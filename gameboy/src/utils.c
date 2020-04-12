@@ -1,9 +1,9 @@
 /*
  *		utils.c
  *
- *  	Created on: 1 apr. 2020
+ *  	Created on: 10 apr. 2020
  *
- *      Author:  papa-caco
+ *      Author:  Grupo "tp-2020-1C Los Que Aprueban"
  *
  *
  */
@@ -32,12 +32,65 @@ int crear_conexion(char *ip, char* puerto)
 	return socket_cliente;
 }
 
-char* leer_consola(void)
+void cargar_argumentos(t_args_msg_gameboy *argumentos_mensaje, t_list *lista)
 {
-	printf("Ingrese el mensaje a enviar:");
-	char* a_leer = readline(">");
-	rl_clear_history();
-	return(a_leer);
+	char *proceso 		= list_get(lista, 0);
+	char *tipo_mensaje 	= list_get(lista,1);
+
+	if (strcmp(proceso,"SUSCRIPTOR") == 0) {
+		argumentos_mensaje -> proceso = SUSCRIPTOR;
+		argumentos_mensaje -> tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
+		borrar_comienzo(lista,2);
+		list_add_all(argumentos_mensaje -> argumentos, lista);
+	}
+	else if (strcmp(proceso,"BROKER") == 0) {
+		argumentos_mensaje -> proceso = BROKER;
+		argumentos_mensaje -> tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
+		borrar_comienzo(lista,2);
+		list_add_all(argumentos_mensaje -> argumentos, lista);
+	}
+	else if (strcmp(proceso,"GAMECARD") == 0) {
+		argumentos_mensaje -> proceso = GAMECARD;
+		argumentos_mensaje -> tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
+		borrar_comienzo(lista,2);
+		list_add_all(argumentos_mensaje -> argumentos, lista);
+	}
+	else if (strcmp(proceso,"TEAM") == 0) {
+		argumentos_mensaje -> proceso = TEAM;
+		argumentos_mensaje -> tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
+		borrar_comienzo(lista,2);
+		list_add_all(argumentos_mensaje -> argumentos, lista);
+	}
+	else {
+		puts("Argumentos Incorrectos!");
+		argumentos_mensaje -> proceso = UNKNOWN_PROC;
+		argumentos_mensaje -> tipo_mensaje = UNKNOWN_QUEUE;
+		list_clean(argumentos_mensaje -> argumentos);
+
+	}
+}
+
+t_tipo_mensaje select_tipo_mensaje(char * valor)
+{
+		if (strcmp(valor,"NEW_POKEMON") == 0) {
+ 			return NEW_POKEMON;
+ 		}
+ 		else if (strcmp(valor,"APPEARED_POKEMON") == 0) {
+ 			return APPEARED_POKEMON;
+		}
+ 		else if (strcmp(valor,"CATCH_POKEMON") == 0) {
+ 		 	return CATCH_POKEMON;
+ 		}
+ 		else if (strcmp(valor,"CAUGHT_POKEMON") == 0) {
+ 			return CAUGHT_POKEMON;
+ 		}
+ 		else if (strcmp(valor,"GET_POKEMON") == 0) {
+ 			return GET_POKEMON;
+ 		}
+ 		else {
+ 			printf("Argumentos Incorrectos!");
+ 			return UNKNOWN_QUEUE;
+ 		}
 }
 
 //TODOlisto
@@ -132,10 +185,24 @@ void* recibir_buffer(int* size, int socket_cliente)
 	return _stream;
 }
 
-
-t_log* inicio_log(void)
+void borrar_comienzo(t_list* lista, int cant)
 {
-	return log_create("log/tp0.log", "TP0-R", 1, LOG_LEVEL_INFO);
+	if (lista->elements_count >= cant) {
+		int i = 0;
+		for (i = 0; i < cant; i++) {
+			list_remove(lista,0);
+		}
+	}
+}
+
+void iniciar_log(void)
+{
+	g_logger = log_create("/home/utnso/workspace/tp-2020-1c-Los-Que-Aprueban/gameboy/src/log/gameboy.log", "GAME_BOY", 1, LOG_LEVEL_INFO);
+}
+
+void leer_config(char *path)
+{
+	g_config = config_create(path);
 }
 
 void liberar_conexion(int socket_cliente)

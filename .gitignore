@@ -1,11 +1,16 @@
 # Prerequisites
 *.d
 
+# Settings
+gameboy/.settings*
+gameboy/.cproject
+
 # Object files
 *.o
 *.ko
 *.obj
 *.elf
+gameboy/src/gameboy
 
 # Linker output
 *.ilk
