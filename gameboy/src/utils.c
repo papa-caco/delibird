@@ -10,28 +10,6 @@
 
 #include "utils.h"
 
-int crear_conexion(char *ip, char* puerto)
-{
-	struct addrinfo hints;
-	struct addrinfo *server_info;
-
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;
-
-	getaddrinfo(ip, puerto, &hints, &server_info);
-
-	int socket_cliente = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
-
-	if(connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen) == -1)
-		printf("error");
-
-	freeaddrinfo(server_info);
-
-	return socket_cliente;
-}
-
 void construir_mensaje(t_mensaje_gameboy *argumentos_mensaje, t_list *lista)
 {
 	char *proceso 		= list_get(lista, 0);
@@ -58,14 +36,12 @@ void construir_mensaje(t_mensaje_gameboy *argumentos_mensaje, t_list *lista)
 		cargar_argumentos(argumentos_mensaje, lista);
 	}
 	else {
-		puts("Argumentos Incorrectos!");
 		argumentos_mensaje -> proceso = UNKNOWN_PROC;
 		argumentos_mensaje -> tipo_mensaje = UNKNOWN_QUEUE;
 		list_clean(argumentos_mensaje -> argumentos);
 
 	}
 }
-
 
 t_tipo_mensaje select_tipo_mensaje(char * valor)
 {
@@ -84,8 +60,10 @@ t_tipo_mensaje select_tipo_mensaje(char * valor)
  		else if (strcmp(valor,"GET_POKEMON") == 0) {
  			return GET_POKEMON;
  		}
+ 		else if (strcmp(valor,"LOCALIZED_POKEMON") == 0) {
+ 		 			return LOCALIZED_POKEMON;
+ 		 		}
  		else {
- 			printf("Argumentos Incorrectos!");
  			return UNKNOWN_QUEUE;
  		}
 }
@@ -96,7 +74,262 @@ void cargar_argumentos(t_mensaje_gameboy *argumentos_mensaje, t_list *lista)
 	list_add_all(argumentos_mensaje -> argumentos, lista);
 }
 
-//TODOlisto
+bool validar_argumentos(t_mensaje_gameboy *argumentos_mensaje)
+{
+	int proceso = argumentos_mensaje -> proceso;
+	int tipo_mensaje = argumentos_mensaje -> tipo_mensaje;
+	int cant_argumentos = argumentos_mensaje -> argumentos -> elements_count;
+	int resultado;
+	if (proceso == SUSCRIPTOR && tipo_mensaje != UNKNOWN_QUEUE && cant_argumentos == 1) {
+		if (validar_tiempo(argumentos_mensaje ->argumentos) == 1) {
+			resultado = 1;
+		}
+		else {
+			resultado = 0;
+		}
+		return resultado;
+	}
+	else {
+		switch(tipo_mensaje){
+			case UNKNOWN_QUEUE:
+				resultado = 0;
+				break;
+			case NEW_POKEMON:
+				if (proceso != TEAM && proceso != GAMEBOY && cant_argumentos == 4 && validar_coordXY(argumentos_mensaje -> argumentos,1,3) == 1) {
+					resultado = 1;
+				}
+				else {
+					resultado = 0;
+				}
+				break;
+			case APPEARED_POKEMON:
+				if (proceso == BROKER && cant_argumentos == 4 && validar_coordXY(argumentos_mensaje -> argumentos,1,2) == 1 && validar_id_mensaje(argumentos_mensaje -> argumentos,3) == 1) {
+					resultado = 1;
+				}
+				else if (proceso == TEAM && cant_argumentos == 3 && validar_coordXY(argumentos_mensaje -> argumentos,1,2) == 1) {
+					resultado = 1;
+				}
+				else {
+					resultado = 0;
+				}
+				break;
+			case CATCH_POKEMON:
+				if (proceso != TEAM && proceso != GAMEBOY && cant_argumentos == 3 && validar_coordXY(argumentos_mensaje -> argumentos,1,2) == 1) {
+					resultado = 1;
+				}
+				else {
+					resultado = 0;
+				}
+				break;
+			case CAUGHT_POKEMON:
+				if (proceso == BROKER && cant_argumentos == 2 && validar_id_mensaje(argumentos_mensaje -> argumentos, 0) == 1 &&   validar_resultado_caught(argumentos_mensaje -> argumentos, 1) == 1) {
+					resultado = 1;
+				}
+				else {
+					resultado = 0;
+				}
+				break;
+			case GET_POKEMON:
+				if (proceso != TEAM && proceso != GAMEBOY && cant_argumentos == 1) {
+					resultado = 1;
+				}
+				else {
+					resultado = 0;
+				}
+				break;
+			case LOCALIZED_POKEMON:
+				resultado = 0;
+				break;
+		}
+	}
+	return resultado;
+}
+
+bool validar_tiempo(t_list *lista)
+{
+	int resultado;
+	char *tiempo = list_get(lista, 0);
+	if (atoi(tiempo) > 0 && atoi(tiempo) <= 120) {
+		resultado = 1;
+	}
+	else {
+		resultado = 0;
+	}
+	return resultado;
+}
+
+bool validar_coordXY(t_list *lista,int index1, int index2)
+{
+	int resultado;
+	char *coordX = list_get(lista, index1);
+	if (atoi(coordX) >= 0 && atoi(coordX) <= g_config_gameboy->coord_x_max) {
+		if (index2 == 2) {
+			char *coordY = list_get(lista, index2);
+			if (atoi(coordY) >= 0 && atoi(coordY) <= g_config_gameboy->coord_y_max) {
+				resultado = 1;
+			}
+			else {
+				resultado = 0;
+			}
+		}
+		else {
+			char *coordY = list_get(lista, index2 - 1);
+			char *cantPokemon = list_get(lista, index2);
+			if (atoi(coordY) >= 0 && atoi(coordY) <= g_config_gameboy->coord_y_max && atoi(cantPokemon) > 0 && atoi(cantPokemon) <= g_config_gameboy->cant_max_pokemon) {
+				resultado = 1;
+			}
+			else {
+				resultado = 0;
+			}
+		}
+	}
+	else {
+		resultado = 0;
+	}
+	return resultado;
+}
+
+bool validar_id_mensaje(t_list *lista, int index)
+{
+	int resultado;
+	char *id_mensaje = list_get(lista, index);
+	if (atoi(id_mensaje) > 0 && atoi(id_mensaje) <= 9999) {
+		resultado = 1;
+	}
+	else {
+		resultado = 0;
+	}
+	return resultado;
+}
+
+bool validar_resultado_caught(t_list *lista,int index)
+{
+	int resultado;
+	char *argumento = list_get(lista, index);
+	if (strcmp(argumento,"OK") == 0 || strcmp(argumento,"FAIL") == 0) {
+		resultado = 1;
+	}
+	else {
+		resultado = 0;
+	}
+	return resultado;
+}
+
+int crear_conexion(t_mensaje_gameboy *msg_gameboy)
+{
+	struct addrinfo hints;
+	struct addrinfo *server_info;
+	char *ip = select_ip_proceso(msg_gameboy);
+	char *puerto = select_puerto_proceso(msg_gameboy);
+
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_PASSIVE;
+
+	getaddrinfo(ip, puerto, &hints, &server_info);
+
+	int socket_cliente = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
+
+	if(connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen) == -1)
+		printf("error");
+
+	freeaddrinfo(server_info);
+
+	return socket_cliente;
+}
+
+char* select_ip_proceso(t_mensaje_gameboy *msg_gameboy) {
+	int proceso = msg_gameboy -> proceso;
+	char *ip;
+	switch(proceso) {
+		case SUSCRIPTOR:
+			ip = g_config_gameboy -> ip_broker;
+			break;
+		case BROKER:
+			ip = g_config_gameboy -> ip_broker;
+			break;
+		case GAMECARD:
+			ip = g_config_gameboy -> ip_gamecard;
+			break;
+		case TEAM:
+			ip = g_config_gameboy -> ip_team;
+			break;
+	}
+	return ip;
+}
+
+char* select_puerto_proceso(t_mensaje_gameboy *msg_gameboy) {
+	int proceso = msg_gameboy -> proceso;
+	char *puerto;
+	switch(proceso) {
+		case SUSCRIPTOR:
+			puerto = g_config_gameboy -> puerto_broker;
+			break;
+		case BROKER:
+			puerto = g_config_gameboy -> puerto_broker;
+			break;
+		case GAMECARD:
+			puerto = g_config_gameboy -> puerto_gamecard;
+			break;
+		case TEAM:
+			puerto = g_config_gameboy -> puerto_team;
+			break;
+	}
+	return puerto;
+}
+
+char *obtengo_proceso(t_mensaje_gameboy *msg_gameboy)
+{
+	int cod_proceso = msg_gameboy -> proceso;
+	char *proceso;
+	switch (cod_proceso) {
+		case SUSCRIPTOR:
+			proceso = "BROKER - MODO_SUSCRIPTOR";
+			break;
+		case BROKER:
+			proceso = "BROKER";
+			break;
+		case GAMEBOY:
+			proceso = "GAMEBOY";
+			break;
+		case GAMECARD:
+			proceso = "GAMECARD";
+			break;
+		case TEAM:
+			proceso = "TEAM";
+			break;
+	}
+	return proceso;
+}
+
+char *obtengo_cola(t_mensaje_gameboy *msg_gameboy)
+{
+	int cod_cola = msg_gameboy -> tipo_mensaje;
+	char *cola;
+	switch (cod_cola) {
+		case APPEARED_POKEMON:
+			cola = "APPEARED";
+			break;
+		case CATCH_POKEMON:
+			cola = "CATCH";
+			break;
+		case CAUGHT_POKEMON:
+			cola = "CAUGHT";
+			break;
+		case GET_POKEMON:
+			cola = "GET";
+			break;
+		case LOCALIZED_POKEMON:
+			cola = "LOCALIZED";
+			break;
+		case NEW_POKEMON:
+			cola = "NEW";
+			break;
+	}
+	return cola;
+}
+
 void enviar_mensaje(char* mensaje, int socket_cliente)
 {
 	t_buffer* 	_buffer;
@@ -216,6 +449,7 @@ void leer_config(char *path)
 	g_config_gameboy->puerto_team = config_get_string_value(g_config, "PUERTO_TEAM");
 	g_config_gameboy->coord_x_max = config_get_int_value(g_config, "COORDENADA_X-MAX");
 	g_config_gameboy->coord_y_max = config_get_int_value(g_config, "COORDENADA_Y-MAX");
+	g_config_gameboy->cant_max_pokemon = config_get_int_value(g_config, "CANT_MAX_POKEMON");
 }
 
 void liberar_conexion(int socket_cliente)

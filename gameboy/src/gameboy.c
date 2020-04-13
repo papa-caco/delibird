@@ -11,7 +11,7 @@
 
 #include "gameboy.h"
 
-int main(int argcnt, char* argval[])
+int main(int argcnt, char *argval[])
 {
 	int i;
 
@@ -35,23 +35,46 @@ int main(int argcnt, char* argval[])
 	leer_config("/home/utnso/workspace/tp-2020-1c-Los-Que-Aprueban/gameboy/bin/config/gameboy.config");
 
 	// Inicializamos la variable conla estructura para los argumentos ingresados
-	t_mensaje_gameboy *argumentos_mensaje = malloc(sizeof(t_mensaje_gameboy));
+	t_mensaje_gameboy *msg_gameboy = malloc(sizeof(t_mensaje_gameboy));
 
-	argumentos_mensaje ->  argumentos = list_create(); // Inicializamos con lista vacia
+	msg_gameboy ->  argumentos = list_create(); // Inicializamos con lista vacia
 
 	// Construimos el mensaje en la estructura definida
-	construir_mensaje(argumentos_mensaje, argumentos_consola);
+	construir_mensaje(msg_gameboy, argumentos_consola);
+
+	// Validar Argumentos para los distintos Procesos y Tipos de Mensaje (segun casuistica)
+	if (validar_argumentos(msg_gameboy) != 1) {
+		puts("Los Argumentos Ingresados son incorrectos");
+		return EXIT_FAILURE;
+	}
+
+	// Establecer conexion con PROCESO REMOTO -- obtenemos el Socket Cliente
+	int conexion = crear_conexion(msg_gameboy);
+
+	char *proceso = obtengo_proceso(msg_gameboy);
+	char *cola = obtengo_cola(msg_gameboy);
+
+	// Loguear conexion con PROCESO REMOTO
+	log_info(g_logger,"GAMEBOY_SUCCESSFULL_CONNECTED - SOCKET: %d PROCESS: %s - QUEUE: %s  - REMOTE_IP: %s PORT: %s",
+				conexion, proceso, cola, select_ip_proceso(msg_gameboy),select_puerto_proceso(msg_gameboy));
+
+	//TODO Validar conexion.
+
+	// Si falla deberia imprimir error por consola
+
+	//TODO SELECCION MODO GAMEBOY
 
 
 	// Las 4 lineas de abajo van de prueba para ir viendo resultados
 	log_info(g_logger,"IP_BROKER = %s", g_config_gameboy->ip_broker);
 	log_info(g_logger,"PUERTO_GAMECARD = %s", g_config_gameboy->puerto_gamecard);
-	log_info(g_logger,"Proceso = %d", argumentos_mensaje -> proceso);
-	log_info(g_logger,"Tipo_Mensaje = %d", argumentos_mensaje -> tipo_mensaje);
-	list_mostrar(argumentos_mensaje -> argumentos);
+	log_info(g_logger,"Proceso = %d", msg_gameboy -> proceso);
+	log_info(g_logger,"Tipo_Mensaje = %d", msg_gameboy -> tipo_mensaje);
+	list_mostrar(msg_gameboy -> argumentos);
+
 
 	// Liberamos memoria reservada para las variables y estructuras
-	terminar_programa(argumentos_mensaje, g_config_gameboy, argumentos_consola, g_logger, g_config);
+	terminar_programa(msg_gameboy, g_config_gameboy, argumentos_consola, g_logger, g_config, conexion);
 
 	return EXIT_SUCCESS;
 }
@@ -67,42 +90,17 @@ void list_mostrar(t_list* lista)
 	}
 }
 
-void terminar_programa(t_mensaje_gameboy *argumentos, t_config_gameboy *config_gameboy, t_list *lista, t_log *log, t_config *config)
+void terminar_programa(t_mensaje_gameboy *msg_gameboy, t_config_gameboy *config_gameboy, t_list *lista, t_log *log, t_config *config, int conexion)
 {
 	log_destroy(log);
 	config_destroy(config);
 	list_destroy(lista);
-	list_destroy(argumentos->argumentos);
+	list_destroy(msg_gameboy->argumentos);
 	free(config_gameboy);
-	free(argumentos);
-	//liberar_conexion(conexion);
+	free(msg_gameboy);
+	liberar_conexion(conexion);
 }
 
-
-//TODO validar y seleccionar argumento tipo_mensaje
-
-//TODO Validar Argumentos restantes (segun casuistica)
-
-/* Salida por Validar Argumentos = Invalidos
- *
- * Imprimer error en Consola
- *
- * Libera memoria
- *
- * Finaliza main()
- *
-*/
-// Continuacion por Validar Argumentos = Ok.
-
-//TODO Establecer conexion con PROCESO REMOTO
-
-//TODO Validar conexion.
-
-// Si falla deberia imprimir error por consola
-
-//TODO Loguear conexion
-
-//TODO SELECCION MODO GAMEBOY
 
 // CASE Modo GAMEBOY PRODUCTOR
 

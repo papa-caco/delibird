@@ -15,7 +15,7 @@
 void 		list_mostrar		(t_list* lista);
 
 
-void terminar_programa(t_mensaje_gameboy *argumentos, t_config_gameboy* config_gameboy, t_list *lista, t_log *log, t_config *config);
+void terminar_programa(t_mensaje_gameboy *argumentos, t_config_gameboy* config_gameboy, t_list *lista, t_log *log, t_config *config, int conexion);
 
 
 

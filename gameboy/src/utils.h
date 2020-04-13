@@ -71,8 +71,9 @@ char *ip_team;
 char *puerto_broker;
 char *puerto_gamecard;
 char *puerto_team;
-uint32_t coord_x_max;
-uint32_t coord_y_max;
+int coord_x_max;
+int coord_y_max;
+int cant_max_pokemon;
 } t_config_gameboy;
 
 typedef struct
@@ -96,13 +97,31 @@ t_config_gameboy	*g_config_gameboy;
 
 /* ---  DEFINICION DE FIRMA DE FUNCIONES ---*/
 
-int 	crear_conexion		(char* ip, char* puerto);
-
 void	construir_mensaje	(t_mensaje_gameboy* argumentos, t_list *lista);
 
 t_tipo_mensaje 	select_tipo_mensaje	(char * valor);
 
 void 	cargar_argumentos	(t_mensaje_gameboy *argumentos_mensaje, t_list *lista);
+
+bool 	validar_argumentos	(t_mensaje_gameboy *argumentos_mensaje);
+
+bool 	validar_tiempo		(t_list *lista);
+
+bool	validar_coordXY		(t_list *lista,int index1, int index2);
+
+bool 	validar_id_mensaje	(t_list *lista,int index);
+
+bool 	validar_resultado_caught	(t_list *lista,int index);
+
+int 	crear_conexion		(t_mensaje_gameboy *msg_gameboy);
+
+char*	select_ip_proceso	(t_mensaje_gameboy *msg_gameboy);
+
+char*	select_puerto_proceso	(t_mensaje_gameboy *msg_gameboy);
+
+char*	obtengo_proceso		(t_mensaje_gameboy *msg_gameboy);
+
+char*	obtengo_cola		(t_mensaje_gameboy *msg_gameboy);
 
 void 	enviar_mensaje		(char* mensaje, int socket_cliente);
 
