@@ -207,6 +207,15 @@ void iniciar_log(void)
 void leer_config(char *path)
 {
 	g_config = config_create(path);
+	g_config_gameboy = malloc(sizeof(t_config_gameboy));
+	g_config_gameboy->ip_broker = config_get_string_value(g_config, "IP_BROKER");
+	g_config_gameboy->ip_gamecard = config_get_string_value(g_config, "IP_GAMECARD");
+	g_config_gameboy->ip_team = config_get_string_value(g_config, "IP_TEAM");
+	g_config_gameboy->puerto_broker = config_get_string_value(g_config, "PUERTO_BROKER");
+	g_config_gameboy->puerto_gamecard = config_get_string_value(g_config, "PUERTO_GAMECARD");
+	g_config_gameboy->puerto_team = config_get_string_value(g_config, "PUERTO_TEAM");
+	g_config_gameboy->coord_x_max = config_get_int_value(g_config, "COORDENADA_X-MAX");
+	g_config_gameboy->coord_y_max = config_get_int_value(g_config, "COORDENADA_Y-MAX");
 }
 
 void liberar_conexion(int socket_cliente)

@@ -42,17 +42,16 @@ int main(int argcnt, char* argval[])
 	// Construimos el mensaje en la estructura definida
 	construir_mensaje(argumentos_mensaje, argumentos_consola);
 
-	char *ip = config_get_string_value(g_config,"IP_BROKER");
 
 	// Las 4 lineas de abajo van de prueba para ir viendo resultados
-	log_info(g_logger,"IP_BROKER = %s",ip);
+	log_info(g_logger,"IP_BROKER = %s", g_config_gameboy->ip_broker);
+	log_info(g_logger,"PUERTO_GAMECARD = %s", g_config_gameboy->puerto_gamecard);
 	log_info(g_logger,"Proceso = %d", argumentos_mensaje -> proceso);
 	log_info(g_logger,"Tipo_Mensaje = %d", argumentos_mensaje -> tipo_mensaje);
 	list_mostrar(argumentos_mensaje -> argumentos);
 
 	// Liberamos memoria reservada para las variables y estructuras
-	terminar_programa(argumentos_mensaje, argumentos_consola, g_logger, g_config);
-
+	terminar_programa(argumentos_mensaje, g_config_gameboy, argumentos_consola, g_logger, g_config);
 
 	return EXIT_SUCCESS;
 }
@@ -68,12 +67,13 @@ void list_mostrar(t_list* lista)
 	}
 }
 
-void terminar_programa(t_mensaje_gameboy *argumentos, t_list *lista, t_log *log, t_config *config)
+void terminar_programa(t_mensaje_gameboy *argumentos, t_config_gameboy *config_gameboy, t_list *lista, t_log *log, t_config *config)
 {
 	log_destroy(log);
 	config_destroy(config);
 	list_destroy(lista);
 	list_destroy(argumentos->argumentos);
+	free(config_gameboy);
 	free(argumentos);
 	//liberar_conexion(conexion);
 }

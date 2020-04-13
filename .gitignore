@@ -4,13 +4,15 @@
 # Settings
 gameboy/.settings*
 gameboy/.cproject
+gameboy/bin/gameboy
+gameboy/debug/*.o
 
 # Object files
 *.o
 *.ko
 *.obj
 *.elf
-gameboy/src/gameboy
+
 
 # Linker output
 *.ilk

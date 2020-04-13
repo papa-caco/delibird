@@ -27,7 +27,7 @@
 typedef enum
 {
 	MENSAJE = 1,
-}op_code;
+} op_code;
 
 typedef enum
 {
@@ -37,7 +37,7 @@ typedef enum
 	BROKER,
 	TEAM,
 	GAMEBOY,
-}t_proceso;
+} t_proceso;
 
 typedef enum
 {
@@ -48,13 +48,13 @@ typedef enum
 	CAUGHT_POKEMON,
 	GET_POKEMON,
 	LOCALIZED_POKEMON,
-}t_tipo_mensaje;
+} t_tipo_mensaje;
 
 typedef enum
 {
 	FAIL,
 	OK,
-}t_result_caught;
+} t_result_caught;
 
 typedef struct
 {
@@ -62,6 +62,18 @@ typedef struct
 	t_tipo_mensaje tipo_mensaje;
 	t_list *argumentos;
 } t_mensaje_gameboy;
+
+typedef struct
+{
+char *ip_broker;
+char *ip_gamecard;
+char *ip_team;
+char *puerto_broker;
+char *puerto_gamecard;
+char *puerto_team;
+uint32_t coord_x_max;
+uint32_t coord_y_max;
+} t_config_gameboy;
 
 typedef struct
 {
@@ -77,8 +89,9 @@ typedef struct
 
 /* ---  DEFINICION DE VARIABLES GLOBALES ---*/
 
-t_log 		*g_logger;
-t_config	*g_config;
+t_log 				*g_logger;
+t_config			*g_config;
+t_config_gameboy	*g_config_gameboy;
 
 
 /* ---  DEFINICION DE FIRMA DE FUNCIONES ---*/
