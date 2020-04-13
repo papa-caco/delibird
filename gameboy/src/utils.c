@@ -32,7 +32,7 @@ int crear_conexion(char *ip, char* puerto)
 	return socket_cliente;
 }
 
-void cargar_argumentos(t_args_msg_gameboy *argumentos_mensaje, t_list *lista)
+void construir_mensaje(t_mensaje_gameboy *argumentos_mensaje, t_list *lista)
 {
 	char *proceso 		= list_get(lista, 0);
 	char *tipo_mensaje 	= list_get(lista,1);
@@ -40,26 +40,22 @@ void cargar_argumentos(t_args_msg_gameboy *argumentos_mensaje, t_list *lista)
 	if (strcmp(proceso,"SUSCRIPTOR") == 0) {
 		argumentos_mensaje -> proceso = SUSCRIPTOR;
 		argumentos_mensaje -> tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
-		borrar_comienzo(lista,2);
-		list_add_all(argumentos_mensaje -> argumentos, lista);
+		cargar_argumentos(argumentos_mensaje, lista);
 	}
 	else if (strcmp(proceso,"BROKER") == 0) {
 		argumentos_mensaje -> proceso = BROKER;
 		argumentos_mensaje -> tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
-		borrar_comienzo(lista,2);
-		list_add_all(argumentos_mensaje -> argumentos, lista);
+		cargar_argumentos(argumentos_mensaje, lista);
 	}
 	else if (strcmp(proceso,"GAMECARD") == 0) {
 		argumentos_mensaje -> proceso = GAMECARD;
 		argumentos_mensaje -> tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
-		borrar_comienzo(lista,2);
-		list_add_all(argumentos_mensaje -> argumentos, lista);
+		cargar_argumentos(argumentos_mensaje, lista);
 	}
 	else if (strcmp(proceso,"TEAM") == 0) {
 		argumentos_mensaje -> proceso = TEAM;
 		argumentos_mensaje -> tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
-		borrar_comienzo(lista,2);
-		list_add_all(argumentos_mensaje -> argumentos, lista);
+		cargar_argumentos(argumentos_mensaje, lista);
 	}
 	else {
 		puts("Argumentos Incorrectos!");
@@ -69,6 +65,7 @@ void cargar_argumentos(t_args_msg_gameboy *argumentos_mensaje, t_list *lista)
 
 	}
 }
+
 
 t_tipo_mensaje select_tipo_mensaje(char * valor)
 {
@@ -91,6 +88,12 @@ t_tipo_mensaje select_tipo_mensaje(char * valor)
  			printf("Argumentos Incorrectos!");
  			return UNKNOWN_QUEUE;
  		}
+}
+
+void cargar_argumentos(t_mensaje_gameboy *argumentos_mensaje, t_list *lista)
+{
+	borrar_comienzo(lista,2);
+	list_add_all(argumentos_mensaje -> argumentos, lista);
 }
 
 //TODOlisto
@@ -197,7 +200,8 @@ void borrar_comienzo(t_list* lista, int cant)
 
 void iniciar_log(void)
 {
-	g_logger = log_create("/home/utnso/workspace/tp-2020-1c-Los-Que-Aprueban/gameboy/src/log/gameboy.log", "GAME_BOY", 1, LOG_LEVEL_INFO);
+	g_logger = log_create("/home/utnso/workspace/tp-2020-1c-Los-Que-Aprueban/gameboy/bin/log/gameboy.log", "GAME_BOY", 1, LOG_LEVEL_INFO);
+	//------------ Quitar el "1" para que no loguee por Pantalla -------//
 }
 
 void leer_config(char *path)

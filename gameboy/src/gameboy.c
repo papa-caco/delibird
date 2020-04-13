@@ -14,7 +14,8 @@
 int main(int argcnt, char* argval[])
 {
 	int i;
-	// Leer argumentos cargados desde linea de comando por consola
+
+	// Utilizamos una lista para cargar los argumentos ingresados por linea de comando en la consola
 	t_list *argumentos_consola	= list_create();
 
 	for(i = 1; i < argcnt; i++){
@@ -22,34 +23,36 @@ int main(int argcnt, char* argval[])
 		list_add(argumentos_consola, argval[i]);
 	}
 
-	/*list_add(argumentos_consola,"SUSCRIPTOR");
-	list_add(argumentos_consola,"GET_POKEMON");
-	list_add(argumentos_consola,"20");*/
+	if (argcnt == 1) {
+		puts("No se ingresaron Argumentos!!");
+		return EXIT_FAILURE;
+	}
 
-	// Iniciar logger
+	// Iniciar logger -- Se definio como variable global g_logger
 	iniciar_log();
 
-	// Leer config
-	leer_config("/home/utnso/workspace/tp-2020-1c-Los-Que-Aprueban/gameboy/src/config/gameboy.config");
+	// Leer config -- Se definio como variable global g_config
+	leer_config("/home/utnso/workspace/tp-2020-1c-Los-Que-Aprueban/gameboy/bin/config/gameboy.config");
 
-	t_args_msg_gameboy *argumentos_mensaje = malloc(sizeof(t_args_msg_gameboy));
-	argumentos_mensaje ->  argumentos = list_create();
+	// Inicializamos la variable conla estructura para los argumentos ingresados
+	t_mensaje_gameboy *argumentos_mensaje = malloc(sizeof(t_mensaje_gameboy));
 
-	// Cargar Argumentos en estructura
-	cargar_argumentos(argumentos_mensaje, argumentos_consola);
+	argumentos_mensaje ->  argumentos = list_create(); // Inicializamos con lista vacia
+
+	// Construimos el mensaje en la estructura definida
+	construir_mensaje(argumentos_mensaje, argumentos_consola);
 
 	char *ip = config_get_string_value(g_config,"IP_BROKER");
 
+	// Las 4 lineas de abajo van de prueba para ir viendo resultados
 	log_info(g_logger,"IP_BROKER = %s",ip);
 	log_info(g_logger,"Proceso = %d", argumentos_mensaje -> proceso);
 	log_info(g_logger,"Tipo_Mensaje = %d", argumentos_mensaje -> tipo_mensaje);
 	list_mostrar(argumentos_mensaje -> argumentos);
 
-
+	// Liberamos memoria reservada para las variables y estructuras
 	terminar_programa(argumentos_mensaje, argumentos_consola, g_logger, g_config);
-	//log_destroy(g_logger);
-	//config_destroy(g_config);
-	//list_destroy(argumentos_consola);
+
 
 	return EXIT_SUCCESS;
 }
@@ -65,7 +68,7 @@ void list_mostrar(t_list* lista)
 	}
 }
 
-void terminar_programa(t_args_msg_gameboy *argumentos, t_list *lista, t_log *log, t_config *config)
+void terminar_programa(t_mensaje_gameboy *argumentos, t_list *lista, t_log *log, t_config *config)
 {
 	log_destroy(log);
 	config_destroy(config);

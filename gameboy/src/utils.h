@@ -36,6 +36,7 @@ typedef enum
 	GAMECARD,
 	BROKER,
 	TEAM,
+	GAMEBOY,
 }t_proceso;
 
 typedef enum
@@ -60,7 +61,7 @@ typedef struct
 	t_proceso proceso;
 	t_tipo_mensaje tipo_mensaje;
 	t_list *argumentos;
-} t_args_msg_gameboy;
+} t_mensaje_gameboy;
 
 typedef struct
 {
@@ -84,9 +85,11 @@ t_config	*g_config;
 
 int 	crear_conexion		(char* ip, char* puerto);
 
-void	cargar_argumentos	(t_args_msg_gameboy* argumentos, t_list *lista);
+void	construir_mensaje	(t_mensaje_gameboy* argumentos, t_list *lista);
 
 t_tipo_mensaje 	select_tipo_mensaje	(char * valor);
+
+void 	cargar_argumentos	(t_mensaje_gameboy *argumentos_mensaje, t_list *lista);
 
 void 	enviar_mensaje		(char* mensaje, int socket_cliente);
 
