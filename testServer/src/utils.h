@@ -62,6 +62,8 @@ void* rcv_catch_broker(int socket_cliente, int* size);
 
 void* rcv_new_broker(int socket_cliente, int* size);
 
+void* rcv_get_broker(int socket_cliente, int* size);
+
 void* serializar_paquete(t_paquete* paquete, int bytes);
 
 void devolver_mensaje(void* payload, int size, int socket_cliente);	// hace un send

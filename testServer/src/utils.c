@@ -92,8 +92,9 @@ void process_request(int cod_op, int cliente_fd) {
 		//TODO
 		break;
 	case GET_BROKER:
-		log_info(g_logger, "(NEW-MESSAGE @");
-		//TODO
+		log_info(g_logger, "(NEW-MESSAGE @: BROKER@GET_POKEMON | SOCKET#: %d",
+				cliente_fd);
+		msg = rcv_get_broker(cliente_fd, &size);
 		break;
 	case GET_GAMECARD:
 		log_info(g_logger, "(NEW-MESSAGE @");
@@ -104,7 +105,7 @@ void process_request(int cod_op, int cliente_fd) {
 				"(NEW-MESSAGE @BROKER | NEW_POKEMON | Socket_Cliente: %d",
 				cliente_fd);
 		msg = rcv_new_broker(cliente_fd, &size);
-
+		devolver_mensaje(msg,size,cliente_fd); // Tiene que devolver todas las posiciones del pokemon
 		break;
 	case NEW_GAMECARD:
 		log_info(g_logger, "(NEW-MESSAGE @");
@@ -176,11 +177,26 @@ void* rcv_new_broker(int socket_cliente, int *size) {
 	offset += sizeof(int);
 	char*pokemon = msg + offset;
 
-	log_info(g_logger, "(MSG-BODY= %s | %d | %d | %d -- SIZE = %d Bytes)", pokemon,
-			*pos_x, *pos_y, *cantidad, *size);
+	log_info(g_logger, "(MSG-BODY= %s | %d | %d | %d -- SIZE = %d Bytes)",
+			pokemon, *pos_x, *pos_y, *cantidad, *size);
 
 	return msg;
 
+}
+
+void* rcv_get_broker(int socket_cliente, int *size) {
+
+	void *msg;
+
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	msg = malloc(*size);
+	recv(socket_cliente, msg, *size, MSG_WAITALL);
+
+	char*pokemon = msg;
+
+	log_info(g_logger, "(MSG-BODY= %s -- SIZE = %d Bytes)", pokemon, *size);
+
+	return msg;
 }
 
 void* serializar_paquete(t_paquete* paquete, int bytes) {

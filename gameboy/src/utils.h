@@ -142,6 +142,8 @@ void	empaquetar_catch_broker	(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete
 
 void empaquetar_new_broker (t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
+void empaquetar_get_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
+
 void* 	serializar_paquete	(t_paquete* paquete, int *bytes);
 
 char* 	recibir_mensaje		(int socket_cliente);
