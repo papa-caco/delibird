@@ -14,8 +14,7 @@
 #define IP "127.0.0.1"
 #define PUERTO "5001"
 
-typedef enum
-{
+typedef enum {
 	MENSAJE = 10,
 	APPEARED_BROKER,
 	APPEARED_TEAM,
@@ -28,14 +27,12 @@ typedef enum
 	NEW_GAMECARD,
 } op_code;
 
-typedef struct
-{
+typedef struct {
 	int size;
 	void* stream;
 } t_stream;
 
-typedef struct
-{
+typedef struct {
 	op_code codigo_operacion;
 	t_stream* buffer;
 } t_paquete;
@@ -49,26 +46,28 @@ t_log *g_logger;
 
 //-----------------Firma de Funciones----------------------------
 
-void*	recibir_buffer		(int*, int);
+void* recibir_buffer(int*, int);
 
-int 	recibir_operacion	(int socket);
+int recibir_operacion(int socket);
 
-void 	iniciar_servidor	(void);
+void iniciar_servidor(void);
 
-void 	serve_client		(int *socket);
+void serve_client(int *socket);
 
-void 	process_request		(int cod_op, int cliente_fd);
+void process_request(int cod_op, int cliente_fd);
 
-void* 	recibir_mensaje		(int socket_cliente, int* size);
+void* recibir_mensaje(int socket_cliente, int* size);
 
-void* 	rcv_catch_broker	(int socket_cliente, int* size);
+void* rcv_catch_broker(int socket_cliente, int* size);
 
-void* 	serializar_paquete	(t_paquete* paquete, int bytes);
+void* rcv_new_broker(int socket_cliente, int* size);
 
-void 	devolver_mensaje	(void* payload, int size, int socket_cliente);	// hace un send
+void* serializar_paquete(t_paquete* paquete, int bytes);
 
-void 	esperar_cliente		(int socket);
+void devolver_mensaje(void* payload, int size, int socket_cliente);	// hace un send
 
-void 	iniciar_logger		(void);
+void esperar_cliente(int socket);
+
+void iniciar_logger(void);
 
 #endif /* CONEXIONES_H_ */
