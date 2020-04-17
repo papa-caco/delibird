@@ -343,7 +343,9 @@ void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente) {
 
 		break;
 	case GET_POKEMON:
-
+		if (proceso == BROKER){
+			empaquetar_get_broker(msg_gameboy, paquete);
+		}
 		break;
 	case NEW_POKEMON:
 		if (proceso == BROKER) {
@@ -415,6 +417,25 @@ void empaquetar_new_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
 	paquete->codigo_operacion = NEW_BROKER;
 	paquete->buffer = buffer;
 	log_info(g_logger, "(SENDING_MSG= %s | %d | %d | %d)", pokemon, pos_x, pos_y, cantidad);
+
+}
+
+void empaquetar_get_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete){
+
+	char *pokemon = list_get(msg_gameboy->argumentos,0);
+
+	t_stream *buffer = malloc(sizeof(t_stream));
+	buffer->size = strlen(pokemon) + 1;
+
+	void *stream = malloc(buffer -> size);
+
+	memcpy(stream, pokemon, strlen(pokemon)+1);
+	buffer->data = stream;
+
+	paquete->codigo_operacion = GET_BROKER;
+	paquete->buffer = buffer;
+
+	log_info(g_logger, "(SENDING_MSG= %s)", pokemon);
 
 }
 
