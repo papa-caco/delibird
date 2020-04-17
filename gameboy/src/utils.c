@@ -472,10 +472,7 @@ void borrar_comienzo(t_list* lista, int cant) {
 }
 
 void iniciar_log(void) {
-	g_logger =
-			log_create(
-					"/home/utnso/tp-2020-1c-Los-Que-Aprueban/gameboy/bin/log/gameboy.log",
-					"GAME_BOY", 1, LOG_LEVEL_INFO);
+	g_logger = log_create( g_config_gameboy -> ruta_log, "GAME_BOY", 1, LOG_LEVEL_INFO);
 	//------------ Quitar el "1" para que no loguee por Pantalla -------//
 }
 
@@ -486,7 +483,8 @@ void leer_config(char *path) {
 			"IP_BROKER");
 	g_config_gameboy->ip_gamecard = config_get_string_value(g_config,
 			"IP_GAMECARD");
-	g_config_gameboy->ip_team = config_get_string_value(g_config, "IP_TEAM");
+	g_config_gameboy->ip_team = config_get_string_value(g_config,
+			"IP_TEAM");
 	g_config_gameboy->puerto_broker = config_get_string_value(g_config,
 			"PUERTO_BROKER");
 	g_config_gameboy->puerto_gamecard = config_get_string_value(g_config,
@@ -501,6 +499,8 @@ void leer_config(char *path) {
 			"CANT_MAX_POKEMON");
 	g_config_gameboy->id_mensaje_unico = config_get_int_value(g_config,
 			"ID_MENSAJE_UNICO");
+	g_config_gameboy->ruta_log = config_get_string_value(g_config,
+			"RUTA_LOG");
 }
 
 void terminar_programa(t_mensaje_gameboy *msg_gameboy,

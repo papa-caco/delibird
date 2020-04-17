@@ -1,0 +1,6 @@
+Copiar el archivo .config
+en el directorio:
+
+	 /home/utnso/config
+
+junto con los demás archivos de configuración.

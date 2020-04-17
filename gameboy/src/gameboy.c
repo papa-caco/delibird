@@ -22,10 +22,12 @@ int main(int argcnt, char *argval[])
 		puts("No se ingresaron Argumentos!!");
 		return EXIT_FAILURE;
 	}
+	// Leer config -- variable global g_config
+	leer_config("/home/utnso/config/gameboy.config");
+
 	// Iniciar logger -- variable global g_logger
 	iniciar_log();
-	// Leer config -- variable global g_config
-	leer_config("/home/utnso/tp-2020-1c-Los-Que-Aprueban/gameboy/bin/config/gameboy.config");
+
 	// Inicializamos la variable con la estructura para los argumentos ingresados
 	t_mensaje_gameboy *msg_gameboy = malloc(sizeof(t_mensaje_gameboy));
 

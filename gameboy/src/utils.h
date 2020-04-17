@@ -84,6 +84,7 @@ int coord_x_max;
 int coord_y_max;
 int cant_max_pokemon;
 int id_mensaje_unico;
+char *ruta_log;
 } t_config_gameboy;
 
 typedef struct
