@@ -194,6 +194,6 @@ void devolver_mensaje(void* payload, int size, int socket_cliente)
 
 void iniciar_logger(void)
 {
-	g_logger = log_create("log/serverlog", "SERVER", 1, LOG_LEVEL_INFO);
+	g_logger = log_create("/home/utnso/workspace/tp-2020-1c-Los-Que-Aprueban/testServer/bin/log/serverlog", "SERVER", 1, LOG_LEVEL_INFO);
 }
 
