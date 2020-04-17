@@ -1,7 +1,9 @@
 # Prerequisites
 *.d
 
-# Settings
+# Setting
+.cproject
+.settings/*
 gameboy/.settings*
 gameboy/.cproject
 gameboy/bin/gameboy
