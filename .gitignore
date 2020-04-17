@@ -5,7 +5,6 @@
 gameboy/.settings*
 gameboy/.cproject
 gameboy/bin/gameboy
-gameboy/bin/log/gameboy.log
 gameboy/debug/*.o
 testServer/.settings*
 testServer/.cproject
