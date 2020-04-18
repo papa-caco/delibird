@@ -95,7 +95,6 @@ void process_request(int cod_op, int cliente_fd) {
 		log_info(g_logger, "(NEW-MESSAGE @: BROKER@GET_POKEMON | SOCKET#: %d",
 				cliente_fd);
 		msg = rcv_get_broker(cliente_fd, &size);
-		printf("Sale de recibir del broker");
 		send_posiciones(cliente_fd, (char*) msg);
 		break;
 	case GET_GAMECARD:
@@ -203,19 +202,11 @@ void* rcv_get_broker(int socket_cliente, int *size) {
 
 void send_posiciones(int socket_cliente, char* pokemon) {
 
-	printf("entro a recibir posiciones");
-
-	printf("El socket es %d \n", socket_cliente);
-
-	printf("El pokemon es %s \n", pokemon);
-
 	FILE* posiciones = fopen("/home/utnso/config/Pokemon", "r");
 
 	char* line = NULL;
 	size_t len = 0;
 	ssize_t read;
-
-	printf("archivo abierto");
 
 	while ((read = getline(&line, &len, posiciones)) != -1) {
 		char** keyValue = malloc(sizeof(char*));
