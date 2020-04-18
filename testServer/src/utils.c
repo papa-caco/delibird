@@ -85,7 +85,7 @@ void process_request(int cod_op, int cliente_fd) {
 		log_info(g_logger,
 				"(NEW-MESSAGE @GAMECARD | CATCH_POKEMON | Socket_Cliente: %d",
 				cliente_fd);
-		//TODO
+		rcv_catch_gamecard(cliente_fd, &size);
 		break;
 	case CAUGHT_BROKER:
 		log_info(g_logger, "(NEW-MESSAGE @");
@@ -200,7 +200,37 @@ void* rcv_get_broker(int socket_cliente, int *size) {
 	return msg;
 }
 
+void* rcv_catch_gamecard(int socket_cliente, int *size){
+
+	void *msg;
+
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	msg = malloc(*size);
+	recv(socket_cliente,msg, *size, MSG_WAITALL);
+
+	int offset = 0;
+	int *idUnico = msg + offset;
+	offset += sizeof(int);
+
+	int *pos_x = msg + offset;
+	offset += sizeof(int);
+
+	int *pos_y = msg + offset;
+	offset += sizeof(int);
+
+	char *pokemon = msg + offset;
+
+	log_info(g_logger, "(MSG-BODY= %s | %d | %d | %d -- SIZE = %d Bytes)",
+				pokemon, *idUnico, *pos_x, *pos_y, *size);
+
+	return msg;
+
+
+}
+
 void send_posiciones(int socket_cliente, char* pokemon) {
+
+	printf("El socket es : %d \n", socket_cliente);
 
 	FILE* posiciones = fopen("/home/utnso/config/Pokemon", "r");
 

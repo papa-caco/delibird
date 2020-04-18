@@ -336,7 +336,7 @@ void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente) {
 		if (proceso == BROKER) {
 			empaquetar_catch_broker(msg_gameboy, paquete);
 		} else {
-			//empaquetar_catch_gamecard(msg_gameboy, paquete, buffer);
+			empaquetar_catch_gamecard(msg_gameboy, paquete);
 		}
 		break;
 	case CAUGHT_POKEMON:
@@ -437,6 +437,41 @@ void empaquetar_get_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
 	paquete->buffer = buffer;
 
 	log_info(g_logger, "(SENDING_MSG= %s)", pokemon);
+
+}
+
+void empaquetar_catch_gamecard(t_mensaje_gameboy *msg_gameboy,
+		t_paquete *paquete) {
+
+	int idUnico = g_config_gameboy->id_mensaje_unico;
+	int pos_x = atoi(list_get(msg_gameboy->argumentos, 0));
+	int pos_y = atoi(list_get(msg_gameboy->argumentos, 1));
+	char* pokemon = list_get(msg_gameboy->argumentos, 2);
+
+	t_stream *buffer = malloc(sizeof(t_stream));
+	buffer->size = strlen(pokemon) + 1 + (3 * sizeof(int));
+
+	void *stream = malloc(buffer->size);
+
+	int offset = 0;
+	memcpy(stream + offset, &(idUnico), sizeof(int));
+	offset += sizeof(int);
+
+	memcpy(stream + offset, &(pos_x), sizeof(int));
+	offset += sizeof(int);
+
+	memcpy(stream + offset, &(pos_y), sizeof(int));
+	offset += sizeof(int);
+
+	memcpy(stream + offset, pokemon, strlen(pokemon) + 1);
+	offset += strlen(pokemon) + 1;
+	buffer->data = stream;
+
+	paquete->codigo_operacion = CATCH_GAMECARD;
+	paquete->buffer = buffer;
+
+	log_info(g_logger, "(SENDING_MSG= %s | %d | %d | %d) \n", pokemon, pos_x,
+			pos_y, idUnico);
 
 }
 

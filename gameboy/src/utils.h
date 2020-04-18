@@ -123,7 +123,8 @@ void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente);
 
 void empaquetar_catch_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
-//void	empaquetar_catch_gamecard	(t_mensaje_gameboy *msg_gameboy,t_paquete *paquete,t_stream *buffer);
+void empaquetar_catch_gamecard(t_mensaje_gameboy *msg_gameboy,
+		t_paquete *paquete);
 
 void empaquetar_new_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 

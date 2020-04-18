@@ -67,6 +67,8 @@ void* rcv_new_broker(int socket_cliente, int* size);
 
 void* rcv_get_broker(int socket_cliente, int* size);
 
+void* rcv_catch_gamecard(int socket_cliente, int* size);
+
 void* serializar_paquete(t_paquete* paquete, int bytes);
 
 void devolver_mensaje(void* payload, int size, int socket_cliente);	// hace un send
@@ -77,7 +79,7 @@ void esperar_cliente(int socket);
 
 void iniciar_logger(void);
 
-typedef struct{
+typedef struct {
 	char* nombrePokemon;
 	int posicionX;
 	int posicionY;
