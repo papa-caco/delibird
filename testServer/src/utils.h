@@ -7,6 +7,9 @@
 #include<unistd.h>
 #include<netdb.h>
 #include<commons/log.h>
+#include<commons/string.h>
+#include<commons/config.h>
+#include<commons/txt.h>
 #include<commons/collections/list.h>
 #include<string.h>
 #include<pthread.h>
@@ -68,8 +71,18 @@ void* serializar_paquete(t_paquete* paquete, int bytes);
 
 void devolver_mensaje(void* payload, int size, int socket_cliente);	// hace un send
 
+void send_posiciones(int socket_cliente, char* pokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
+
 void esperar_cliente(int socket);
 
 void iniciar_logger(void);
+
+typedef struct{
+	char* nombrePokemon;
+	int posicionX;
+	int posicionY;
+	int cantidad;
+
+} t_posicion_pokemon;
 
 #endif /* CONEXIONES_H_ */

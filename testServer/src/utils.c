@@ -95,6 +95,8 @@ void process_request(int cod_op, int cliente_fd) {
 		log_info(g_logger, "(NEW-MESSAGE @: BROKER@GET_POKEMON | SOCKET#: %d",
 				cliente_fd);
 		msg = rcv_get_broker(cliente_fd, &size);
+		printf("Sale de recibir del broker");
+		send_posiciones(cliente_fd, (char*) msg);
 		break;
 	case GET_GAMECARD:
 		log_info(g_logger, "(NEW-MESSAGE @");
@@ -105,7 +107,7 @@ void process_request(int cod_op, int cliente_fd) {
 				"(NEW-MESSAGE @BROKER | NEW_POKEMON | Socket_Cliente: %d",
 				cliente_fd);
 		msg = rcv_new_broker(cliente_fd, &size);
-		devolver_mensaje(msg,size,cliente_fd); // Tiene que devolver todas las posiciones del pokemon
+		devolver_mensaje(msg, size, cliente_fd); // Tiene que devolver todas las posiciones del pokemon
 		break;
 	case NEW_GAMECARD:
 		log_info(g_logger, "(NEW-MESSAGE @");
@@ -199,6 +201,58 @@ void* rcv_get_broker(int socket_cliente, int *size) {
 	return msg;
 }
 
+void send_posiciones(int socket_cliente, char* pokemon) {
+
+	printf("entro a recibir posiciones");
+
+	printf("El socket es %d \n", socket_cliente);
+
+	printf("El pokemon es %s \n", pokemon);
+
+	FILE* posiciones = fopen("/home/utnso/config/Pokemon", "r");
+
+	char* line = NULL;
+	size_t len = 0;
+	ssize_t read;
+
+	printf("archivo abierto");
+
+	while ((read = getline(&line, &len, posiciones)) != -1) {
+		char** keyValue = malloc(sizeof(char*));
+		keyValue = string_split(line, "=");
+
+		char* key = keyValue[0];
+
+		int cantidad = atoi(keyValue[1]);
+
+		char** posiciones = malloc(sizeof(char*));
+		posiciones = string_split(key, "-");
+
+		int posicionX = atoi(posiciones[0]);
+		int posicionY = atoi(posiciones[1]);
+
+		t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
+		posicion->cantidad = cantidad;
+		posicion->nombrePokemon = pokemon;
+		posicion->posicionX = posicionX;
+		posicion->posicionY = posicionY;
+
+		printf("Pokemon %s : \n", posicion->nombrePokemon);
+		printf("Posicion X: %d \n", posicion->posicionX);
+		printf("Posicion Y: %d \n", posicion->posicionY);
+		printf("Cantidad: %d \n", posicion->cantidad);
+		printf("------------------------------ \n");
+
+		free(keyValue);
+		free(posiciones);
+		free(posicion);
+
+	}
+
+	txt_close_file(posiciones);
+
+}
+
 void* serializar_paquete(t_paquete* paquete, int bytes) {
 	void * magic = malloc(bytes);
 	int desplazamiento = 0;
@@ -236,6 +290,7 @@ void devolver_mensaje(void* payload, int size, int socket_cliente) {
 }
 
 void iniciar_logger(void) {
-	g_logger = log_create("/home/utnso/logs/server.log","SERVER", 1, LOG_LEVEL_INFO);
+	g_logger = log_create("/home/utnso/logs/server.log", "SERVER", 1,
+			LOG_LEVEL_INFO);
 }
 
