@@ -81,6 +81,8 @@ void process_request(int cod_op, int cliente_fd) {
 		break;
 	case CAUGHT_BROKER:
 		log_info(g_logger, "(NEW-MESSAGE: GAMECARD@CAUGHT_POKEMON | Socket#: %d", cliente_fd);
+		msg = rcv_caught_broker(cliente_fd, &size);
+		devolver_recepcion_ok(cliente_fd);
 		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
 		break;
 	case GET_BROKER:
@@ -91,6 +93,7 @@ void process_request(int cod_op, int cliente_fd) {
 		break;
 	case GET_GAMECARD:
 		log_info(g_logger, "(NEW-MESSAGE @");
+		//msg = rcv_get_gamecard(cliente_fd, &size);
 		//TODO
 		//TODO El GameBoy tiene que recibir un mensaje op_code = CAUGHT_BROKER como respuesta
 		break;
@@ -152,6 +155,20 @@ void* rcv_catch_broker(int socket_cliente, int *size) {
 	return msg;
 }
 
+void *rcv_caught_broker(int socket_cliente,int *size)
+{
+	void *msg;
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	msg = malloc(*size);
+	recv(socket_cliente, msg, *size, MSG_WAITALL);
+	int offset = 0;
+	int *id_mensaje = msg + offset;
+	offset += sizeof(int);
+	t_result_caught *resultado_caught = msg + offset;
+	log_info(g_logger, "(MSG-BODY= %d | %d -- SIZE = %d Bytes)", *id_mensaje, *resultado_caught, *size);
+	return msg;
+}
+
 void* rcv_new_broker(int socket_cliente, int *size) {
 
 	void *msg;
@@ -190,6 +207,8 @@ void* rcv_get_broker(int socket_cliente, int *size) {
 
 	return msg;
 }
+
+
 
 void* rcv_catch_gamecard(int socket_cliente, int *size){
 
@@ -283,13 +302,35 @@ void* serializar_paquete(t_paquete* paquete, int bytes) {
 void devolver_id_mensaje_propio(int socket_cliente) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	int id_mensaje = ID_MSG_RTA;
-	log_info(g_logger,"id_rta %d", id_mensaje);
+	log_info(g_logger,"(RESPUESTA: ID_MENSAJE= %d)", id_mensaje);
 
 	paquete->codigo_operacion = ID_MENSAJE;
 	paquete->buffer = malloc(sizeof(t_stream));
 	paquete->buffer->size = sizeof(int);
 	paquete->buffer->stream = malloc(paquete->buffer->size);
 	memcpy(paquete->buffer->stream, &(id_mensaje), paquete->buffer->size);
+
+	int bytes = paquete->buffer->size + 2 * sizeof(int);
+
+	void* a_enviar = serializar_paquete(paquete, bytes);
+
+	send(socket_cliente, a_enviar, bytes, 0);
+
+	free(a_enviar);
+	eliminar_paquete(paquete);
+}
+
+void devolver_recepcion_ok(int socket_cliente)
+{
+	t_paquete* paquete = malloc(sizeof(t_paquete));
+	char *respuesta = RESPUESTA_OK;
+	log_info(g_logger,"(RESPUESTA = %s)", respuesta);
+
+	paquete->codigo_operacion = MSG_CONFIRMED;
+	paquete->buffer = malloc(sizeof(t_stream));
+	paquete->buffer->size = strlen(respuesta)  + 1;
+	paquete->buffer->stream = malloc(paquete->buffer->size);
+	memcpy(paquete->buffer->stream, respuesta, paquete->buffer->size);
 
 	int bytes = paquete->buffer->size + 2 * sizeof(int);
 

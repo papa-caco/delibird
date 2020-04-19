@@ -27,6 +27,7 @@
 typedef enum
 {
 	ID_MENSAJE = 10,
+	MSG_CONFIRMED,
 	APPEARED_BROKER,
 	APPEARED_TEAM,
 	CATCH_BROKER,
@@ -111,6 +112,8 @@ bool validar_id_mensaje(t_list *lista, int index);
 
 bool validar_resultado_caught(t_list *lista, int index);
 
+t_result_caught codificar_resultado_caught(char *valor);
+
 int crear_conexion(t_mensaje_gameboy *msg_gameboy);
 
 char* select_ip_proceso(t_mensaje_gameboy *msg_gameboy);
@@ -127,13 +130,15 @@ void esperar_respuesta	(int socket_cliente);
 
 void empaquetar_catch_broker	(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
-void empaquetar_catch_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
+void empaquetar_caught_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
 void empaquetar_catch_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
 void empaquetar_new_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
 void empaquetar_get_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
+
+void empaquetar_get_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
 void* serializar_paquete(t_paquete* paquete, int *bytes);
 
@@ -148,6 +153,8 @@ void* recibir_buffer(int* size, int socket_cliente);
 void* recibir_stream(int* size, int socket_cliente);
 
 void eliminar_paquete(t_paquete* paquete);
+
+int tamano_paquete(t_paquete *paquete);
 
 void borrar_comienzo(t_list* lista, int cant);
 

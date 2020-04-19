@@ -53,6 +53,7 @@ int main(int argcnt, char *argval[])
 		// Logueamos Mensaje a Enviar
 		// Enviamos mensaje a proceso Consumidor
 		enviar_mensaje(msg_gameboy, conexion);
+		// GAMEBOY SIEMPRE ESPERA UNA RTA DEL SERVIDOR
 		// Imprimir Respuesta del Proceso Consumidor por log.
 		esperar_respuesta(conexion);
 	}
