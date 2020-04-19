@@ -13,9 +13,10 @@
 
 #define IP "127.0.0.1"
 #define PUERTO "5001"
+#define ID_MSG_RTA 65535
 
 typedef enum {
-	MENSAJE = 10,
+	ID_MENSAJE = 10,
 	APPEARED_BROKER,
 	APPEARED_TEAM,
 	CATCH_BROKER,
@@ -66,9 +67,11 @@ void* rcv_get_broker(int socket_cliente, int* size);
 
 void* serializar_paquete(t_paquete* paquete, int bytes);
 
-void devolver_mensaje(void* payload, int size, int socket_cliente);	// hace un send
+void arrojar_id_mensaje(int socket_cliente);
 
 void esperar_cliente(int socket);
+
+void eliminar_paquete (t_paquete *paquete);
 
 void iniciar_logger(void);
 

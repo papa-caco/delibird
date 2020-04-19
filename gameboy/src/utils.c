@@ -439,12 +439,6 @@ void empaquetar_get_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete){
 
 }
 
-void eliminar_paquete(t_paquete* paquete) {
-	free(paquete->buffer->data);
-	free(paquete->buffer);
-	free(paquete);
-}
-
 void* serializar_paquete(t_paquete *paquete, int *bytes) {
 	void *a_enviar = malloc(*bytes);
 	int offset = 0;
@@ -456,6 +450,49 @@ void* serializar_paquete(t_paquete *paquete, int *bytes) {
 	memcpy(a_enviar + offset, paquete->buffer->data, paquete->buffer->size);
 	offset += paquete->buffer->size;
 	return a_enviar;
+}
+
+void eliminar_paquete(t_paquete* paquete) {
+	free(paquete->buffer->data);
+	free(paquete->buffer);
+	free(paquete);
+}
+
+void esperar_respuesta(int socket_cliente)
+{
+	void *a_recibir;
+	op_code codigo_operacion = recibir_op_code(socket_cliente);
+	int size;
+	switch(codigo_operacion) {
+	case APPEARED_BROKER:
+		//TODO
+		break;
+	case ID_MENSAJE:
+		a_recibir = recibir_buffer(&size, socket_cliente);
+		int id_mensaje;
+		memcpy(&(id_mensaje), a_recibir, size);
+		log_info(g_logger, "(ANSWER_MSG | ID_MENSAJE = %d)", id_mensaje);
+		break;
+	case CAUGHT_BROKER:
+		break;
+	case LOCALIZED_BROKER:
+		break;
+	case NEW_BROKER:
+		break;
+	case NEW_GAMECARD:
+		break;
+	case GET_BROKER:
+		break;
+	case GET_GAMECARD:
+		break;
+	case CATCH_BROKER:
+		break;
+	case CATCH_GAMECARD:
+		break;
+	case APPEARED_TEAM:
+		break;
+	}
+	free(a_recibir);
 }
 
 char* recibir_mensaje(int socket_cliente) {
@@ -475,12 +512,12 @@ int recibir_op_code(int socket_cliente) {
 	return code;
 }
 
-void* recibir_buffer(int* size, int socket_cliente) {
-	void* _stream;
-	recv(socket_cliente, size, sizeof(int), MSG_WAITALL); // el argumento size es un puntero
-	_stream = malloc(*size);
-	recv(socket_cliente, _stream, *size, MSG_WAITALL);
-	return _stream;
+void *recibir_buffer(int *size, int socket_cliente) {
+	void* stream;
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	stream = malloc(*size);
+	recv(socket_cliente, stream, *size, MSG_WAITALL);
+	return stream;
 }
 
 void borrar_comienzo(t_list* lista, int cant) {

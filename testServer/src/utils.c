@@ -8,9 +8,8 @@
 #include"utils.h"
 
 void iniciar_servidor(void) {
-	int socket_servidor;
 
-	iniciar_logger();
+	int socket_servidor;
 
 	struct addrinfo hints, *servinfo, *p; 	//hints no es puntero
 
@@ -22,7 +21,7 @@ void iniciar_servidor(void) {
 	getaddrinfo(IP, PUERTO, &hints, &servinfo);
 
 	log_info(g_logger, "Direccion: %s, Port: %s", IP, PUERTO);
-	log_destroy(g_logger);
+
 
 	for (p = servinfo; p != NULL; p = p->ai_next) {
 		if ((socket_servidor = socket(p->ai_family, p->ai_socktype,
@@ -67,19 +66,13 @@ void serve_client(int* socket) {
 void process_request(int cod_op, int cliente_fd) {
 	int size;
 	void* msg;
-	iniciar_logger();
 	switch (cod_op) {
-	case MENSAJE:
-		msg = recibir_mensaje(cliente_fd, &size);
-		devolver_mensaje(msg, size, cliente_fd);
-		free(msg);
+	case ID_MENSAJE:
 		break;
-	case CATCH_BROKER:
-		log_info(g_logger, "(NEW-MESSAGE: BROKER@CATCH_POKEMON | Socket#: %d",
-				cliente_fd);
+	case CATCH_BROKER:		 // Tiene que devolver un ID_MENSAJE propio
+		log_info(g_logger, "(NEW-MESSAGE: BROKER@CATCH_POKEMON | Socket#: %d", cliente_fd);
 		msg = rcv_catch_broker(cliente_fd, &size);
-		devolver_mensaje(msg, size, cliente_fd); // Tiene que devolver un Id Mensaje (un int)
-		free(msg);
+		arrojar_id_mensaje(cliente_fd);
 		break;
 	case CATCH_GAMECARD:
 		log_info(g_logger,
@@ -105,7 +98,7 @@ void process_request(int cod_op, int cliente_fd) {
 				"(NEW-MESSAGE @BROKER | NEW_POKEMON | Socket_Cliente: %d",
 				cliente_fd);
 		msg = rcv_new_broker(cliente_fd, &size);
-		devolver_mensaje(msg,size,cliente_fd); // Tiene que devolver todas las posiciones del pokemon
+		arrojar_id_mensaje(cliente_fd); // Tiene que devolver todas las posiciones del pokemon
 		break;
 	case NEW_GAMECARD:
 		log_info(g_logger, "(NEW-MESSAGE @");
@@ -124,11 +117,10 @@ void process_request(int cod_op, int cliente_fd) {
 	case -1:
 		pthread_exit(NULL);
 	}
-	log_destroy(g_logger);
+	free(msg);
 }
 
 void* recibir_mensaje(int socket_cliente, int* size) {
-	iniciar_logger();
 	void * buffer;
 
 	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
@@ -136,7 +128,6 @@ void* recibir_mensaje(int socket_cliente, int* size) {
 	recv(socket_cliente, buffer, *size, MSG_WAITALL);
 	log_info(g_logger, "Recibi del cliente Socket: %d el mensaje: %s",
 			socket_cliente, buffer);
-	log_destroy(g_logger);
 	return buffer;
 }
 
@@ -214,14 +205,16 @@ void* serializar_paquete(t_paquete* paquete, int bytes) {
 	return magic;
 }
 
-void devolver_mensaje(void* payload, int size, int socket_cliente) {
+void arrojar_id_mensaje(int socket_cliente) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
+	int id_mensaje = ID_MSG_RTA;
+	log_info(g_logger,"id_rta %d", id_mensaje);
 
-	paquete->codigo_operacion = MENSAJE;
+	paquete->codigo_operacion = ID_MENSAJE;
 	paquete->buffer = malloc(sizeof(t_stream));
-	paquete->buffer->size = size;
+	paquete->buffer->size = sizeof(int);
 	paquete->buffer->stream = malloc(paquete->buffer->size);
-	memcpy(paquete->buffer->stream, payload, paquete->buffer->size);
+	memcpy(paquete->buffer->stream, &(id_mensaje), paquete->buffer->size);
 
 	int bytes = paquete->buffer->size + 2 * sizeof(int);
 
@@ -230,6 +223,11 @@ void devolver_mensaje(void* payload, int size, int socket_cliente) {
 	send(socket_cliente, a_enviar, bytes, 0);
 
 	free(a_enviar);
+	eliminar_paquete(paquete);
+}
+
+void eliminar_paquete(t_paquete *paquete)
+{
 	free(paquete->buffer->stream);
 	free(paquete->buffer);
 	free(paquete);
@@ -238,4 +236,3 @@ void devolver_mensaje(void* payload, int size, int socket_cliente) {
 void iniciar_logger(void) {
 	g_logger = log_create("/home/utnso/logs/server.log","SERVER", 1, LOG_LEVEL_INFO);
 }
-

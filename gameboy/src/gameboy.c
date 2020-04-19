@@ -53,7 +53,8 @@ int main(int argcnt, char *argval[])
 		// Logueamos Mensaje a Enviar
 		// Enviamos mensaje a proceso Consumidor
 		enviar_mensaje(msg_gameboy, conexion);
-		//TODO Imprimir Respuesta del Proceso Consumidor (por log aparte o consola)
+		// Imprimir Respuesta del Proceso Consumidor por log.
+		esperar_respuesta(conexion);
 	}
 	else {
 		//TODO Modo SUSCRIBER - ENVIA el HANDSHAKE y espera Recibir MENSAJES del BROKER

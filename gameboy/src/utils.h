@@ -26,7 +26,7 @@
 
 typedef enum
 {
-	MENSAJE = 10,
+	ID_MENSAJE = 10,
 	APPEARED_BROKER,
 	APPEARED_TEAM,
 	CATCH_BROKER,
@@ -36,6 +36,7 @@ typedef enum
 	GET_GAMECARD,
 	NEW_BROKER,
 	NEW_GAMECARD,
+	LOCALIZED_BROKER,
 } op_code;
 
 typedef enum
@@ -135,6 +136,8 @@ char*	obtengo_proceso		(t_mensaje_gameboy *msg_gameboy);
 char*	obtengo_cola		(t_mensaje_gameboy *msg_gameboy);
 
 void 	enviar_mensaje		(t_mensaje_gameboy *msg_gameboy, int socket_cliente);
+
+void 	esperar_respuesta	(int socket_cliente);
 
 void	empaquetar_catch_broker	(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
