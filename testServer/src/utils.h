@@ -16,9 +16,16 @@
 
 #define IP "127.0.0.1"
 #define PUERTO "5001"
+#define ID_MSG_RTA 65535
+#define RESPUESTA_OK "RECIBIDO_OK"
 
 typedef enum {
-	MENSAJE = 10,
+	FAIL, OK,
+} t_result_caught;
+
+typedef enum {
+	ID_MENSAJE = 10,
+	MSG_CONFIRMED,
 	APPEARED_BROKER,
 	APPEARED_TEAM,
 	CATCH_BROKER,
@@ -31,6 +38,14 @@ typedef enum {
 } op_code;
 
 typedef struct {
+	char* nombrePokemon;
+	int posicionX;
+	int posicionY;
+	int cantidad;
+
+} t_posicion_pokemon;
+
+typedef struct {
 	int size;
 	void* stream;
 } t_stream;
@@ -40,10 +55,11 @@ typedef struct {
 	t_stream* buffer;
 } t_paquete;
 
-// Variable Global
-pthread_t thread;
 
 //-----------------Variables Globales----------------------------
+
+pthread_t thread;
+
 
 t_log *g_logger;
 
@@ -63,6 +79,8 @@ void* recibir_mensaje(int socket_cliente, int* size);
 
 void* rcv_catch_broker(int socket_cliente, int* size);
 
+void *rcv_caught_broker(int socket_cliente,int *size);
+
 void* rcv_new_broker(int socket_cliente, int* size);
 
 void* rcv_get_broker(int socket_cliente, int* size);
@@ -73,20 +91,18 @@ void* rcv_appeared_broker(int socket_cliente, int* size);
 
 void* serializar_paquete(t_paquete* paquete, int bytes);
 
-void devolver_mensaje(void* payload, int size, int socket_cliente);	// hace un send
+void devolver_id_mensaje_propio(int socket_cliente);
+
+void devolver_recepcion_ok(int socket_cliente);
 
 void send_posiciones(int socket_cliente, char* pokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
 
 void esperar_cliente(int socket);
 
+void eliminar_paquete (t_paquete *paquete);
+
 void iniciar_logger(void);
 
-typedef struct {
-	char* nombrePokemon;
-	int posicionX;
-	int posicionY;
-	int cantidad;
 
-} t_posicion_pokemon;
 
 #endif /* CONEXIONES_H_ */

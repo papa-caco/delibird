@@ -202,6 +202,16 @@ bool validar_resultado_caught(t_list *lista, int index) {
 	return resultado;
 }
 
+t_result_caught codificar_resultado_caught(char *valor)
+{
+	if(strcmp(valor, "OK") == 0){
+		return OK;
+	}
+	else {
+		return FAIL;
+	}
+}
+
 int crear_conexion(t_mensaje_gameboy *msg_gameboy) {
 	struct addrinfo hints;
 	struct addrinfo *server_info;
@@ -340,11 +350,14 @@ void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente) {
 		}
 		break;
 	case CAUGHT_POKEMON:
-
+		empaquetar_caught_broker(msg_gameboy, paquete);
 		break;
 	case GET_POKEMON:
 		if (proceso == BROKER) {
 			empaquetar_get_broker(msg_gameboy, paquete);
+		}
+		else {
+			empaquetar_get_gamecard(msg_gameboy, paquete);
 		}
 		break;
 	case NEW_POKEMON:
@@ -362,8 +375,6 @@ void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente) {
 	bytes = paquete->buffer->size + 2 * (sizeof(int));
 
 	a_enviar = serializar_paquete(paquete, &bytes);
-
-	log_info(g_logger, "Se envia mensaje de %d bytes", bytes);
 
 	send(socket_cliente, a_enviar, bytes, 0);
 
@@ -391,7 +402,8 @@ void empaquetar_catch_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete)
 
 	paquete->codigo_operacion = CATCH_BROKER;
 	paquete->buffer = buffer;
-	log_info(g_logger, "(SENDING_MSG= %s | %d | %d)", pokemon, pos_x, pos_y);
+	int tamano = tamano_paquete(paquete);
+	log_info(g_logger, "(SENDING_MSG= %s | %d | %d -- SIZE= %d Bytes)", pokemon, pos_x, pos_y, tamano);
 }
 
 void empaquetar_new_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
@@ -418,8 +430,8 @@ void empaquetar_new_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
 
 	paquete->codigo_operacion = NEW_BROKER;
 	paquete->buffer = buffer;
-	log_info(g_logger, "(SENDING_MSG= %s | %d | %d | %d)", pokemon, pos_x,
-			pos_y, cantidad);
+	int tamano = tamano_paquete(paquete);
+	log_info(g_logger, "(SENDING_MSG= %s | %d | %d | %d -- SIZE= %d Bytes)", pokemon, pos_x, pos_y, cantidad, tamano);
 
 
 }
@@ -427,7 +439,6 @@ void empaquetar_new_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
 void empaquetar_get_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
 
 	char *pokemon = list_get(msg_gameboy->argumentos, 0);
-
 	t_stream *buffer = malloc(sizeof(t_stream));
 	buffer->size = strlen(pokemon) + 1;
 
@@ -435,16 +446,37 @@ void empaquetar_get_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
 
 	memcpy(stream, pokemon, strlen(pokemon) + 1);
 	buffer->data = stream;
-
 	paquete->codigo_operacion = GET_BROKER;
 	paquete->buffer = buffer;
 
-	log_info(g_logger, "(SENDING_MSG= %s)", pokemon);
+	int tamano = tamano_paquete(paquete);
+	log_info(g_logger, "(SENDING_MSG= %s -- SIZE= %d Bytes)", pokemon, tamano);
 
 }
 
-void empaquetar_catch_gamecard(t_mensaje_gameboy *msg_gameboy,
-		t_paquete *paquete) {
+void empaquetar_get_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete)
+{
+	char *pokemon = list_get(msg_gameboy->argumentos, 0);
+	int idUnico = g_config_gameboy->id_mensaje_unico;
+	t_stream *buffer = malloc(sizeof(t_stream));
+	buffer->size = sizeof(idUnico) + strlen(pokemon) + 1;
+	void *stream = malloc(buffer->size);
+
+	int offset = 0;
+	memcpy(stream + offset, &(idUnico), sizeof(int));
+	offset += sizeof(int);
+	memcpy(stream, pokemon, strlen(pokemon) + 1);
+	buffer->data = stream;
+
+	paquete->codigo_operacion = GET_GAMECARD;
+	paquete->buffer = buffer;
+	int tamano = tamano_paquete(paquete);
+
+	log_info(g_logger, "(SENDING_MSG= %d | %s -- SIZE= %d Bytes)", idUnico, pokemon, tamano);
+
+}
+
+void empaquetar_catch_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
 
 	int idUnico = g_config_gameboy->id_mensaje_unico;
 	int pos_x = atoi(list_get(msg_gameboy->argumentos, 0));
@@ -455,27 +487,46 @@ void empaquetar_catch_gamecard(t_mensaje_gameboy *msg_gameboy,
 	buffer->size = strlen(pokemon) + 1 + (3 * sizeof(int));
 
 	void *stream = malloc(buffer->size);
-
 	int offset = 0;
 	memcpy(stream + offset, &(idUnico), sizeof(int));
 	offset += sizeof(int);
-
 	memcpy(stream + offset, &(pos_x), sizeof(int));
 	offset += sizeof(int);
-
 	memcpy(stream + offset, &(pos_y), sizeof(int));
 	offset += sizeof(int);
-
 	memcpy(stream + offset, pokemon, strlen(pokemon) + 1);
 	offset += strlen(pokemon) + 1;
 	buffer->data = stream;
 
 	paquete->codigo_operacion = CATCH_GAMECARD;
 	paquete->buffer = buffer;
+	int tamano = tamano_paquete(paquete);
 
-	log_info(g_logger, "(SENDING_MSG= %s | %d | %d | %d) \n", pokemon, pos_x,
-			pos_y, idUnico);
+	log_info(g_logger, "(SENDING_MSG= %s | %d | %d | %d -- SIZE = %d Bytes) \n", pokemon, pos_x, pos_y, idUnico, tamano);
 
+}
+
+void empaquetar_caught_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete)
+{
+	int id_mensaje = atoi(list_get(msg_gameboy->argumentos,0));
+	char *arg_resul_caught = list_get(msg_gameboy->argumentos,1);
+	t_result_caught result_caught = codificar_resultado_caught(arg_resul_caught);
+
+	t_stream *buffer = malloc(sizeof(t_stream));
+	buffer->size = 2 * sizeof(int);
+
+	void *stream = malloc(buffer->size);
+
+	int offset = 0;
+	memcpy(stream + offset, &(id_mensaje), sizeof(int));
+	offset += sizeof(int);
+	memcpy(stream + offset, &(result_caught), sizeof(int));
+	buffer->data = stream;
+	paquete->codigo_operacion = CAUGHT_BROKER;
+	paquete->buffer = buffer;
+	int tamano = tamano_paquete(paquete);
+
+	log_info(g_logger, "(SENDING_MSG= %d | %d -- SIZE = %d Bytes)", id_mensaje, result_caught, tamano);
 }
 
 void empaquetar_appeared_broker(t_mensaje_gameboy *msg_gameboy,
@@ -531,6 +582,47 @@ void* serializar_paquete(t_paquete *paquete, int *bytes) {
 	return a_enviar;
 }
 
+void esperar_respuesta(int socket_cliente)
+{
+	void *a_recibir;
+	op_code codigo_operacion = recibir_op_code(socket_cliente);
+	int size;
+	switch(codigo_operacion) {
+	case MSG_CONFIRMED:
+		a_recibir = recibir_buffer(&size, socket_cliente);
+		log_info(g_logger, "(ANSWER_MSG | %s)", a_recibir);
+		break;
+	case APPEARED_BROKER:
+		//TODO
+		break;
+	case ID_MENSAJE:
+		a_recibir = recibir_buffer(&size, socket_cliente);
+		int id_mensaje;
+		memcpy(&(id_mensaje), a_recibir, size);
+		log_info(g_logger, "(ANSWER_MSG | ID_MENSAJE = %d)", id_mensaje);
+		break;
+	case CAUGHT_BROKER:
+		break;
+	case LOCALIZED_BROKER:
+		break;
+	case NEW_BROKER:
+		break;
+	case NEW_GAMECARD:
+		break;
+	case GET_BROKER:
+		break;
+	case GET_GAMECARD:
+		break;
+	case CATCH_BROKER:
+		break;
+	case CATCH_GAMECARD:
+		break;
+	case APPEARED_TEAM:
+		break;
+	}
+	free(a_recibir);
+}
+
 char* recibir_mensaje(int socket_cliente) {
 	printf("codigo operacion = %d \n", recibir_op_code(socket_cliente));
 	int size;
@@ -548,12 +640,17 @@ int recibir_op_code(int socket_cliente) {
 	return code;
 }
 
-void* recibir_buffer(int* size, int socket_cliente) {
-	void* _stream;
-	recv(socket_cliente, size, sizeof(int), MSG_WAITALL); // el argumento size es un puntero
-	_stream = malloc(*size);
-	recv(socket_cliente, _stream, *size, MSG_WAITALL);
-	return _stream;
+void *recibir_buffer(int *size, int socket_cliente) {
+	void* stream;
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	stream = malloc(*size);
+	recv(socket_cliente, stream, *size, MSG_WAITALL);
+	return stream;
+}
+
+int tamano_paquete(t_paquete *paquete)
+{
+	return paquete->buffer->size + sizeof(paquete->codigo_operacion) + sizeof(paquete->buffer->size);
 }
 
 void borrar_comienzo(t_list* lista, int cant) {
