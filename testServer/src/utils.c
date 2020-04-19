@@ -22,7 +22,6 @@ void iniciar_servidor(void) {
 
 	log_info(g_logger, "Direccion: %s, Port: %s", IP, PUERTO);
 
-
 	for (p = servinfo; p != NULL; p = p->ai_next) {
 		if ((socket_servidor = socket(p->ai_family, p->ai_socktype,
 				p->ai_protocol)) == -1)
@@ -70,23 +69,28 @@ void process_request(int cod_op, int cliente_fd) {
 	case ID_MENSAJE:
 		break;
 	case CATCH_BROKER:
-		log_info(g_logger, "(NEW-MESSAGE: BROKER@CATCH_POKEMON | Socket#: %d", cliente_fd);
+		log_info(g_logger, "(NEW-MESSAGE: BROKER@CATCH_POKEMON | Socket#: %d",
+				cliente_fd);
 		msg = rcv_catch_broker(cliente_fd, &size);
 		devolver_id_mensaje_propio(cliente_fd); // Devuelve al GAMEBOY un mensaje op_code = ID_MENSAJE con id_mensaje propio
 		break;
 	case CATCH_GAMECARD:
-		log_info(g_logger,"(NEW-MESSAGE: GAMECARD@CATCH_POKEMON | Socket#: %d", cliente_fd);
+		log_info(g_logger, "(NEW-MESSAGE: GAMECARD@CATCH_POKEMON | Socket#: %d",
+				cliente_fd);
 		msg = rcv_catch_gamecard(cliente_fd, &size);
 		//TODO El GameBoy tiene que recibir un mensaje op_code = CAUGHT_BROKER como respuesta
 		break;
 	case CAUGHT_BROKER:
-		log_info(g_logger, "(NEW-MESSAGE: GAMECARD@CAUGHT_POKEMON | Socket#: %d", cliente_fd);
+		log_info(g_logger,
+				"(NEW-MESSAGE: GAMECARD@CAUGHT_POKEMON | Socket#: %d",
+				cliente_fd);
 		msg = rcv_caught_broker(cliente_fd, &size);
 		devolver_recepcion_ok(cliente_fd);
 		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
 		break;
 	case GET_BROKER:
-		log_info(g_logger, "(NEW-MESSAGE: BROKER@GET_POKEMON | SOCKET#: %d", cliente_fd);
+		log_info(g_logger, "(NEW-MESSAGE: BROKER@GET_POKEMON | SOCKET#: %d",
+				cliente_fd);
 		msg = rcv_get_broker(cliente_fd, &size);
 		// TODO El GameBoy tiene que recibir un mensaje op_code = ID_MENSAJE con id_mensaje que envió  como respuesta
 		//send_posiciones(cliente_fd, (char*) msg);
@@ -97,7 +101,8 @@ void process_request(int cod_op, int cliente_fd) {
 		//TODO El GameBoy tiene que recibir un mensaje op_code = CAUGHT_BROKER como respuesta
 		break;
 	case NEW_BROKER:
-		log_info(g_logger,"(NEW-MESSAGE BROKER@NEW_POKEMON | Socket#: %d", cliente_fd);
+		log_info(g_logger, "(NEW-MESSAGE BROKER@NEW_POKEMON | Socket#: %d",
+				cliente_fd);
 		msg = rcv_new_broker(cliente_fd, &size);
 		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
 		break;
@@ -106,8 +111,11 @@ void process_request(int cod_op, int cliente_fd) {
 		//TODO El GameBoy tiene que recibir un mensaje op_code = APPEARED_BROKER
 		break;
 	case APPEARED_BROKER:
-		log_info(g_logger, "(NEW-MESSAGE @");
-		//TODO
+		log_info(g_logger, "ENTRO A APPEARED");
+		log_info(g_logger,
+				"(NEW-MESSAGE @BROKER | APPEARED_POKEMON | Socket_Cliente: %d",
+				cliente_fd);
+		msg = rcv_appeared_broker(cliente_fd, &size);
 		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
 		break;
 	case APPEARED_TEAM:
@@ -154,8 +162,7 @@ void* rcv_catch_broker(int socket_cliente, int *size) {
 	return msg;
 }
 
-void *rcv_caught_broker(int socket_cliente,int *size)
-{
+void *rcv_caught_broker(int socket_cliente, int *size) {
 	void *msg;
 	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
 	msg = malloc(*size);
@@ -164,7 +171,8 @@ void *rcv_caught_broker(int socket_cliente,int *size)
 	int *id_mensaje = msg + offset;
 	offset += sizeof(int);
 	t_result_caught *resultado_caught = msg + offset;
-	log_info(g_logger, "(MSG-BODY= %d | %d -- SIZE = %d Bytes)", *id_mensaje, *resultado_caught, *size);
+	log_info(g_logger, "(MSG-BODY= %d | %d -- SIZE = %d Bytes)", *id_mensaje,
+			*resultado_caught, *size);
 	return msg;
 }
 
@@ -226,15 +234,13 @@ void *rcv_get_gamecard(int socket_cliente, int *size)
 
 }
 
-
-
-void* rcv_catch_gamecard(int socket_cliente, int *size){
+void* rcv_catch_gamecard(int socket_cliente, int *size) {
 
 	void *msg;
 
 	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
 	msg = malloc(*size);
-	recv(socket_cliente,msg, *size, MSG_WAITALL);
+	recv(socket_cliente, msg, *size, MSG_WAITALL);
 
 	int offset = 0;
 	int *idUnico = msg + offset;
@@ -249,11 +255,34 @@ void* rcv_catch_gamecard(int socket_cliente, int *size){
 	char *pokemon = msg + offset;
 
 	log_info(g_logger, "(MSG-BODY= %s | %d | %d | %d -- SIZE = %d Bytes)",
-				pokemon, *idUnico, *pos_x, *pos_y, *size);
+			pokemon, *idUnico, *pos_x, *pos_y, *size);
 
 	return msg;
 
+}
 
+void* rcv_appeared_broker(int socket_cliente, int *size) {
+
+	void *msg;
+
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	msg = malloc(*size);
+	recv(socket_cliente, msg, *size, MSG_WAITALL);
+
+	int offset = 0;
+
+	int *id_mensaje = msg + offset;
+	offset += sizeof(int);
+	int *pos_x = msg + offset;
+	offset += sizeof(int);
+	int *pos_y = msg + offset;
+	offset += sizeof(int);
+	char*pokemon = msg + offset;
+
+	log_info(g_logger, "(MSG-BODY= %d | %s | %d | %d -- SIZE = %d Bytes)",
+			*id_mensaje, pokemon, *pos_x, *pos_y, *size);
+
+	return msg;
 }
 
 void send_posiciones(int socket_cliente, char* pokemon) {
@@ -320,7 +349,7 @@ void* serializar_paquete(t_paquete* paquete, int bytes) {
 void devolver_id_mensaje_propio(int socket_cliente) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	int id_mensaje = ID_MSG_RTA;
-	log_info(g_logger,"(RESPUESTA: ID_MENSAJE= %d)", id_mensaje);
+	log_info(g_logger, "(RESPUESTA: ID_MENSAJE= %d)", id_mensaje);
 
 	paquete->codigo_operacion = ID_MENSAJE;
 	paquete->buffer = malloc(sizeof(t_stream));
@@ -338,15 +367,14 @@ void devolver_id_mensaje_propio(int socket_cliente) {
 	eliminar_paquete(paquete);
 }
 
-void devolver_recepcion_ok(int socket_cliente)
-{
+void devolver_recepcion_ok(int socket_cliente) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	char *respuesta = RESPUESTA_OK;
-	log_info(g_logger,"(RESPUESTA = %s)", respuesta);
+	log_info(g_logger, "(RESPUESTA = %s)", respuesta);
 
 	paquete->codigo_operacion = MSG_CONFIRMED;
 	paquete->buffer = malloc(sizeof(t_stream));
-	paquete->buffer->size = strlen(respuesta)  + 1;
+	paquete->buffer->size = strlen(respuesta) + 1;
 	paquete->buffer->stream = malloc(paquete->buffer->size);
 	memcpy(paquete->buffer->stream, respuesta, paquete->buffer->size);
 
@@ -373,5 +401,6 @@ void eliminar_paquete(t_paquete *paquete)
 }
 
 void iniciar_logger(void) {
-	g_logger = log_create("/home/utnso/logs/server.log", "SERVER", 1, LOG_LEVEL_INFO);
+	g_logger = log_create("/home/utnso/logs/server.log", "SERVER", 1,
+			LOG_LEVEL_INFO);
 }
