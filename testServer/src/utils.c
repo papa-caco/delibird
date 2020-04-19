@@ -92,9 +92,8 @@ void process_request(int cod_op, int cliente_fd) {
 		//send_posiciones(cliente_fd, (char*) msg);
 		break;
 	case GET_GAMECARD:
-		log_info(g_logger, "(NEW-MESSAGE @");
-		//msg = rcv_get_gamecard(cliente_fd, &size);
-		//TODO
+		log_info(g_logger, "(NEW-MESSAGE: GAMECARD@GET_POKEMON | SOCKET#: %d", cliente_fd);
+		msg = rcv_get_gamecard(cliente_fd, &size);
 		//TODO El GameBoy tiene que recibir un mensaje op_code = CAUGHT_BROKER como respuesta
 		break;
 	case NEW_BROKER:
@@ -185,9 +184,10 @@ void* rcv_new_broker(int socket_cliente, int *size) {
 	int *cantidad = msg + offset;
 	offset += sizeof(int);
 	char*pokemon = msg + offset;
+	int tamano = tamano_recibido(*size);
 
 	log_info(g_logger, "(MSG-BODY= %s | %d | %d | %d -- SIZE = %d Bytes)",
-			pokemon, *pos_x, *pos_y, *cantidad, *size);
+			pokemon, *pos_x, *pos_y, *cantidad, tamano);
 
 	return msg;
 
@@ -196,16 +196,34 @@ void* rcv_new_broker(int socket_cliente, int *size) {
 void* rcv_get_broker(int socket_cliente, int *size) {
 
 	void *msg;
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	msg = malloc(*size);
+	recv(socket_cliente, msg, *size, MSG_WAITALL);
+	char*pokemon = msg;
+	int tamano = tamano_recibido(*size);
 
+	log_info(g_logger, "(MSG-BODY= %s -- SIZE = %d Bytes)", pokemon, tamano);
+
+	return msg;
+}
+
+void *rcv_get_gamecard(int socket_cliente, int *size)
+{
+	void *msg;
 	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
 	msg = malloc(*size);
 	recv(socket_cliente, msg, *size, MSG_WAITALL);
 
-	char*pokemon = msg;
+	int offset = 0;
+	int *idUnico = msg + offset;
+	offset += sizeof(int);
+	char*pokemon = msg + offset;
 
-	log_info(g_logger, "(MSG-BODY= %s -- SIZE = %d Bytes)", pokemon, *size);
+	int tamano = tamano_recibido(*size);
+	log_info(g_logger, "(MSG-BODY= %d | %s -- SIZE = %d Bytes)",idUnico, pokemon, tamano);
 
 	return msg;
+
 }
 
 
@@ -340,6 +358,11 @@ void devolver_recepcion_ok(int socket_cliente)
 
 	free(a_enviar);
 	eliminar_paquete(paquete);
+}
+
+int tamano_recibido(int bytes)
+{
+	return bytes + 2 * sizeof(int);
 }
 
 void eliminar_paquete(t_paquete *paquete)

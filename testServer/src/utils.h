@@ -85,6 +85,8 @@ void* rcv_new_broker(int socket_cliente, int* size);
 
 void* rcv_get_broker(int socket_cliente, int* size);
 
+void *rcv_get_gamecard(int socket_cliente, int *size);
+
 void* rcv_catch_gamecard(int socket_cliente, int* size);
 
 void* serializar_paquete(t_paquete* paquete, int bytes);
@@ -96,6 +98,8 @@ void devolver_recepcion_ok(int socket_cliente);
 void send_posiciones(int socket_cliente, char* pokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
 
 void esperar_cliente(int socket);
+
+int tamano_recibido(int bytes);
 
 void eliminar_paquete (t_paquete *paquete);
 

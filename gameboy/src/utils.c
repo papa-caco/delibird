@@ -456,7 +456,7 @@ void empaquetar_get_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete)
 	char *pokemon = list_get(msg_gameboy->argumentos, 0);
 	int idUnico = g_config_gameboy->id_mensaje_unico;
 	t_stream *buffer = malloc(sizeof(t_stream));
-	buffer->size = sizeof(idUnico) + strlen(pokemon) + 1;
+	buffer->size = sizeof(int) + strlen(pokemon) + 1;
 	void *stream = malloc(buffer->size);
 
 	int offset = 0;
@@ -470,7 +470,6 @@ void empaquetar_get_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete)
 	int tamano = tamano_paquete(paquete);
 
 	log_info(g_logger, "(SENDING_MSG= %d | %s -- SIZE= %d Bytes)", idUnico, pokemon, tamano);
-
 }
 
 void empaquetar_catch_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
