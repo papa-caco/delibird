@@ -75,8 +75,7 @@ void process_request(int cod_op, int cliente_fd) {
 		devolver_id_mensaje_propio(cliente_fd); // Devuelve al GAMEBOY un mensaje op_code = ID_MENSAJE con id_mensaje propio
 		break;
 	case CATCH_GAMECARD:
-		log_info(g_logger, "(NEW-MESSAGE: GAMECARD@CATCH_POKEMON | Socket#: %d",
-				cliente_fd);
+		log_info(g_logger, "(NEW-MESSAGE: GAMECARD@CATCH_POKEMON | Socket#: %d", cliente_fd);
 		msg = rcv_catch_gamecard(cliente_fd, &size);
 		//TODO El GameBoy tiene que recibir un mensaje op_code = CAUGHT_BROKER como respuesta
 		break;
@@ -155,9 +154,9 @@ void* rcv_catch_broker(int socket_cliente, int *size) {
 	int *pos_y = msg + offset;
 	offset += sizeof(int);
 	char *pokemon = msg + offset;
+	int tamano = tamano_recibido(*size);
 
-	log_info(g_logger, "(MSG-BODY= %s | %d | %d -- SIZE = %d Bytes)", pokemon,
-			*pos_x, *pos_y, *size);
+	log_info(g_logger, "(MSG-BODY= %s | %d | %d -- SIZE = %d Bytes)", pokemon, *pos_x, *pos_y, tamano);
 
 	return msg;
 }
@@ -245,17 +244,16 @@ void* rcv_catch_gamecard(int socket_cliente, int *size) {
 	int offset = 0;
 	int *idUnico = msg + offset;
 	offset += sizeof(int);
-
 	int *pos_x = msg + offset;
 	offset += sizeof(int);
-
 	int *pos_y = msg + offset;
 	offset += sizeof(int);
 
 	char *pokemon = msg + offset;
+	int tamano = tamano_recibido(*size);
 
-	log_info(g_logger, "(MSG-BODY= %s | %d | %d | %d -- SIZE = %d Bytes)",
-			pokemon, *idUnico, *pos_x, *pos_y, *size);
+	log_info(g_logger, "(MSG-BODY= %d | %s | %d | %d -- SIZE = %d Bytes)",
+			*idUnico, pokemon, *pos_x, *pos_y, tamano);
 
 	return msg;
 
