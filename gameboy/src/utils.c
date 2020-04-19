@@ -336,14 +336,14 @@ void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente) {
 		if (proceso == BROKER) {
 			empaquetar_catch_broker(msg_gameboy, paquete);
 		} else {
-			//empaquetar_catch_gamecard(msg_gameboy, paquete, buffer);
+			empaquetar_catch_gamecard(msg_gameboy, paquete);
 		}
 		break;
 	case CAUGHT_POKEMON:
 
 		break;
 	case GET_POKEMON:
-		if (proceso == BROKER){
+		if (proceso == BROKER) {
 			empaquetar_get_broker(msg_gameboy, paquete);
 		}
 		break;
@@ -412,24 +412,25 @@ void empaquetar_new_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
 	memcpy(stream + offset, &(cantidad), sizeof(int));
 	offset += sizeof(int);
 	memcpy(stream + offset, pokemon, strlen(pokemon) + 1);
-	buffer ->data = stream;
+	buffer->data = stream;
 
 	paquete->codigo_operacion = NEW_BROKER;
 	paquete->buffer = buffer;
-	log_info(g_logger, "(SENDING_MSG= %s | %d | %d | %d)", pokemon, pos_x, pos_y, cantidad);
+	log_info(g_logger, "(SENDING_MSG= %s | %d | %d | %d)", pokemon, pos_x,
+			pos_y, cantidad);
 
 }
 
-void empaquetar_get_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete){
+void empaquetar_get_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
 
-	char *pokemon = list_get(msg_gameboy->argumentos,0);
+	char *pokemon = list_get(msg_gameboy->argumentos, 0);
 
 	t_stream *buffer = malloc(sizeof(t_stream));
 	buffer->size = strlen(pokemon) + 1;
 
-	void *stream = malloc(buffer -> size);
+	void *stream = malloc(buffer->size);
 
-	memcpy(stream, pokemon, strlen(pokemon)+1);
+	memcpy(stream, pokemon, strlen(pokemon) + 1);
 	buffer->data = stream;
 
 	paquete->codigo_operacion = GET_BROKER;
@@ -437,6 +438,47 @@ void empaquetar_get_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete){
 
 	log_info(g_logger, "(SENDING_MSG= %s)", pokemon);
 
+}
+
+void empaquetar_catch_gamecard(t_mensaje_gameboy *msg_gameboy,
+		t_paquete *paquete) {
+
+	int idUnico = g_config_gameboy->id_mensaje_unico;
+	int pos_x = atoi(list_get(msg_gameboy->argumentos, 0));
+	int pos_y = atoi(list_get(msg_gameboy->argumentos, 1));
+	char* pokemon = list_get(msg_gameboy->argumentos, 2);
+
+	t_stream *buffer = malloc(sizeof(t_stream));
+	buffer->size = strlen(pokemon) + 1 + (3 * sizeof(int));
+
+	void *stream = malloc(buffer->size);
+
+	int offset = 0;
+	memcpy(stream + offset, &(idUnico), sizeof(int));
+	offset += sizeof(int);
+
+	memcpy(stream + offset, &(pos_x), sizeof(int));
+	offset += sizeof(int);
+
+	memcpy(stream + offset, &(pos_y), sizeof(int));
+	offset += sizeof(int);
+
+	memcpy(stream + offset, pokemon, strlen(pokemon) + 1);
+	offset += strlen(pokemon) + 1;
+	buffer->data = stream;
+
+	paquete->codigo_operacion = CATCH_GAMECARD;
+	paquete->buffer = buffer;
+
+	log_info(g_logger, "(SENDING_MSG= %s | %d | %d | %d) \n", pokemon, pos_x,
+			pos_y, idUnico);
+
+}
+
+void eliminar_paquete(t_paquete* paquete) {
+	free(paquete->buffer->data);
+	free(paquete->buffer);
+	free(paquete);
 }
 
 void* serializar_paquete(t_paquete *paquete, int *bytes) {
@@ -450,12 +492,6 @@ void* serializar_paquete(t_paquete *paquete, int *bytes) {
 	memcpy(a_enviar + offset, paquete->buffer->data, paquete->buffer->size);
 	offset += paquete->buffer->size;
 	return a_enviar;
-}
-
-void eliminar_paquete(t_paquete* paquete) {
-	free(paquete->buffer->data);
-	free(paquete->buffer);
-	free(paquete);
 }
 
 void esperar_respuesta(int socket_cliente)
@@ -530,7 +566,8 @@ void borrar_comienzo(t_list* lista, int cant) {
 }
 
 void iniciar_log(void) {
-	g_logger = log_create( g_config_gameboy -> ruta_log, "GAME_BOY", 1, LOG_LEVEL_INFO);
+	g_logger = log_create(g_config_gameboy->ruta_log, "GAME_BOY", 1,
+			LOG_LEVEL_INFO);
 	//------------ Quitar el "1" para que no loguee por Pantalla -------//
 }
 
@@ -541,8 +578,7 @@ void leer_config(char *path) {
 			"IP_BROKER");
 	g_config_gameboy->ip_gamecard = config_get_string_value(g_config,
 			"IP_GAMECARD");
-	g_config_gameboy->ip_team = config_get_string_value(g_config,
-			"IP_TEAM");
+	g_config_gameboy->ip_team = config_get_string_value(g_config, "IP_TEAM");
 	g_config_gameboy->puerto_broker = config_get_string_value(g_config,
 			"PUERTO_BROKER");
 	g_config_gameboy->puerto_gamecard = config_get_string_value(g_config,
@@ -557,8 +593,7 @@ void leer_config(char *path) {
 			"CANT_MAX_POKEMON");
 	g_config_gameboy->id_mensaje_unico = config_get_int_value(g_config,
 			"ID_MENSAJE_UNICO");
-	g_config_gameboy->ruta_log = config_get_string_value(g_config,
-			"RUTA_LOG");
+	g_config_gameboy->ruta_log = config_get_string_value(g_config, "RUTA_LOG");
 }
 
 void terminar_programa(t_mensaje_gameboy *msg_gameboy,

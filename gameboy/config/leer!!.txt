@@ -1,4 +1,4 @@
-Copiar el archivo .config
+Copiar el archivo .config y Pokemon
 en el directorio:
 
 	 /home/utnso/config

@@ -7,6 +7,9 @@
 #include<unistd.h>
 #include<netdb.h>
 #include<commons/log.h>
+#include<commons/string.h>
+#include<commons/config.h>
+#include<commons/txt.h>
 #include<commons/collections/list.h>
 #include<string.h>
 #include<pthread.h>
@@ -29,6 +32,14 @@ typedef enum {
 } op_code;
 
 typedef struct {
+	char* nombrePokemon;
+	int posicionX;
+	int posicionY;
+	int cantidad;
+
+} t_posicion_pokemon;
+
+typedef struct {
 	int size;
 	void* stream;
 } t_stream;
@@ -38,10 +49,11 @@ typedef struct {
 	t_stream* buffer;
 } t_paquete;
 
-// Variable Global
-pthread_t thread;
 
 //-----------------Variables Globales----------------------------
+
+pthread_t thread;
+
 
 t_log *g_logger;
 
@@ -65,14 +77,20 @@ void* rcv_new_broker(int socket_cliente, int* size);
 
 void* rcv_get_broker(int socket_cliente, int* size);
 
+void* rcv_catch_gamecard(int socket_cliente, int* size);
+
 void* serializar_paquete(t_paquete* paquete, int bytes);
 
-void arrojar_id_mensaje(int socket_cliente);
+void devolver_id_mensaje_propio(int socket_cliente);
+
+void send_posiciones(int socket_cliente, char* pokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
 
 void esperar_cliente(int socket);
 
 void eliminar_paquete (t_paquete *paquete);
 
 void iniciar_logger(void);
+
+
 
 #endif /* CONEXIONES_H_ */
