@@ -113,8 +113,12 @@ void process_request(int cod_op, int cliente_fd) {
 		//TODO
 		break;
 	case APPEARED_BROKER:
-		log_info(g_logger, "(NEW-MESSAGE @");
-		//TODO
+		log_info(g_logger,"ENTRO A APPEARED" );
+		log_info(g_logger,
+				"(NEW-MESSAGE @BROKER | APPEARED_POKEMON | Socket_Cliente: %d",
+				cliente_fd);
+		msg = rcv_appeared_broker(cliente_fd, &size);
+		devolver_mensaje(msg, size, cliente_fd); //PRUEBA
 		break;
 	case APPEARED_TEAM:
 		log_info(g_logger, "(NEW-MESSAGE @");
@@ -200,13 +204,13 @@ void* rcv_get_broker(int socket_cliente, int *size) {
 	return msg;
 }
 
-void* rcv_catch_gamecard(int socket_cliente, int *size){
+void* rcv_catch_gamecard(int socket_cliente, int *size) {
 
 	void *msg;
 
 	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
 	msg = malloc(*size);
-	recv(socket_cliente,msg, *size, MSG_WAITALL);
+	recv(socket_cliente, msg, *size, MSG_WAITALL);
 
 	int offset = 0;
 	int *idUnico = msg + offset;
@@ -221,11 +225,34 @@ void* rcv_catch_gamecard(int socket_cliente, int *size){
 	char *pokemon = msg + offset;
 
 	log_info(g_logger, "(MSG-BODY= %s | %d | %d | %d -- SIZE = %d Bytes)",
-				pokemon, *idUnico, *pos_x, *pos_y, *size);
+			pokemon, *idUnico, *pos_x, *pos_y, *size);
 
 	return msg;
 
+}
 
+void* rcv_appeared_broker(int socket_cliente, int *size) {
+
+	void *msg;
+
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	msg = malloc(*size);
+	recv(socket_cliente, msg, *size, MSG_WAITALL);
+
+	int offset = 0;
+
+	int *id_mensaje = msg + offset;
+	offset += sizeof(int);
+	int *pos_x = msg + offset;
+	offset += sizeof(int);
+	int *pos_y = msg + offset;
+	offset += sizeof(int);
+	char*pokemon = msg + offset;
+
+	log_info(g_logger, "(MSG-BODY= %d | %s | %d | %d -- SIZE = %d Bytes)",
+			*id_mensaje, pokemon, *pos_x, *pos_y, *size);
+
+	return msg;
 }
 
 void send_posiciones(int socket_cliente, char* pokemon) {
