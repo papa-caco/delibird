@@ -83,6 +83,8 @@ void *rcv_caught_broker(int socket_cliente,int *size);
 
 void* rcv_new_broker(int socket_cliente, int* size);
 
+void* rcv_new_gamecard(int socket_cliente, int* size);
+
 void* rcv_get_broker(int socket_cliente, int* size);
 
 void *rcv_get_gamecard(int socket_cliente, int *size);

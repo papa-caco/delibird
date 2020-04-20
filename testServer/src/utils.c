@@ -106,7 +106,9 @@ void process_request(int cod_op, int cliente_fd) {
 		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
 		break;
 	case NEW_GAMECARD:
-		log_info(g_logger, "(NEW-MESSAGE @");
+		log_info(g_logger, "(NEW-MESSAGE GAMECARD@NEW_POKEMON | Socket#: %d",
+						cliente_fd);
+				msg = rcv_new_broker(cliente_fd, &size);
 		//TODO El GameBoy tiene que recibir un mensaje op_code = APPEARED_BROKER
 		break;
 	case APPEARED_BROKER:
@@ -180,6 +182,31 @@ void *rcv_caught_broker(int socket_cliente, int *size) {
 }
 
 void* rcv_new_broker(int socket_cliente, int *size) {
+
+	void *msg;
+
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	msg = malloc(*size);
+	recv(socket_cliente, msg, *size, MSG_WAITALL);
+
+	int offset = 0;
+	int *pos_x = msg + offset;
+	offset += sizeof(int);
+	int *pos_y = msg + offset;
+	offset += sizeof(int);
+	int *cantidad = msg + offset;
+	offset += sizeof(int);
+	char*pokemon = msg + offset;
+	int tamano = tamano_recibido(*size);
+
+	log_info(g_logger, "(MSG-BODY= %s | %d | %d | %d -- SIZE = %d Bytes)",
+			pokemon, *pos_x, *pos_y, *cantidad, tamano);
+
+	return msg;
+
+}
+
+void* rcv_new_gamecard(int socket_cliente, int *size) {
 
 	void *msg;
 
