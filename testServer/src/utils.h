@@ -19,11 +19,11 @@
 #define ID_MSG_RTA 65535
 #define RESPUESTA_OK "RECIBIDO_OK"
 
-typedef enum {
+typedef enum Resultado_Caught{
 	FAIL, OK,
 } t_result_caught;
 
-typedef enum {
+typedef enum Codigo_Operacion{
 	ID_MENSAJE = 10,
 	MSG_CONFIRMED,
 	APPEARED_BROKER,
@@ -35,22 +35,23 @@ typedef enum {
 	GET_GAMECARD,
 	NEW_BROKER,
 	NEW_GAMECARD,
+	LOCALIZED_BROKER,
 } op_code;
 
-typedef struct {
+typedef struct Posicion_Pokemon{
 	char* nombrePokemon;
-	int posicionX;
-	int posicionY;
+	int id_mensaje;
+	int pos_x;
+	int pos_y;
 	int cantidad;
-
 } t_posicion_pokemon;
 
-typedef struct {
+typedef struct Stream{
 	int size;
 	void* stream;
 } t_stream;
 
-typedef struct {
+typedef struct Paquete{
 	op_code codigo_operacion;
 	t_stream* buffer;
 } t_paquete;
@@ -83,6 +84,8 @@ void *rcv_caught_broker(int socket_cliente,int *size);
 
 void* rcv_new_broker(int socket_cliente, int* size);
 
+void* rcv_new_gamecard(int socket_cliente,int *size);
+
 void* rcv_get_broker(int socket_cliente, int* size);
 
 void *rcv_get_gamecard(int socket_cliente, int *size);
@@ -91,11 +94,21 @@ void* rcv_catch_gamecard(int socket_cliente, int* size);
 
 void* rcv_appeared_broker(int socket_cliente, int* size);
 
+void *rcv_appeared_team(int socket_cliente, int *size);
+
 void* serializar_paquete(t_paquete* paquete, int bytes);
 
 void devolver_id_mensaje_propio(int socket_cliente);
 
 void devolver_recepcion_ok(int socket_cliente);
+
+void devolver_caught_broker(void *msg, int socket_cliente);
+
+void devolver_appeared_broker(void *msg, int size, int socket_cliente);
+
+void devolver_localized_broker(int socket_cliente,int size,void *msg);
+
+void devolver_id_mensaje(void *msg,int socket_cliente);
 
 void send_posiciones(int socket_cliente, char* pokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
 

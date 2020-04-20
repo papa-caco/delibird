@@ -24,7 +24,7 @@
 
 /* ---  DEFINICION DE ESTRUCTURAS ---*/
 
-typedef enum
+typedef enum Codigo_Operacion
 {
 	ID_MENSAJE = 10,
 	MSG_CONFIRMED,
@@ -40,11 +40,11 @@ typedef enum
 	LOCALIZED_BROKER,
 } op_code;
 
-typedef enum {
+typedef enum Proceso{
 	UNKNOWN_PROC = 9, SUSCRIPTOR, GAMECARD, BROKER, TEAM, GAMEBOY,
 } t_proceso;
 
-typedef enum {
+typedef enum Tipo_Mensaje{
 	UNKNOWN_QUEUE = 9,
 	NEW_POKEMON,
 	APPEARED_POKEMON,
@@ -54,17 +54,25 @@ typedef enum {
 	LOCALIZED_POKEMON,
 } t_tipo_mensaje;
 
-typedef enum {
+typedef enum Resultado_Caught{
 	FAIL, OK,
 } t_result_caught;
 
-typedef struct {
+typedef struct Mensaje_Gameboy{
 	t_proceso proceso;
 	t_tipo_mensaje tipo_mensaje;
 	t_list *argumentos;
 } t_mensaje_gameboy;
 
-typedef struct {
+typedef struct Posicion_Pokemon{
+	char* nombrePokemon;
+	int id_mensaje;
+	int pos_x;
+	int pos_y;
+	int cantidad;
+} t_posicion_pokemon;
+
+typedef struct Configuracion_Gameboy{
 	char *ip_broker;
 	char *ip_gamecard;
 	char *ip_team;
@@ -78,12 +86,12 @@ typedef struct {
 	char *ruta_log;
 } t_config_gameboy;
 
-typedef struct {
+typedef struct Stream{
 	int size;
 	void* data;
 } t_stream;
 
-typedef struct {
+typedef struct Paquete{
 	op_code codigo_operacion;
 	t_stream* buffer;
 } t_paquete;
@@ -128,7 +136,7 @@ void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente);
 
 void esperar_respuesta	(int socket_cliente);
 
-void empaquetar_catch_broker	(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
+void empaquetar_catch_broker (t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
 void empaquetar_caught_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
@@ -136,9 +144,15 @@ void empaquetar_catch_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquet
 
 void empaquetar_new_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
+void empaquetar_new_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
+
 void empaquetar_get_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
+void empaquetar_new_gamecard(t_mensaje_gameboy *msg_gameboy,t_paquete *paquete);
+
 void empaquetar_appeared_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
+
+void empaquetar_appeared_team(t_mensaje_gameboy *msg_gameboy,t_paquete *paquete);
 
 void empaquetar_get_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
