@@ -118,10 +118,10 @@ void process_request(int cod_op, int cliente_fd) {
 		// El GameBoy recibe RECIBIDO_OK para cerrar la comunicación
 		break;
 	case APPEARED_TEAM:
-		log_info(g_logger,"(RECEIVING: TEAM@APPEARED_POKEMON | Socket#: %d)",	cliente_fd);
+		log_info(g_logger,"(RECEIVING: TEAM@APPEARED_POKEMON | Socket_Cliente: %d)",cliente_fd);
 		msg = rcv_appeared_team(cliente_fd, &size);
 		devolver_recepcion_ok(cliente_fd);
-		// El GameBoy recibe RECIBIDO_OK para cerrar la comunicación.
+		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
 		break;
 	case 0:
 		pthread_exit(NULL);
@@ -310,25 +310,25 @@ void* rcv_appeared_broker(int socket_cliente, int *size) {
 	return msg;
 }
 
-void *rcv_appeared_team(int socket_cliente, int *size) {
-
-	void *msg;
+void* rcv_appeared_team(int socket_cliente, int *size) {
+	void* msg;
+	int* posX;
+	int* posY;
+	char* pokemonName;
 	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
 	msg = malloc(*size);
 	recv(socket_cliente, msg, *size, MSG_WAITALL);
+	int offset=0;
+	posX = msg + offset;
+	offset+=sizeof(int);
+	posY = msg + offset;
+	offset+=sizeof(int);
+	pokemonName = msg + offset;
 
-	int offset = 0;
-	int *pos_x = msg + offset;
-	offset += sizeof(int);
-	int *pos_y = msg + offset;
-	offset += sizeof(int);
-	char*pokemon = msg + offset;
-	int tamano = tamano_recibido(*size);
+	log_info(g_logger, "(MSG-BODY= %d | %d | %s -- SIZE = %d Bytes)",
+				*posX, *posY, pokemonName, *size);
 
-	log_info(g_logger, "(MSG-BODY=  %s | %d | %d -- SIZE = %d Bytes)",
-			 pokemon, *pos_x, *pos_y, tamano);
-
-	return msg;
+		return msg;
 }
 
 void send_posiciones(int socket_cliente, char* pokemon) {

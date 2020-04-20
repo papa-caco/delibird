@@ -84,7 +84,7 @@ void *rcv_caught_broker(int socket_cliente,int *size);
 
 void* rcv_new_broker(int socket_cliente, int* size);
 
-void* rcv_new_gamecard(int socket_cliente,int *size);
+void* rcv_new_gamecard(int socket_cliente, int* size);
 
 void* rcv_get_broker(int socket_cliente, int* size);
 
@@ -94,7 +94,7 @@ void* rcv_catch_gamecard(int socket_cliente, int* size);
 
 void* rcv_appeared_broker(int socket_cliente, int* size);
 
-void *rcv_appeared_team(int socket_cliente, int *size);
+void* rcv_appeared_team(int socket_cliente, int* size);
 
 void* serializar_paquete(t_paquete* paquete, int bytes);
 

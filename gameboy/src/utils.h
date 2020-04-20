@@ -152,7 +152,7 @@ void empaquetar_new_gamecard(t_mensaje_gameboy *msg_gameboy,t_paquete *paquete);
 
 void empaquetar_appeared_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
-void empaquetar_appeared_team(t_mensaje_gameboy *msg_gameboy,t_paquete *paquete);
+void empaquetar_appeared_team(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
 void empaquetar_get_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
