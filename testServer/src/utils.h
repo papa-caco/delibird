@@ -91,6 +91,8 @@ void* rcv_catch_gamecard(int socket_cliente, int* size);
 
 void* rcv_appeared_broker(int socket_cliente, int* size);
 
+void* rcv_appeared_team(int socket_cliente, int* size);
+
 void* serializar_paquete(t_paquete* paquete, int bytes);
 
 void devolver_id_mensaje_propio(int socket_cliente);

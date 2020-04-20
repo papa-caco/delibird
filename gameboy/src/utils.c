@@ -369,6 +369,9 @@ void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente) {
 		if (proceso == BROKER) {
 			empaquetar_appeared_broker(msg_gameboy, paquete);
 		}
+		else{
+			empaquetar_appeared_team(msg_gameboy, paquete);
+		}
 		break;
 	}
 
@@ -561,6 +564,30 @@ void empaquetar_appeared_broker(t_mensaje_gameboy *msg_gameboy,
 			pos_x, pos_y);
 
 	log_info(g_logger, "(CODIGO OPERACION %d ", paquete->codigo_operacion);
+
+}
+
+void empaquetar_appeared_team(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete){
+	char *namePokemon = list_get(msg_gameboy->argumentos, 0);
+	int sizePokemonName = strlen(namePokemon) + 1;
+	int posX = atoi(list_get(msg_gameboy->argumentos, 1));
+	int posY = atoi(list_get(msg_gameboy->argumentos, 2));
+	t_stream* buffer = malloc(sizeof(t_stream));
+	buffer->size = sizeof(int)*2 + sizePokemonName;
+	buffer->data = malloc(buffer->size);
+	int offset=0;
+	memcpy(buffer->data + offset, &(posX), sizeof(int));
+	offset+=sizeof(int);
+	memcpy(buffer->data + offset, &(posY), sizeof(int));
+	offset+=sizeof(int);
+	memcpy(buffer->data + offset, namePokemon, sizePokemonName);
+	offset+=sizePokemonName;
+
+	paquete->codigo_operacion = APPEARED_TEAM;
+	paquete->buffer = buffer;
+	int tamano = tamano_paquete(paquete);
+
+	log_info(g_logger, "(SENDING_MSG= %s | %d | %d -- SIZE = %d Bytes)", namePokemon, posX, posY, tamano);
 
 }
 

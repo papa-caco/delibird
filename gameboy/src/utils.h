@@ -140,6 +140,8 @@ void empaquetar_get_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
 void empaquetar_appeared_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
+void empaquetar_appeared_team(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
+
 void empaquetar_get_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
 void* serializar_paquete(t_paquete* paquete, int *bytes);

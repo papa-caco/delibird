@@ -118,7 +118,11 @@ void process_request(int cod_op, int cliente_fd) {
 		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
 		break;
 	case APPEARED_TEAM:
-		log_info(g_logger, "(NEW-MESSAGE @");
+		log_info(g_logger, "ENTRO A APPEARED");
+				log_info(g_logger,
+						"(NEW-MESSAGE @TEAM | APPEARED_POKEMON | Socket_Cliente: %d",
+						cliente_fd);
+				msg = rcv_appeared_team(cliente_fd, &size);
 		//TODO
 		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
 		break;
@@ -281,6 +285,27 @@ void* rcv_appeared_broker(int socket_cliente, int *size) {
 			*id_mensaje, pokemon, *pos_x, *pos_y, *size);
 
 	return msg;
+}
+
+void* rcv_appeared_team(int socket_cliente, int *size) {
+	void* msg;
+	int* posX;
+	int* posY;
+	char* pokemonName;
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	msg = malloc(*size);
+	recv(socket_cliente, msg, *size, MSG_WAITALL);
+	int offset=0;
+	posX = msg + offset;
+	offset+=sizeof(int);
+	posY = msg + offset;
+	offset+=sizeof(int);
+	pokemonName = msg + offset;
+
+	log_info(g_logger, "(MSG-BODY= %d | %d | %s -- SIZE = %d Bytes)",
+				*posX, *posY, pokemonName, *size);
+
+		return msg;
 }
 
 void send_posiciones(int socket_cliente, char* pokemon) {
