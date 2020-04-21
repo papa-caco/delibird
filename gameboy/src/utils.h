@@ -132,7 +132,13 @@ char* obtengo_proceso(t_mensaje_gameboy *msg_gameboy);
 
 char* obtengo_cola(t_mensaje_gameboy *msg_gameboy);
 
+int get_time_suscripcion(t_mensaje_gameboy *msg_gameboy);
+
 void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente);
+
+void enviar_msj_suscriptor(t_mensaje_gameboy *msg_gameboy,int socket_cliente);
+
+void recibir_msjs_suscripcion(int tiempo_suscripcion,int socket_cliente);
 
 void esperar_respuesta	(int socket_cliente);
 
