@@ -39,7 +39,6 @@ typedef enum Codigo_Operacion{
 } op_code;
 
 typedef struct Posicion_Pokemon{
-	char* nombrePokemon;
 	int id_mensaje;
 	int pos_x;
 	int pos_y;
@@ -110,7 +109,7 @@ void devolver_localized_broker(int socket_cliente,int size,void *msg);
 
 void devolver_id_mensaje(void *msg,int socket_cliente);
 
-void send_posiciones(int socket_cliente, char* pokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
+void devolver_posiciones(int socket_cliente, char* pokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
 
 void esperar_cliente(int socket);
 
