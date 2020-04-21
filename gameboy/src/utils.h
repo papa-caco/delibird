@@ -164,7 +164,7 @@ void empaquetar_get_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete)
 
 void* serializar_paquete(t_paquete* paquete, int *bytes);
 
-t_list* recv_posiciones(int socket_cliente);
+t_list* armar_lista(void* stream, int* cantPosiciones);
 
 char* recibir_mensaje(int socket_cliente);
 
