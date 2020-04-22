@@ -44,6 +44,7 @@ int main(int argcnt, char *argval[])
 
 	// DIVIDIMOS GAMEBOY: MODOS PUBLISHER - SUSCRIBER
 	if (msg_gameboy -> proceso != SUSCRIPTOR) {
+		// Modo PUBLISHER
 		// Establecemos conexion con PROCESO REMOTO correspondiente
 		// Seleccionamos la direccion IP y el puerto del proceso remoto
 		// -- obtenemos el Socket Cliente "conexion"
@@ -52,7 +53,6 @@ int main(int argcnt, char *argval[])
 		if (conexion < 0) {
 			return EXIT_FAILURE;
 		}
-		// Modo PUBLISHER - SOLO ENVIA
 		// Empaquetamos mensaje
 		// Serializamos Paquete
 		// Logueamos Mensaje a Enviar
@@ -64,17 +64,16 @@ int main(int argcnt, char *argval[])
 	}
 	else {
 		//TODO Modo SUSCRIBER - ENVIA el HANDSHAKE y espera Recibir MENSAJES del BROKER
-
 		// Establecemos conexion con PROCESO REMOTO correspondiente
 		// Seleccionamos la direccion IP y el puerto del proceso remoto
 		// -- obtenemos el Socket Cliente "conexion"
-		 /*conexion = crear_conexion(msg_gameboy);
+		conexion = crear_conexion(msg_gameboy);
 		// Logueamos conexion con PROCESO REMOTO: Satisfactoria o Fallida.
 		if (conexion < 0) {
 			return EXIT_FAILURE;
-		}*/
+		}
 
-		//TODO enviar_msj_suscriptor(msg_gameboy, conexion);
+		enviar_msj_suscriptor(msg_gameboy, conexion);
 		int tiempo_suscripcion = get_time_suscripcion(msg_gameboy);
 
 		//TODO recibir_msjs_suscripcion(tiempo_suscripcion,conexion);

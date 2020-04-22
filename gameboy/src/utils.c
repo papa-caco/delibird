@@ -389,6 +389,47 @@ void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente) {
 	eliminar_paquete(paquete);
 }
 
+void enviar_msj_suscriptor(t_mensaje_gameboy *msg_gameboy, int socket_cliente)
+{
+	// En esta funcion: msg_gameboy->proceso = SUSCRIPTOR
+	int tipo_mensaje = msg_gameboy->tipo_mensaje; // Una Cola del BROKER -- Cualquiera de las 6(seis)
+	t_paquete *paquete = malloc(sizeof(t_paquete));
+	void *a_enviar;
+	int bytes = 0;
+
+	switch (tipo_mensaje) {
+	case CATCH_POKEMON:
+		paquete->codigo_operacion = SUSCRIP_CATCH;
+		break;
+	case CAUGHT_POKEMON:
+		paquete->codigo_operacion = SUSCRIP_CAUGHT;
+		break;
+	case NEW_POKEMON:
+		paquete->codigo_operacion = SUSCRIP_NEW;
+		break;
+	case APPEARED_POKEMON:
+		paquete->codigo_operacion = SUSCRIP_APPEARED;
+		break;
+	case GET_POKEMON:
+		paquete->codigo_operacion = SUSCRIP_GET;
+		break;
+	case LOCALIZED_POKEMON:
+		paquete->codigo_operacion = SUSCRIP_LOCALIZED;
+		break;
+	}
+	empaquetar_handshake_suscriptor(paquete);
+
+	bytes = paquete->buffer->size + 2 * (sizeof(int));
+
+	a_enviar = serializar_paquete(paquete, &bytes);
+
+	send(socket_cliente, a_enviar, bytes, 0);
+
+	free(a_enviar);
+	eliminar_paquete(paquete);
+
+}
+
 void empaquetar_catch_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
 	int pos_x = atoi(list_get(msg_gameboy->argumentos, 1));
 	int pos_y = atoi(list_get(msg_gameboy->argumentos, 2));
@@ -630,6 +671,21 @@ void empaquetar_appeared_team(t_mensaje_gameboy *msg_gameboy,
 			namePokemon, posX, posY, tamano);
 }
 
+void empaquetar_handshake_suscriptor(t_paquete *paquete)
+{
+	int handshake = HANDSHAKE_SUSCRIPTOR;
+	t_stream *buffer = malloc(sizeof(t_stream));
+	buffer->size = sizeof(int);
+	void *stream = malloc(buffer->size);
+
+	memcpy(stream, &(handshake), sizeof(int));
+	buffer->data = stream;
+	paquete->buffer = buffer;
+	int tamano = tamano_paquete(paquete);
+
+	log_info(g_logger, "(SENDING Handshake Suscriptor -- SIZE = %d Bytes)", tamano);
+}
+
 void eliminar_paquete(t_paquete* paquete) {
 	free(paquete->buffer->data);
 	free(paquete->buffer);
@@ -651,24 +707,23 @@ void* serializar_paquete(t_paquete *paquete, int *bytes) {
 
 void esperar_respuesta(int socket_cliente) {
 
-	printf("Entro a esperar respuesta \n");
+	//printf("Entro a esperar respuesta \n");
 	void *a_recibir;
 	op_code codigo_operacion = recibir_op_code(socket_cliente);
-	printf("Recibi codigo de operacion : %d \n", codigo_operacion);
+	//printf("Recibi codigo de operacion : %d \n", codigo_operacion);
 	int size;
 	int id_mensaje;
 	int pos_x;
 	int pos_y;
 	int size_pokemon;
 	char *pokemon;
-
 	int offset = 0;
-	switch (codigo_operacion) {
-	case MSG_CONFIRMED:
+
+	if (codigo_operacion == MSG_CONFIRMED) {
 		a_recibir = recibir_buffer(&size, socket_cliente);
 		log_info(g_logger, "(ANSWER_MSG | %s)", a_recibir);
-		break;
-	case APPEARED_BROKER:
+	}
+	else if (codigo_operacion == APPEARED_BROKER) {
 		a_recibir = recibir_buffer(&size, socket_cliente);
 		size_pokemon = size - 3 * sizeof(int);
 		pokemon = malloc(size_pokemon);
@@ -684,23 +739,22 @@ void esperar_respuesta(int socket_cliente) {
 				"(ANSWER_MSG | BROKER@APPEARED_POKEMON | ID_MENSAJE = %d | %s | POS_X = %d | POS_Y = %d)",
 				id_mensaje, pokemon, pos_x, pos_y);
 		free(pokemon);
-		break;
-	case ID_MENSAJE:
+	}
+	else if (codigo_operacion == ID_MENSAJE) {
 		a_recibir = recibir_buffer(&size, socket_cliente);
 		memcpy(&(id_mensaje), a_recibir, size);
 		log_info(g_logger, "(ANSWER_MSG | ID_MENSAJE = %d)", id_mensaje);
-		break;
-	case CAUGHT_BROKER:
+	}
+	else if (codigo_operacion == CAUGHT_BROKER) {
 		a_recibir = recibir_buffer(&size, socket_cliente);
 		t_result_caught resultado;
 		memcpy(&(id_mensaje), a_recibir + offset, sizeof(int));
 		offset += sizeof(int);
 		memcpy(&(resultado), a_recibir + offset, sizeof(t_result_caught));
 		log_info(g_logger,
-				"(ANSWER_MSG | BROKER@CAUGHT_POKEMON | ID_MENSAJE = %d | RESULTADO = %d)",
-				id_mensaje, resultado);
-		break;
-	case LOCALIZED_BROKER:
+				"(ANSWER_MSG | BROKER@CAUGHT_POKEMON | ID_MENSAJE = %d | RESULTADO = %d)", id_mensaje, resultado);
+	}
+	else if (codigo_operacion == LOCALIZED_BROKER) {
 		printf("Entro a LOCALIZED BROKER \n");
 		a_recibir = recibir_buffer(&size, socket_cliente);
 		t_list* posiciones = armar_lista(a_recibir, &size);
@@ -708,29 +762,13 @@ void esperar_respuesta(int socket_cliente) {
 		//"(ANSWER_MSG | BROKER@LOCALIZED_POKEMON | ID_MENSAJE = %d | POKEMON = %s)",
 		//id_mensaje, pokemon);
 		//free(pokemon);
-
 		list_destroy(posiciones);
-		break;
-	case NEW_BROKER:
-		break;
-	case NEW_GAMECARD:
-		break;
-	case GET_BROKER:
-		break;
-	case GET_GAMECARD:
-		break;
-	case CATCH_BROKER:
-		break;
-	case CATCH_GAMECARD:
-		break;
-	case APPEARED_TEAM:
-		break;
 	}
 	free(a_recibir);
 }
 
 char* recibir_mensaje(int socket_cliente) {
-	printf("codigo operacion = %d \n", recibir_op_code(socket_cliente));
+	//printf("codigo operacion = %d \n", recibir_op_code(socket_cliente));
 	int size;
 	void* a_recibir = recibir_buffer(&size, socket_cliente);
 	char* mensaje = malloc(size);

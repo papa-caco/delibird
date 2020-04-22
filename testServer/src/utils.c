@@ -57,6 +57,7 @@ void esperar_cliente(int socket_servidor) {
 
 void serve_client(int* socket) {
 	int cod_op;
+	// OBTENGO el Codigo_Operacion de los  Mensajes que Recibo
 	if (recv(*socket, &cod_op, sizeof(int), MSG_WAITALL) == -1)
 		cod_op = -1;
 	process_request(cod_op, *socket);
@@ -93,15 +94,15 @@ void process_request(int cod_op, int cliente_fd) {
 		log_info(g_logger, "(RECEIVING: BROKER@GET_POKEMON | SOCKET#: %d)",
 				cliente_fd);
 		msg = rcv_get_broker(cliente_fd, &size);
-		//devolver_id_mensaje_propio(cliente_fd);
+		devolver_id_mensaje_propio(cliente_fd);
 		// El GameBoy tiene que recibir un mensaje op_code = ID_MENSAJE con id_mensaje propio
-		devolver_posiciones(cliente_fd, (char*) msg);
 		break;
 	case GET_GAMECARD:
 		log_info(g_logger, "(RECEIVING: GAMECARD@GET_POKEMON | SOCKET#: %d)",
 				cliente_fd);
 		msg = rcv_get_gamecard(cliente_fd, &size);
-		devolver_localized_broker(cliente_fd, size, msg);
+		devolver_posiciones(cliente_fd, "Pokemon");
+		//devolver_localized_broker(cliente_fd, size, msg);
 		// El GameBoy tiene que recibir un mensaje op_code = LOCALIZED_BROKER como respuesta
 		break;
 	case NEW_BROKER:
@@ -126,13 +127,54 @@ void process_request(int cod_op, int cliente_fd) {
 		// El GameBoy recibe RECIBIDO_OK para cerrar la comunicación
 		break;
 	case APPEARED_TEAM:
-		log_info(g_logger,
-				"(RECEIVING: TEAM@APPEARED_POKEMON | Socket_Cliente: %d)",
-				cliente_fd);
+		log_info(g_logger, "(RECEIVING: TEAM@APPEARED_POKEMON | Socket#: %d)", cliente_fd);
 		msg = rcv_appeared_team(cliente_fd, &size);
 		devolver_recepcion_ok(cliente_fd);
 		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
 		break;
+	// MENSAJES QUE RECIBE en MODO SUSCRIPTOR
+	case SUSCRIP_NEW:
+		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@NEW_POKEMON | Socket#: %d)", cliente_fd);
+		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
+			 log_info(g_logger, "Suscripcion a NEW_POKEMON"); //Borrar
+			 msg = malloc(1); //Borrar
+		 }
+		 break;
+	case SUSCRIP_APPEARED:
+		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@APPEARED_POKEMON | Socket#: %d)", cliente_fd);
+		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
+			 log_info(g_logger, "Suscripcion a APPEARED_POKEMON"); //Borrar
+			 msg = malloc(1);//Borrar
+		 }
+		 break;
+	case SUSCRIP_CATCH:
+		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@CATCH_POKEMON | Socket#: %d)", cliente_fd);
+		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
+			 log_info(g_logger, "Suscripcion a CATCH_POKEMON"); //Borrar
+			 msg = malloc(1);//Borrar
+		 }
+		 break;
+	case SUSCRIP_CAUGHT:
+		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@CAUGHT_POKEMON | Socket#: %d)", cliente_fd);
+		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
+			 log_info(g_logger, "Suscripcion a CAUGHT_POKEMON");//Borrar
+			 msg = malloc(1);//Borrar
+		 }
+		 break;
+	case SUSCRIP_GET:
+		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@GET_POKEMON | Socket#: %d)", cliente_fd);
+		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
+			 log_info(g_logger, "Suscripcion a GET_POKEMON"); //Borrar
+			 msg = malloc(1);//Borrar
+		 }
+		 break;
+	case SUSCRIP_LOCALIZED:
+		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@LOCALIZED_POKEMON | Socket#: %d)", cliente_fd);
+		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
+			 log_info(g_logger, "Suscripcion a LOCALIZED_POKEMON");//Borrar
+			 msg = malloc(1);//Borrar
+		 }
+		 break;
 	case 0:
 		pthread_exit(NULL);
 	case -1:
@@ -147,8 +189,7 @@ void* recibir_mensaje(int socket_cliente, int* size) {
 	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
 	buffer = malloc(*size);
 	recv(socket_cliente, buffer, *size, MSG_WAITALL);
-	log_info(g_logger, "Recibi del cliente Socket: %d el mensaje: %s",
-			socket_cliente, buffer);
+	log_info(g_logger, "Recibi del cliente Socket: %d el mensaje: %s",socket_cliente, buffer);
 	return buffer;
 }
 
@@ -236,8 +277,8 @@ void *rcv_new_gamecard(int socket_cliente, int *size) {
 	posicion->pos_y = *pos_y;
 	posicion->cantidad = *cantidad;
 
-	log_info(g_logger, "(MSG-BODY= %d | %d | %d | %d -- SIZE = %d Bytes)",
-			posicion->id_mensaje, posicion->pos_x, posicion->pos_y,
+	log_info(g_logger, "(MSG-BODY= %d | %s | %d | %d | %d -- SIZE = %d Bytes)",
+			posicion->id_mensaje, nombrePokemon , posicion->pos_x, posicion->pos_y,
 			posicion->cantidad, tamano);
 	free(posicion);
 	return msg;
@@ -341,6 +382,18 @@ void* rcv_appeared_team(int socket_cliente, int *size) {
 			*posY, pokemonName, *size);
 
 	return msg;
+}
+
+int rcv_handshake_suscripcion(int socket_cliente, int *size) {
+	int handshake;
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	if (*size != sizeof(int)) {
+		return EXIT_FAILURE;
+	}
+	recv(socket_cliente, &handshake, *size, MSG_WAITALL);
+
+	log_info(g_logger, "(MSG-BODY= Handshake = %d )", handshake);
+	return handshake;
 }
 
 void devolver_posiciones(int socket_cliente, char* pokemon) {

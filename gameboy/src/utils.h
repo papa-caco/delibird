@@ -22,22 +22,32 @@
 #include<string.h>
 #include<commons/collections/list.h>
 
+#define HANDSHAKE_SUSCRIPTOR 255
+
 /* ---  DEFINICION DE ESTRUCTURAS ---*/
 
 typedef enum Codigo_Operacion
 {
 	ID_MENSAJE = 10,
 	MSG_CONFIRMED,
+	NEW_BROKER = 20,
 	APPEARED_BROKER,
-	APPEARED_TEAM,
 	CATCH_BROKER,
-	CATCH_GAMECARD,
 	CAUGHT_BROKER,
 	GET_BROKER,
-	GET_GAMECARD,
-	NEW_BROKER,
-	NEW_GAMECARD,
 	LOCALIZED_BROKER,
+	NEW_GAMECARD = 40,
+	CATCH_GAMECARD,
+	GET_GAMECARD,
+	APPEARED_TEAM = 80,
+	CAUGHT_TEAM,
+	LOCALIZED_TEAM,
+	SUSCRIP_NEW = 120,
+	SUSCRIP_APPEARED,
+	SUSCRIP_CATCH,
+	SUSCRIP_CAUGHT,
+	SUSCRIP_GET,
+	SUSCRIP_LOCALIZED,
 } op_code;
 
 typedef enum Proceso{
@@ -162,6 +172,8 @@ void empaquetar_appeared_team(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete
 
 void empaquetar_get_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete);
 
+void empaquetar_handshake_suscriptor(t_paquete *paquete);
+
 void* serializar_paquete(t_paquete* paquete, int *bytes);
 
 t_list* armar_lista(void* stream, int* cantPosiciones);
@@ -171,8 +183,6 @@ char* recibir_mensaje(int socket_cliente);
 int recibir_op_code(int socket_cliente);
 
 void* recibir_buffer(int* size, int socket_cliente);
-
-void* recibir_stream(int* size, int socket_cliente);
 
 void eliminar_paquete(t_paquete* paquete);
 

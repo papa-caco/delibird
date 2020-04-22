@@ -18,6 +18,7 @@
 #define PUERTO "5001"
 #define ID_MSG_RTA 65535
 #define RESPUESTA_OK "RECIBIDO_OK"
+#define HANDSHAKE_SUSCRIPTOR 255
 
 typedef enum Resultado_Caught{
 	FAIL, OK,
@@ -26,16 +27,24 @@ typedef enum Resultado_Caught{
 typedef enum Codigo_Operacion{
 	ID_MENSAJE = 10,
 	MSG_CONFIRMED,
+	NEW_BROKER = 20,
 	APPEARED_BROKER,
-	APPEARED_TEAM,
 	CATCH_BROKER,
-	CATCH_GAMECARD,
 	CAUGHT_BROKER,
 	GET_BROKER,
-	GET_GAMECARD,
-	NEW_BROKER,
-	NEW_GAMECARD,
 	LOCALIZED_BROKER,
+	NEW_GAMECARD = 40,
+	CATCH_GAMECARD,
+	GET_GAMECARD,
+	APPEARED_TEAM = 80,
+	CAUGHT_TEAM,
+	LOCALIZED_TEAM,
+	SUSCRIP_NEW = 120,
+	SUSCRIP_APPEARED,
+	SUSCRIP_CATCH,
+	SUSCRIP_CAUGHT,
+	SUSCRIP_GET,
+	SUSCRIP_LOCALIZED,
 } op_code;
 
 typedef struct Posicion_Pokemon{
@@ -94,6 +103,8 @@ void* rcv_catch_gamecard(int socket_cliente, int* size);
 void* rcv_appeared_broker(int socket_cliente, int* size);
 
 void* rcv_appeared_team(int socket_cliente, int* size);
+
+int rcv_handshake_suscripcion(int socket_cliente, int *size);
 
 void* serializar_paquete(t_paquete* paquete, int bytes);
 
