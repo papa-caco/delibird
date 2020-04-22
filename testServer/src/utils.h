@@ -39,7 +39,6 @@ typedef enum Codigo_Operacion{
 } op_code;
 
 typedef struct Posicion_Pokemon{
-	int id_mensaje;
 	int pos_x;
 	int pos_y;
 	int cantidad;

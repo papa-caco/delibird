@@ -66,7 +66,6 @@ typedef struct Mensaje_Gameboy{
 
 typedef struct Posicion_Pokemon{
 	char* nombrePokemon;
-	int id_mensaje;
 	int pos_x;
 	int pos_y;
 	int cantidad;
