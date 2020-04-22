@@ -261,8 +261,6 @@ void *rcv_new_gamecard(int socket_cliente, int *size) {
 	t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
 
 	int offset = 0;
-	int *id_mensaje = msg + offset;
-	offset += sizeof(int);
 	int *pos_x = msg + offset;
 	offset += sizeof(int);
 	int *pos_y = msg + offset;
@@ -272,14 +270,14 @@ void *rcv_new_gamecard(int socket_cliente, int *size) {
 	char *nombrePokemon = msg + offset;
 	int tamano = tamano_recibido(*size);
 
-	posicion->id_mensaje = *id_mensaje;
 	posicion->pos_x = *pos_x;
 	posicion->pos_y = *pos_y;
 	posicion->cantidad = *cantidad;
 
 	log_info(g_logger, "(MSG-BODY= %d | %s | %d | %d | %d -- SIZE = %d Bytes)",
-			posicion->id_mensaje, nombrePokemon , posicion->pos_x, posicion->pos_y,
-			posicion->cantidad, tamano);
+			1111, nombrePokemon , posicion->pos_x, posicion->pos_y,
+			posicion->pos_x, posicion->pos_y, posicion->cantidad, tamano);
+
 	free(posicion);
 	return msg;
 }
@@ -425,7 +423,6 @@ void devolver_posiciones(int socket_cliente, char* pokemon) {
 
 		t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
 		posicion->cantidad = cantidad;
-		posicion->id_mensaje = idMensajeUnico;
 		posicion->pos_x = posicionX;
 		posicion->pos_y = posicionY;
 
@@ -447,7 +444,7 @@ void devolver_posiciones(int socket_cliente, char* pokemon) {
 	printf("La cantidad de posiciones en la lista es %d: \n",
 			cantidadDePosiciones);
 
-	int totalBytes = cantidadDePosiciones * 4 * sizeof(int);
+	int totalBytes = sizeof(int) + cantidadDePosiciones * 3 * sizeof(int);
 
 	printf("La cantidad de bytes son :%d \n", totalBytes);
 
@@ -455,13 +452,13 @@ void devolver_posiciones(int socket_cliente, char* pokemon) {
 
 	int offset = 0;
 
+	memcpy(stream+offset, &(idMensajeUnico), sizeof(int));
+	offset += sizeof(int);
+
 	for (int procesados = 0; procesados < cantidadDePosiciones; procesados++) {
 
 		t_posicion_pokemon* posicionActual = list_get(listaPosiciones,
 				procesados);
-
-		memcpy(stream + offset, &(posicionActual->id_mensaje), sizeof(int));
-		offset += sizeof(int);
 
 		memcpy(stream + offset, &(posicionActual->cantidad), sizeof(int));
 		offset += sizeof(int);
@@ -613,29 +610,6 @@ void devolver_appeared_broker(void *msg, int size, int socket_cliente) {
 
 	free(a_enviar);
 	eliminar_paquete(paquete);
-}
-
-void devolver_localized_broker(int socket_cliente, int size, void *msg) {
-	t_paquete* paquete = malloc(sizeof(t_paquete));
-	paquete->codigo_operacion = LOCALIZED_BROKER;
-	paquete->buffer = malloc(sizeof(t_stream));
-	paquete->buffer->size = size;
-	int long_pokemon = paquete->buffer->size - sizeof(int);
-	void *stream = malloc(paquete->buffer->size);
-	//TODO Buscarle la vuelta para enviar la lista de posiciones con la cantidad correspondiente
-	int offset = 0;
-	memcpy(stream + offset, msg, sizeof(int)); //Tomamos el id_mensaje, pos_x y pos_y Recibido en new_GAMECARD
-	offset += sizeof(int);
-	memcpy(stream + offset, msg + offset, long_pokemon);
-	paquete->buffer->stream = stream;
-
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
-	void* a_enviar = serializar_paquete(paquete, bytes);
-	send(socket_cliente, a_enviar, bytes, 0);
-
-	free(a_enviar);
-	eliminar_paquete(paquete);
-
 }
 
 void devolver_id_mensaje(void *msg, int socket_cliente) {

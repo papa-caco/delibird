@@ -63,7 +63,7 @@ int main(int argcnt, char *argval[])
 		esperar_respuesta(conexion);
 	}
 	else {
-		//TODO Modo SUSCRIBER - ENVIA el HANDSHAKE y espera Recibir MENSAJES del BROKER
+		//Modo SUSCRIBER - ENVIA el HANDSHAKE y espera Recibir MENSAJES del BROKER
 		// Establecemos conexion con PROCESO REMOTO correspondiente
 		// Seleccionamos la direccion IP y el puerto del proceso remoto
 		// -- obtenemos el Socket Cliente "conexion"
@@ -99,9 +99,6 @@ void list_mostrar(t_list* lista)
 	}
 }
 
-//TODO  Modo GAMEBOY SUSCRIBER
-
-//TODO Enviar Handshake
 
 /* TODO WHILE TIEMPO < = TIEMPO LIMITE
  *

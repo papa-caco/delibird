@@ -48,7 +48,6 @@ typedef enum Codigo_Operacion{
 } op_code;
 
 typedef struct Posicion_Pokemon{
-	int id_mensaje;
 	int pos_x;
 	int pos_y;
 	int cantidad;
@@ -115,8 +114,6 @@ void devolver_recepcion_ok(int socket_cliente);
 void devolver_caught_broker(void *msg, int socket_cliente);
 
 void devolver_appeared_broker(void *msg, int size, int socket_cliente);
-
-void devolver_localized_broker(int socket_cliente,int size,void *msg);
 
 void devolver_id_mensaje(void *msg,int socket_cliente);
 

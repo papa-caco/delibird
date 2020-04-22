@@ -796,20 +796,23 @@ t_list* armar_lista(void* stream, int* tamanioTotal) {
 
 	t_list* listaPosiciones = list_create();
 
-	int cantPosiciones = *tamanioTotal / (4 * sizeof(int));
+	int cantPosiciones = (*tamanioTotal - 4)  / (3 * sizeof(int));
 	printf("La cantidad de posiciones del pokemon son: %d \n", cantPosiciones);
 
 	int offset = 0;
 
 	int idMensajeUnico;
+
+	memcpy(&(idMensajeUnico), stream + offset, sizeof(int));
+	offset += sizeof(int);
+
 	int cantidad;
 	int pos_x;
 	int pos_y;
 
-	while (offset < *tamanioTotal) {
+	printf("Id mensaje unico X: %d \n", idMensajeUnico);
 
-		memcpy(&(idMensajeUnico), stream + offset, sizeof(int));
-		offset += sizeof(int);
+	while (offset < *tamanioTotal) {
 
 		memcpy(&(cantidad), stream + offset, sizeof(int));
 		offset += sizeof(int);
@@ -821,12 +824,10 @@ t_list* armar_lista(void* stream, int* tamanioTotal) {
 		offset += sizeof(int);
 
 		t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
-		posicion->id_mensaje = idMensajeUnico;
 		posicion->cantidad = cantidad;
 		posicion->pos_x = pos_x;
 		posicion->pos_y = pos_y;
 
-		printf("Id mensaje unico X: %d \n", posicion->id_mensaje);
 		printf("Posicion X: %d \n", posicion->pos_x);
 		printf("Posicion Y: %d \n", posicion->pos_y);
 		printf("Cantidad: %d \n", posicion->cantidad);
