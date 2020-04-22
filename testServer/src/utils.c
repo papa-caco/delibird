@@ -261,6 +261,8 @@ void *rcv_new_gamecard(int socket_cliente, int *size) {
 	t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
 
 	int offset = 0;
+	int *id_mensaje = msg + offset;
+	offset += sizeof(int);
 	int *pos_x = msg + offset;
 	offset += sizeof(int);
 	int *pos_y = msg + offset;
@@ -275,8 +277,7 @@ void *rcv_new_gamecard(int socket_cliente, int *size) {
 	posicion->cantidad = *cantidad;
 
 	log_info(g_logger, "(MSG-BODY= %d | %s | %d | %d | %d -- SIZE = %d Bytes)",
-			1111, nombrePokemon , posicion->pos_x, posicion->pos_y,
-			posicion->pos_x, posicion->pos_y, posicion->cantidad, tamano);
+			*id_mensaje, nombrePokemon , posicion->pos_x, posicion->pos_y, posicion->cantidad, tamano);
 
 	free(posicion);
 	return msg;
