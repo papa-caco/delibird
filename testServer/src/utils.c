@@ -61,7 +61,7 @@ void serve_client(int* socket) {
 		cod_op = -1;
 	process_request(cod_op, *socket);
 }
-
+// RECIBE todos los TIPOS de MENSAJE QUE MANEJA el GAMEBOY y resuelve segun el CODIGO_OPERACION del MENSAJE
 void process_request(int cod_op, int cliente_fd) {
 	int size;
 	void* msg;

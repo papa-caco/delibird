@@ -1,10 +1,10 @@
 # Prerequisites
 *.d
 
-<<<<<<< HEAD
 # Setting
 .cproject
 .settings/*
+gameboy/.settings/language.settings.xml
 gameboy/.settings*
 gameboy/.cproject
 gameboy/bin/gameboy
@@ -14,14 +14,6 @@ testServer/.cproject
 testServer/bin/testServer
 testServer/bin/log/*.log
 testServer/debug/*.o
-=======
-# Settings
-gameboy/.settings*
-gameboy/.cproject
-gameboy/bin/gameboy
-gameboy/bin/log/gameboy.log
-gameboy/debug/*.o
->>>>>>> 841cc96c9416514ca57b37ae2087157168e62846
 
 # Object files
 *.o

@@ -332,6 +332,12 @@ char *obtengo_cola(t_mensaje_gameboy *msg_gameboy) {
 	return cola;
 }
 
+int get_time_suscripcion(t_mensaje_gameboy *msg_gameboy) {
+	char *tiempo_ingresado = list_get(msg_gameboy->argumentos,0);
+	int tiempo = atoi(tiempo_ingresado);
+	return tiempo;
+}
+
 void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente) {
 	int proceso = msg_gameboy->proceso;
 	int tipo_mensaje = msg_gameboy->tipo_mensaje;

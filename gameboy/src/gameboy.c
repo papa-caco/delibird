@@ -39,14 +39,19 @@ int main(int argcnt, char *argval[])
 		puts("Los Argumentos Ingresados son incorrectos");
 		return EXIT_FAILURE;
 	}
-	// Establecemos conexion con PROCESO REMOTO correspondiente -- obtenemos el Socket Cliente
-	int conexion = crear_conexion(msg_gameboy);
-	// Logueamos conexion con PROCESO REMOTO: Satisfactoria o Fallida.
-	if (conexion < 0) {
-		return EXIT_FAILURE;
-	}
+
+	int conexion;
+
 	// DIVIDIMOS GAMEBOY: MODOS PUBLISHER - SUSCRIBER
 	if (msg_gameboy -> proceso != SUSCRIPTOR) {
+		// Establecemos conexion con PROCESO REMOTO correspondiente
+		// Seleccionamos la direccion IP y el puerto del proceso remoto
+		// -- obtenemos el Socket Cliente "conexion"
+		 conexion = crear_conexion(msg_gameboy);
+		// Logueamos conexion con PROCESO REMOTO: Satisfactoria o Fallida.
+		if (conexion < 0) {
+			return EXIT_FAILURE;
+		}
 		// Modo PUBLISHER - SOLO ENVIA
 		// Empaquetamos mensaje
 		// Serializamos Paquete
@@ -59,12 +64,25 @@ int main(int argcnt, char *argval[])
 	}
 	else {
 		//TODO Modo SUSCRIBER - ENVIA el HANDSHAKE y espera Recibir MENSAJES del BROKER
-		// Las 4 lineas de abajo van de prueba para ir viendo resultados
-		log_info(g_logger,"IP_BROKER = %s", g_config_gameboy->ip_broker);
-		log_info(g_logger,"PUERTO_GAMECARD = %s", g_config_gameboy->puerto_gamecard);
+
+		// Establecemos conexion con PROCESO REMOTO correspondiente
+		// Seleccionamos la direccion IP y el puerto del proceso remoto
+		// -- obtenemos el Socket Cliente "conexion"
+		 /*conexion = crear_conexion(msg_gameboy);
+		// Logueamos conexion con PROCESO REMOTO: Satisfactoria o Fallida.
+		if (conexion < 0) {
+			return EXIT_FAILURE;
+		}*/
+
+		//TODO enviar_msj_suscriptor(msg_gameboy, conexion);
+		int tiempo_suscripcion = get_time_suscripcion(msg_gameboy);
+
+		//TODO recibir_msjs_suscripcion(tiempo_suscripcion,conexion);
+
+		// Las 3 lineas de abajo van de prueba para ir viendo resultados
 		log_info(g_logger,"Proceso = %d", msg_gameboy -> proceso);
 		log_info(g_logger,"Tipo_Mensaje = %d", msg_gameboy -> tipo_mensaje);
-		list_mostrar(msg_gameboy -> argumentos);
+		log_info(g_logger,"tiempo_suscripcion %d", tiempo_suscripcion); //TODO Borrar linea
 	}
 
 	terminar_programa(msg_gameboy, g_config_gameboy, argumentos_consola, g_logger, g_config, conexion);
