@@ -72,6 +72,9 @@ void process_request(int cod_op,t_socket_cliente *socket) {
 	int size;
 	int cliente_fd = socket->cliente_fd;
 	int cant_msg_enviados = socket->cant_msg_enviados;
+
+	int existePokemon;
+	char* nombrePokemon;
 	void* msg;
 
 	switch (cod_op) {
@@ -109,7 +112,20 @@ void process_request(int cod_op,t_socket_cliente *socket) {
 		log_info(g_logger, "(RECEIVING: GAMECARD@GET_POKEMON | SOCKET#: %d)",
 				cliente_fd);
 		msg = rcv_get_gamecard(cliente_fd, &size);
-		devolver_posiciones(cliente_fd, "Pokemon");
+		nombrePokemon = msg + sizeof(int);
+		log_info(g_logger, "POKEMON: %s", nombrePokemon);
+
+		devolver_posiciones(cliente_fd, nombrePokemon, &existePokemon);
+
+		log_info(g_logger, "VALOR ENCONTRO POKEMON: %d", existePokemon);
+
+		//Verifico si encontro o no el archivo
+		if (existePokemon == 0) {
+			devolver_recepcion_fail(cliente_fd,
+					"NO SE ENCONTRO EL ARCHIVO DEL POKEMON");
+		}
+
+		//devolver_posiciones(cliente_fd, "Pokemon");
 		//devolver_localized_broker(cliente_fd, size, msg);
 		// El GameBoy tiene que recibir un mensaje op_code = LOCALIZED_BROKER como respuesta
 		break;
@@ -135,12 +151,13 @@ void process_request(int cod_op,t_socket_cliente *socket) {
 		// El GameBoy recibe RECIBIDO_OK para cerrar la comunicación
 		break;
 	case APPEARED_TEAM:
-		log_info(g_logger, "(RECEIVING: TEAM@APPEARED_POKEMON | Socket#: %d)", cliente_fd);
+		log_info(g_logger, "(RECEIVING: TEAM@APPEARED_POKEMON | Socket#: %d)",
+				cliente_fd);
 		msg = rcv_appeared_team(cliente_fd, &size);
 		devolver_recepcion_ok(cliente_fd);
 		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
 		break;
-	// MENSAJES QUE RECIBE en MODO SUSCRIPTOR
+		// MENSAJES QUE RECIBE en MODO SUSCRIPTOR
 	case SUSCRIP_NEW:
 		msg = rcv_handshake_suscripcion(socket, &size);
 		//if (msg != "error")
@@ -211,6 +228,56 @@ void process_request(int cod_op,t_socket_cliente *socket) {
 	case FIN_SUSCRIPCION:
 		msg = rcv_fin_suscripcion(socket, &size);
 		free(socket);
+		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@NEW_POKEMON | Socket#: %d)",
+				cliente_fd);
+		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
+			log_info(g_logger, "Suscripcion a NEW_POKEMON"); //Borrar
+			msg = malloc(1); //Borrar
+		}
+		break;
+	case SUSCRIP_APPEARED:
+		log_info(g_logger,
+				"(RECEIVING: SUSCRIPTOR@APPEARED_POKEMON | Socket#: %d)",
+				cliente_fd);
+		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
+			log_info(g_logger, "Suscripcion a APPEARED_POKEMON"); //Borrar
+			msg = malloc(1); //Borrar
+		}
+		break;
+	case SUSCRIP_CATCH:
+		log_info(g_logger,
+				"(RECEIVING: SUSCRIPTOR@CATCH_POKEMON | Socket#: %d)",
+				cliente_fd);
+		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
+			log_info(g_logger, "Suscripcion a CATCH_POKEMON"); //Borrar
+			msg = malloc(1); //Borrar
+		}
+		break;
+	case SUSCRIP_CAUGHT:
+		log_info(g_logger,
+				"(RECEIVING: SUSCRIPTOR@CAUGHT_POKEMON | Socket#: %d)",
+				cliente_fd);
+		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
+			log_info(g_logger, "Suscripcion a CAUGHT_POKEMON"); //Borrar
+			msg = malloc(1); //Borrar
+		}
+		break;
+	case SUSCRIP_GET:
+		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@GET_POKEMON | Socket#: %d)",
+				cliente_fd);
+		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
+			log_info(g_logger, "Suscripcion a GET_POKEMON"); //Borrar
+			msg = malloc(1); //Borrar
+		}
+		break;
+	case SUSCRIP_LOCALIZED:
+		log_info(g_logger,
+				"(RECEIVING: SUSCRIPTOR@LOCALIZED_POKEMON | Socket#: %d)",
+				cliente_fd);
+		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
+			log_info(g_logger, "Suscripcion a LOCALIZED_POKEMON"); //Borrar
+			msg = malloc(1); //Borrar
+		}
 		break;
 	case 0:
 		pthread_exit(NULL);
@@ -226,7 +293,8 @@ void* recibir_mensaje(int socket_cliente, int* size) {
 	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
 	buffer = malloc(*size);
 	recv(socket_cliente, buffer, *size, MSG_WAITALL);
-	log_info(g_logger, "Recibi del cliente Socket: %d el mensaje: %s",socket_cliente, buffer);
+	log_info(g_logger, "Recibi del cliente Socket: %d el mensaje: %s",
+			socket_cliente, buffer);
 	return buffer;
 }
 
@@ -314,7 +382,8 @@ void *rcv_new_gamecard(int socket_cliente, int *size) {
 	posicion->cantidad = *cantidad;
 
 	log_info(g_logger, "(MSG-BODY= %d | %s | %d | %d | %d -- SIZE = %d Bytes)",
-			*id_mensaje, nombrePokemon , posicion->pos_x, posicion->pos_y, posicion->cantidad, tamano);
+			*id_mensaje, nombrePokemon, posicion->pos_x, posicion->pos_y,
+			posicion->cantidad, tamano);
 
 	free(posicion);
 	return msg;
@@ -473,125 +542,165 @@ void *rcv_fin_suscripcion(t_socket_cliente *socket, int *size)
 	return msg;
 }
 
-void devolver_posiciones(int socket_cliente, char* pokemon) {
+void devolver_posiciones(int socket_cliente, char* pokemon,
+		int* encontroPokemon) {
+
 	printf("El socket es : %d \n", socket_cliente);
-	FILE* posiciones = fopen("/home/utnso/config/Pokemon", "r");
-	char* line = NULL;
-	size_t len = 0;
-	ssize_t read;
 
-	t_config* config = config_create("/home/utnso/config/gameboy.config");
+	//Por como funciona la funcion strcat, guardo espacio para la ruta completa en el primer argumento
+	char* ruta = malloc(20 + strlen(pokemon) + 1);
 
-	int idMensajeUnico = config_get_int_value(config, "ID_MENSAJE_UNICO");
+	strcpy(ruta, "/home/utnso/config/");
 
-	t_list* listaPosiciones = list_create();
+	//Creo la ruta segun el pokemon
+	char* path = strcat(ruta, pokemon);
 
-	while ((read = getline(&line, &len, posiciones)) != -1) {
-		char** keyValue = malloc(sizeof(char*));
-		keyValue = string_split(line, "=");
+	printf("El path del pokemon es: %s ", path);
 
-		char* key = keyValue[0];
+	FILE* posiciones = fopen(path, "r");
 
-		int cantidad = atoi(keyValue[1]);
+	//Verifico si el archivo existe (fopen devuelve null si no existe)
+	if (posiciones != NULL) {
+		//Asigno 1 haciendo referencia a que encontro el archivo
+		*encontroPokemon = 1;
 
-		char** posiciones = malloc(sizeof(char*));
-		posiciones = string_split(key, "-");
+		char* line = NULL;
+		size_t len = 0;
+		ssize_t read = getline(&line, &len, posiciones);
 
-		int posicionX = atoi(posiciones[0]);
-		int posicionY = atoi(posiciones[1]);
+		//Verifico que si el archivo esta vacio
+		if (read == -1) {
+			devolver_recepcion_fail(socket_cliente,
+					"SE ENCONTRO EL ARCHIVO PERO ESTA VACIO");
+			//Si tiene contenido, hago el flujo de carga
+		} else {
 
-		t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
-		posicion->cantidad = cantidad;
-		posicion->pos_x = posicionX;
-		posicion->pos_y = posicionY;
+			t_config* config = config_create(
+					"/home/utnso/config/gameboy.config");
 
-		printf("Pokemon %s : \n", pokemon);
-		printf("Posicion X: %d \n", posicion->pos_x);
-		printf("Posicion Y: %d \n", posicion->pos_y);
-		printf("Cantidad: %d \n", posicion->cantidad);
-		printf("------------------------------ \n");
+			int idMensajeUnico = config_get_int_value(config,
+					"ID_MENSAJE_UNICO");
 
-		list_add(listaPosiciones, posicion);
+			t_list* listaPosiciones = list_create();
 
-		free(keyValue);
-		free(posiciones);
+			rewind(posiciones);
 
+			while ((read = getline(&line, &len, posiciones)) != -1) {
+				char** keyValue = malloc(sizeof(char*));
+				keyValue = string_split(line, "=");
+
+				char* key = keyValue[0];
+
+				int cantidad = atoi(keyValue[1]);
+
+				char** posiciones = malloc(sizeof(char*));
+				posiciones = string_split(key, "-");
+
+				int posicionX = atoi(posiciones[0]);
+				int posicionY = atoi(posiciones[1]);
+
+				t_posicion_pokemon *posicion = malloc(
+						sizeof(t_posicion_pokemon));
+				posicion->cantidad = cantidad;
+				posicion->pos_x = posicionX;
+				posicion->pos_y = posicionY;
+
+				printf("Pokemon %s : \n", pokemon);
+				printf("Posicion X: %d \n", posicion->pos_x);
+				printf("Posicion Y: %d \n", posicion->pos_y);
+				printf("Cantidad: %d \n", posicion->cantidad);
+				printf("------------------------------ \n");
+
+				list_add(listaPosiciones, posicion);
+
+				free(keyValue);
+				free(posiciones);
+
+			}
+
+			int cantidadDePosiciones = list_size(listaPosiciones);
+
+			printf("La cantidad de posiciones en la lista es %d: \n",
+					cantidadDePosiciones);
+
+			int totalBytes = sizeof(int)
+					+ cantidadDePosiciones * 3 * sizeof(int);
+
+			printf("La cantidad de bytes son :%d \n", totalBytes);
+
+			void* stream = malloc(totalBytes);
+
+			int offset = 0;
+
+			memcpy(stream + offset, &(idMensajeUnico), sizeof(int));
+			offset += sizeof(int);
+
+			for (int procesados = 0; procesados < cantidadDePosiciones;
+					procesados++) {
+
+				t_posicion_pokemon* posicionActual = list_get(listaPosiciones,
+						procesados);
+
+				memcpy(stream + offset, &(posicionActual->cantidad),
+						sizeof(int));
+				offset += sizeof(int);
+
+				memcpy(stream + offset, &(posicionActual->pos_x), sizeof(int));
+				offset += sizeof(int);
+
+				printf("la posicion x es : %d \n", posicionActual->pos_x);
+
+				memcpy(stream + offset, &(posicionActual->pos_y), sizeof(int));
+				offset += sizeof(int);
+
+				printf("la posicion y es : %d \n", posicionActual->pos_y);
+
+				printf("El offset es: %d \n", offset);
+
+			}
+
+			printf("Termine de armar el stream \n");
+
+			t_paquete* paquete = malloc(sizeof(t_paquete));
+			paquete->codigo_operacion = LOCALIZED_BROKER;
+			paquete->buffer = malloc(sizeof(t_stream));
+			paquete->buffer->size = totalBytes;
+			paquete->buffer->stream = malloc(sizeof(paquete->buffer->size));
+			paquete->buffer->stream = stream;
+
+			printf("Termine de armar el paquete \n");
+
+			int totalBuffer = paquete->buffer->size + (2 * (sizeof(int)));
+
+			printf("El total del tamanio de a_enviar es: %d \n", totalBuffer);
+
+			void* a_enviar = serializar_paquete(paquete, totalBuffer);
+
+			printf("Termine de serializar paquete \n");
+
+			send(socket_cliente, a_enviar, totalBuffer, MSG_WAITALL);
+
+			printf("Enviado el paquete \n");
+
+			free(a_enviar);
+
+			printf("Liberado a_enviar \n");
+
+			eliminar_paquete(paquete);
+
+			printf("Liberado el paquete \n");
+
+			list_destroy(listaPosiciones);
+
+			printf("Destruida la lista \n");
+
+			txt_close_file(posiciones);
+		}
+
+	} else {
+		//Asigno 0 haciendo referencia a que no encontro el archivo
+		*encontroPokemon = 0;
 	}
-
-	int cantidadDePosiciones = list_size(listaPosiciones);
-
-	printf("La cantidad de posiciones en la lista es %d: \n",
-			cantidadDePosiciones);
-
-	int totalBytes = sizeof(int) + cantidadDePosiciones * 3 * sizeof(int);
-
-	printf("La cantidad de bytes son :%d \n", totalBytes);
-
-	void* stream = malloc(totalBytes);
-
-	int offset = 0;
-
-	memcpy(stream+offset, &(idMensajeUnico), sizeof(int));
-	offset += sizeof(int);
-
-	for (int procesados = 0; procesados < cantidadDePosiciones; procesados++) {
-
-		t_posicion_pokemon* posicionActual = list_get(listaPosiciones,
-				procesados);
-
-		memcpy(stream + offset, &(posicionActual->cantidad), sizeof(int));
-		offset += sizeof(int);
-
-		memcpy(stream + offset, &(posicionActual->pos_x), sizeof(int));
-		offset += sizeof(int);
-
-		printf("la posicion x es : %d \n", posicionActual->pos_x);
-
-		memcpy(stream + offset, &(posicionActual->pos_y), sizeof(int));
-		offset += sizeof(int);
-
-		printf("la posicion y es : %d \n", posicionActual->pos_y);
-
-		printf("El offset es: %d \n", offset);
-
-	}
-
-	printf("Termine de armar el stream \n");
-
-	t_paquete* paquete = malloc(sizeof(t_paquete));
-	paquete->codigo_operacion = LOCALIZED_BROKER;
-	paquete->buffer = malloc(sizeof(t_stream));
-	paquete->buffer->size = totalBytes;
-	paquete->buffer->stream = malloc(sizeof(paquete->buffer->size));
-	paquete->buffer->stream = stream;
-
-	printf("Termine de armar el paquete \n");
-
-	int totalBuffer = paquete->buffer->size + (2 * (sizeof(int)));
-
-	printf("El total del tamanio de a_enviar es: %d \n", totalBuffer);
-
-	void* a_enviar = serializar_paquete(paquete, totalBuffer);
-
-	printf("Termine de serializar paquete \n");
-
-	send(socket_cliente, a_enviar, totalBuffer, MSG_WAITALL);
-
-	printf("Enviado el paquete \n");
-
-	free(a_enviar);
-
-	printf("Liberado a_enviar \n");
-
-	eliminar_paquete(paquete);
-
-	printf("Liberado el paquete \n");
-
-	list_destroy(listaPosiciones);
-
-	printf("Destruida la lista \n");
-
-	txt_close_file(posiciones);
 
 }
 
@@ -638,6 +747,26 @@ void devolver_recepcion_ok(int socket_cliente) {
 	paquete->buffer->size = strlen(respuesta) + 1;
 	paquete->buffer->stream = malloc(paquete->buffer->size);
 	memcpy(paquete->buffer->stream, respuesta, paquete->buffer->size);
+
+	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	void* a_enviar = serializar_paquete(paquete, bytes);
+	send(socket_cliente, a_enviar, bytes, 0);
+
+	free(a_enviar);
+	eliminar_paquete(paquete);
+}
+
+void devolver_recepcion_fail(int socket_cliente, char* mensajeError) {
+	t_paquete* paquete = malloc(sizeof(t_paquete));
+
+	log_info(g_logger, "(RESPUESTA = %s)", mensajeError);
+
+	paquete->codigo_operacion = MSG_ERROR;
+	paquete->buffer = malloc(sizeof(t_stream));
+	paquete->buffer->size = strlen(mensajeError) + 1;
+	paquete->buffer->stream = malloc(paquete->buffer->size);
+
+	memcpy(paquete->buffer->stream, mensajeError, paquete->buffer->size);
 
 	int bytes = paquete->buffer->size + 2 * sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);

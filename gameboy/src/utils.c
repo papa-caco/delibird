@@ -762,6 +762,10 @@ void esperar_respuesta(int socket_cliente) {
 		a_recibir = recibir_buffer(&size, socket_cliente);
 		log_info(g_logger, "(RECEIVING: %s)", a_recibir);
 	}
+	else if (codigo_operacion == MSG_ERROR) {
+		a_recibir = recibir_buffer(&size, socket_cliente);
+		log_info(g_logger, "(ANSWER_MSG | %s)", a_recibir);
+	}
 	else if (codigo_operacion == APPEARED_BROKER) {
 		a_recibir = recibir_buffer(&size, socket_cliente);
 		size_pokemon = size - 3 * sizeof(int);
