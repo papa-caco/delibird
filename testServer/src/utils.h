@@ -13,6 +13,7 @@
 #include<commons/collections/list.h>
 #include<string.h>
 #include<pthread.h>
+#include<stdbool.h>
 
 #define IP "127.0.0.1"
 #define PUERTO "5001"
@@ -27,6 +28,7 @@ typedef enum Resultado_Caught{
 typedef enum Codigo_Operacion{
 	ID_MENSAJE = 10,
 	MSG_CONFIRMED,
+	MSG_ERROR,
 	NEW_BROKER = 20,
 	APPEARED_BROKER,
 	CATCH_BROKER,
@@ -111,13 +113,15 @@ void devolver_id_mensaje_propio(int socket_cliente);
 
 void devolver_recepcion_ok(int socket_cliente);
 
+void devolver_recepcion_fail(int socket_cliente, char* mensajeError);
+
 void devolver_caught_broker(void *msg, int socket_cliente);
 
 void devolver_appeared_broker(void *msg, int size, int socket_cliente);
 
 void devolver_id_mensaje(void *msg,int socket_cliente);
 
-void devolver_posiciones(int socket_cliente, char* pokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
+void devolver_posiciones(int socket_cliente, char* pokemon, int* encontroPokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
 
 void esperar_cliente(int socket);
 

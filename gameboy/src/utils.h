@@ -30,6 +30,7 @@ typedef enum Codigo_Operacion
 {
 	ID_MENSAJE = 10,
 	MSG_CONFIRMED,
+	MSG_ERROR,
 	NEW_BROKER = 20,
 	APPEARED_BROKER,
 	CATCH_BROKER,
