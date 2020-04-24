@@ -228,56 +228,6 @@ void process_request(int cod_op,t_socket_cliente *socket) {
 	case FIN_SUSCRIPCION:
 		msg = rcv_fin_suscripcion(socket, &size);
 		free(socket);
-		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@NEW_POKEMON | Socket#: %d)",
-				cliente_fd);
-		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
-			log_info(g_logger, "Suscripcion a NEW_POKEMON"); //Borrar
-			msg = malloc(1); //Borrar
-		}
-		break;
-	case SUSCRIP_APPEARED:
-		log_info(g_logger,
-				"(RECEIVING: SUSCRIPTOR@APPEARED_POKEMON | Socket#: %d)",
-				cliente_fd);
-		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
-			log_info(g_logger, "Suscripcion a APPEARED_POKEMON"); //Borrar
-			msg = malloc(1); //Borrar
-		}
-		break;
-	case SUSCRIP_CATCH:
-		log_info(g_logger,
-				"(RECEIVING: SUSCRIPTOR@CATCH_POKEMON | Socket#: %d)",
-				cliente_fd);
-		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
-			log_info(g_logger, "Suscripcion a CATCH_POKEMON"); //Borrar
-			msg = malloc(1); //Borrar
-		}
-		break;
-	case SUSCRIP_CAUGHT:
-		log_info(g_logger,
-				"(RECEIVING: SUSCRIPTOR@CAUGHT_POKEMON | Socket#: %d)",
-				cliente_fd);
-		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
-			log_info(g_logger, "Suscripcion a CAUGHT_POKEMON"); //Borrar
-			msg = malloc(1); //Borrar
-		}
-		break;
-	case SUSCRIP_GET:
-		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@GET_POKEMON | Socket#: %d)",
-				cliente_fd);
-		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
-			log_info(g_logger, "Suscripcion a GET_POKEMON"); //Borrar
-			msg = malloc(1); //Borrar
-		}
-		break;
-	case SUSCRIP_LOCALIZED:
-		log_info(g_logger,
-				"(RECEIVING: SUSCRIPTOR@LOCALIZED_POKEMON | Socket#: %d)",
-				cliente_fd);
-		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
-			log_info(g_logger, "Suscripcion a LOCALIZED_POKEMON"); //Borrar
-			msg = malloc(1); //Borrar
-		}
 		break;
 	case 0:
 		pthread_exit(NULL);
