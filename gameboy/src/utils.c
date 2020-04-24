@@ -141,7 +141,8 @@ bool validar_argumentos(t_mensaje_gameboy *argumentos_mensaje) {
 bool validar_tiempo(t_list *lista) {
 	int resultado;
 	char *tiempo = list_get(lista, 0);
-	if (atoi(tiempo) > 0 && atoi(tiempo) <= 120) {
+	int tiempo_max = g_config_gameboy->time_suscrip_max;
+	if (atoi(tiempo) > 0 && atoi(tiempo) <= tiempo_max) {
 		resultado = 1;
 	} else {
 		resultado = 0;
@@ -236,7 +237,7 @@ int crear_conexion(t_mensaje_gameboy *msg_gameboy) {
 		socket_cliente = conexion;
 	} else {
 		log_info(g_logger,
-				"(CONN_SUCCESS | SOCKET=%d | SENDING_TO: %s@%s_POKEMON | REMOTE_IP=%s | PORT=%s)",
+				"(CONN_SUCCESS | SOCKET# %d | TO: %s@%s_POKEMON | REMOTE_IP=%s | PORT=%s)",
 				socket_cliente, proceso, cola, ip, puerto);
 	}
 	freeaddrinfo(server_info);
@@ -288,7 +289,7 @@ char *obtengo_proceso(t_mensaje_gameboy *msg_gameboy) {
 	char *proceso;
 	switch (cod_proceso) {
 	case SUSCRIPTOR:
-		proceso = "BROKER | MODE=SUSCRIBER";
+		proceso = "BROKER";
 		break;
 	case BROKER:
 		proceso = "BROKER";
@@ -427,7 +428,25 @@ void enviar_msj_suscriptor(t_mensaje_gameboy *msg_gameboy, int socket_cliente)
 
 	free(a_enviar);
 	eliminar_paquete(paquete);
+}
 
+void enviar_fin_suscripcion(t_mensaje_gameboy *msg_gameboy,int cant_mensajes, int socket_cliente)
+{
+	t_tipo_mensaje cola = msg_gameboy->tipo_mensaje;
+	t_paquete *paquete = malloc(sizeof(t_paquete));
+	void *a_enviar;
+	int bytes = 0;
+	paquete->codigo_operacion = FIN_SUSCRIPCION;
+
+	empaquetar_fin_suscripcion(cola, cant_mensajes, paquete);
+
+	bytes = paquete->buffer->size + 2 * (sizeof(int));
+
+	a_enviar = serializar_paquete(paquete, &bytes);
+	send(socket_cliente, a_enviar, bytes, 0);
+
+	free(a_enviar);
+	eliminar_paquete(paquete);
 }
 
 void empaquetar_catch_broker(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete) {
@@ -674,17 +693,37 @@ void empaquetar_appeared_team(t_mensaje_gameboy *msg_gameboy,
 void empaquetar_handshake_suscriptor(t_paquete *paquete)
 {
 	int handshake = HANDSHAKE_SUSCRIPTOR;
+	int id_suscriptor = g_config_gameboy->id_suscriptor;
 	t_stream *buffer = malloc(sizeof(t_stream));
-	buffer->size = sizeof(int);
+	buffer->size = 2 * sizeof(int);
 	void *stream = malloc(buffer->size);
+	int offset = 0;
 
-	memcpy(stream, &(handshake), sizeof(int));
+	memcpy(stream + offset, &(handshake), sizeof(int));
+	offset += sizeof(int);
+	memcpy(stream + offset, &(id_suscriptor), sizeof(int));
 	buffer->data = stream;
 	paquete->buffer = buffer;
-	int tamano = tamano_paquete(paquete);
-
-	log_info(g_logger, "(SENDING Handshake Suscriptor -- SIZE = %d Bytes)", tamano);
 }
+
+void empaquetar_fin_suscripcion(t_tipo_mensaje cola,int cant_mensajes,t_paquete *paquete)
+{
+	int id_suscriptor = g_config_gameboy->id_suscriptor;
+	t_stream *buffer = malloc(sizeof(t_stream));
+	buffer->size = 2 * sizeof(int);
+	void *stream = malloc(buffer->size);
+	int offset = 0;
+
+	memcpy(stream + offset, &(id_suscriptor), sizeof(int));
+	offset += sizeof(int);
+	memcpy(stream + offset, &(cant_mensajes), sizeof(int));
+	buffer->data = stream;
+	paquete->buffer = buffer;
+	char *name_cola = nombre_cola(cola);
+	log_info(g_logger, "(SENDING END_SUSCRIPTION_TO = %s | ID_SUSCRIPTOR = %d | RCVD_MSGs = %d)"
+			, name_cola, id_suscriptor, cant_mensajes);
+}
+
 
 void eliminar_paquete(t_paquete* paquete) {
 	free(paquete->buffer->data);
@@ -721,7 +760,7 @@ void esperar_respuesta(int socket_cliente) {
 
 	if (codigo_operacion == MSG_CONFIRMED) {
 		a_recibir = recibir_buffer(&size, socket_cliente);
-		log_info(g_logger, "(ANSWER_MSG | %s)", a_recibir);
+		log_info(g_logger, "(RECEIVING: %s)", a_recibir);
 	}
 	else if (codigo_operacion == APPEARED_BROKER) {
 		a_recibir = recibir_buffer(&size, socket_cliente);
@@ -736,14 +775,14 @@ void esperar_respuesta(int socket_cliente) {
 		offset += sizeof(int);
 		memcpy(pokemon, a_recibir + offset, size_pokemon);
 		log_info(g_logger,
-				"(ANSWER_MSG | BROKER@APPEARED_POKEMON | ID_MENSAJE = %d | %s | POS_X = %d | POS_Y = %d)",
+				"(RECEIVING: BROKER@APPEARED_POKEMON | ID_MENSAJE = %d | %s | POS_X = %d | POS_Y = %d)",
 				id_mensaje, pokemon, pos_x, pos_y);
 		free(pokemon);
 	}
 	else if (codigo_operacion == ID_MENSAJE) {
 		a_recibir = recibir_buffer(&size, socket_cliente);
 		memcpy(&(id_mensaje), a_recibir, size);
-		log_info(g_logger, "(ANSWER_MSG | ID_MENSAJE = %d)", id_mensaje);
+		log_info(g_logger, "(RECEIVING: ID_MENSAJE = %d)", id_mensaje);
 	}
 	else if (codigo_operacion == CAUGHT_BROKER) {
 		a_recibir = recibir_buffer(&size, socket_cliente);
@@ -752,7 +791,7 @@ void esperar_respuesta(int socket_cliente) {
 		offset += sizeof(int);
 		memcpy(&(resultado), a_recibir + offset, sizeof(t_result_caught));
 		log_info(g_logger,
-				"(ANSWER_MSG | BROKER@CAUGHT_POKEMON | ID_MENSAJE = %d | RESULTADO = %d)", id_mensaje, resultado);
+				"(RECEIVING: BROKER@CAUGHT_POKEMON | ID_MENSAJE = %d | RESULTADO = %d)", id_mensaje, resultado);
 	}
 	else if (codigo_operacion == LOCALIZED_BROKER) {
 		printf("Entro a LOCALIZED BROKER \n");
@@ -847,6 +886,35 @@ int tamano_paquete(t_paquete *paquete) {
 			+ sizeof(paquete->buffer->size);
 }
 
+char *nombre_cola(t_tipo_mensaje cola)
+{
+	char *nombre_cola;
+	switch (cola) {
+		case NEW_POKEMON:
+			nombre_cola = "NEW_POKEMON";
+			break;
+		case APPEARED_POKEMON:
+			nombre_cola = "APPEARED_POKEMON";
+			break;
+		case CATCH_POKEMON:
+			nombre_cola = "CATCH_POKEMON";
+			break;
+		case CAUGHT_POKEMON:
+			nombre_cola = "CAUGHT_POKEMON";
+			break;
+		case GET_POKEMON:
+			nombre_cola = "GET_POKEMON";
+			break;
+		case LOCALIZED_POKEMON:
+			nombre_cola = "LOCALIZED_POKEMON";
+			break;
+		default:
+			nombre_cola = "";
+			break;
+	}
+	return nombre_cola;
+}
+
 void borrar_comienzo(t_list* lista, int cant) {
 	if (lista->elements_count >= cant) {
 		int i = 0;
@@ -882,8 +950,12 @@ void leer_config(char *path) {
 			"COORDENADA_Y-MAX");
 	g_config_gameboy->cant_max_pokemon = config_get_int_value(g_config,
 			"CANT_MAX_POKEMON");
+	g_config_gameboy->time_suscrip_max = config_get_int_value(g_config,
+			"TIME_SUSCRIP_MAX");
 	g_config_gameboy->id_mensaje_unico = config_get_int_value(g_config,
 			"ID_MENSAJE_UNICO");
+	g_config_gameboy->id_suscriptor = config_get_int_value(g_config,
+				"ID_SUSCRIPTOR");
 	g_config_gameboy->ruta_log = config_get_string_value(g_config, "RUTA_LOG");
 }
 
@@ -901,4 +973,14 @@ void terminar_programa(t_mensaje_gameboy *msg_gameboy,
 
 void liberar_conexion(int socket_cliente) {
 	close(socket_cliente);
+}
+
+void list_mostrar(t_list* lista)
+{
+	int i = 0;
+	char* elemento;
+	for(i=0;i<lista->elements_count;i++){
+		elemento = list_get(lista,i);
+		puts(elemento);
+	}
 }

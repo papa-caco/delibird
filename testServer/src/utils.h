@@ -45,6 +45,8 @@ typedef enum Codigo_Operacion{
 	SUSCRIP_CAUGHT,
 	SUSCRIP_GET,
 	SUSCRIP_LOCALIZED,
+	COLA_VACIA,
+	FIN_SUSCRIPCION,
 } op_code;
 
 typedef struct Posicion_Pokemon{
@@ -63,6 +65,11 @@ typedef struct Paquete{
 	t_stream* buffer;
 } t_paquete;
 
+typedef struct socket_cliente{
+	int cliente_fd;
+	int cant_msg_enviados;
+} t_socket_cliente;
+
 
 //-----------------Variables Globales----------------------------
 
@@ -79,9 +86,9 @@ int recibir_operacion(int socket);
 
 void iniciar_servidor(void);
 
-void serve_client(int *socket);
+void serve_client(t_socket_cliente *socket);
 
-void process_request(int cod_op, int cliente_fd);
+void process_request(int cod_op, t_socket_cliente *socket);
 
 void* recibir_mensaje(int socket_cliente, int* size);
 
@@ -103,9 +110,11 @@ void* rcv_appeared_broker(int socket_cliente, int* size);
 
 void* rcv_appeared_team(int socket_cliente, int* size);
 
-int rcv_handshake_suscripcion(int socket_cliente, int *size);
+void *rcv_handshake_suscripcion(t_socket_cliente *socket, int *size);
 
-void* serializar_paquete(t_paquete* paquete, int bytes);
+void *rcv_fin_suscripcion(t_socket_cliente *socket, int *size);
+
+void *serializar_paquete(t_paquete* paquete, int bytes);
 
 void devolver_id_mensaje_propio(int socket_cliente);
 

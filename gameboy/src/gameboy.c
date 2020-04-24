@@ -66,39 +66,30 @@ int main(int argcnt, char *argval[])
 		//Modo SUSCRIBER - ENVIA el HANDSHAKE y espera Recibir MENSAJES del BROKER
 		// Establecemos conexion con PROCESO REMOTO correspondiente
 		// Seleccionamos la direccion IP y el puerto del proceso remoto
-		// -- obtenemos el Socket Cliente "conexion"
+		// Otenemos el Socket Cliente "conexion"
+		int tiempo_suscripcion = get_time_suscripcion(msg_gameboy);
 		conexion = crear_conexion(msg_gameboy);
 		// Logueamos conexion con PROCESO REMOTO: Satisfactoria o Fallida.
 		if (conexion < 0) {
 			return EXIT_FAILURE;
 		}
+		char *cola = nombre_cola(msg_gameboy->tipo_mensaje);
+		log_info(g_logger, "(SENDING SUSCRIPTION_TO = %s | ID_SUSCRIPTOR = %d )", cola, g_config_gameboy->id_suscriptor);
 
-		enviar_msj_suscriptor(msg_gameboy, conexion);
-		int tiempo_suscripcion = get_time_suscripcion(msg_gameboy);
+		int j;
 
-		//TODO recibir_msjs_suscripcion(tiempo_suscripcion,conexion);
-
-		// Las 3 lineas de abajo van de prueba para ir viendo resultados
-		log_info(g_logger,"Proceso = %d", msg_gameboy -> proceso);
-		log_info(g_logger,"Tipo_Mensaje = %d", msg_gameboy -> tipo_mensaje);
-		log_info(g_logger,"tiempo_suscripcion %d", tiempo_suscripcion); //TODO Borrar linea
+		for (j = 0 ; j < tiempo_suscripcion; j++) {
+			enviar_msj_suscriptor(msg_gameboy, conexion);
+			//TODO recibir_msjs_suscripcion(tiempo_suscripcion,conexion);
+			esperar_respuesta(conexion);
+		}
+		enviar_fin_suscripcion(msg_gameboy, j, conexion);
 	}
 
 	terminar_programa(msg_gameboy, g_config_gameboy, argumentos_consola, g_logger, g_config, conexion);
 	// Salida
 	return EXIT_SUCCESS;
 }
-
-void list_mostrar(t_list* lista)
-{
-	int i = 0;
-	char* elemento;
-	for(i=0;i<lista->elements_count;i++){
-		elemento = list_get(lista,i);
-		puts(elemento);
-	}
-}
-
 
 /* TODO WHILE TIEMPO < = TIEMPO LIMITE
  *

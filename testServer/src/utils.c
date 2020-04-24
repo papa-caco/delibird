@@ -50,22 +50,30 @@ void esperar_cliente(int socket_servidor) {
 	int socket_cliente = accept(socket_servidor, (void*) &dir_cliente,
 			&tam_direccion);
 
-	pthread_create(&thread, NULL, (void*) serve_client, &socket_cliente);
-	pthread_detach(thread);
+	t_socket_cliente *socket = malloc(sizeof(t_socket_cliente));
+	socket->cliente_fd = socket_cliente;
+	// inicializa contador de mensajes de algun cliente suscriptor
+	socket->cant_msg_enviados = 0;
 
+	pthread_create(&thread, NULL, (void*) serve_client, socket);
+	pthread_detach(thread);
 }
 
-void serve_client(int* socket) {
+void serve_client(t_socket_cliente *socket) {
 	int cod_op;
+	int cliente_fd = socket->cliente_fd;
 	// OBTENGO el Codigo_Operacion de los  Mensajes que Recibo
-	if (recv(*socket, &cod_op, sizeof(int), MSG_WAITALL) == -1)
+	if (recv(cliente_fd, &cod_op, sizeof(int), MSG_WAITALL) == -1)
 		cod_op = -1;
-	process_request(cod_op, *socket);
+	process_request(cod_op, socket);
 }
 // RECIBE todos los TIPOS de MENSAJE QUE MANEJA el GAMEBOY y resuelve segun el CODIGO_OPERACION del MENSAJE
-void process_request(int cod_op, int cliente_fd) {
+void process_request(int cod_op,t_socket_cliente *socket) {
 	int size;
+	int cliente_fd = socket->cliente_fd;
+	int cant_msg_enviados = socket->cant_msg_enviados;
 	void* msg;
+
 	switch (cod_op) {
 	case ID_MENSAJE:
 		break;
@@ -134,47 +142,76 @@ void process_request(int cod_op, int cliente_fd) {
 		break;
 	// MENSAJES QUE RECIBE en MODO SUSCRIPTOR
 	case SUSCRIP_NEW:
-		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@NEW_POKEMON | Socket#: %d)", cliente_fd);
-		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
-			 log_info(g_logger, "Suscripcion a NEW_POKEMON"); //Borrar
-			 msg = malloc(1); //Borrar
-		 }
-		 break;
-	case SUSCRIP_APPEARED:
-		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@APPEARED_POKEMON | Socket#: %d)", cliente_fd);
-		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
-			 log_info(g_logger, "Suscripcion a APPEARED_POKEMON"); //Borrar
-			 msg = malloc(1);//Borrar
-		 }
-		 break;
+		msg = rcv_handshake_suscripcion(socket, &size);
+		//if (msg != "error")
+			// TODO Buscar mensajes en cola no enviados al suscriptor
+			// Enviar el primer mensaje no_enviado
+
+			devolver_recepcion_ok(cliente_fd);
+			// Incrementar el contador de mensajes enviados
+			cant_msg_enviados += 1;
+			socket->cant_msg_enviados = cant_msg_enviados;
+			serve_client(socket);
+			break;
+		case SUSCRIP_APPEARED:
+		msg = rcv_handshake_suscripcion(socket, &size);
+		// TODO Buscar mensajes en cola no enviados al suscriptor
+		// Enviar el primer mensaje no_enviado
+
+		devolver_recepcion_ok(cliente_fd);
+		// Incrementar el contador de mensajes enviados
+		cant_msg_enviados += 1;
+		socket->cant_msg_enviados = cant_msg_enviados;
+		serve_client(socket);
+		break;
 	case SUSCRIP_CATCH:
-		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@CATCH_POKEMON | Socket#: %d)", cliente_fd);
-		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
-			 log_info(g_logger, "Suscripcion a CATCH_POKEMON"); //Borrar
-			 msg = malloc(1);//Borrar
-		 }
-		 break;
+		msg = rcv_handshake_suscripcion(socket, &size);
+		// TODO Buscar mensajes en cola no enviados al suscriptor
+		// Enviar el primer mensaje no_enviado
+
+		devolver_recepcion_ok(cliente_fd);
+		// Incrementar el contador de mensajes enviados
+		cant_msg_enviados += 1;
+		socket->cant_msg_enviados = cant_msg_enviados;
+		serve_client(socket);
+		break;
 	case SUSCRIP_CAUGHT:
-		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@CAUGHT_POKEMON | Socket#: %d)", cliente_fd);
-		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
-			 log_info(g_logger, "Suscripcion a CAUGHT_POKEMON");//Borrar
-			 msg = malloc(1);//Borrar
-		 }
-		 break;
+		msg = rcv_handshake_suscripcion(socket, &size);
+		// TODO Buscar mensajes en cola no enviados al suscriptor
+		// Enviar el primer mensaje no_enviado
+
+		devolver_recepcion_ok(cliente_fd);
+		// Incrementar el contador de mensajes enviados
+		cant_msg_enviados += 1;
+		socket->cant_msg_enviados = cant_msg_enviados;
+		serve_client(socket);
+		break;
 	case SUSCRIP_GET:
-		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@GET_POKEMON | Socket#: %d)", cliente_fd);
-		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
-			 log_info(g_logger, "Suscripcion a GET_POKEMON"); //Borrar
-			 msg = malloc(1);//Borrar
-		 }
-		 break;
+		msg = rcv_handshake_suscripcion(socket, &size);
+		// TODO Buscar mensajes en cola no enviados al suscriptor
+		// Enviar el primer mensaje no_enviado
+
+		devolver_recepcion_ok(cliente_fd);
+		// Incrementar el contador de mensajes enviados
+		cant_msg_enviados += 1;
+		socket->cant_msg_enviados = cant_msg_enviados;
+		serve_client(socket);
+		break;
 	case SUSCRIP_LOCALIZED:
-		log_info(g_logger, "(RECEIVING: SUSCRIPTOR@LOCALIZED_POKEMON | Socket#: %d)", cliente_fd);
-		if (rcv_handshake_suscripcion(cliente_fd, &size) == HANDSHAKE_SUSCRIPTOR) {
-			 log_info(g_logger, "Suscripcion a LOCALIZED_POKEMON");//Borrar
-			 msg = malloc(1);//Borrar
-		 }
-		 break;
+		msg = rcv_handshake_suscripcion(socket, &size);
+		// TODO Buscar mensajes en cola no enviados al suscriptor
+		// Enviar el primer mensaje no_enviado
+
+		devolver_recepcion_ok(cliente_fd);
+		// Incrementar el contador de mensajes enviados
+		cant_msg_enviados += 1;
+		socket->cant_msg_enviados = cant_msg_enviados;
+		serve_client(socket);
+		break;
+	case FIN_SUSCRIPCION:
+		msg = rcv_fin_suscripcion(socket, &size);
+		free(socket);
+		break;
 	case 0:
 		pthread_exit(NULL);
 	case -1:
@@ -383,16 +420,57 @@ void* rcv_appeared_team(int socket_cliente, int *size) {
 	return msg;
 }
 
-int rcv_handshake_suscripcion(int socket_cliente, int *size) {
-	int handshake;
-	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
-	if (*size != sizeof(int)) {
-		return EXIT_FAILURE;
-	}
-	recv(socket_cliente, &handshake, *size, MSG_WAITALL);
+void *rcv_handshake_suscripcion(t_socket_cliente *socket, int *size)
+{
+	void *msg;
+	int *handshake;
+	int *id_suscriptor;
+	int socket_cliente = socket->cliente_fd;
+	int cant_enviados = socket->cant_msg_enviados;
 
-	log_info(g_logger, "(MSG-BODY= Handshake = %d )", handshake);
-	return handshake;
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	msg = malloc(*size);
+	recv(socket_cliente, msg, *size, MSG_WAITALL);
+	int offset = 0;
+	handshake = msg + offset;
+	if (*handshake == HANDSHAKE_SUSCRIPTOR) {
+		offset += sizeof(int);
+		id_suscriptor = msg + offset;
+		if (cant_enviados == 0) {
+		log_info(g_logger, "(RECEIVED: ID_SUSCRIPTOR = %d | HandShake = %d | Socket# = %d)",
+				*id_suscriptor, *handshake, socket_cliente);
+		}
+		return msg;
+	} else {
+		log_error(g_logger,"WRONG_HANDSHAKE");
+		return "error";
+	}
+}
+
+void *rcv_fin_suscripcion(t_socket_cliente *socket, int *size)
+{
+	void *msg;
+	 int *id_suscriptor;
+	int *cant_recibidos;
+	int socket_cliente = socket->cliente_fd;
+	int cant_enviados = socket->cant_msg_enviados;
+
+	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	msg = malloc(*size);
+	recv(socket_cliente, msg, *size, MSG_WAITALL);
+	int offset = 0;
+	id_suscriptor = msg + offset;
+	offset += sizeof(int);
+	cant_recibidos = msg + offset;
+	if (cant_enviados == *cant_recibidos) {
+		log_info(g_logger, "(END_SUSCRIPTION_OK: ID_SUSCRIPTOR = %d | Socket# = %d | SENT_MSGs = %d)",
+				* id_suscriptor,socket_cliente, cant_enviados);
+	} else {
+		log_error(g_logger, "(END_SUSCRIPTION: ID_SUSCRIPTOR = %d | Socket# = %d | SENT_MSGs = %d != RCVD_MSGs = %d)",
+						* id_suscriptor,socket_cliente, cant_enviados, *cant_recibidos);
+
+	}
+	return msg;
 }
 
 void devolver_posiciones(int socket_cliente, char* pokemon) {
@@ -534,7 +612,7 @@ void* serializar_paquete(t_paquete* paquete, int bytes) {
 void devolver_id_mensaje_propio(int socket_cliente) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	int id_mensaje = ID_MSG_RTA;
-	log_info(g_logger, "(RESPUESTA: ID_MENSAJE= %d)", id_mensaje);
+	log_info(g_logger, "(SENDING: ID_MENSAJE= %d)", id_mensaje);
 
 	paquete->codigo_operacion = ID_MENSAJE;
 	paquete->buffer = malloc(sizeof(t_stream));
@@ -553,7 +631,7 @@ void devolver_id_mensaje_propio(int socket_cliente) {
 void devolver_recepcion_ok(int socket_cliente) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	char *respuesta = RESPUESTA_OK;
-	log_info(g_logger, "(RESPUESTA = %s)", respuesta);
+	log_info(g_logger, "(SENDING: %s)", respuesta);
 
 	paquete->codigo_operacion = MSG_CONFIRMED;
 	paquete->buffer = malloc(sizeof(t_stream));

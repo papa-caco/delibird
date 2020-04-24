@@ -7,11 +7,11 @@
  *
  *
  */
-
 #ifndef UTILS_H_
 #define UTILS_H_
 
 #include<stdio.h>
+#include<stdbool.h>
 #include<stdlib.h>
 #include<signal.h>
 #include<unistd.h>
@@ -48,6 +48,8 @@ typedef enum Codigo_Operacion
 	SUSCRIP_CAUGHT,
 	SUSCRIP_GET,
 	SUSCRIP_LOCALIZED,
+	COLA_VACIA,
+	FIN_SUSCRIPCION,
 } op_code;
 
 typedef enum Proceso{
@@ -91,7 +93,9 @@ typedef struct Configuracion_Gameboy{
 	int coord_x_max;
 	int coord_y_max;
 	int cant_max_pokemon;
+	int time_suscrip_max;
 	int id_mensaje_unico;
+	int id_suscriptor;
 	char *ruta_log;
 } t_config_gameboy;
 
@@ -147,7 +151,9 @@ void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente);
 
 void enviar_msj_suscriptor(t_mensaje_gameboy *msg_gameboy,int socket_cliente);
 
-void recibir_msjs_suscripcion(int tiempo_suscripcion,int socket_cliente);
+void enviar_fin_suscripcion(t_mensaje_gameboy *msg_gameboy,int cant_mensajes, int socket_cliente);
+
+//void recibir_msjs_suscripcion(int tiempo_suscripcion,int socket_cliente);
 
 void esperar_respuesta	(int socket_cliente);
 
@@ -173,6 +179,8 @@ void empaquetar_get_gamecard(t_mensaje_gameboy *msg_gameboy, t_paquete *paquete)
 
 void empaquetar_handshake_suscriptor(t_paquete *paquete);
 
+void empaquetar_fin_suscripcion(t_tipo_mensaje cola,int cant_mensajes,t_paquete *paquete);
+
 void* serializar_paquete(t_paquete* paquete, int *bytes);
 
 t_list* armar_lista(void* stream, int* cantPosiciones);
@@ -187,6 +195,8 @@ void eliminar_paquete(t_paquete* paquete);
 
 int tamano_paquete(t_paquete *paquete);
 
+char *nombre_cola(t_tipo_mensaje cola);
+
 void borrar_comienzo(t_list* lista, int cant);
 
 void iniciar_log(void);
@@ -198,5 +208,7 @@ void terminar_programa(t_mensaje_gameboy *msg_gameboy,
 		t_config *config, int conexion);
 
 void liberar_conexion(int socket_cliente);
+
+void list_mostrar (t_list* lista);
 
 #endif /* UTILS_H_ */
