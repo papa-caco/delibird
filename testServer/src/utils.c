@@ -536,15 +536,13 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 			rewind(posiciones);
 
 			while ((read = getline(&line, &len, posiciones)) != -1) {
-				char** keyValue = malloc(sizeof(char*));
-				keyValue = string_split(line, "=");
+				char** keyValue = string_split(line, "=");
 
 				char* key = keyValue[0];
 
 				int cantidad = atoi(keyValue[1]);
 
-				char** posiciones = malloc(sizeof(char*));
-				posiciones = string_split(key, "-");
+				char** posiciones = string_split(key, "-");
 
 				int posicionX = atoi(posiciones[0]);
 				int posicionY = atoi(posiciones[1]);
@@ -565,6 +563,7 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 
 				free(keyValue);
 				free(posiciones);
+				free(key);
 
 			}
 
@@ -615,7 +614,6 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 			paquete->codigo_operacion = LOCALIZED_BROKER;
 			paquete->buffer = malloc(sizeof(t_stream));
 			paquete->buffer->size = totalBytes;
-			paquete->buffer->stream = malloc(sizeof(paquete->buffer->size));
 			paquete->buffer->stream = stream;
 
 			printf("Termine de armar el paquete \n");
@@ -636,7 +634,9 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 
 			printf("Liberado a_enviar \n");
 
-			eliminar_paquete(paquete);
+			free(stream);
+			free(paquete->buffer);
+			free(paquete);
 
 			printf("Liberado el paquete \n");
 
@@ -645,6 +645,8 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 			printf("Destruida la lista \n");
 
 			txt_close_file(posiciones);
+
+			config_destroy(config);
 		}
 
 	} else {
