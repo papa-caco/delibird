@@ -120,6 +120,8 @@ void *serializar_paquete(t_paquete* paquete, int bytes);
 
 void devolver_id_mensaje_propio(int socket_cliente);
 
+void liberar_listas(char** lista);
+
 void devolver_recepcion_ok(int socket_cliente);
 
 void devolver_recepcion_fail(int socket_cliente, char* mensajeError);

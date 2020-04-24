@@ -505,6 +505,8 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 	//Creo la ruta segun el pokemon
 	char* path = strcat(ruta, pokemon);
 
+	free(ruta);
+
 	printf("El path del pokemon es: %s ", path);
 
 	FILE* posiciones = fopen(path, "r");
@@ -522,6 +524,7 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 		if (read == -1) {
 			devolver_recepcion_fail(socket_cliente,
 					"SE ENCONTRO EL ARCHIVO PERO ESTA VACIO");
+			free(line);
 			//Si tiene contenido, hago el flujo de carga
 		} else {
 
@@ -532,6 +535,8 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 					"ID_MENSAJE_UNICO");
 
 			t_list* listaPosiciones = list_create();
+
+			free(line);
 
 			rewind(posiciones);
 
@@ -561,9 +566,10 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 
 				list_add(listaPosiciones, posicion);
 
-				free(keyValue);
-				free(posiciones);
-				free(key);
+				free(posicion);
+				liberar_listas(keyValue);
+				liberar_listas(posiciones);
+				free(line);
 
 			}
 
@@ -687,6 +693,17 @@ void devolver_id_mensaje_propio(int socket_cliente) {
 
 	free(a_enviar);
 	eliminar_paquete(paquete);
+}
+
+void liberar_listas(char** lista){
+
+	int contador = 0;
+	while(lista[contador] != NULL){
+		free(lista[contador]);
+		contador++;
+	}
+
+	free(lista);
 }
 
 void devolver_recepcion_ok(int socket_cliente) {
