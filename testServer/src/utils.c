@@ -541,17 +541,21 @@ t_handsake_suscript *rcv_fin_suscripcion(t_socket_cliente *socket, int *size)
 void devolver_posiciones(int socket_cliente, char* pokemon,
 		int* encontroPokemon) {
 
-	printf("El socket es : %d \n", socket_cliente);
+	/*printf("El socket es : %d \n", socket_cliente);
+
+	char *dir="/home/utnso/config/";
 
 	//Por como funciona la funcion strcat, guardo espacio para la ruta completa en el primer argumento
-	char* ruta = malloc(20 + strlen(pokemon) + 1);
+	char* ruta = malloc(strlen(dir) + strlen(pokemon) + 2);
 
-	strcpy(ruta, "/home/utnso/config/");
+	strcpy(ruta, dir);
 
 	//Creo la ruta segun el pokemon
 	char* path = strcat(ruta, pokemon);
 
-	free(ruta);
+	free(ruta);*/
+
+	char *path = "/home/utnso/config/Pepito";
 
 	printf("El path del pokemon es: %s ", path);
 
