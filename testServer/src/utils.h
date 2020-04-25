@@ -189,6 +189,8 @@ void enviar_msjs_new(int socket_cliente,int  id_mensaje);
 
 void esperar_cliente(int socket);
 
+void liberar_lista_posiciones(t_list* list);
+
 int tamano_recibido(int bytes);
 
 void eliminar_paquete (t_paquete *paquete);
