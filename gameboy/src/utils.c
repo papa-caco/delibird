@@ -872,6 +872,8 @@ t_list* armar_lista(void* stream, int* tamanioTotal) {
 
 		list_add(listaPosiciones, posicion);
 
+		free(posicion);
+
 	}
 
 	return listaPosiciones;

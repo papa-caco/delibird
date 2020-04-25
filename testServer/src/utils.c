@@ -551,6 +551,8 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 	//Creo la ruta segun el pokemon
 	char* path = strcat(ruta, pokemon);
 
+	free(ruta);
+
 	printf("El path del pokemon es: %s ", path);
 
 	FILE* posiciones = fopen(path, "r");
@@ -568,6 +570,7 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 		if (read == -1) {
 			devolver_recepcion_fail(socket_cliente,
 					"SE ENCONTRO EL ARCHIVO PERO ESTA VACIO");
+			free(line);
 			//Si tiene contenido, hago el flujo de carga
 		} else {
 
@@ -579,18 +582,18 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 
 			t_list* listaPosiciones = list_create();
 
+			free(line);
+
 			rewind(posiciones);
 
 			while ((read = getline(&line, &len, posiciones)) != -1) {
-				char** keyValue = malloc(sizeof(char*));
-				keyValue = string_split(line, "=");
+				char** keyValue = string_split(line, "=");
 
 				char* key = keyValue[0];
 
 				int cantidad = atoi(keyValue[1]);
 
-				char** posiciones = malloc(sizeof(char*));
-				posiciones = string_split(key, "-");
+				char** posiciones = string_split(key, "-");
 
 				int posicionX = atoi(posiciones[0]);
 				int posicionY = atoi(posiciones[1]);
@@ -609,8 +612,10 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 
 				list_add(listaPosiciones, posicion);
 
-				free(keyValue);
-				free(posiciones);
+				free(posicion);
+				liberar_listas(keyValue);
+				liberar_listas(posiciones);
+				free(line);
 
 			}
 
@@ -661,7 +666,6 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 			paquete->codigo_operacion = LOCALIZED_BROKER;
 			paquete->buffer = malloc(sizeof(t_stream));
 			paquete->buffer->size = totalBytes;
-			paquete->buffer->stream = malloc(sizeof(paquete->buffer->size));
 			paquete->buffer->stream = stream;
 
 			printf("Termine de armar el paquete \n");
@@ -682,7 +686,9 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 
 			printf("Liberado a_enviar \n");
 
-			eliminar_paquete(paquete);
+			free(stream);
+			free(paquete->buffer);
+			free(paquete);
 
 			printf("Liberado el paquete \n");
 
@@ -691,6 +697,8 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 			printf("Destruida la lista \n");
 
 			txt_close_file(posiciones);
+
+			config_destroy(config);
 		}
 
 	} else {
@@ -731,6 +739,17 @@ void devolver_id_mensaje_propio(int socket_cliente) {
 
 	free(a_enviar);
 	eliminar_paquete(paquete);
+}
+
+void liberar_listas(char** lista){
+
+	int contador = 0;
+	while(lista[contador] != NULL){
+		free(lista[contador]);
+		contador++;
+	}
+
+	free(lista);
 }
 
 void devolver_recepcion_ok(int socket_cliente) {
