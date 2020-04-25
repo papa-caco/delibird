@@ -98,8 +98,8 @@ int main(int argcnt, char *argval[])
 			time(&tiempo_2);
 			time_loop = tiempo_2 - tiempo_1;
 		}
+		enviar_fin_suscripcion(msg_gameboy, msjs_recibidos, conexion);
 	}
-	enviar_fin_suscripcion(msg_gameboy, msjs_recibidos, conexion);
 	terminar_programa(msg_gameboy, g_config_gameboy, argumentos_consola, g_logger, g_config, conexion);
 	// Salida
 	return EXIT_SUCCESS;
