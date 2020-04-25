@@ -68,13 +68,12 @@ void serve_client(t_socket_cliente *socket) {
 	}
 	if (cod_op < SUSCRIP_NEW) {
 		process_request(cod_op, socket);
-	}
-	else {
+	} else {
 		process_suscript(cod_op, socket);
 	}
 }
 // RECIBE todos los TIPOS de MENSAJE QUE MANEJA el GAMEBOY y resuelve segun el CODIGO_OPERACION del MENSAJE
-void process_request(op_code cod_op,t_socket_cliente *socket) {
+void process_request(op_code cod_op, t_socket_cliente *socket) {
 	int size;
 	int cliente_fd = socket->cliente_fd;
 
@@ -135,7 +134,8 @@ void process_request(op_code cod_op,t_socket_cliente *socket) {
 		// El GameBoy tiene que recibir un mensaje op_code = LOCALIZED_BROKER como respuesta
 		break;
 	case NEW_BROKER:
-		log_info(g_logger, "(RECEIVING: BROKER@NEW_POKEMON | SOCKET#: %d)",	cliente_fd);
+		log_info(g_logger, "(RECEIVING: BROKER@NEW_POKEMON | SOCKET#: %d)",
+				cliente_fd);
 		msg = rcv_new_broker(cliente_fd, &size);
 		devolver_recepcion_ok(cliente_fd);
 		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
@@ -171,7 +171,7 @@ void process_request(op_code cod_op,t_socket_cliente *socket) {
 }
 
 // MENSAJES QUE RECIBE en MODO SUSCRIPTOR
-void process_suscript(op_code cod_op,t_socket_cliente *socket) {
+void process_suscript(op_code cod_op, t_socket_cliente *socket) {
 	int size;
 	int id_suscriptor;
 	int cliente_fd = socket->cliente_fd;
@@ -185,14 +185,15 @@ void process_suscript(op_code cod_op,t_socket_cliente *socket) {
 			exit(EXIT_FAILURE);
 		}
 		if (cant_msg_enviados == 0) {
-			log_info(g_logger, "(SUSCRIPT_RECEIVED: NEW_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",handshake->id_suscriptor, cliente_fd);
+			log_info(g_logger,
+					"(SUSCRIPT_RECEIVED: NEW_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",
+					handshake->id_suscriptor, cliente_fd);
 		}
 		// TODO Buscar mensajes en cola no enviados al suscriptor
 		if (cant_msg_enviados < 1000) {
 			enviar_msjs_new(cliente_fd, cant_msg_enviados);
-			cant_msg_enviados ++;
-		}
-		else {
+			cant_msg_enviados++;
+		} else {
 			enviar_cola_vacia(cliente_fd, id_suscriptor);
 		}
 		socket->cant_msg_enviados = cant_msg_enviados;
@@ -205,7 +206,9 @@ void process_suscript(op_code cod_op,t_socket_cliente *socket) {
 			exit(EXIT_FAILURE);
 		}
 		if (cant_msg_enviados == 0) {
-			log_info(g_logger, "(SUSCRIPT_RECEIVED: APPEARED_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",handshake->id_suscriptor, cliente_fd);
+			log_info(g_logger,
+					"(SUSCRIPT_RECEIVED: APPEARED_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",
+					handshake->id_suscriptor, cliente_fd);
 		}
 		// TODO Buscar mensajes en cola no enviados al suscriptor
 		// Enviar el primer mensaje no_enviado
@@ -220,7 +223,9 @@ void process_suscript(op_code cod_op,t_socket_cliente *socket) {
 			exit(EXIT_FAILURE);
 		}
 		if (cant_msg_enviados == 0) {
-			log_info(g_logger, "(SUSCRIPT_RECEIVED: CATCH_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",handshake->id_suscriptor, cliente_fd);
+			log_info(g_logger,
+					"(SUSCRIPT_RECEIVED: CATCH_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",
+					handshake->id_suscriptor, cliente_fd);
 		}
 		// TODO Buscar mensajes en cola no enviados al suscriptor
 		// Enviar el primer mensaje no_enviado
@@ -235,7 +240,9 @@ void process_suscript(op_code cod_op,t_socket_cliente *socket) {
 			exit(EXIT_FAILURE);
 		}
 		if (cant_msg_enviados == 0) {
-			log_info(g_logger, "(SUSCRIPT_RECEIVED: CAUGHT_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",handshake->id_suscriptor, cliente_fd);
+			log_info(g_logger,
+					"(SUSCRIPT_RECEIVED: CAUGHT_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",
+					handshake->id_suscriptor, cliente_fd);
 		}
 		// TODO Buscar mensajes en cola no enviados al suscriptor
 		// Enviar el primer mensaje no_enviado
@@ -250,13 +257,14 @@ void process_suscript(op_code cod_op,t_socket_cliente *socket) {
 			exit(EXIT_FAILURE);
 		}
 		if (cant_msg_enviados == 0) {
-			log_info(g_logger, "(SUSCRIPT_RECEIVED: GET_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",handshake->id_suscriptor, cliente_fd);
+			log_info(g_logger,
+					"(SUSCRIPT_RECEIVED: GET_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",
+					handshake->id_suscriptor, cliente_fd);
 		}
 		if (cant_msg_enviados < 100000) {
 			enviar_msjs_get(cliente_fd, cant_msg_enviados);
-			cant_msg_enviados ++;
-		}
-		else {
+			cant_msg_enviados++;
+		} else {
 			enviar_cola_vacia(cliente_fd, id_suscriptor);
 		}
 		socket->cant_msg_enviados = cant_msg_enviados;
@@ -269,7 +277,9 @@ void process_suscript(op_code cod_op,t_socket_cliente *socket) {
 			exit(EXIT_FAILURE);
 		}
 		if (cant_msg_enviados == 0) {
-			log_info(g_logger, "(SUSCRIPT_RECEIVED: LOCALIZED_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",handshake->id_suscriptor, cliente_fd);
+			log_info(g_logger,
+					"(SUSCRIPT_RECEIVED: LOCALIZED_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",
+					handshake->id_suscriptor, cliente_fd);
 		}
 		// TODO Buscar mensajes en cola no enviados al suscriptor
 		// Enviar el primer mensaje no_enviado
@@ -493,8 +503,8 @@ void* rcv_appeared_team(int socket_cliente, int *size) {
 	return msg;
 }
 
-t_handsake_suscript *rcv_handshake_suscripcion(t_socket_cliente *socket, int *size)
-{
+t_handsake_suscript *rcv_handshake_suscripcion(t_socket_cliente *socket,
+		int *size) {
 	t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
 	int socket_cliente = socket->cliente_fd;
 	void *msg;
@@ -511,8 +521,7 @@ t_handsake_suscript *rcv_handshake_suscripcion(t_socket_cliente *socket, int *si
 	return handshake;
 }
 
-t_handsake_suscript *rcv_fin_suscripcion(t_socket_cliente *socket, int *size)
-{
+t_handsake_suscript *rcv_fin_suscripcion(t_socket_cliente *socket, int *size) {
 	t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
 	void *msg;
 	int socket_cliente = socket->cliente_fd;
@@ -522,16 +531,19 @@ t_handsake_suscript *rcv_fin_suscripcion(t_socket_cliente *socket, int *size)
 	msg = malloc(*size);
 	recv(socket_cliente, msg, *size, MSG_WAITALL);
 	int offset = 0;
-	memcpy(&(handshake->id_suscriptor), msg + offset,sizeof(int));
+	memcpy(&(handshake->id_suscriptor), msg + offset, sizeof(int));
 	offset += sizeof(int);
 	memcpy(&(handshake->msjs_recibidos), msg + offset, sizeof(int));
 	handshake->valor_handshake = HANDSHAKE_SUSCRIPTOR;
 	if (cant_enviados == handshake->msjs_recibidos) {
-		log_info(g_logger, "(END_SUSCRIPTION_OK: ID_SUSCRIPTOR = %d | Socket# = %d | SENT_MSGs = %d)",
+		log_info(g_logger,
+				"(END_SUSCRIPTION_OK: ID_SUSCRIPTOR = %d | Socket# = %d | SENT_MSGs = %d)",
 				handshake->id_suscriptor, socket_cliente, cant_enviados);
 	} else {
-		log_error(g_logger, "(END_SUSCRIPTION: ID_SUSCRIPTOR = %d | Socket# = %d | SENT_MSGs = %d != RCVD_MSGs = %d)",
-				handshake->id_suscriptor,socket_cliente, cant_enviados, handshake->msjs_recibidos);
+		log_error(g_logger,
+				"(END_SUSCRIPTION: ID_SUSCRIPTOR = %d | Socket# = %d | SENT_MSGs = %d != RCVD_MSGs = %d)",
+				handshake->id_suscriptor, socket_cliente, cant_enviados,
+				handshake->msjs_recibidos);
 
 	}
 	free(msg);
@@ -551,9 +563,9 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 	//Creo la ruta segun el pokemon
 	char* path = strcat(ruta, pokemon);
 
-	free(ruta);
+	printf("El tamanio del path es: %d \n", strlen(path));
 
-	printf("El path del pokemon es: %s ", path);
+	printf("El path del pokemon es: %s \n", path);
 
 	FILE* posiciones = fopen(path, "r");
 
@@ -574,6 +586,7 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 			//Si tiene contenido, hago el flujo de carga
 		} else {
 
+			printf("Se encontró el archivo con contenido\n");
 			t_config* config = config_create(
 					"/home/utnso/config/gameboy.config");
 
@@ -582,12 +595,14 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 
 			t_list* listaPosiciones = list_create();
 
-			free(line);
-
 			rewind(posiciones);
 
 			while ((read = getline(&line, &len, posiciones)) != -1) {
+				printf("Entro a leer lista\n");
+
 				char** keyValue = string_split(line, "=");
+
+				printf("Luego de primer split\n");
 
 				char* key = keyValue[0];
 
@@ -595,11 +610,14 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 
 				char** posiciones = string_split(key, "-");
 
+				printf("Luego de segundo split\n");
+
 				int posicionX = atoi(posiciones[0]);
 				int posicionY = atoi(posiciones[1]);
 
 				t_posicion_pokemon *posicion = malloc(
 						sizeof(t_posicion_pokemon));
+
 				posicion->cantidad = cantidad;
 				posicion->pos_x = posicionX;
 				posicion->pos_y = posicionY;
@@ -612,12 +630,11 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 
 				list_add(listaPosiciones, posicion);
 
-				free(posicion);
 				liberar_listas(keyValue);
 				liberar_listas(posiciones);
-				free(line);
 
 			}
+			printf("Salgo de leer lista\n");
 
 			int cantidadDePosiciones = list_size(listaPosiciones);
 
@@ -635,6 +652,8 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 
 			memcpy(stream + offset, &(idMensajeUnico), sizeof(int));
 			offset += sizeof(int);
+
+			printf("Comienzo a serializar\n");
 
 			for (int procesados = 0; procesados < cantidadDePosiciones;
 					procesados++) {
@@ -692,7 +711,8 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 
 			printf("Liberado el paquete \n");
 
-			list_destroy(listaPosiciones);
+
+			liberar_lista_posiciones(listaPosiciones);
 
 			printf("Destruida la lista \n");
 
@@ -701,10 +721,14 @@ void devolver_posiciones(int socket_cliente, char* pokemon,
 			config_destroy(config);
 		}
 
+		free(line);
+
 	} else {
 		//Asigno 0 haciendo referencia a que no encontro el archivo
 		*encontroPokemon = 0;
 	}
+
+	free(ruta);
 
 }
 
@@ -741,10 +765,18 @@ void devolver_id_mensaje_propio(int socket_cliente) {
 	eliminar_paquete(paquete);
 }
 
-void liberar_listas(char** lista){
+void liberar_lista_posiciones(t_list* lista){
+	for(int i = 0; i< list_size(lista); i++){
+		free(list_get(lista,i));
+	}
+
+	list_destroy(lista);
+}
+
+void liberar_listas(char** lista) {
 
 	int contador = 0;
-	while(lista[contador] != NULL){
+	while (lista[contador] != NULL) {
 		free(lista[contador]);
 		contador++;
 	}
@@ -852,10 +884,10 @@ void devolver_id_mensaje(void *msg, int socket_cliente) {
 	eliminar_paquete(paquete);
 }
 
-void enviar_cola_vacia(int socket_cliente, int id_suscriptor)
-{
+void enviar_cola_vacia(int socket_cliente, int id_suscriptor) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
-	log_info(g_logger, "(SENDING: EMPTY_QUEUE | ID_SUSCRIPTOR = %d)", id_suscriptor);
+	log_info(g_logger, "(SENDING: EMPTY_QUEUE | ID_SUSCRIPTOR = %d)",
+			id_suscriptor);
 	paquete->codigo_operacion = COLA_VACIA;
 	paquete->buffer = malloc(sizeof(t_stream));
 	paquete->buffer->size = sizeof(int);
@@ -868,7 +900,7 @@ void enviar_cola_vacia(int socket_cliente, int id_suscriptor)
 	eliminar_paquete(paquete);
 }
 
-void enviar_msjs_get(int socket_cliente,int  id_mensaje) {
+void enviar_msjs_get(int socket_cliente, int id_mensaje) {
 	t_msg_get *msg_get = malloc(sizeof(t_msg_get));
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	msg_get->id_mensaje = id_mensaje + 1000;
@@ -876,16 +908,18 @@ void enviar_msjs_get(int socket_cliente,int  id_mensaje) {
 	paquete->codigo_operacion = GET_GAMECARD;
 	paquete->buffer = malloc(sizeof(t_stream));
 	int size_pokemon = strlen(msg_get->pokemon) + 1;
-	paquete->buffer->size = sizeof(int)+ size_pokemon;
+	paquete->buffer->size = sizeof(int) + size_pokemon;
 	paquete->buffer->stream = malloc(paquete->buffer->size);
 	int offset = 0;
-	memcpy(paquete->buffer->stream + offset, &(msg_get->id_mensaje), sizeof(int));
+	memcpy(paquete->buffer->stream + offset, &(msg_get->id_mensaje),
+			sizeof(int));
 	offset += sizeof(int);
 	memcpy(paquete->buffer->stream + offset, msg_get->pokemon, size_pokemon);
 
 	int bytes = paquete->buffer->size + 2 * sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);
-	log_info(g_logger, "(SENDING: GET_POKEMON | Socket# = %d | ID_MENSAJE = %d | Pokemon = %s)",
+	log_info(g_logger,
+			"(SENDING: GET_POKEMON | Socket# = %d | ID_MENSAJE = %d | Pokemon = %s)",
 			socket_cliente, msg_get->id_mensaje, msg_get->pokemon);
 	send(socket_cliente, a_enviar, bytes, 0);
 	free(msg_get);
@@ -893,7 +927,7 @@ void enviar_msjs_get(int socket_cliente,int  id_mensaje) {
 	eliminar_paquete(paquete);
 }
 
-void enviar_msjs_new(int socket_cliente,int  id_mensaje) {
+void enviar_msjs_new(int socket_cliente, int id_mensaje) {
 	t_msg_new *msg_new = malloc(sizeof(t_msg_new));
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	msg_new->id_mensaje = id_mensaje + 1100;
@@ -904,10 +938,11 @@ void enviar_msjs_new(int socket_cliente,int  id_mensaje) {
 	paquete->codigo_operacion = NEW_GAMECARD;
 	paquete->buffer = malloc(sizeof(t_stream));
 	int size_pokemon = strlen(msg_new->pokemon) + 1;
-	paquete->buffer->size = 4 * sizeof(int)+ size_pokemon;
+	paquete->buffer->size = 4 * sizeof(int) + size_pokemon;
 	paquete->buffer->stream = malloc(paquete->buffer->size);
 	int offset = 0;
-	memcpy(paquete->buffer->stream + offset, &(msg_new->id_mensaje), sizeof(int));
+	memcpy(paquete->buffer->stream + offset, &(msg_new->id_mensaje),
+			sizeof(int));
 	offset += sizeof(int);
 	memcpy(paquete->buffer->stream + offset, &(msg_new->pos_x), sizeof(int));
 	offset += sizeof(int);
@@ -918,8 +953,10 @@ void enviar_msjs_new(int socket_cliente,int  id_mensaje) {
 	memcpy(paquete->buffer->stream + offset, msg_new->pokemon, size_pokemon);
 	int bytes = paquete->buffer->size + 2 * sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);
-	log_info(g_logger, "(SENDING: NEW_POKEMON | Socket#: %d|ID_MSJ: = %d|Pokemon: %s|POS_X: %d|POS_Y: %d|QTY: %d)",
-			socket_cliente, msg_new->id_mensaje, msg_new->pokemon, msg_new->pos_x, msg_new->pos_y, msg_new->cantidad);
+	log_info(g_logger,
+			"(SENDING: NEW_POKEMON | Socket#: %d|ID_MSJ: = %d|Pokemon: %s|POS_X: %d|POS_Y: %d|QTY: %d)",
+			socket_cliente, msg_new->id_mensaje, msg_new->pokemon,
+			msg_new->pos_x, msg_new->pos_y, msg_new->cantidad);
 	send(socket_cliente, a_enviar, bytes, 0);
 	free(msg_new);
 	free(a_enviar);
