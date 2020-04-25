@@ -41,7 +41,11 @@ int main(int argcnt, char *argval[])
 	}
 
 	int conexion;
-
+	int msjs_recibidos = 0;
+	time_t tiempo_1;
+	time_t tiempo_2;
+	int tiempo_suscripcion = 0;
+	int time_loop = 0;
 	// DIVIDIMOS GAMEBOY: MODOS PUBLISHER - SUSCRIBER
 	if (msg_gameboy -> proceso != SUSCRIPTOR) {
 		// Modo PUBLISHER
@@ -67,35 +71,34 @@ int main(int argcnt, char *argval[])
 		// Establecemos conexion con PROCESO REMOTO correspondiente
 		// Seleccionamos la direccion IP y el puerto del proceso remoto
 		// Otenemos el Socket Cliente "conexion"
-		int tiempo_suscripcion = get_time_suscripcion(msg_gameboy);
+		tiempo_suscripcion = get_time_suscripcion(msg_gameboy);
+
 		conexion = crear_conexion(msg_gameboy);
 		// Logueamos conexion con PROCESO REMOTO: Satisfactoria o Fallida.
 		if (conexion < 0) {
 			return EXIT_FAILURE;
 		}
 		char *cola = nombre_cola(msg_gameboy->tipo_mensaje);
-		log_info(g_logger, "(SENDING SUSCRIPTION_TO = %s | ID_SUSCRIPTOR = %d )", cola, g_config_gameboy->id_suscriptor);
-
-		int j;
-
-		for (j = 0 ; j < tiempo_suscripcion; j++) {
-			enviar_msj_suscriptor(msg_gameboy, conexion);
-			//TODO recibir_msjs_suscripcion(tiempo_suscripcion,conexion);
-			esperar_respuesta(conexion);
+		log_info(g_logger, "(SENDING SUSCRIPTION_TO = %s | ID_SUSCRIPTOR = %d )",cola, g_config_gameboy->id_suscriptor);
+		enviar_msj_suscriptor(msg_gameboy, conexion);
+		time(&tiempo_1);
+		op_code cod_oper_mensaje;
+		while (time_loop < tiempo_suscripcion && cod_oper_mensaje != COLA_VACIA) {
+			cod_oper_mensaje = recibir_op_code(conexion);
+			if (cod_oper_mensaje != COLA_VACIA){
+				respuesta_publisher(cod_oper_mensaje, conexion);
+				msjs_recibidos ++;
+				enviar_msj_suscriptor(msg_gameboy, conexion);
+			}
+			else {
+				respuesta_publisher(cod_oper_mensaje, conexion);
+			}
+			time(&tiempo_2);
+			time_loop = tiempo_2 - tiempo_1;
 		}
-		enviar_fin_suscripcion(msg_gameboy, j, conexion);
 	}
-
+	enviar_fin_suscripcion(msg_gameboy, msjs_recibidos, conexion);
 	terminar_programa(msg_gameboy, g_config_gameboy, argumentos_consola, g_logger, g_config, conexion);
 	// Salida
 	return EXIT_SUCCESS;
 }
-
-/* TODO WHILE TIEMPO < = TIEMPO LIMITE
- *
- * Loguear Mensajes Recibidos
- *
- */
-
-// FIN TIEMPO LIMITE
-

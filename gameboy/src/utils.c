@@ -692,18 +692,22 @@ void empaquetar_appeared_team(t_mensaje_gameboy *msg_gameboy,
 
 void empaquetar_handshake_suscriptor(t_paquete *paquete)
 {
-	int handshake = HANDSHAKE_SUSCRIPTOR;
-	int id_suscriptor = g_config_gameboy->id_suscriptor;
+	t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
+
+	handshake->id_suscriptor = g_config_gameboy->id_suscriptor;
+	handshake->valor_handshake = HANDSHAKE_SUSCRIPTOR;
+	handshake->msjs_recibidos = 0;
 	t_stream *buffer = malloc(sizeof(t_stream));
 	buffer->size = 2 * sizeof(int);
 	void *stream = malloc(buffer->size);
 	int offset = 0;
 
-	memcpy(stream + offset, &(handshake), sizeof(int));
+	memcpy(stream + offset, &(handshake->valor_handshake), sizeof(int));
 	offset += sizeof(int);
-	memcpy(stream + offset, &(id_suscriptor), sizeof(int));
+	memcpy(stream + offset, &(handshake->id_suscriptor), sizeof(int));
 	buffer->data = stream;
 	paquete->buffer = buffer;
+	free(handshake);
 }
 
 void empaquetar_fin_suscripcion(t_tipo_mensaje cola,int cant_mensajes,t_paquete *paquete)
@@ -810,17 +814,6 @@ void esperar_respuesta(int socket_cliente) {
 	free(a_recibir);
 }
 
-char* recibir_mensaje(int socket_cliente) {
-	//printf("codigo operacion = %d \n", recibir_op_code(socket_cliente));
-	int size;
-	void* a_recibir = recibir_buffer(&size, socket_cliente);
-	char* mensaje = malloc(size);
-
-	memcpy(mensaje, a_recibir, size);
-	free(a_recibir);
-	return mensaje;
-}
-
 int recibir_op_code(int socket_cliente) {
 	int code;
 	recv(socket_cliente, &code, sizeof(int), MSG_WAITALL);
@@ -883,6 +876,102 @@ t_list* armar_lista(void* stream, int* tamanioTotal) {
 
 	return listaPosiciones;
 
+}
+
+void respuesta_publisher(op_code codigo_operacion, int socket_cliente) {
+	switch(codigo_operacion){
+	case COLA_VACIA:
+		rcv_msg_cola_vacia(socket_cliente);
+		break;
+	case NEW_GAMECARD:
+		rcv_msg_new(socket_cliente);
+		break;
+	case CATCH_GAMECARD:
+
+		break;
+	case GET_GAMECARD:
+		rcv_msg_get(socket_cliente);
+		break;
+	case APPEARED_TEAM:
+
+		break;
+	case CAUGHT_TEAM:
+
+		break;
+	case LOCALIZED_TEAM:
+
+		break;
+	case 0:
+		pthread_exit(NULL);
+	case -1:
+		pthread_exit(NULL);
+	}
+}
+
+void rcv_msg_cola_vacia(int socket_cliente)
+{
+	int size;
+	void *a_recibir = recibir_buffer(&size, socket_cliente);
+	int id_suscriptor;
+	memcpy(&id_suscriptor, a_recibir, size);
+	free(a_recibir);
+	if (id_suscriptor != g_config_gameboy->id_suscriptor) {
+		log_error(g_logger,"ERROR_MSG EMPTY_QUEUE");
+	}
+	log_info(g_logger,"(RECEIVING: EMPTY_QUEUE | ID_SUSCRIPTOR = %d )", id_suscriptor);
+}
+
+void rcv_msg_get(int socket_cliente)
+{
+	int size;
+	void *a_recibir = recibir_buffer(&size, socket_cliente);
+	t_msg_get *msg_get = malloc(sizeof(t_msg_get));
+	int offset = 0;
+	int size_pokemon = size - sizeof(int);
+	void *pokemon = malloc(size_pokemon);
+	memcpy(&(msg_get->id_mensaje), a_recibir + offset, sizeof(int));
+	offset += sizeof(int);
+	memcpy(pokemon, a_recibir + offset, size_pokemon);
+	msg_get->pokemon = pokemon;
+	log_info(g_logger,"(RECEIVING: GET_POKEMON | ID_MENSAJE = %d | Pokemon %s)",
+			msg_get->id_mensaje, msg_get->pokemon);
+	free(a_recibir);
+	free(msg_get);
+}
+
+void rcv_msg_new(int socket_cliente)
+{
+	int size;
+	void *a_recibir = recibir_buffer(&size, socket_cliente);
+	t_msg_new *msg_new = malloc(sizeof(t_msg_new));
+	int offset = 0;
+	int size_pokemon = size - 4 * sizeof(int);
+	void *pokemon = malloc(size_pokemon);
+	memcpy(&(msg_new->id_mensaje), a_recibir + offset, sizeof(int));
+	offset += sizeof(int);
+	memcpy(&(msg_new->pos_x), a_recibir + offset, sizeof(int));
+	offset += sizeof(int);
+	memcpy(&(msg_new->pos_y), a_recibir + offset, sizeof(int));
+	offset += sizeof(int);
+	memcpy(&(msg_new->cantidad), a_recibir + offset, sizeof(int));
+	offset += sizeof(int);
+	memcpy(pokemon, a_recibir + offset, size_pokemon);
+	msg_new->pokemon = pokemon;
+	log_info(g_logger,"(RECEIVING: NEW_POKEMON|ID_MSJ: %d|Pokemon: %s|POS_X: %d|POS_Y: %d|QTY: %d)",
+			msg_new->id_mensaje, msg_new->pokemon, msg_new->pos_x, msg_new->pos_y, msg_new->cantidad);
+	free(a_recibir);
+	free(msg_new);
+}
+
+char* recibir_mensaje(int socket_cliente) {
+	//printf("codigo operacion = %d \n", recibir_op_code(socket_cliente));
+	int size;
+	void* a_recibir = recibir_buffer(&size, socket_cliente);
+	char* mensaje = malloc(size);
+
+	memcpy(mensaje, a_recibir, size);
+	free(a_recibir);
+	return mensaje;
 }
 
 int tamano_paquete(t_paquete *paquete) {

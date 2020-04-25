@@ -63,15 +63,20 @@ void serve_client(t_socket_cliente *socket) {
 	int cod_op;
 	int cliente_fd = socket->cliente_fd;
 	// OBTENGO el Codigo_Operacion de los  Mensajes que Recibo
-	if (recv(cliente_fd, &cod_op, sizeof(int), MSG_WAITALL) == -1)
+	if (recv(cliente_fd, &cod_op, sizeof(int), MSG_WAITALL) == -1) {
 		cod_op = -1;
-	process_request(cod_op, socket);
+	}
+	if (cod_op < SUSCRIP_NEW) {
+		process_request(cod_op, socket);
+	}
+	else {
+		process_suscript(cod_op, socket);
+	}
 }
 // RECIBE todos los TIPOS de MENSAJE QUE MANEJA el GAMEBOY y resuelve segun el CODIGO_OPERACION del MENSAJE
-void process_request(int cod_op,t_socket_cliente *socket) {
+void process_request(op_code cod_op,t_socket_cliente *socket) {
 	int size;
 	int cliente_fd = socket->cliente_fd;
-	int cant_msg_enviados = socket->cant_msg_enviados;
 
 	int existePokemon;
 	char* nombrePokemon;
@@ -130,8 +135,7 @@ void process_request(int cod_op,t_socket_cliente *socket) {
 		// El GameBoy tiene que recibir un mensaje op_code = LOCALIZED_BROKER como respuesta
 		break;
 	case NEW_BROKER:
-		log_info(g_logger, "(RECEIVING: BROKER@NEW_POKEMON | SOCKET#: %d)",
-				cliente_fd);
+		log_info(g_logger, "(RECEIVING: BROKER@NEW_POKEMON | SOCKET#: %d)",	cliente_fd);
 		msg = rcv_new_broker(cliente_fd, &size);
 		devolver_recepcion_ok(cliente_fd);
 		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
@@ -157,76 +161,126 @@ void process_request(int cod_op,t_socket_cliente *socket) {
 		devolver_recepcion_ok(cliente_fd);
 		// El GameBoy no tiene que recibir ninguna repuesta en este tipo de mensaje.
 		break;
-		// MENSAJES QUE RECIBE en MODO SUSCRIPTOR
-	case SUSCRIP_NEW:
-		msg = rcv_handshake_suscripcion(socket, &size);
-		//if (msg != "error")
-			// TODO Buscar mensajes en cola no enviados al suscriptor
-			// Enviar el primer mensaje no_enviado
+	case 0:
+		pthread_exit(NULL);
+	case -1:
+		pthread_exit(NULL);
+	}
+	free(msg);
+	free(socket);
+}
 
-			devolver_recepcion_ok(cliente_fd);
-			// Incrementar el contador de mensajes enviados
-			cant_msg_enviados += 1;
-			socket->cant_msg_enviados = cant_msg_enviados;
-			serve_client(socket);
-			break;
-		case SUSCRIP_APPEARED:
-		msg = rcv_handshake_suscripcion(socket, &size);
+// MENSAJES QUE RECIBE en MODO SUSCRIPTOR
+void process_suscript(op_code cod_op,t_socket_cliente *socket) {
+	int size;
+	int id_suscriptor;
+	int cliente_fd = socket->cliente_fd;
+	int cant_msg_enviados = socket->cant_msg_enviados;
+	t_handsake_suscript *handshake;
+	switch (cod_op) {
+	case SUSCRIP_NEW:
+		handshake = rcv_handshake_suscripcion(socket, &size);
+		id_suscriptor = handshake->id_suscriptor;
+		if (handshake->valor_handshake != HANDSHAKE_SUSCRIPTOR) {
+			exit(EXIT_FAILURE);
+		}
+		if (cant_msg_enviados == 0) {
+			log_info(g_logger, "(SUSCRIPT_RECEIVED: NEW_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",handshake->id_suscriptor, cliente_fd);
+		}
+		// TODO Buscar mensajes en cola no enviados al suscriptor
+		if (cant_msg_enviados < 1000) {
+			enviar_msjs_new(cliente_fd, cant_msg_enviados);
+			cant_msg_enviados ++;
+		}
+		else {
+			enviar_cola_vacia(cliente_fd, id_suscriptor);
+		}
+		socket->cant_msg_enviados = cant_msg_enviados;
+		serve_client(socket);
+		break;
+	case SUSCRIP_APPEARED:
+		handshake = rcv_handshake_suscripcion(socket, &size);
+		id_suscriptor = handshake->id_suscriptor;
+		if (handshake->valor_handshake != HANDSHAKE_SUSCRIPTOR) {
+			exit(EXIT_FAILURE);
+		}
+		if (cant_msg_enviados == 0) {
+			log_info(g_logger, "(SUSCRIPT_RECEIVED: APPEARED_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",handshake->id_suscriptor, cliente_fd);
+		}
 		// TODO Buscar mensajes en cola no enviados al suscriptor
 		// Enviar el primer mensaje no_enviado
-
-		devolver_recepcion_ok(cliente_fd);
-		// Incrementar el contador de mensajes enviados
-		cant_msg_enviados += 1;
+		enviar_cola_vacia(cliente_fd, id_suscriptor);
 		socket->cant_msg_enviados = cant_msg_enviados;
 		serve_client(socket);
 		break;
 	case SUSCRIP_CATCH:
-		msg = rcv_handshake_suscripcion(socket, &size);
+		handshake = rcv_handshake_suscripcion(socket, &size);
+		id_suscriptor = handshake->id_suscriptor;
+		if (handshake->valor_handshake != HANDSHAKE_SUSCRIPTOR) {
+			exit(EXIT_FAILURE);
+		}
+		if (cant_msg_enviados == 0) {
+			log_info(g_logger, "(SUSCRIPT_RECEIVED: CATCH_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",handshake->id_suscriptor, cliente_fd);
+		}
 		// TODO Buscar mensajes en cola no enviados al suscriptor
 		// Enviar el primer mensaje no_enviado
-
-		devolver_recepcion_ok(cliente_fd);
-		// Incrementar el contador de mensajes enviados
-		cant_msg_enviados += 1;
+		enviar_cola_vacia(cliente_fd, id_suscriptor);
 		socket->cant_msg_enviados = cant_msg_enviados;
 		serve_client(socket);
 		break;
 	case SUSCRIP_CAUGHT:
-		msg = rcv_handshake_suscripcion(socket, &size);
+		handshake = rcv_handshake_suscripcion(socket, &size);
+		id_suscriptor = handshake->id_suscriptor;
+		if (handshake->valor_handshake != HANDSHAKE_SUSCRIPTOR) {
+			exit(EXIT_FAILURE);
+		}
+		if (cant_msg_enviados == 0) {
+			log_info(g_logger, "(SUSCRIPT_RECEIVED: CAUGHT_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",handshake->id_suscriptor, cliente_fd);
+		}
 		// TODO Buscar mensajes en cola no enviados al suscriptor
 		// Enviar el primer mensaje no_enviado
-
-		devolver_recepcion_ok(cliente_fd);
-		// Incrementar el contador de mensajes enviados
-		cant_msg_enviados += 1;
+		enviar_cola_vacia(cliente_fd, id_suscriptor);
 		socket->cant_msg_enviados = cant_msg_enviados;
 		serve_client(socket);
 		break;
 	case SUSCRIP_GET:
-		msg = rcv_handshake_suscripcion(socket, &size);
-		// TODO Buscar mensajes en cola no enviados al suscriptor
-		// Enviar el primer mensaje no_enviado
-
-		devolver_recepcion_ok(cliente_fd);
-		// Incrementar el contador de mensajes enviados
-		cant_msg_enviados += 1;
+		handshake = rcv_handshake_suscripcion(socket, &size);
+		id_suscriptor = handshake->id_suscriptor;
+		if (handshake->valor_handshake != HANDSHAKE_SUSCRIPTOR) {
+			exit(EXIT_FAILURE);
+		}
+		if (cant_msg_enviados == 0) {
+			log_info(g_logger, "(SUSCRIPT_RECEIVED: GET_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",handshake->id_suscriptor, cliente_fd);
+		}
+		if (cant_msg_enviados < 100000) {
+			enviar_msjs_get(cliente_fd, cant_msg_enviados);
+			cant_msg_enviados ++;
+		}
+		else {
+			enviar_cola_vacia(cliente_fd, id_suscriptor);
+		}
 		socket->cant_msg_enviados = cant_msg_enviados;
 		serve_client(socket);
 		break;
 	case SUSCRIP_LOCALIZED:
-		msg = rcv_handshake_suscripcion(socket, &size);
+		handshake = rcv_handshake_suscripcion(socket, &size);
+		id_suscriptor = handshake->id_suscriptor;
+		if (handshake->valor_handshake != HANDSHAKE_SUSCRIPTOR) {
+			exit(EXIT_FAILURE);
+		}
+		if (cant_msg_enviados == 0) {
+			log_info(g_logger, "(SUSCRIPT_RECEIVED: LOCALIZED_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)",handshake->id_suscriptor, cliente_fd);
+		}
 		// TODO Buscar mensajes en cola no enviados al suscriptor
 		// Enviar el primer mensaje no_enviado
-
-		devolver_recepcion_ok(cliente_fd);
-		// Incrementar el contador de mensajes enviados
-		cant_msg_enviados += 1;
+		enviar_cola_vacia(cliente_fd, id_suscriptor);
 		socket->cant_msg_enviados = cant_msg_enviados;
 		serve_client(socket);
 		break;
+		serve_client(socket);
+		break;
 	case FIN_SUSCRIPCION:
-		msg = rcv_fin_suscripcion(socket, &size);
+		handshake = rcv_fin_suscripcion(socket, &size);
 		free(socket);
 		break;
 	case 0:
@@ -234,7 +288,7 @@ void process_request(int cod_op,t_socket_cliente *socket) {
 	case -1:
 		pthread_exit(NULL);
 	}
-	free(msg);
+	free(handshake);
 }
 
 void* recibir_mensaje(int socket_cliente, int* size) {
@@ -439,38 +493,28 @@ void* rcv_appeared_team(int socket_cliente, int *size) {
 	return msg;
 }
 
-void *rcv_handshake_suscripcion(t_socket_cliente *socket, int *size)
+t_handsake_suscript *rcv_handshake_suscripcion(t_socket_cliente *socket, int *size)
 {
-	void *msg;
-	int *handshake;
-	int *id_suscriptor;
+	t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
 	int socket_cliente = socket->cliente_fd;
-	int cant_enviados = socket->cant_msg_enviados;
+	void *msg;
 
 	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
 	msg = malloc(*size);
 	recv(socket_cliente, msg, *size, MSG_WAITALL);
 	int offset = 0;
-	handshake = msg + offset;
-	if (*handshake == HANDSHAKE_SUSCRIPTOR) {
-		offset += sizeof(int);
-		id_suscriptor = msg + offset;
-		if (cant_enviados == 0) {
-		log_info(g_logger, "(RECEIVED: ID_SUSCRIPTOR = %d | HandShake = %d | Socket# = %d)",
-				*id_suscriptor, *handshake, socket_cliente);
-		}
-		return msg;
-	} else {
-		log_error(g_logger,"WRONG_HANDSHAKE");
-		return "error";
-	}
+	memcpy(&(handshake->valor_handshake), msg + offset, sizeof(int));
+	offset += sizeof(int);
+	memcpy(&(handshake->id_suscriptor), msg + offset, sizeof(int));
+	handshake->msjs_recibidos = 0;
+	free(msg);
+	return handshake;
 }
 
-void *rcv_fin_suscripcion(t_socket_cliente *socket, int *size)
+t_handsake_suscript *rcv_fin_suscripcion(t_socket_cliente *socket, int *size)
 {
+	t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
 	void *msg;
-	 int *id_suscriptor;
-	int *cant_recibidos;
 	int socket_cliente = socket->cliente_fd;
 	int cant_enviados = socket->cant_msg_enviados;
 
@@ -478,18 +522,20 @@ void *rcv_fin_suscripcion(t_socket_cliente *socket, int *size)
 	msg = malloc(*size);
 	recv(socket_cliente, msg, *size, MSG_WAITALL);
 	int offset = 0;
-	id_suscriptor = msg + offset;
+	memcpy(&(handshake->id_suscriptor), msg + offset,sizeof(int));
 	offset += sizeof(int);
-	cant_recibidos = msg + offset;
-	if (cant_enviados == *cant_recibidos) {
+	memcpy(&(handshake->msjs_recibidos), msg + offset, sizeof(int));
+	handshake->valor_handshake = HANDSHAKE_SUSCRIPTOR;
+	if (cant_enviados == handshake->msjs_recibidos) {
 		log_info(g_logger, "(END_SUSCRIPTION_OK: ID_SUSCRIPTOR = %d | Socket# = %d | SENT_MSGs = %d)",
-				* id_suscriptor,socket_cliente, cant_enviados);
+				handshake->id_suscriptor, socket_cliente, cant_enviados);
 	} else {
 		log_error(g_logger, "(END_SUSCRIPTION: ID_SUSCRIPTOR = %d | Socket# = %d | SENT_MSGs = %d != RCVD_MSGs = %d)",
-						* id_suscriptor,socket_cliente, cant_enviados, *cant_recibidos);
+				handshake->id_suscriptor,socket_cliente, cant_enviados, handshake->msjs_recibidos);
 
 	}
-	return msg;
+	free(msg);
+	return handshake;
 }
 
 void devolver_posiciones(int socket_cliente, char* pokemon,
@@ -783,6 +829,80 @@ void devolver_id_mensaje(void *msg, int socket_cliente) {
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	send(socket_cliente, a_enviar, bytes, 0);
 
+	free(a_enviar);
+	eliminar_paquete(paquete);
+}
+
+void enviar_cola_vacia(int socket_cliente, int id_suscriptor)
+{
+	t_paquete* paquete = malloc(sizeof(t_paquete));
+	log_info(g_logger, "(SENDING: EMPTY_QUEUE | ID_SUSCRIPTOR = %d)", id_suscriptor);
+	paquete->codigo_operacion = COLA_VACIA;
+	paquete->buffer = malloc(sizeof(t_stream));
+	paquete->buffer->size = sizeof(int);
+	paquete->buffer->stream = malloc(paquete->buffer->size);
+	memcpy(paquete->buffer->stream, &(id_suscriptor), paquete->buffer->size);
+	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	void* a_enviar = serializar_paquete(paquete, bytes);
+	send(socket_cliente, a_enviar, bytes, 0);
+	free(a_enviar);
+	eliminar_paquete(paquete);
+}
+
+void enviar_msjs_get(int socket_cliente,int  id_mensaje) {
+	t_msg_get *msg_get = malloc(sizeof(t_msg_get));
+	t_paquete* paquete = malloc(sizeof(t_paquete));
+	msg_get->id_mensaje = id_mensaje + 1000;
+	msg_get->pokemon = "Charizard";
+	paquete->codigo_operacion = GET_GAMECARD;
+	paquete->buffer = malloc(sizeof(t_stream));
+	int size_pokemon = strlen(msg_get->pokemon) + 1;
+	paquete->buffer->size = sizeof(int)+ size_pokemon;
+	paquete->buffer->stream = malloc(paquete->buffer->size);
+	int offset = 0;
+	memcpy(paquete->buffer->stream + offset, &(msg_get->id_mensaje), sizeof(int));
+	offset += sizeof(int);
+	memcpy(paquete->buffer->stream + offset, msg_get->pokemon, size_pokemon);
+
+	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	void* a_enviar = serializar_paquete(paquete, bytes);
+	log_info(g_logger, "(SENDING: GET_POKEMON | Socket# = %d | ID_MENSAJE = %d | Pokemon = %s)",
+			socket_cliente, msg_get->id_mensaje, msg_get->pokemon);
+	send(socket_cliente, a_enviar, bytes, 0);
+	free(msg_get);
+	free(a_enviar);
+	eliminar_paquete(paquete);
+}
+
+void enviar_msjs_new(int socket_cliente,int  id_mensaje) {
+	t_msg_new *msg_new = malloc(sizeof(t_msg_new));
+	t_paquete* paquete = malloc(sizeof(t_paquete));
+	msg_new->id_mensaje = id_mensaje + 1100;
+	msg_new->pos_x = 20;
+	msg_new->pos_y = 25;
+	msg_new->cantidad = 30;
+	msg_new->pokemon = "Bulbasaur";
+	paquete->codigo_operacion = NEW_GAMECARD;
+	paquete->buffer = malloc(sizeof(t_stream));
+	int size_pokemon = strlen(msg_new->pokemon) + 1;
+	paquete->buffer->size = 4 * sizeof(int)+ size_pokemon;
+	paquete->buffer->stream = malloc(paquete->buffer->size);
+	int offset = 0;
+	memcpy(paquete->buffer->stream + offset, &(msg_new->id_mensaje), sizeof(int));
+	offset += sizeof(int);
+	memcpy(paquete->buffer->stream + offset, &(msg_new->pos_x), sizeof(int));
+	offset += sizeof(int);
+	memcpy(paquete->buffer->stream + offset, &(msg_new->pos_y), sizeof(int));
+	offset += sizeof(int);
+	memcpy(paquete->buffer->stream + offset, &(msg_new->cantidad), sizeof(int));
+	offset += sizeof(int);
+	memcpy(paquete->buffer->stream + offset, msg_new->pokemon, size_pokemon);
+	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	void* a_enviar = serializar_paquete(paquete, bytes);
+	log_info(g_logger, "(SENDING: NEW_POKEMON | Socket#: %d|ID_MSJ: = %d|Pokemon: %s|POS_X: %d|POS_Y: %d|QTY: %d)",
+			socket_cliente, msg_new->id_mensaje, msg_new->pokemon, msg_new->pos_x, msg_new->pos_y, msg_new->cantidad);
+	send(socket_cliente, a_enviar, bytes, 0);
+	free(msg_new);
 	free(a_enviar);
 	eliminar_paquete(paquete);
 }

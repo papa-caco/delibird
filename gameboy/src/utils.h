@@ -20,6 +20,7 @@
 #include<commons/config.h>
 #include<commons/log.h>
 #include<string.h>
+#include<pthread.h>
 #include<commons/collections/list.h>
 
 #define HANDSHAKE_SUSCRIPTOR 255
@@ -70,6 +71,50 @@ typedef enum Tipo_Mensaje{
 typedef enum Resultado_Caught{
 	FAIL, OK,
 } t_result_caught;
+
+typedef struct Handshake_Suscriptor{
+	int id_suscriptor;
+	int valor_handshake;
+	int msjs_recibidos;
+} t_handsake_suscript;
+
+typedef struct Msg_Appeared_Pokemon{
+	int pos_x;
+	int pos_y;
+	char *pokemon;
+} t_msg_appeared;
+
+typedef struct Msg_Caught_Pokemon{
+	int id_correlativo;
+	t_result_caught resultado;
+} t_msg_caught;
+
+typedef struct Msg_Localized_Pokemon{
+	int id_correlativo;
+	int cant_posiciones;
+	t_list *posiciones;
+	char *pokemon;
+} t_msg_localized;
+
+typedef struct Msg_New_Pokemon{
+	int id_mensaje;
+	int pos_x;
+	int pos_y;
+	int cantidad;
+	char *pokemon;
+} t_msg_new;
+
+typedef struct Msg_Catch_Pokemon{
+	int id_mensaje;
+	int pos_x;
+	int pos_y;
+	char *pokemon;
+} t_msg_catch;
+
+typedef struct Msg_Get_Pokemon{
+	int id_mensaje;
+	char *pokemon;
+} t_msg_get;
 
 typedef struct Mensaje_Gameboy{
 	t_proceso proceso;
@@ -185,6 +230,14 @@ void empaquetar_fin_suscripcion(t_tipo_mensaje cola,int cant_mensajes,t_paquete 
 void* serializar_paquete(t_paquete* paquete, int *bytes);
 
 t_list* armar_lista(void* stream, int* cantPosiciones);
+
+void respuesta_publisher(op_code codigo_operacion, int socket_cliente);
+
+void rcv_msg_cola_vacia(int socket_cliente);
+
+void rcv_msg_get(int socket_cliente);
+
+void rcv_msg_new(int socket_cliente);
 
 char* recibir_mensaje(int socket_cliente);
 
