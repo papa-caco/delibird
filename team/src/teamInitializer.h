@@ -41,12 +41,6 @@ typedef enum Codigo_Operacion{
 	APPEARED_TEAM = 80,
 	CAUGHT_TEAM,
 	LOCALIZED_TEAM,
-	SUSCRIP_NEW = 120,
-	SUSCRIP_APPEARED,
-	SUSCRIP_CATCH,
-	SUSCRIP_CAUGHT,
-	SUSCRIP_GET,
-	SUSCRIP_LOCALIZED,
 	COLA_VACIA,
 	FIN_SUSCRIPCION,
 } op_code;
@@ -132,11 +126,11 @@ t_log *g_logger;
 
 //-----------------Firma de Funciones----------------------------
 
+t_list * extraer_posiciones_entrenadores();
+
 void* recibir_buffer(int*, int);
 
 int recibir_operacion(int socket);
-
-void iniciar_team(void);
 
 void iniciar_servidor(void);
 
@@ -204,3 +198,4 @@ void eliminar_paquete (t_paquete *paquete);
 
 
 #endif /* CONEXIONES_H_ */
+

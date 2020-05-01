@@ -9,11 +9,24 @@
 
 int main(void)
 {
-	iniciar_logger();
+	//iniciar_team();
 
-	iniciar_servidor();
+	t_list * listita = extraer_posiciones_entrenadores();
 
-	log_destroy(g_logger);
+	for (int procesados = 0; procesados < 3; procesados++) {
+
+		t_posicion_entrenador* posicion = list_get(listita, procesados);
+
+		printf("-------------------El contenido de la posicion DENTRO DE LA LISTA es %d \n",
+				posicion ->pos_x);
+		printf("-------------------El contenido de la posicion DENTRO DE LA LISTA es %d \n",
+						posicion ->pos_y);
+
+	}
+
+	list_destroy(listita);
+
+	//log_destroy(g_logger);
 
 	return EXIT_SUCCESS;
 }
