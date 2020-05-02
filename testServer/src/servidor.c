@@ -10,9 +10,11 @@
 int main(void)
 {
 	iniciar_logger();
+	iniciar_estructuras();
 
 	iniciar_servidor();
 
+	eliminar_estructuras();
 	log_destroy(g_logger);
 
 	return EXIT_SUCCESS;

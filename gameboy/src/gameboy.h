@@ -11,7 +11,7 @@
 
 # include "utils.h"
 
-void terminar_programa(t_mensaje_gameboy *argumentos, t_config_gameboy* config_gameboy, t_list *lista, t_log *log, t_config *config, int conexion);
+void end_suscript(int *tiempo);
 
 
 #endif /* GAMEBOY_H_ */

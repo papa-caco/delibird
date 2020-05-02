@@ -22,8 +22,10 @@
 #include<string.h>
 #include<pthread.h>
 #include<commons/collections/list.h>
+#include<commons/string.h>
 
 #define HANDSHAKE_SUSCRIPTOR 255
+#define RESPUESTA_OK 1001
 
 /* ---  DEFINICION DE ESTRUCTURAS ---*/
 
@@ -32,6 +34,7 @@ typedef enum Codigo_Operacion
 	ID_MENSAJE = 10,
 	MSG_CONFIRMED,
 	MSG_ERROR,
+	FIN_SUSCRIPCION,
 	NEW_BROKER = 20,
 	APPEARED_BROKER,
 	CATCH_BROKER,
@@ -50,8 +53,8 @@ typedef enum Codigo_Operacion
 	SUSCRIP_CAUGHT,
 	SUSCRIP_GET,
 	SUSCRIP_LOCALIZED,
+	SUSCRIP_END,
 	COLA_VACIA,
-	FIN_SUSCRIPCION,
 } op_code;
 
 typedef enum Proceso{
@@ -74,9 +77,13 @@ typedef enum Resultado_Caught{
 
 typedef struct Handshake_Suscriptor{
 	int id_suscriptor;
-	int valor_handshake;
 	int msjs_recibidos;
 } t_handsake_suscript;
+
+typedef struct Posiciones_Localized{
+	int cantidad;
+	t_list *coordenadas;
+} t_posiciones_localized;
 
 typedef struct Msg_Appeared_Pokemon{
 	int pos_x;
@@ -90,11 +97,17 @@ typedef struct Msg_Caught_Pokemon{
 } t_msg_caught;
 
 typedef struct Msg_Localized_Pokemon{
+	int cantidad;
+	t_list *coordenadas;
+	char *pokemon;
+} t_msg_localized;
+
+typedef struct Msg_Localized_Broker{
 	int id_correlativo;
 	int cant_posiciones;
 	t_list *posiciones;
 	char *pokemon;
-} t_msg_localized;
+} t_msg_localized_broker;
 
 typedef struct Msg_New_Pokemon{
 	int id_mensaje;
@@ -160,6 +173,8 @@ typedef struct Paquete{
 t_log *g_logger;
 t_config *g_config;
 t_config_gameboy *g_config_gameboy;
+t_tipo_mensaje	g_suscript_queue;
+int g_rcv_msg_qty;
 
 /* ---  DEFINICION DE FIRMA DE FUNCIONES ---*/
 
@@ -183,6 +198,8 @@ t_result_caught codificar_resultado_caught(char *valor);
 
 int crear_conexion(t_mensaje_gameboy *msg_gameboy);
 
+int conexion_broker(void);
+
 char* select_ip_proceso(t_mensaje_gameboy *msg_gameboy);
 
 char* select_puerto_proceso(t_mensaje_gameboy *msg_gameboy);
@@ -197,9 +214,11 @@ void enviar_mensaje(t_mensaje_gameboy *msg_gameboy, int socket_cliente);
 
 void enviar_msj_suscriptor(t_mensaje_gameboy *msg_gameboy,int socket_cliente);
 
-void enviar_fin_suscripcion(t_mensaje_gameboy *msg_gameboy,int cant_mensajes, int socket_cliente);
+void snd_suscript_msg(t_tipo_mensaje tipo_mensaje, int socket_cliente);
 
-//void recibir_msjs_suscripcion(int tiempo_suscripcion,int socket_cliente);
+void enviar_fin_suscripcion(int socket_cliente);
+
+void enviar_recepcion_ok(int socket_cliente);
 
 void esperar_respuesta	(int socket_cliente);
 
@@ -231,13 +250,35 @@ void* serializar_paquete(t_paquete* paquete, int *bytes);
 
 t_list* armar_lista(void* stream, int* cantPosiciones);
 
-void respuesta_publisher(op_code codigo_operacion, int socket_cliente);
+void rcv_localized_broker(int socket_cliente);
+
+void rcv_msj_publisher(op_code codigo_operacion, int socket_cliente);
+
+void send_get_next_msg(t_tipo_mensaje queue,int socket_cliente);
 
 void rcv_msg_cola_vacia(int socket_cliente);
 
 void rcv_msg_get(int socket_cliente);
 
 void rcv_msg_new(int socket_cliente);
+
+void rcv_msg_appeared(int socket_cliente);
+
+void rcv_msg_catch(int socket_cliente);
+
+void rcv_msg_caught(int socket_cliente);
+
+void rcv_msg_localized(int socket_cliente);
+
+int rcv_msg_confirmed(int socket_cliente);
+
+int rcv_suscrip_end(int socket_cliente);
+
+char *result_caught(t_result_caught resultado);
+
+char  *concat_coord(t_list *lista);
+
+void eliminar_msg_localized(t_msg_localized *msg_localized);
 
 char* recibir_mensaje(int socket_cliente);
 
@@ -257,12 +298,10 @@ void iniciar_log(void);
 
 void leer_config(char *path);
 
-void terminar_programa(t_mensaje_gameboy *msg_gameboy,
-		t_config_gameboy *config_gameboy, t_list *lista, t_log *log,
-		t_config *config, int conexion);
+void eliminar_lista(t_list *lista);
+
+void terminar_programa(t_config_gameboy *config_gameboy, t_log *log, t_config *config);
 
 void liberar_conexion(int socket_cliente);
-
-void list_mostrar (t_list* lista);
 
 #endif /* UTILS_H_ */
