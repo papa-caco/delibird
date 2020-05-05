@@ -11,17 +11,7 @@
 typedef enum {
 	UNKNOWN_PROC = 9, SUSCRIPTOR, GAMECARD, BROKER, TEAM, GAMEBOY,
 } t_proceso;
-/*
-typedef enum {
-	UNKNOWN_QUEUE = 9,
-	NEW_POKEMON,
-	APPEARED_POKEMON,
-	CATCH_POKEMON,
-	CAUGHT_POKEMON,
-	GET_POKEMON,
-	LOCALIZED_POKEMON,
-} t_tipo_mensaje;
-*/
+
 typedef struct {
 	t_proceso proceso;
 	t_tipo_mensaje tipo_mensaje;
@@ -36,6 +26,6 @@ void* serializar_paquete_cliente(t_paquete* paquete, int *bytes);
 void enviar_mensaje_al_canal(char* mensaje,int canal,int conexion);
 void empaquetar_mensaje(char* mensaje,int canal,t_paquete *paquete);
 int tamano_paquete(t_paquete *paquete);
-void eliminar_paquete(t_paquete* paquete);
+
 int recibir_id_mensaje(int socket_cliente);
 #endif /* SRC_CLIENTE_H_ */

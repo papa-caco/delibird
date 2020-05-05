@@ -12,8 +12,12 @@
 #include<netdb.h>
 #include<string.h>
 #include<pthread.h>
-
-
+/*
+typedef struct socket_cliente{
+	int cliente_fd;
+	int cant_msg_enviados;
+} t_socket_cliente;
+*/
 
 /*****  Definicion de variables globales   *****/
 
@@ -22,14 +26,12 @@ pthread_t thread;
 /*****  definicion de funciones   *****/
 void* recibir_buffer(int*, int);
 int crear_conexion(void);
-void iniciar_servidor(int* servidor);
-void esperar_cliente(int);
+
 void* recibir_mensaje(int socket_cliente, int* size);
 int recibir_operacion(int);
-void process_request(int cod_op, int cliente_fd);
-void serve_client(int *socket);
+
 void suscribirse( int socket_gamecard);
-void* serializar_paquete(t_paquete* paquete, int bytes);
+
 void devolver_mensaje(void* payload, int size, int socket_cliente);
 
 void enviar_mensaje(char* mensaje, int socket_cliente);

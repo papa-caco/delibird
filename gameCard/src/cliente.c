@@ -27,7 +27,7 @@ void* serializar_paquete_cliente(t_paquete* paquete, int *bytes)
 
 char* recibir_mensaje_broken(int socket_cliente)
 {
-	log_info(logger,"RECIBIENDO MENSAJE");
+	log_info(g_logger,"RECIBIENDO MENSAJE");
 	char* mensaje;
 	int cod_op,size;
 	recv(socket_cliente, &cod_op, sizeof(int), MSG_WAITALL); // Primero recibimos el codigo de operacion
@@ -112,10 +112,10 @@ void enviar_mensaje_al_canal(char* mensaje,int canal,int socket_cliente){
 	int tamanio = tamano_paquete(paquete);
 
 	if( send(socket_cliente, a_enviar, bytes, 0) == -1 ){
-		log_error(logger, "(SENDING_MSG NOT FOUND | MSG = %s | CANAL= %d | -- SIZE= %d Bytes)", mensaje, canal, tamanio);
+		log_error(g_logger, "(SENDING_MSG NOT FOUND | MSG = %s | CANAL= %d | -- SIZE= %d Bytes)", mensaje, canal, tamanio);
 	}
 	else{
-		log_info(logger, "(SENDING_MSG OK | MSG = %s | CANAL= %d | -- SIZE= %d Bytes)", mensaje, canal, tamanio);
+		log_info(g_logger, "(SENDING_MSG OK | MSG = %s | CANAL= %d | -- SIZE= %d Bytes)", mensaje, canal, tamanio);
 	}
 
 	free(a_enviar);
@@ -124,7 +124,7 @@ void enviar_mensaje_al_canal(char* mensaje,int canal,int socket_cliente){
 
 void empaquetar_mensaje(char* mensaje,int canal,t_paquete *paquete){
 
-	t_buffer *buffer = malloc(sizeof(t_buffer));
+	t_stream *buffer = malloc(sizeof(t_stream));
 	buffer->size =  sizeof(int) + strlen(mensaje) + 1;
 
 	void *stream = malloc(buffer->size);
@@ -149,11 +149,7 @@ int tamano_paquete(t_paquete *paquete){
 	return paquete->buffer->size + sizeof(paquete->codigo_operacion) + sizeof(paquete->buffer->size);
 }
 
-void eliminar_paquete(t_paquete* paquete) {
-	free(paquete->buffer->stream);
-	free(paquete->buffer);
-	free(paquete);
-}
+
 
 
 
