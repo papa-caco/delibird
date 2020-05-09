@@ -12,7 +12,7 @@ int main(void)
 	iniciar_logger();
 	iniciar_estructuras();
 
-	iniciar_servidor();
+	iniciar_server_broker(IP, PUERTO, g_logger, thread);
 
 	eliminar_estructuras();
 	log_destroy(g_logger);

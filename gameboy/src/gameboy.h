@@ -9,7 +9,7 @@
 #ifndef GAMEBOY_H_
 #define GAMEBOY_H_
 
-# include "utils.h"
+#include "gameboy_utils.h"
 
 void end_suscript(int *tiempo);
 

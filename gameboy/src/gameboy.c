@@ -26,9 +26,9 @@ int main(int argcnt, char *argval[])
 	}
 
 	// Leer config -- variable global g_config
-	leer_config("/home/utnso/config/gameboy.config");
+	leer_config_gameboy("/home/utnso/config/gameboy.config");
 	// Iniciar logger -- variable global g_logger
-	iniciar_log();
+	iniciar_log_gameboy();
 	// Inicializamos la variable con la estructura para los argumentos ingresados
 	t_mensaje_gameboy *msg_gameboy = malloc(sizeof(t_mensaje_gameboy));
 	msg_gameboy->argumentos = list_create(); // Inicializamos con lista vacia
@@ -50,7 +50,7 @@ int main(int argcnt, char *argval[])
 		// Establecemos conexion con PROCESO REMOTO correspondiente
 		// Seleccionamos la direccion IP y el puerto del proceso remoto
 		// -- obtenemos el Socket Cliente "conexion"
-		 conexion = crear_conexion(msg_gameboy);
+		 conexion = realizar_conexion(msg_gameboy);
 		// Logueamos conexion con PROCESO REMOTO: Satisfactoria o Fallida.
 		if (conexion < 0) {
 			return EXIT_FAILURE;
@@ -59,10 +59,10 @@ int main(int argcnt, char *argval[])
 		// Serializamos Paquete
 		// Logueamos Mensaje a Enviar
 		// Enviamos mensaje a proceso Consumidor
-		enviar_mensaje(msg_gameboy, conexion);
+		enviar_mensaje_gameboy(msg_gameboy, conexion);
 		// GAMEBOY SIEMPRE ESPERA UNA RTA DEL SERVIDOR
 		// Imprimir Respuesta del Proceso Consumidor por log.
-		esperar_respuesta(conexion);
+		esperar_rta_servidor(conexion);
 		close(conexion);
 	}
 	else {
@@ -70,14 +70,12 @@ int main(int argcnt, char *argval[])
 		// Establecemos conexion con BROKER
 		// Otenemos el Socket Cliente "conexion"
 		tiempo_suscripcion = get_time_suscripcion(msg_gameboy);
-		conexion = crear_conexion(msg_gameboy);
+		conexion = realizar_conexion(msg_gameboy);
 		// Logueamos conexion con PROCESO REMOTO: Satisfactoria o Fallida.
 		if (conexion < 0) {
 			return EXIT_FAILURE;
 		}
-		char *cola = nombre_cola(g_suscript_queue);
-		log_info(g_logger, "(SENDING SUSCRIPTION_TO = %s | ID_SUSCRIPTOR = %d )",cola, g_config_gameboy->id_suscriptor);
-		enviar_msj_suscriptor(msg_gameboy, conexion);
+		send_msg_gameboy_suscriptor(msg_gameboy, conexion);
 		//manejo el final de la suscripcion desde otro hilo
 		pthread_create(&ender_suscript, NULL,(void*) end_suscript,&(tiempo_suscripcion));
 		pthread_detach(ender_suscript);
@@ -86,13 +84,13 @@ int main(int argcnt, char *argval[])
 		int flag_salida =1;
 
 		while(flag_salida) {
-			cod_oper_mensaje = recibir_op_code(conexion);
+			cod_oper_mensaje = rcv_codigo_operacion(conexion);
 			if (cod_oper_mensaje != SUSCRIP_END) {
-				rcv_msj_publisher(cod_oper_mensaje, conexion);
+				rcv_mensaje_publisher(cod_oper_mensaje, conexion);
 				g_rcv_msg_qty += 1;
-				send_get_next_msg(g_suscript_queue, conexion);
+				enviar_msj_suscripcion_broker(g_suscript_queue, conexion);
 			}
-			else if (rcv_suscrip_end(conexion) != g_config_gameboy->id_suscriptor) {
+			else if (rcv_msg_suscrip_end(conexion) != g_config_gameboy->id_suscriptor) {
 				return EXIT_FAILURE;
 			}
 			else {
@@ -104,7 +102,7 @@ int main(int argcnt, char *argval[])
 		sleep(1);
 		pthread_exit(&ender_suscript);
 		}
-	terminar_programa(g_config_gameboy, g_logger, g_config);
+	finalizar_gameboy(g_config_gameboy, g_logger, g_config);
 
 	return EXIT_SUCCESS;
 }
@@ -119,11 +117,11 @@ void end_suscript(int *tiempo)
 		exit(EXIT_FAILURE);
 	}
 
-	enviar_fin_suscripcion(cliente_fd);
-	if(recibir_op_code(cliente_fd) != MSG_CONFIRMED) {
+	enviar_msj_fin_suscripcion(cliente_fd, g_logger, g_config_gameboy->id_suscriptor, g_suscript_queue);
+	if(rcv_codigo_operacion(cliente_fd) != MSG_CONFIRMED) {
 		exit(EXIT_FAILURE);
 	}
-	if (rcv_msg_confirmed(cliente_fd) != RESPUESTA_OK) {
+	if (rcv_msg_confirmed(cliente_fd, g_logger) != RESPUESTA_OK) {
 		exit(EXIT_FAILURE);
 	}
 
