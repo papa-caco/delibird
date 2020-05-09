@@ -30,7 +30,7 @@ void enviar_msj_suscript_end(t_socket_cliente_broker *socket, t_log * logger, in
 	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger, "(SENDING: END_SUSCRIPTION|ID_SUSCRIPTOR= %d|SENT-MSGS= %d)", id_suscriptor, socket->cant_msg_enviados);
+	log_info(logger, "(SENDING: SUSCRIPTION_ENDED|ID_SUSCRIPTOR= %d|SENT-MSGS= %d)", id_suscriptor, socket->cant_msg_enviados);
 	free(a_enviar);
 }
 
