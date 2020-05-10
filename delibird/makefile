@@ -13,7 +13,7 @@ create-dirs:
 	mkdir -p build/
 
 build/libdelibird.so: create-dirs $(OBJS)
-	$(CC) -shared -o "build/libdelibird.so" $(OBJS)
+	$(CC) -shared -o "build/libdelibird.so" $(OBJS) -lpthread
 
 debug/delibird/%.o: delibird/%.c
 	$(CC) -c -fmessage-length=0 -fPIC -Wno-switch-enum -Werror -g  -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"

@@ -1,13 +1,22 @@
 /*
- * broker.h
- *
- *  Created on: 21 abr. 2020
- *      Author: utnso
+ ============================================================================
+ Name        : broker.h
+
+ Author      : Los Que Aprueban.
+
+ Created on	 : 9 may. 2020
+
+ Version     :
+
+ Description :
+ ============================================================================
  */
 
 #ifndef BROKER_H_
 #define BROKER_H_
+#include "broker_utils.h"
 
-#include "utils.h"
+
+
 
 #endif /* BROKER_H_ */

@@ -84,7 +84,7 @@ void esperar_cliente(int socket_servidor, pthread_t thread)
 	struct sockaddr_in dir_cliente;
 	socklen_t tam_direccion = sizeof(struct sockaddr_in);
 	int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
-		pthread_create(&thread, NULL, (void*) serve_client, &socket_cliente);
+	pthread_create(&thread, NULL, (void*) serve_client, &socket_cliente);
 	pthread_detach(thread);
 }
 
