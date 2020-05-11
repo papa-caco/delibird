@@ -4,6 +4,7 @@
 # Setting
 .cproject
 .settings/*
+broker/logs/broker.log
 gameboy/.settings/language.settings.xml
 gameboy/.settings*
 gameboy/.cproject
@@ -64,9 +65,6 @@ testServer/debug/*.o
 modules.order
 Module.symvers
 Mkfile.old
-<<<<<<< HEAD
 dkms.conf
-=======
 dkms.conf
->>>>>>> 841cc96c9416514ca57b37ae2087157168e62846
 /Default/
