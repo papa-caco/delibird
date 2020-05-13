@@ -5,6 +5,8 @@
 .cproject
 .settings/*
 broker/logs/broker.log
+broker/bin/broker
+broker/bin/logs/broker.log
 gameboy/.settings/language.settings.xml
 gameboy/.settings*
 gameboy/.cproject

@@ -64,11 +64,12 @@ void process_request(op_code cod_op, t_socket_cliente_broker *socket) {
 		log_info(g_logger, "(RECEIVING: GAMECARD@GET_POKEMON | SOCKET#: %d)", cliente_fd);
 		t_msg_get_gamecard *msg_get_gamecard = (t_msg_get_gamecard*) msg;
 		msg_get_gamecard = rcv_msj_get_gamecard(cliente_fd, g_logger);
-		devolver_posiciones(cliente_fd, msg_get_gamecard->pokemon, &existePokemon);
+		int id_correlativo = msg_get_gamecard->id_mensaje;
+		devolver_posiciones(cliente_fd, id_correlativo, msg_get_gamecard->pokemon, &existePokemon);
 		log_info(g_logger, "VALOR ENCONTRO POKEMON: %d", existePokemon);
 		//Verifico si encontro o no el archivo
 		if (existePokemon == 0) {
-			enviar_mensaje_error(cliente_fd,	g_logger, "NO SE ENCONTRO EL ARCHIVO DEL POKEMON");
+			enviar_mensaje_error(cliente_fd, g_logger, "NO SE ENCONTRO EL ARCHIVO DEL POKEMON");
 		}
 		eliminar_msg_get_gamecard(msg_get_gamecard);
 		break;
@@ -375,7 +376,7 @@ t_suscriptor_broker *obtengo_suscriptor(t_list *suscriptores, int id_suscriptor)
 	}
 }
 
- void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon) {
+void devolver_posiciones(int socket_cliente, int id_correlativo, char* pokemon,	int* encontroPokemon) {
 
 	printf("El socket es : %d \n", socket_cliente);
 
@@ -407,11 +408,11 @@ t_suscriptor_broker *obtengo_suscriptor(t_list *suscriptores, int id_suscriptor)
 		} else {
 			free(line);
 			printf("Se encontró el archivo con contenido\n");
-			t_config* config = config_create("/home/utnso/config/gameboy.config");
-
 			t_msg_localized_broker *msg_localized_broker = malloc(sizeof(t_msg_localized_broker));
-			msg_localized_broker->id_correlativo = config_get_int_value(config,"ID_MENSAJE_UNICO");
-			msg_localized_broker->posiciones = list_create();
+			msg_localized_broker->id_correlativo = id_correlativo;
+			msg_localized_broker->posiciones = malloc(sizeof(t_posiciones_localized));
+			msg_localized_broker->posiciones->cant_posic = 0;
+			msg_localized_broker->posiciones->coordenadas = list_create();
 			line = malloc(len);
 			rewind(posiciones);
 			while ((read = getline(&line, &len, posiciones)) != -1){
@@ -432,20 +433,22 @@ t_suscriptor_broker *obtengo_suscriptor(t_list *suscriptores, int id_suscriptor)
 				int posicionX = atoi(posiciones[0]);
 				int posicionY = atoi(posiciones[1]);
 
-				t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
+				/*t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
 
 				posicion->cantidad = cantidad;
 				posicion->pos_x = posicionX;
-				posicion->pos_y = posicionY;
+				posicion->pos_y = posicionY;*/
 
 				printf("Pokemon %s : \n", pokemon);
-				printf("Posicion X: %d \n", posicion->pos_x);
-				printf("Posicion Y: %d \n", posicion->pos_y);
-				printf("Cantidad: %d \n", posicion->cantidad);
+				printf("Posicion X: %d \n", posicionX);
+				printf("Posicion Y: %d \n", posicionY);
+				printf("Cantidad: %d \n", cantidad);
 				printf("------------------------------ \n");
-
-				list_add(msg_localized_broker->posiciones, posicion);
-
+				t_coordenada *coord_xy = malloc(sizeof(t_coordenada));
+				coord_xy->pos_x = posicionX;
+				coord_xy->pos_y = posicionY;
+				list_add(msg_localized_broker->posiciones->coordenadas, coord_xy);
+				msg_localized_broker->posiciones->cant_posic += 1;
 				liberar_listas(keyValue);
 				liberar_listas(posiciones);
 				line = malloc(len);
@@ -455,23 +458,18 @@ t_suscriptor_broker *obtengo_suscriptor(t_list *suscriptores, int id_suscriptor)
 			printf("Salgo de leer lista\n");
 
 			int size_pokemon = strlen(pokemon) + 1;
-
 			msg_localized_broker->pokemon = malloc(size_pokemon);
-
 			printf("pokemon:%s -tamaño:%d\n", pokemon, size_pokemon);
-
-			msg_localized_broker->cant_posiciones = list_size(msg_localized_broker->posiciones);
-
 			memcpy(msg_localized_broker->pokemon, pokemon, size_pokemon);
 
-			printf("La cantidad de posiciones en la lista es %d: \n",msg_localized_broker->cant_posiciones);
-
+			printf("La cantidad de posiciones en la lista es %d: \n",
+					msg_localized_broker->posiciones->cant_posic);
+			enviar_msj_localized_al_broker(msg_localized_broker);
 			enviar_msj_localized_broker(socket_cliente, g_logger, msg_localized_broker);
 
-			txt_close_file(posiciones);
-			config_destroy(config);
 
-			eliminar_msg_localized_broker(msg_localized_broker);
+
+			txt_close_file(posiciones);
 		}
 
 
@@ -480,7 +478,6 @@ t_suscriptor_broker *obtengo_suscriptor(t_list *suscriptores, int id_suscriptor)
 		*encontroPokemon = 0;
 	}
 	free(ruta);
-
 }
 
 void liberar_lista_posiciones(t_list* lista){
@@ -594,19 +591,37 @@ void enviar_msjs_localized(t_socket_cliente_broker *socket)
 	free(msg_localized);
 }
 
-t_posiciones_localized_team *generar_posiciones_localized(int cantidad)
+void enviar_msj_localized_al_broker(t_msg_localized_broker *msg_localized)
 {
-	t_posiciones_localized_team *posiciones = malloc(sizeof(t_posiciones_localized_team));
-	posiciones->cant_posiciones = cantidad;
-	int elem = cantidad * 2;
-	t_list *lista = list_create();
-	for(int i = 0; i < elem; i++){
-		int valor = rand() % 99;
-		void *elem = malloc(sizeof(int));
-		memcpy(elem, &valor, sizeof(int));
-		list_add(lista,elem);
+	pthread_create(&thread, NULL, (void*) connect_broker_send_msg, msg_localized);
+	pthread_detach(thread);
+}
+
+void connect_broker_send_msg(t_msg_localized_broker *msg_localized)
+{
+	int cliente_fd = crear_conexion(IP_BROKER, PUERTO_BROKER, g_logger, "BROKER", "LOCALIZED_POKEMON");
+	if (cliente_fd > 0) {
+		enviar_msj_localized_broker(cliente_fd, g_logger, msg_localized);
+		int cod_operacion = rcv_codigo_operacion(cliente_fd);
+		if (cod_operacion == ID_MENSAJE) {
+			rcv_id_mensaje(cliente_fd, g_logger);
+		}
+		close(cliente_fd);
 	}
-	posiciones->coordenadas = lista;
+	eliminar_msg_localized_broker(msg_localized);
+}
+
+t_posiciones_localized *generar_posiciones_localized(int cantidad)
+{
+	t_posiciones_localized *posiciones = malloc(sizeof(t_posiciones_localized));
+	posiciones->cant_posic = cantidad;
+	posiciones->coordenadas = list_create();
+	for(int i = 0; i < cantidad; i++){
+		t_coordenada *coord = malloc(sizeof(t_coordenada));
+		coord->pos_x = rand() % 99;
+		coord->pos_y = rand() % 99;
+		list_add(posiciones->coordenadas,coord);
+	}
 	return posiciones;
 }
 

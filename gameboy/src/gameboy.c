@@ -69,6 +69,7 @@ int main(int argcnt, char *argval[])
 		//Modo SUSCRIBER - ENVIA el HANDSHAKE y espera Recibir MENSAJES del BROKER
 		// Establecemos conexion con BROKER
 		// Otenemos el Socket Cliente "conexion"
+		g_suscript_queue = msg_gameboy->tipo_mensaje;
 		tiempo_suscripcion = get_time_suscripcion(msg_gameboy);
 		conexion = realizar_conexion(msg_gameboy);
 		// Logueamos conexion con PROCESO REMOTO: Satisfactoria o Fallida.

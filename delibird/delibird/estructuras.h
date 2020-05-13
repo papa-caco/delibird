@@ -18,6 +18,7 @@
 #include <commons/string.h>
 #include <commons/config.h>
 #include <commons/collections/list.h>
+#include <commons/collections/queue.h>
 #include <semaphore.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -91,10 +92,10 @@ typedef struct Posicion_Pokemon{
 	int cantidad;
 } t_posicion_pokemon;
 
-typedef struct Posiciones_Localized_Team{
-	int cant_posiciones;
+typedef struct Posiciones_Localized{
+	int cant_posic;
 	t_list *coordenadas;
-} t_posiciones_localized_team;
+} t_posiciones_localized;
 
 typedef struct Socket_Cliente{
 	int cliente_fd;
@@ -118,6 +119,12 @@ typedef struct Msg_Get_Broker{
 	char *pokemon;
 } t_msg_get_broker;
 
+typedef struct Msg_Localized_Broker{
+	int id_correlativo;
+	t_posiciones_localized *posiciones;
+	char *pokemon;
+} t_msg_localized_broker;
+
 typedef struct Msg_Caught_Broker{
 	int id_correlativo;
 	t_result_caught resultado;
@@ -128,13 +135,6 @@ typedef struct Msg_Appeared_Broker{
 	t_coordenada *coordenada;
 	char *pokemon;
 } t_msg_appeared_broker;
-
-typedef struct Msg_Localized_Broker{
-	int id_correlativo;
-	int cant_posiciones;
-	t_list *posiciones;
-	char *pokemon;
-} t_msg_localized_broker;
 
 typedef struct Msg_Handshake_Suscriptor{
 	int id_suscriptor;
@@ -176,7 +176,7 @@ typedef struct Msg_Caught_Team{
 typedef struct Msg_Localized_Team{
 	int id_mensaje;
 	int id_correlativo;
-	t_posiciones_localized_team *posiciones;
+	t_posiciones_localized *posiciones;
 	char *pokemon;
 } t_msg_localized_team;
 

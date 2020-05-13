@@ -157,20 +157,22 @@ t_paquete *empaquetar_msg_localized_team(t_msg_localized_team *msg_localized_tea
 	paquete->codigo_operacion = LOCALIZED_TEAM;
 	paquete->buffer = malloc(sizeof(t_stream));
 	int size_pokemon = strlen(msg_localized_team->pokemon) + 1;
-	int cant_elem = msg_localized_team->posiciones->coordenadas->elements_count;
-	paquete->buffer->size = (cant_elem + 3) * sizeof(int) + size_pokemon;
+	int cant_posiciones = msg_localized_team->posiciones->cant_posic;
+	paquete->buffer->size = ((cant_posiciones * 2) + 3) * sizeof(int) + size_pokemon;
 	paquete->buffer->data = malloc(paquete->buffer->size);
 	int offset = 0;
 	memcpy(paquete->buffer->data + offset, &(msg_localized_team->id_mensaje),sizeof(int));
 	offset += sizeof(int);
 	memcpy(paquete->buffer->data + offset, &(msg_localized_team->id_correlativo),sizeof(int));
 	offset += sizeof(int);
-	memcpy(paquete->buffer->data + offset, &(msg_localized_team->posiciones->cant_posiciones),sizeof(int));
+	memcpy(paquete->buffer->data + offset, &(msg_localized_team->posiciones->cant_posic),sizeof(int));
 	//Serializamos Lista de posiciones.
-	for (int i = 0 ;i < cant_elem; i ++) {
-		int coord = coordenada_posiciones(msg_localized_team->posiciones,i);
+	for (int i = 0 ;i < cant_posiciones; i ++) {
 		offset += sizeof(int);
-		memcpy(paquete->buffer->data + offset, &coord,sizeof(int));
+		t_coordenada *coordxy = list_get(msg_localized_team->posiciones->coordenadas, i);
+		memcpy(paquete->buffer->data + offset,&(coordxy->pos_x) ,sizeof(int));
+		offset += sizeof(int);
+		memcpy(paquete->buffer->data + offset,&(coordxy->pos_y) ,sizeof(int));
 	}
 	offset += sizeof(int);
 	memcpy(paquete->buffer->data + offset, msg_localized_team->pokemon, size_pokemon);
@@ -233,31 +235,30 @@ t_paquete *empaquetar_msg_caught_broker(t_msg_caught_broker *msg_caught_broker)
 	return paquete;
 }
 
-t_paquete *empaquetar_msg_localized_broker(t_msg_localized_broker *msg_localized_broker)
+t_paquete *empaquetar_msg_localized_broker(t_msg_localized_broker *msg_localized)
 {
-	int size_pokemon = strlen(msg_localized_broker->pokemon) + 1;
+	int size_pokemon = strlen(msg_localized->pokemon) + 1;
+	int cant_posiciones = msg_localized->posiciones->cant_posic;
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	paquete->codigo_operacion = LOCALIZED_BROKER;
 	paquete->buffer = malloc(sizeof(t_stream));
-	int totalBytes = (2 + (msg_localized_broker->cant_posiciones * 3)) * sizeof(int) + size_pokemon;
+	int totalBytes = (2 + (cant_posiciones * 2)) * sizeof(int) + size_pokemon;
 	paquete->buffer->size = totalBytes;
-	void* stream = malloc(paquete->buffer->size);
+	paquete->buffer->data = malloc(paquete->buffer->size);
 	int offset = 0;
-	memcpy(stream + offset, &(msg_localized_broker->id_correlativo), sizeof(int));
+	memcpy(paquete->buffer->data + offset, &(msg_localized->id_correlativo), sizeof(int));
 	offset += sizeof(int);
-	memcpy(stream + offset, &(msg_localized_broker->cant_posiciones), sizeof(int));
-	offset += sizeof(int);
-	for (int procesados = 0; procesados < msg_localized_broker->cant_posiciones; procesados++) {
-		t_posicion_pokemon* posicionActual = list_get(msg_localized_broker->posiciones,procesados);
-		memcpy(stream + offset, &(posicionActual->cantidad),sizeof(int));
+	memcpy(paquete->buffer->data + offset, &(msg_localized->posiciones->cant_posic), sizeof(int));
+	//Serializamos Lista de posiciones.
+	for (int i = 0 ;i < cant_posiciones; i ++) {
 		offset += sizeof(int);
-		memcpy(stream + offset, &(posicionActual->pos_x), sizeof(int));
+		t_coordenada *coordxy = list_get(msg_localized->posiciones->coordenadas, i);
+		memcpy(paquete->buffer->data + offset,&(coordxy->pos_x) ,sizeof(int));
 		offset += sizeof(int);
-		memcpy(stream + offset, &(posicionActual->pos_y), sizeof(int));
-		offset += sizeof(int);
+		memcpy(paquete->buffer->data + offset,&(coordxy->pos_y) ,sizeof(int));
 	}
-	memcpy(stream + offset, msg_localized_broker->pokemon, size_pokemon);
-	paquete->buffer->data = stream;
+	offset += sizeof(int);
+	memcpy(paquete->buffer->data + offset, msg_localized->pokemon, size_pokemon);
 	return paquete;
 }
 
@@ -314,7 +315,7 @@ t_paquete *empaquetar_id_mensaje(int id_mensaje)
 	return paquete;
 }
 
-int coordenada_posiciones(t_posiciones_localized_team* posiciones, int indice)
+int coordenada_posiciones(t_posiciones_localized* posiciones, int indice)
 {
 		t_list *coordxy =  posiciones->coordenadas;
 		void *elem = list_get(coordxy,indice);
@@ -412,23 +413,23 @@ t_msg_appeared_broker *deserializar_msg_appeared_broker(void *msg, int size)
 t_msg_localized_broker *deserializar_msg_localized_broker(void *msg, int size)
 {
 	t_msg_localized_broker *msg_localized_broker = malloc(sizeof(t_msg_localized_broker));
-	msg_localized_broker->posiciones = list_create();
+	msg_localized_broker->posiciones = malloc(sizeof(t_posiciones_localized));
+	msg_localized_broker->posiciones->coordenadas = list_create();
 	int offset = 0;
 	memcpy(&(msg_localized_broker->id_correlativo), msg + offset, sizeof(int));
 	offset += sizeof(int);
-	memcpy(&(msg_localized_broker->cant_posiciones), msg + offset, sizeof(int));
+	memcpy(&(msg_localized_broker->posiciones->cant_posic), msg + offset, sizeof(int));
+	int cant_posiciones = msg_localized_broker->posiciones->cant_posic;
 	offset += sizeof(int);
-	for (int i = 0; i < msg_localized_broker->cant_posiciones; i ++) {
-		t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
-		memcpy(&(posicion->cantidad), msg + offset, sizeof(int));
+	for (int i = 0; i < cant_posiciones; i ++) {
+		t_coordenada *coord = malloc(sizeof(t_coordenada));
+		memcpy(&coord->pos_x,msg + offset, sizeof(int));
 		offset += sizeof(int);
-		memcpy(&(posicion->pos_x), msg + offset, sizeof(int));
+		memcpy(&coord->pos_y,msg + offset, sizeof(int));
+		list_add(msg_localized_broker->posiciones->coordenadas, coord);
 		offset += sizeof(int);
-		memcpy(&(posicion->pos_y), msg + offset, sizeof(int));
-		offset += sizeof(int);
-		list_add(msg_localized_broker->posiciones,posicion);
 	}
-	int size_pokemon = size - ((msg_localized_broker->cant_posiciones * 3) + 2) * sizeof(int);
+	int size_pokemon = size - ((cant_posiciones * 2) + 2) * sizeof(int);
 	msg_localized_broker->pokemon = malloc(size_pokemon);
 	memcpy(msg_localized_broker->pokemon, msg + offset, size_pokemon);
 	return msg_localized_broker;
@@ -524,23 +525,25 @@ t_msg_appeared_team *deserializar_msg_appeared_team(void *msg, int size)
 t_msg_localized_team *deserializar_msg_localized_team(void *msg, int size)
 {
 	t_msg_localized_team *msg_localized_team = malloc(sizeof(t_msg_localized_team));
-	msg_localized_team->posiciones = malloc(sizeof(t_posiciones_localized_team));
+	msg_localized_team->posiciones = malloc(sizeof(t_posiciones_localized));
 	msg_localized_team->posiciones->coordenadas = list_create();
 	int offset = 0;
 	memcpy(&(msg_localized_team->id_mensaje), msg + offset, sizeof(int));
 	offset += sizeof(int);
 	memcpy(&(msg_localized_team->id_correlativo), msg + offset, sizeof(int));
 	offset += sizeof(int);
-	memcpy(&(msg_localized_team->posiciones->cant_posiciones), msg + offset, sizeof(int));
-	int cant_elem = 2 * msg_localized_team->posiciones->cant_posiciones;
+	memcpy(&(msg_localized_team->posiciones->cant_posic), msg + offset, sizeof(int));
+	int cant_elem = msg_localized_team->posiciones->cant_posic;
 	offset += sizeof(int);
 	for (int i = 0; i < cant_elem; i ++) {
-		void *valor = malloc(sizeof(int));
-		memcpy(valor,  msg + offset, sizeof(int));
-		list_add(msg_localized_team->posiciones->coordenadas,valor);
+		t_coordenada *coord = malloc(sizeof(t_coordenada));
+		memcpy(&coord->pos_x,msg + offset, sizeof(int));
+		offset += sizeof(int);
+		memcpy(&coord->pos_y,msg + offset, sizeof(int));
+		list_add(msg_localized_team->posiciones->coordenadas, coord);
 		offset += sizeof(int);
 	}
-	int size_pokemon = size - (cant_elem + 2) * sizeof(int);
+	int size_pokemon = size - ((cant_elem * 2) + 3) * sizeof(int);
 	msg_localized_team->pokemon = malloc(size_pokemon);
 	memcpy(msg_localized_team->pokemon, msg + offset, size_pokemon);
 	return msg_localized_team;

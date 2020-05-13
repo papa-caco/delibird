@@ -49,9 +49,23 @@ void enviar_msj_new_broker(int cliente_fd, t_log *logger, t_msg_new_broker *msg_
 
 void enviar_msj_fin_suscripcion(int socket_cliente, t_log *logger, int id_suscriptor, t_tipo_mensaje cola_suscripcion);
 
-
-
 // ------FUNCIONES PARA RECEPCION DE MENSAJES DEL BROKER ENVIADOS POR OTROS PROCESOS---------------//
+
+t_stream *rcv_msg_new_broker(int socket_cliente, t_log *logger);
+
+t_stream *rcv_msg_get_broker(int socket_cliente, t_log *logger);
+
+t_stream *rcv_msg_catch_broker(int socket_cliente, t_log *logger);
+
+t_stream *rcv_msg_caught_broker(int socket_cliente, t_log *logger);
+
+t_stream *rcv_msg_appeared_broker(int socket_cliente, t_log *logger);
+
+t_stream *rcv_msg_localized_broker(int socket_cliente, t_log *logger);
+
+t_stream *receive_buffer(int socket_cliente, int *size);
+
+// ------FUNCIONES PARA RECEPCION DE MENSAJES DEL TEST_SERVER ENVIADOS POR OTROS PROCESOS----------//
 
 t_msg_new_broker *rcv_msj_new_broker(int socket_cliente, t_log *logger);
 
@@ -63,7 +77,7 @@ t_msg_caught_broker *rcv_msj_caught_broker(int socket_cliente, t_log *logger);
 
 t_msg_appeared_broker *rcv_msj_appeared_broker(int socket_cliente, t_log *logger);
 
-t_msg_localized_broker *rcv_msj_localized_broker(int socket_cliente, t_log *logger); //TODO
+t_msg_localized_broker *rcv_msj_localized_broker(int socket_cliente, t_log *logger);
 
 t_handsake_suscript *rcv_msj_handshake_suscriptor(int socket_cliente);
 
@@ -130,8 +144,6 @@ void *recibir_buffer(int socket_cliente, int *size);
 int tamano_recibido(int bytes);
 
 char *result_caught(t_result_caught resultado);
-
-char *concat_coord_x_y(t_list *posiciones);
 
 char *concat_posiciones(t_list *posiciones);
 

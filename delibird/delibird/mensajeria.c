@@ -112,13 +112,13 @@ void enviar_msj_localized_team(t_socket_cliente_broker *socket, t_log *logger, t
 	int bytes = paquete->buffer->size + 2 * sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
-	char *concatenada = concat_coord_x_y(msg_localized_team->posiciones->coordenadas);
+	char *concatenada = concat_posiciones(msg_localized_team->posiciones->coordenadas);
 		if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger,"(SENDING: LOCALIZED_POKEMON|Socket#: %d|ID_MSG:%d|ID_CORRELATIVE:%d|%s|POSIC_QTY=%d|{Xn|Yn}:=%s)",
+	log_info(logger,"(SENDING: LOCALIZED_POKEMON|Socket#: %d|ID_MSG:%d|ID_CORRELATIVE:%d|%s|POSIC_QTY=%d|{Xn|Yn}:=%s|SIZE:%d)",
 		socket->cliente_fd,  msg_localized_team->id_mensaje,msg_localized_team->id_correlativo,
-		msg_localized_team->pokemon, msg_localized_team->posiciones->cant_posiciones, concatenada);
+		msg_localized_team->pokemon, msg_localized_team->posiciones->cant_posic, concatenada,bytes);
 	free(concatenada);
 	free(a_enviar);
 }
@@ -161,10 +161,10 @@ void enviar_msj_localized_broker(int cliente_fd, t_log *logger, t_msg_localized_
 	if (send(cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	char *concatenada = concat_posiciones(msg_localized_broker->posiciones);
-	log_info(logger,"(SENDING: LOCALIZED_POKEMON|Socket#:%d|ID_CORRELATIVE=%d|%s|QTY_POS:%d|{Qn|Xn|Yn}: %s)",
+	char *concatenada = concat_posiciones(msg_localized_broker->posiciones->coordenadas);
+	log_info(logger,"(SENDING: LOCALIZED_POKEMON|Socket#:%d|ID_CORRELATIVE=%d|%s|QTY_POS:%d|{Xn|Yn}:%s|SIZE:%d Bytes)",
 			cliente_fd, msg_localized_broker->id_correlativo, msg_localized_broker->pokemon,
-			msg_localized_broker->cant_posiciones,concatenada);
+			msg_localized_broker->posiciones->cant_posic,concatenada, bytes);
 	free(a_enviar);
 	free(concatenada);
 }
@@ -246,9 +246,9 @@ void enviar_msg_confirmed(int socket_cliente, t_log *logger) {
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(socket_cliente, a_enviar, bytes, MSG_WAITALL) != bytes) {
-		log_error(logger, "(SENDING: MSG_ERROR)");
+		log_error(logger, "(SEND_TO Socket:%d|MSG_ERROR)", socket_cliente);
 	}
-	log_info(logger, "(SENDING: MSG_CONFIRMED)");
+	log_info(logger, "(SEND_TO Socket:%d|MSG_CONFIRMED)", socket_cliente);
 	free(a_enviar);
 }
 
@@ -260,34 +260,9 @@ void enviar_id_mensaje(int socket_cliente, t_log *logger, int id_mensaje)
 	if (send(socket_cliente, a_enviar, bytes, 0) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger, "(SENDING: ID_MSG:%d)", id_mensaje);
+	log_info(logger, "(SEND_TO Socket:%d|ID_MSG:%d)",socket_cliente, id_mensaje);
 	free(a_enviar);
 	eliminar_paquete(paquete);
-}
-
-char *concat_coord_x_y(t_list *posiciones)
-{
-	int cant_elem = posiciones->elements_count;
-		char *cadena = malloc(200);
-	strcpy(cadena, "[");
-	for (int i = 0; i < cant_elem; i ++) {
-		int valor;
-		void *elemento;
-		elemento = list_get(posiciones,i);
-		memcpy(&valor, elemento, sizeof(int));
-		char *num = string_itoa(valor);
-		char nume[3];
-		strcpy(nume,num);
-		strcat(cadena,nume);
-		if (i == cant_elem - 1) {
-			strcat(cadena,"] ");
-		}
-		else {
-			strcat(cadena,"|");
-		}
-		free(num);
-	}
-	return cadena;
 }
 
 char *concat_posiciones(t_list *posiciones)
@@ -296,21 +271,13 @@ char *concat_posiciones(t_list *posiciones)
 		char *cadena = malloc(200);
 	strcpy(cadena, "[");
 	for (int i = 0; i < cant_elem; i ++) {
-		void *posicion =  list_get(posiciones,i);
-		int qty,pos_x,pos_y;
-		int offset=0;
-		memcpy(&qty,posicion + offset, sizeof(int));
-		offset += sizeof(int);
-		memcpy(&pos_x,posicion + offset, sizeof(int));
-		offset += sizeof(int);
-		memcpy(&pos_y,posicion + offset, sizeof(int));
-		char *cant = string_itoa(qty);
+		t_coordenada *coord_xy =  list_get(posiciones,i);
+		int pos_x,pos_y;
+		memcpy(&pos_x,&coord_xy->pos_x, sizeof(int));
+		memcpy(&pos_y,&coord_xy->pos_y, sizeof(int));
 		char *posx = string_itoa(pos_x);
 		char *posy = string_itoa(pos_y);
 		char auxiliar[3];
-		strcpy(auxiliar,cant);
-		strcat(cadena,auxiliar);
-		strcat(cadena,"|");
 		strcpy(auxiliar,posx);
 		strcat(cadena,auxiliar);
 		strcat(cadena,"|");
@@ -322,7 +289,6 @@ char *concat_posiciones(t_list *posiciones)
 		else {
 			strcat(cadena,"|");
 		}
-		free(cant);
 		free(posx);
 		free(posy);
 	}
@@ -331,10 +297,8 @@ char *concat_posiciones(t_list *posiciones)
 
 void eliminar_msg_localized_broker(t_msg_localized_broker *msg_localized_broker)
 {
-	for (int i = 0; i < msg_localized_broker->posiciones->elements_count; i ++) {
-		free(list_get(msg_localized_broker->posiciones,i));
-	}
-	list_destroy(msg_localized_broker->posiciones);
+	list_destroy_and_destroy_elements(msg_localized_broker->posiciones->coordenadas,(void*) free);
+	free(msg_localized_broker->posiciones);
 	free(msg_localized_broker->pokemon);
 	free(msg_localized_broker);
 }
@@ -359,6 +323,19 @@ t_msg_new_broker *rcv_msj_new_broker(int socket_cliente, t_log *logger)
 	return msg_new_broker;
 }
 
+t_stream *rcv_msg_new_broker(int socket_cliente, t_log *logger)
+{
+	int size;
+	t_stream *msg = receive_buffer(socket_cliente, &size);
+	t_msg_new_broker *msg_new_broker = deserializar_msg_new_broker(msg->data, size);
+	int tamano = tamano_recibido(size);
+	log_info(logger, "(RCV_FROM Socket:%d|NEW_POKEMON|Pokemon:'%s'|POS_X:%d|POS_Y:%d|QTY:%d|SIZE:%d Bytes)",
+			socket_cliente, msg_new_broker->pokemon, msg_new_broker->coordenada->pos_x,
+			msg_new_broker->coordenada->pos_y, msg_new_broker->cantidad, tamano);
+	eliminar_msg_new_broker(msg_new_broker);
+	return msg;
+}
+
 t_msg_catch_broker *rcv_msj_catch_broker(int socket_cliente, t_log *logger)
 {
 	int size;
@@ -369,6 +346,19 @@ t_msg_catch_broker *rcv_msj_catch_broker(int socket_cliente, t_log *logger)
 	log_info(logger, "(MSG-BODY= %s | POS_X:%d | POS_Y:%d -- SIZE = %d Bytes)",
 			msg_catch_broker->pokemon, msg_catch_broker->coordenada->pos_x, msg_catch_broker->coordenada->pos_y, tamano);
 	return msg_catch_broker;
+}
+
+t_stream *rcv_msg_catch_broker(int socket_cliente, t_log *logger)
+{
+	int size;
+	t_stream *msg = receive_buffer(socket_cliente, &size);
+	t_msg_catch_broker *msg_catch_broker = deserializar_msg_catch_broker(msg->data, size);
+	int tamano = tamano_recibido(size);
+	log_info(logger, "(RCV_FROM Socket:%d|CATCH_POKEMON|Pokemon:'%s'|POS_X:%d|POS_Y:%d|SIZE:%d Bytes)",
+			socket_cliente, msg_catch_broker->pokemon, msg_catch_broker->coordenada->pos_x,
+			msg_catch_broker->coordenada->pos_y, tamano);
+	eliminar_msg_catch_broker(msg_catch_broker);
+	return(msg);
 }
 
 t_msg_get_broker *rcv_msj_get_broker(int socket_cliente, t_log *logger)
@@ -382,6 +372,18 @@ t_msg_get_broker *rcv_msj_get_broker(int socket_cliente, t_log *logger)
 	return msg_get_broker;
 }
 
+t_stream *rcv_msg_get_broker(int socket_cliente, t_log *logger)
+{
+	int size;
+	t_stream *msg = receive_buffer(socket_cliente, &size);
+	t_msg_get_broker *msg_get_broker = deserializar_msg_get_broker(msg->data, size);
+	int tamano = tamano_recibido(size);
+	log_info(logger, "(RCV_FROM Socket:%d|GET_POKEMON|Pokemon:'%s'|SIZE:%d Bytes)",
+			socket_cliente, msg_get_broker->pokemon, tamano);
+	eliminar_msg_get_broker(msg_get_broker);
+	return(msg);
+}
+
 t_msg_caught_broker *rcv_msj_caught_broker(int socket_cliente, t_log *logger)
 {
 	int size;
@@ -392,6 +394,18 @@ t_msg_caught_broker *rcv_msj_caught_broker(int socket_cliente, t_log *logger)
 	log_info(logger, "(RECEIVING: From:GAMECARD|To:BROKER|Queue:CAUGHT_POKEMON|ID_CORRELATIVE:%d | RESULT:%s -- SIZE: %d Bytes)",
 			msg_caught_broker->id_correlativo,	result_caught(msg_caught_broker->resultado), tamano);
 	return msg_caught_broker;
+}
+
+t_stream *rcv_msg_caught_broker(int socket_cliente, t_log *logger)
+{
+	int size;
+	t_stream *msg = receive_buffer(socket_cliente, &size);
+	t_msg_caught_broker *msg_caught_broker = deserializar_msg_caught_broker(msg->data, size);
+		int tamano = tamano_recibido(size);
+	log_info(logger, "(RCV_FROM Socket:%d|CAUGHT_POKEMON|ID_CORRELATIVE:%d|RESULT:%s|SIZE:%d Bytes)",
+			socket_cliente, msg_caught_broker->id_correlativo,	result_caught(msg_caught_broker->resultado), tamano);
+	free(msg_caught_broker);
+	return(msg);
 }
 
 t_msg_appeared_broker *rcv_msj_appeared_broker(int socket_cliente, t_log *logger)
@@ -407,17 +421,47 @@ t_msg_appeared_broker *rcv_msj_appeared_broker(int socket_cliente, t_log *logger
 	return msg_appeared_broker;
 }
 
+t_stream *rcv_msg_appeared_broker(int socket_cliente, t_log *logger)
+{
+	int size;
+	t_stream *msg = receive_buffer(socket_cliente, &size);
+	t_msg_appeared_broker *msg_appeared_broker = deserializar_msg_appeared_broker(msg->data, size);
+	int tamano = tamano_recibido(size);
+	log_info(logger, "(RCV_FROM Socket:%d|APPEARED_POKEMON|ID_CORRELATIVE:%d|Pokemon:'%s'|POS_X:%d|POS_Y:%d|SIZE:%d Bytes)",
+		socket_cliente, msg_appeared_broker->id_correlativo, msg_appeared_broker->pokemon,
+		msg_appeared_broker->coordenada->pos_x, msg_appeared_broker->coordenada->pos_y, tamano);
+	eliminar_msg_appeared_broker(msg_appeared_broker);
+	return msg;
+}
+
 t_msg_localized_broker *rcv_msj_localized_broker(int socket_cliente, t_log *logger)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
 	t_msg_localized_broker *msg_localized_broker = deserializar_msg_localized_broker(msg, size);
-	char *concatenada = concat_posiciones(msg_localized_broker->posiciones);
-	log_info(logger,"(RECEIVING: From:GAMECARD|To:BROKER|Queue:LOCALIZED_POKEMON |ID_CORRELATIVE:%d |%s|POS_QTY=%d|Xn|Yn|QTn: %s)",
-		msg_localized_broker->id_correlativo, msg_localized_broker->pokemon,msg_localized_broker->cant_posiciones, concatenada);
 	free(msg);
+	int tamano = tamano_recibido(size);
+	char *concatenada = concat_posiciones(msg_localized_broker->posiciones->coordenadas);
+	log_info(logger,"(RECEIVING: From:GAMECARD|To:BROKER|Queue:LOCALIZED_POKEMON |ID_CORRELATIVE:%d |%s|POS_QTY=%d|{Xn|Yn}:%s|SIZE:%d Bytes)",
+		msg_localized_broker->id_correlativo, msg_localized_broker->pokemon,
+		msg_localized_broker->posiciones->cant_posic, concatenada,tamano);
 	free(concatenada);
 	return msg_localized_broker;
+}
+
+t_stream *rcv_msg_localized_broker(int socket_cliente, t_log *logger)
+{
+	int size;
+	t_stream *msg = receive_buffer(socket_cliente, &size);
+	t_msg_localized_broker *msg_localized_broker = deserializar_msg_localized_broker(msg->data, size);
+	char *concatenada = concat_posiciones(msg_localized_broker->posiciones->coordenadas);
+	int tamano = tamano_recibido(size);
+	log_info(logger,"(RCV_FROM Socket:%d|LOCALIZED_POKEMON|ID_CORRELATIVE:%d |%s|POS_QTY=%d|[Xn|Yn]:%s|SIZE:%d Bytes)",
+		socket_cliente, msg_localized_broker->id_correlativo, msg_localized_broker->pokemon,
+		msg_localized_broker->posiciones->cant_posic, concatenada, tamano);
+	free(concatenada);
+	eliminar_msg_localized_broker(msg_localized_broker);
+	return(msg);
 }
 
 t_handsake_suscript *rcv_msj_handshake_suscriptor(int socket_cliente)
@@ -512,10 +556,10 @@ t_msg_localized_team *rcv_msj_localized_team(int socket_cliente, t_log *logger)
 	t_msg_localized_team *msg_localized_team = deserializar_msg_localized_team(msg, size);
 	free(msg);
 	int tamano = tamano_recibido(size);
-	char *concatenada = concat_coord_x_y(msg_localized_team->posiciones->coordenadas);
-	log_info(logger,"(RECEIVING: FROM LOCALIZED_POKEMON|ID_MSG:%d|ID_CORRELATIVE:%d|%s|POSIC_QTY=%d|{Xn|Yn}:=%s)",
+	char *concatenada = concat_posiciones(msg_localized_team->posiciones->coordenadas);
+	log_info(logger,"(RECEIVING: FROM LOCALIZED_POKEMON|ID_MSG:%d|ID_CORRELATIVE:%d|%s|POSIC_QTY=%d|{Xn|Yn}:%s|SIZE:%d Bytes)",
 		msg_localized_team->id_mensaje,msg_localized_team->id_correlativo,
-		msg_localized_team->pokemon, msg_localized_team->posiciones->cant_posiciones, concatenada);
+		msg_localized_team->pokemon, msg_localized_team->posiciones->cant_posic, concatenada, tamano);
 	free(concatenada);
 	return msg_localized_team;
 }
@@ -655,6 +699,17 @@ void *recibir_buffer(int socket_cliente, int *size)
 	msg = malloc(*size);
 	recv(socket_cliente, msg, *size, MSG_WAITALL);
 	return msg;
+}
+
+t_stream *receive_buffer(int socket_cliente, int *size)
+{
+	void *msg = recibir_buffer(socket_cliente, size);
+	t_stream *buffer = malloc(sizeof(t_stream));
+	buffer->size = *size;
+	buffer->data = malloc(buffer->size);
+	memcpy(buffer->data, msg, buffer->size);
+	free(msg);
+	return buffer;
 }
 
 void eliminar_lista(t_list *lista)

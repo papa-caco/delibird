@@ -21,6 +21,8 @@
 
 #define IP "127.0.0.1"
 #define PUERTO "5001"
+#define IP_BROKER "127.0.0.1"
+#define PUERTO_BROKER "6009"
 #define ID_MSG_RTA 5535
 #define RESPUESTA_OK 1001
 
@@ -37,8 +39,6 @@ t_list *g_suscriptores;
 void process_request(op_code cod_op, t_socket_cliente_broker *socket);
 
 void process_suscript(op_code cod_op, t_socket_cliente_broker *socket);
-
-int recibir_operacion(int socket);
 
 void start_suscription(t_list *suscriptores,t_handsake_suscript *suscrpitor);
 
@@ -58,7 +58,7 @@ void devolver_msj_caught_broker(t_msg_catch_gamecard *msg_catch_gamecard, int cl
 
 void devolver_msj_appeared_broker(t_msg_new_gamecard *msg_new_gamecard,int cliente_fd);
 
-void devolver_posiciones(int socket_cliente, char* pokemon, int* encontroPokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
+void devolver_posiciones(int socket_cliente, int id_correlativo, char* pokemon, int* encontroPokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
 
 void enviar_msjs_get(t_socket_cliente_broker *socket);
 
@@ -72,7 +72,11 @@ void enviar_msjs_caught(t_socket_cliente_broker *socket);
 
 void enviar_msjs_localized(t_socket_cliente_broker *socket);
 
-t_posiciones_localized_team *generar_posiciones_localized(int cantidad);
+void enviar_msj_localized_al_broker(t_msg_localized_broker *msg_localized);
+
+void connect_broker_send_msg(t_msg_localized_broker *msg_localized);
+
+t_posiciones_localized *generar_posiciones_localized(int cantidad);
 
 void liberar_lista_posiciones(t_list* list);
 

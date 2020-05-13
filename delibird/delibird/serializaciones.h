@@ -27,7 +27,7 @@ t_paquete *empaquetar_msg_caught_team(t_msg_caught_team *msg_caught_team);
 
 t_paquete *empaquetar_msg_localized_team(t_msg_localized_team *msg_localized_team);
 
-int coordenada_posiciones(t_posiciones_localized_team* posiciones, int indice);
+int coordenada_posiciones(t_posiciones_localized* posiciones, int indice);
 
 // --------------FUNCIONES DE SERIALIZACION PARA MENSAJES QUE ENVIAN GAMECARD y TEAM al BROKER o GAMEBOY-----------//
 
@@ -35,7 +35,7 @@ t_paquete *empaquetar_msg_appeared_broker(t_msg_appeared_broker *msg_appeared_br
 
 t_paquete *empaquetar_msg_caught_broker(t_msg_caught_broker *msg_caught_broker);
 
-t_paquete *empaquetar_msg_localized_broker(t_msg_localized_broker *msg_localized_broker);
+t_paquete *empaquetar_msg_localized_broker(t_msg_localized_broker *msg_localized);
 
 t_paquete *empaquetar_msg_catch_broker(t_msg_catch_broker *msg_catch_broker);
 

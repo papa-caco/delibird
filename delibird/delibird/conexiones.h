@@ -15,7 +15,7 @@
 
 void iniciar_server_broker(char *ip, char *puerto, t_log* logger, pthread_t thread);
 
-void esperar_cliente_broker(int socket_servidor, pthread_t thread);
+void esperar_cliente_broker(int socket_servidor, t_log *logger, pthread_t thread);
 
 void atender_cliente_broker(t_socket_cliente_broker *socket);
 

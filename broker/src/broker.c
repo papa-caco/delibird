@@ -19,17 +19,10 @@ int main(void) {
 
 	iniciar_log_broker();
 
-	log_info(g_logger,"Algoritmo Memoria: %s = %d",
-			config_get_string_value(g_config,"ALGORITMO_MEMORIA"), g_config_broker->algoritmo_memoria);
+	iniciar_estructuras_broker();
 
-	t_list *lista = lista_numerica();
+	inicio_server_broker();
 
-	log_info(g_logger,"Cant Elem: %d", lista->elements_count);
-
-	char *cadena = concat_coord_x_y(lista);
-
-	log_info(g_logger,"%s", cadena);
-
-	return 0;
+	return EXIT_SUCCESS;
 
 }

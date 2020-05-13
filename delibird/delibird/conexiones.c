@@ -20,7 +20,7 @@ void iniciar_server_broker(char *ip, char *puerto, t_log* logger, pthread_t thre
 	hints.ai_flags = AI_PASSIVE;			// Asigna el address del localhost: 127.0.0.1
 
 	getaddrinfo(ip, puerto, &hints, &servinfo);
-	log_info(logger, "Esperando conexiones en Direccion: %s, Puerto: %s", ip, puerto);
+	log_info(logger, "(AWAITING CONNECTIONS AT ADDRESS:%s | PORT:%s)", ip, puerto);
 
 	for (p = servinfo; p != NULL; p = p->ai_next) {
 		if ((socket_servidor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
@@ -34,14 +34,15 @@ void iniciar_server_broker(char *ip, char *puerto, t_log* logger, pthread_t thre
 	listen(socket_servidor, SOMAXCONN);	// Maximum queue length specifiable by listen = 128 (default)
 	freeaddrinfo(servinfo);
 	while (1)
-		esperar_cliente_broker(socket_servidor, thread);
+		esperar_cliente_broker(socket_servidor, logger, thread);
 }
 
-void esperar_cliente_broker(int socket_servidor, pthread_t thread)
+void esperar_cliente_broker(int socket_servidor,t_log *logger, pthread_t thread)
 {
 	struct sockaddr_in dir_cliente;
 	socklen_t tam_direccion = sizeof(struct sockaddr_in);
 	int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
+	log_info(logger,"(NEW CLIENT CONNECTED | SOCKET#:%d)", socket_cliente);
 	t_socket_cliente_broker *socket = malloc(sizeof(t_socket_cliente_broker));
 	socket->cliente_fd = socket_cliente;
 	// inicializa contador de mensajes enviados al cliente que se conectó.
@@ -104,6 +105,7 @@ int crear_conexion(char *ip, char *puerto, t_log *logger, char *proceso, char *c
 			server_info->ai_addrlen);
 	if (conexion < 0) {
 		log_error(logger,"(CONN_FAILED:PROCESS: %s | QUEUE: %s | IP: %s | PORT: %s)", proceso, cola, ip, puerto);
+		socket_cliente = conexion;
 	}
 	else {
 		log_info(logger,"(SUCCESS_CONN - PROCESS: %s | QUEUE: %s | IP: %s | PORT: %s)", proceso, cola, ip, puerto);

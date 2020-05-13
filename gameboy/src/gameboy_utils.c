@@ -16,26 +16,20 @@ void construir_mensaje(t_mensaje_gameboy *argumentos_mensaje, t_list *lista) {
 
 	if (strcmp(proceso, "SUSCRIPTOR") == 0) {
 		argumentos_mensaje->proceso = SUSCRIPTOR;
-		argumentos_mensaje->tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
-		g_suscript_queue = argumentos_mensaje->tipo_mensaje;
-		cargar_argumentos(argumentos_mensaje, lista);
 	} else if (strcmp(proceso, "BROKER") == 0) {
 		argumentos_mensaje->proceso = BROKER;
-		argumentos_mensaje->tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
-		cargar_argumentos(argumentos_mensaje, lista);
 	} else if (strcmp(proceso, "GAMECARD") == 0) {
 		argumentos_mensaje->proceso = GAMECARD;
-		argumentos_mensaje->tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
-		cargar_argumentos(argumentos_mensaje, lista);
 	} else if (strcmp(proceso, "TEAM") == 0) {
 		argumentos_mensaje->proceso = TEAM;
-		argumentos_mensaje->tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
-		cargar_argumentos(argumentos_mensaje, lista);
 	} else {
 		argumentos_mensaje->proceso = UNKNOWN_PROC;
 		argumentos_mensaje->tipo_mensaje = UNKNOWN_QUEUE;
 		list_clean(argumentos_mensaje->argumentos);
+		exit(EXIT_SUCCESS);
 	}
+	argumentos_mensaje->tipo_mensaje = select_tipo_mensaje(tipo_mensaje);
+	cargar_argumentos(argumentos_mensaje, lista);
 	list_destroy(lista);
 }
 
@@ -113,6 +107,7 @@ bool validar_argumentos(t_mensaje_gameboy *argumentos_mensaje) {
 			} else if (proceso == GAMECARD && (cant_argumentos == 4)
 					&& validar_coordXY(argumentos_mensaje->argumentos, 1, 2) == 1
 					&& validar_id_mensaje(argumentos_mensaje->argumentos, 3) == 1) {
+				resultado = 1;
 			} else {
 				resultado = 0;
 			}
@@ -127,9 +122,12 @@ bool validar_argumentos(t_mensaje_gameboy *argumentos_mensaje) {
 			}
 			break;
 		case GET_POKEMON:
-			if (proceso != TEAM && proceso != GAMEBOY && cant_argumentos == 1) {
+			if (proceso == BROKER && cant_argumentos == 1) {
 				resultado = 1;
-			} else {
+			} else if (proceso == GAMECARD && (cant_argumentos == 2)
+					&& validar_id_mensaje(argumentos_mensaje->argumentos, 1) == 1) {
+				resultado = 1;
+			}else {
 				resultado = 0;
 			}
 			break;
@@ -472,7 +470,7 @@ void send_msg_get_gamecard(t_mensaje_gameboy *msg_gameboy, int socket_cliente, t
 	char *pokemon = list_get(msg_gameboy->argumentos, 0);
 	int size_pokemon =  strlen(pokemon) + 1;
 	t_msg_get_gamecard *msg_get = malloc(sizeof(t_msg_get_gamecard));
-	msg_get->id_mensaje = g_config_gameboy->id_mensaje_unico;
+	msg_get->id_mensaje = atoi(list_get(msg_gameboy->argumentos, 1));
 	msg_get->pokemon = malloc(size_pokemon);
 	memcpy(msg_get->pokemon, pokemon, size_pokemon);
 	t_socket_cliente_broker *socket = malloc(sizeof(t_socket_cliente_broker));
