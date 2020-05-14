@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
-		<cconfiguration id="cdt.managedbuild.toolchain.gnu.base.606612210">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.gnu.base.606612210" moduleId="org.eclipse.cdt.core.settings" name="Default">
+		<cconfiguration id="cdt.managedbuild.toolchain.gnu.base.415947385">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.gnu.base.415947385" moduleId="org.eclipse.cdt.core.settings" name="Default">
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
@@ -14,25 +14,25 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration buildProperties="" id="cdt.managedbuild.toolchain.gnu.base.606612210" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
-					<folderInfo id="cdt.managedbuild.toolchain.gnu.base.606612210.1349726630" name="/" resourcePath="">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.base.814649913" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
-							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.GNU_ELF" id="cdt.managedbuild.target.gnu.platform.base.557576301" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
-							<builder id="cdt.managedbuild.target.gnu.builder.base.1496074696" managedBuildOn="false" name="Gnu Make Builder.Default" superClass="cdt.managedbuild.target.gnu.builder.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.archiver.base.466981395" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.762030694" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.576360433" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
-								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1723202439" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+				<configuration buildProperties="" id="cdt.managedbuild.toolchain.gnu.base.415947385" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="cdt.managedbuild.toolchain.gnu.base.415947385.1332172792" name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.base.2040133038" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.GNU_ELF" id="cdt.managedbuild.target.gnu.platform.base.2009154996" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
+							<builder id="cdt.managedbuild.target.gnu.builder.base.1611733508" managedBuildOn="false" name="Gnu Make Builder.Default" superClass="cdt.managedbuild.target.gnu.builder.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.2108424424" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.1598189734" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1947334658" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1583203848" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1446937163" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base">
-								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.426450699" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.440903749" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base">
+								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.1327475068" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
 							</tool>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.783941424" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1366979335" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
-								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.864525543" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.821064645" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1825838209" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1610994422" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
@@ -43,9 +43,12 @@
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.606612210;cdt.managedbuild.toolchain.gnu.base.606612210.1349726630;cdt.managedbuild.tool.gnu.c.compiler.base.576360433;cdt.managedbuild.tool.gnu.c.compiler.input.1723202439">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="gameboy.null.1517873407" name="gameboy"/>
+		<project id="gameboy.null.1613562318" name="gameboy"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope"/>

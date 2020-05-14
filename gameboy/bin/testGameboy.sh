@@ -12,10 +12,11 @@
 ./gameboy BROKER GET_POKEMON Maurito
 ./gameboy BROKER GET_POKEMON Mauricio
 ./gameboy BROKER GET_POKEMON Macri
-./gameboy GAMECARD GET_POKEMON PepeVacio
-./gameboy GAMECARD GET_POKEMON Pepito
-./gameboy GAMECARD GET_POKEMON Damian
-./gameboy GAMECARD GET_POKEMON Charmander
+./gameboy GAMECARD GET_POKEMON PepeVacio 223
+./gameboy GAMECARD GET_POKEMON Pepito 3456
+./gameboy GAMECARD GET_POKEMON Damian 1234
+./gameboy GAMECARD GET_POKEMON Pikachu 1234
+./gameboy GAMECARD GET_POKEMON Charmander 9789
 ./gameboy BROKER CATCH_POKEMON Pikachu 0 0
 ./gameboy BROKER CATCH_POKEMON Pikachu 255 255
 ./gameboy BROKER CATCH_POKEMON Pikachu 40 40

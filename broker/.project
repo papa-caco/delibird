@@ -3,6 +3,7 @@
 	<name>broker</name>
 	<comment></comment>
 	<projects>
+		<project>delibird</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
