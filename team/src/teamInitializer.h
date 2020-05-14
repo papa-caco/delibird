@@ -1,6 +1,3 @@
-#ifndef CONEXIONES_H_
-#define CONEXIONES_H_
-
 #include<stdio.h>
 #include<stdlib.h>
 #include<sys/socket.h>
@@ -11,111 +8,46 @@
 #include<commons/config.h>
 #include<commons/txt.h>
 #include<commons/collections/list.h>
+#include<commons/collections/queue.h>
 #include<string.h>
 #include<pthread.h>
 #include<stdbool.h>
+#include"utilsTeam.h"
 
 #define IP "127.0.0.1"
 #define PUERTO "5001"
 #define ID_MSG_RTA 65535
 #define RESPUESTA_OK "RECIBIDO_OK"
 #define HANDSHAKE_SUSCRIPTOR 255
+//t_queue* new;
+//t_list* objetivoGlobal;
 
-typedef enum Resultado_Caught{
-	FAIL, OK,
-} t_result_caught;
-
-typedef enum Codigo_Operacion{
-	ID_MENSAJE = 10,
-	MSG_CONFIRMED,
-	MSG_ERROR,
-	NEW_BROKER = 20,
-	APPEARED_BROKER,
-	CATCH_BROKER,
-	CAUGHT_BROKER,
-	GET_BROKER,
-	LOCALIZED_BROKER,
-	NEW_GAMECARD = 40,
-	CATCH_GAMECARD,
-	GET_GAMECARD,
-	APPEARED_TEAM = 80,
-	CAUGHT_TEAM,
-	LOCALIZED_TEAM,
-	COLA_VACIA,
-	FIN_SUSCRIPCION,
-} op_code;
-
-typedef struct Posicion_Pokemon{
-	int pos_x;
-	int pos_y;
-	int cantidad;
-} t_posicion_pokemon;
 
 typedef struct Posicion_Entrenador{
 	int pos_x;
 	int pos_y;
 } t_posicion_entrenador;
 
-typedef struct Handshake_Suscriptor{
-	int id_suscriptor;
-	int valor_handshake;
-	int msjs_recibidos;
-} t_handsake_suscript;
-
-typedef struct Msg_Appeared_Pokemon{
-	int pos_x;
-	int pos_y;
-	char *pokemon;
-} t_msg_appeared;
-
-typedef struct Msg_Caught_Pokemon{
-	int id_correlativo;
-	t_result_caught resultado;
-} t_msg_caught;
-
-typedef struct Msg_Localized_Pokemon{
-	int id_correlativo;
-	int cant_posiciones;
-	t_list *posiciones;
-	char *pokemon;
-} t_msg_localized;
-
-typedef struct Msg_New_Pokemon{
-	int id_mensaje;
-	int pos_x;
-	int pos_y;
+typedef struct Pokemon_Entrenador{
+	char* pokemon;
 	int cantidad;
-	char *pokemon;
-} t_msg_new;
+} t_pokemon_entrenador;
 
-typedef struct Msg_Catch_Pokemon{
-	int id_mensaje;
-	int pos_x;
-	int pos_y;
-	char *pokemon;
-} t_msg_catch;
+typedef enum Estado_Entrenador{
+	NEW,
+	READY,
+	BLOCKED,
+	EXEC,
+	EXIT,
+} t_estado;
 
-typedef struct Msg_Get_Pokemon{
-	int id_mensaje;
-	char *pokemon;
-} t_msg_get;
-
-
-typedef struct Stream{
-	int size;
-	void* stream;
-} t_stream;
-
-typedef struct Paquete{
-	op_code codigo_operacion;
-	t_stream* buffer;
-} t_paquete;
-
-typedef struct socket_cliente{
-	int cliente_fd;
-	int cant_msg_enviados;
-} t_socket_cliente;
-
+typedef struct Entrenador{
+	t_posicion_entrenador* posicion;
+	t_list* objetivoEntrenador;
+	t_list* pokemonesObtenidos;
+	//Tal vez como opción podrías agregar una variable hilo acá e ir inicializándoselo a cada uno.
+	//La otra es crear los hilos por otro lado e ir manejándolos a tu criterio.
+} t_entrenador;
 
 //-----------------Variables Globales----------------------------
 
@@ -132,7 +64,11 @@ void* recibir_buffer(int*, int);
 
 int recibir_operacion(int socket);
 
+void iniciar_team(void);
+
 void iniciar_servidor(void);
+
+void iniciar_logger(void);
 
 void serve_client(t_socket_cliente *socket);
 
@@ -160,15 +96,13 @@ void* rcv_appeared_broker(int socket_cliente, int* size);
 
 void* rcv_appeared_team(int socket_cliente, int* size);
 
-t_handsake_suscript *rcv_handshake_suscripcion(t_socket_cliente *socket, int *size);
+//t_handsake_suscript *rcv_handshake_suscripcion(t_socket_cliente *socket, int *size);
 
-t_handsake_suscript *rcv_fin_suscripcion(t_socket_cliente *socket, int *size);
+//t_handsake_suscript *rcv_fin_suscripcion(t_socket_cliente *socket, int *size);
 
-void *serializar_paquete(t_paquete* paquete, int bytes);
+//void *serializar_paquete(t_paquete* paquete, int bytes);
 
 void devolver_id_mensaje_propio(int socket_cliente);
-
-void liberar_listas(char** lista);
 
 void devolver_recepcion_ok(int socket_cliente);
 
@@ -194,8 +128,16 @@ void liberar_lista_posiciones(t_list* list);
 
 int tamano_recibido(int bytes);
 
-void eliminar_paquete (t_paquete *paquete);
+//void eliminar_paquete (t_paquete *paquete);
 
+t_pokemon_entrenador* list_buscar(t_list* lista, char* elementoAbuscar);
 
-#endif /* CONEXIONES_H_ */
+t_list *extraer_pokemones_entrenadores(char* configKey);
 
+void iniciar_entrenadores_and_objetivoGlobal(t_queue* cola, t_list* objetivoGlobal);
+
+void cargar_objetivo_global(t_list* objetivosDeTodosEntrenadores, t_list* objetivoGlobal);
+
+void liberar_lista(t_list* lista);
+
+void liberar_cola(t_queue* cola);

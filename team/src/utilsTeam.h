@@ -57,10 +57,6 @@ typedef struct Posicion_Pokemon{
 	int cantidad;
 } t_posicion_pokemon;
 
-typedef struct Posicion_Entrenador{
-	int pos_x;
-	int pos_y;
-} t_posicion_entrenador;
 
 typedef struct Handshake_Suscriptor{
 	int id_suscriptor;
@@ -137,14 +133,6 @@ void* recibir_buffer(int*, int);
 int recibir_operacion(int socket);
 
 void iniciar_team(void);
-
-void iniciar_servidor(void);
-
-void serve_client(t_socket_cliente *socket);
-
-void process_request(op_code cod_op, t_socket_cliente *socket);
-
-void process_suscript(op_code cod_op, t_socket_cliente *socket);
 
 void* recibir_mensaje(int socket_cliente, int* size);
 

@@ -13,6 +13,7 @@
 #include<string.h>
 #include<commons/log.h>
 #include "utilsTeam.h"
+#include "teamInitializer.h"
 
 
 #endif /* SERVIDOR_H_ */
