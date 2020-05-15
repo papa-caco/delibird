@@ -3,6 +3,7 @@
 	<name>team</name>
 	<comment></comment>
 	<projects>
+		<project>delibird</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

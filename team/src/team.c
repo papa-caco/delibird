@@ -45,14 +45,13 @@ int main(void) {
 
 	 liberar_lista(objetivosEntrenadores);
 	 */
-	t_queue* unaCola = queue_create();
-	t_list* objetivoGlobal = list_create();
-	iniciar_entrenadores_and_objetivoGlobal(unaCola, objetivoGlobal);
+
+	iniciar_entrenadores_and_objetivoGlobal();
 
 	printf("----------------------------------\n");
 
-	for (int i = 0; queue_is_empty(unaCola) == 0; i++) {
-		t_entrenador* unEntrenador = (t_entrenador*) queue_pop(unaCola);
+	for (int i = 0; queue_is_empty(colaNewEntrenadores) == 0; i++) {
+		t_entrenador* unEntrenador = (t_entrenador*) queue_pop(colaNewEntrenadores);
 		printf("EL ENTRENADOR %d SE ENCUENTRA EN (%d, %d) \n", i + 1,
 				unEntrenador->posicion->pos_x, unEntrenador->posicion->pos_y);
 		printf("SUS POKEMONES OBJETIVO SON \n");
@@ -73,23 +72,23 @@ int main(void) {
 		}
 		printf("----------------------------------\n");
 	}
-		printf("La cantidad de objetivoGlobal es: %d \n", list_size(objetivoGlobal));
-	for (int procesados = 0; list_get(objetivoGlobal, procesados) !=NULL ; procesados++) {
+		printf("La cantidad de objetivoGlobal es: %d \n", list_size(objetivoGlobalEntrenadores));
+	for (int procesados = 0; list_get(objetivoGlobalEntrenadores, procesados) !=NULL ; procesados++) {
 		printf("-----------------Los objetivos globales son: ------------------\n");
 
 
 
 
 			t_pokemon_entrenador* pokemonPrint = list_get(
-					objetivoGlobal, procesados);
+					objetivoGlobalEntrenadores, procesados);
 
 			printf("-------------------El pokemon es %s y su cantidad es %d \n",
 					pokemonPrint->pokemon, pokemonPrint->cantidad);
 
 	}
-	liberar_lista(objetivoGlobal);
+	liberar_lista(objetivoGlobalEntrenadores);
 
-	liberar_cola(unaCola);
+	liberar_cola(colaNewEntrenadores);
 
 	//log_destroy(g_logger);
 	//LAS VARIABLES "objetivoGlobal" y "new" TIENEN QUE SER VARIABLES GLOBALES, es decir que vamos a tener que sacar

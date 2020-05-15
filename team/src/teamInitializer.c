@@ -201,11 +201,13 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 
 
 
-void iniciar_entrenadores_and_objetivoGlobal(t_queue* unaCola, t_list* objetivoGlobal){
+void iniciar_entrenadores_and_objetivoGlobal(){
+	colaNewEntrenadores = queue_create();
+	objetivoGlobalEntrenadores = list_create();
 	t_list* objetivosEntrenadores = extraer_pokemones_entrenadores("OBJETIVOS_ENTRENADORES");
 	t_list* pokemonesObtenidos = extraer_pokemones_entrenadores("POKEMON_ENTRENADORES");
 	t_list* posiciones = extraer_posiciones_entrenadores();
-	cargar_objetivo_global(objetivosEntrenadores, objetivoGlobal);
+	cargar_objetivo_global(objetivosEntrenadores);
 
 
 	for(int i=0; list_get(posiciones, i) != NULL; i++){
@@ -213,28 +215,28 @@ void iniciar_entrenadores_and_objetivoGlobal(t_queue* unaCola, t_list* objetivoG
 		unEntrenador->posicion = (t_posicion_entrenador*)list_get(posiciones, i);
 		unEntrenador->objetivoEntrenador = (t_list*)list_get(objetivosEntrenadores, i);
 		unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
-		queue_push(unaCola, unEntrenador);
+		queue_push(colaNewEntrenadores, unEntrenador);
 	}
 	//Al finalizar el programa vamos a tener que destruir la lista de entrenadores, lo cual implicará destruir
 	//también cada una de las listas que creamos acá para llenar a cada uno
 
 }
 
-void cargar_objetivo_global(t_list* objetivosEntrenadores, t_list* objetivoGlobal){
+void cargar_objetivo_global(t_list* objetivosEntrenadores){
 	for(int i=0; list_get(objetivosEntrenadores, i) != NULL; i++){
 		t_list* objetivosUnEntrenador = (t_list*)list_get(objetivosEntrenadores, i);
 
 
 		for(int j=0; list_get(objetivosUnEntrenador, j) != NULL; j++){
 			t_pokemon_entrenador *pokemonNuevo = malloc(sizeof(t_pokemon_entrenador));
-			t_pokemon_entrenador* pokemonEncontrado = list_buscar(objetivoGlobal, ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->pokemon);
+			t_pokemon_entrenador* pokemonEncontrado = list_buscar(objetivoGlobalEntrenadores, ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->pokemon);
 			if(pokemonEncontrado != NULL){
 				pokemonEncontrado -> cantidad+=((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->cantidad;
 			}
 			else{
 				pokemonNuevo -> pokemon = ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->pokemon;
 				pokemonNuevo -> cantidad = ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->cantidad;
-				list_add(objetivoGlobal, pokemonNuevo);
+				list_add(objetivoGlobalEntrenadores, pokemonNuevo);
 			}
 
 		}

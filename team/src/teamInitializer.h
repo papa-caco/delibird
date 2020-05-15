@@ -56,6 +56,10 @@ pthread_t thread;
 
 t_log *g_logger;
 
+t_queue* colaNewEntrenadores;
+
+t_list* objetivoGlobalEntrenadores;
+
 //-----------------Firma de Funciones----------------------------
 
 t_list * extraer_posiciones_entrenadores();
@@ -134,9 +138,9 @@ t_pokemon_entrenador* list_buscar(t_list* lista, char* elementoAbuscar);
 
 t_list *extraer_pokemones_entrenadores(char* configKey);
 
-void iniciar_entrenadores_and_objetivoGlobal(t_queue* cola, t_list* objetivoGlobal);
+void iniciar_entrenadores_and_objetivoGlobal();
 
-void cargar_objetivo_global(t_list* objetivosDeTodosEntrenadores, t_list* objetivoGlobal);
+void cargar_objetivo_global(t_list* objetivosDeTodosEntrenadores);
 
 void liberar_lista(t_list* lista);
 
