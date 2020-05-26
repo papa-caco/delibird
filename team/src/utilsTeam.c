@@ -6,13 +6,7 @@
  */
 
 #include"utilsTeam.h"
-#include"teamInitializer.c"
 
-
-void iniciar_team(void){
-	iniciar_logger();
-	iniciar_servidor();
-}
 
 
 void* recibir_mensaje(int socket_cliente, int* size) {
