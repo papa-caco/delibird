@@ -15,7 +15,7 @@ void atender_cliente_broker(t_socket_cliente_broker *socket) {
 	if (recv(cliente_fd, &cod_op, sizeof(int), MSG_WAITALL) == -1) {
 		cod_op = -1;
 	}
-	if (cod_op < SUSCRIP_NEW) {
+	if (cod_op < SUSCRIBER_ACK) {
 		process_request(cod_op, socket);
 	} else {
 		process_suscript(cod_op, socket);
@@ -123,199 +123,40 @@ void process_request(op_code cod_op, t_socket_cliente_broker *socket) {
 
 // MENSAJES QUE RECIBE en MODO SUSCRIPTOR
 void process_suscript(op_code cod_op, t_socket_cliente_broker *socket) {
-	int id_suscriptor;
-	int cliente_fd = socket->cliente_fd;
-	int cant_msg = socket->cant_msg_enviados;
-	t_handsake_suscript *handshake;
-	switch (cod_op) {
-	case SUSCRIP_NEW:
-		handshake = rcv_msj_handshake_suscriptor(cliente_fd);
-		id_suscriptor = handshake->id_suscriptor;
+	while (cod_op == SUSCRIBER_ACK) {
+		int cliente_fd = socket->cliente_fd;
+		int cant_msg = socket->cant_msg_enviados;
+		t_handsake_suscript *handshake = rcv_msj_handshake_suscriptor(
+				cliente_fd);
+		int id_suscriptor = handshake->id_suscriptor;
 		cant_msg = handshake->msjs_recibidos;
+		t_tipo_mensaje cola = handshake->cola_id;
 		if (cant_msg == 0) {
-			log_info(g_logger,"(SUSCRIPT_RECEIVED: NEW_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)", handshake->id_suscriptor, cliente_fd);
-			start_suscription(g_suscriptores,handshake);
+			log_info(g_logger,
+					"(SUSCRIPT_RECEIVED: %s|ID_SUSCRIPTOR:%d|Socket:%d)",
+					nombre_cola(cola), handshake->id_suscriptor, cliente_fd);
+			start_suscription(g_suscriptores, handshake);
 		}
-		// Simulo Buscar mensajes en cola NEW_POKEMON no enviados al suscriptor
+		free(handshake); // Simulo Buscar mensajes en una cola del BROKER no enviados al suscriptor
 		while (is_active_suscriptor(g_suscriptores, id_suscriptor)) {
 			socket->cant_msg_enviados = cant_msg;
-			if (cant_msg >= 0 && cant_msg < 10000){
-				enviar_msjs_new(socket);
-				free(handshake);
+			if (cant_msg >= 0 && cant_msg < 10000) {
+				enviar_msjs_cola_broker(cola, socket);
 				atender_cliente_broker(socket);
 				free(socket);
-			}
-			else {
+			} else {
 				enviar_msj_cola_vacia(socket, g_logger, id_suscriptor);
 				sleep(1);
-				free(handshake);
 				atender_cliente_broker(socket);
 				free(socket);
 			}
 		}
 		socket->cant_msg_enviados = cant_msg;
 		enviar_msj_suscript_end(socket, g_logger, id_suscriptor);
-		remove_ended_suscriptor(g_suscriptores,id_suscriptor);
-		free(handshake);
+		remove_ended_suscriptor(g_suscriptores, id_suscriptor);
 		free(socket);
 		pthread_exit(EXIT_SUCCESS);
-	case SUSCRIP_APPEARED:
-		handshake = rcv_msj_handshake_suscriptor(cliente_fd);
-		id_suscriptor = handshake->id_suscriptor;
-		cant_msg = handshake->msjs_recibidos;
-		if (cant_msg == 0) {
-			log_info(g_logger,"(SUSCRIPT_RECEIVED: APPEARED_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)", handshake->id_suscriptor, cliente_fd);
-			start_suscription(g_suscriptores,handshake);
-		}
-		while (is_active_suscriptor(g_suscriptores, id_suscriptor)) {
-			socket->cant_msg_enviados = cant_msg;
-			if (cant_msg >= 0 && cant_msg < 10000){
-				enviar_msjs_appeared(socket);
-				free(handshake);
-				atender_cliente_broker(socket);
-				free(socket);
-			}
-			else {
-				enviar_msj_cola_vacia(socket, g_logger, id_suscriptor);
-				sleep(15);
-				free(handshake);
-				atender_cliente_broker(socket);
-				free(socket);
-			}
-		}
-		socket->cant_msg_enviados = cant_msg;
-		enviar_msj_suscript_end(socket, g_logger, id_suscriptor);
-		remove_ended_suscriptor(g_suscriptores,id_suscriptor);
-		free(handshake);
-		free(socket);
-		pthread_exit(EXIT_SUCCESS);
-	case SUSCRIP_CATCH:
-		handshake = rcv_msj_handshake_suscriptor(cliente_fd);
-		id_suscriptor = handshake->id_suscriptor;
-		cant_msg = handshake->msjs_recibidos;
-		if (cant_msg == 0) {
-			log_info(g_logger,"(SUSCRIPT_RECEIVED: CATCH_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)", handshake->id_suscriptor, cliente_fd);
-			start_suscription(g_suscriptores,handshake);
-		}
-		while (is_active_suscriptor(g_suscriptores, id_suscriptor)) {
-			socket->cant_msg_enviados = cant_msg;
-			if (cant_msg >= 0 && cant_msg < 10000){
-				enviar_msjs_catch(socket);
-				free(handshake);
-				atender_cliente_broker(socket);
-				free(socket);
-			}
-			else {
-				enviar_msj_cola_vacia(socket, g_logger, id_suscriptor);
-				sleep(15);
-				free(handshake);
-				atender_cliente_broker(socket);
-				free(socket);
-			}
-		}
-		socket->cant_msg_enviados = cant_msg;
-		enviar_msj_suscript_end(socket, g_logger, id_suscriptor);
-		remove_ended_suscriptor(g_suscriptores,id_suscriptor);
-		free(handshake);
-		free(socket);
-		pthread_exit(EXIT_SUCCESS);
-	case SUSCRIP_CAUGHT:
-		handshake = rcv_msj_handshake_suscriptor(cliente_fd);
-		id_suscriptor = handshake->id_suscriptor;
-		cant_msg = handshake->msjs_recibidos;
-		if (cant_msg == 0) {
-			log_info(g_logger,"(SUSCRIPT_RECEIVED: CATCH_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)", handshake->id_suscriptor, cliente_fd);
-			start_suscription(g_suscriptores,handshake);
-		}
-		while (is_active_suscriptor(g_suscriptores, id_suscriptor)) {
-			socket->cant_msg_enviados = cant_msg;
-			if (cant_msg >= 0 && cant_msg < 10000){
-				enviar_msjs_caught(socket);
-				free(handshake);
-				atender_cliente_broker(socket);
-				free(socket);
-			}
-			else {
-				enviar_msj_cola_vacia(socket, g_logger, id_suscriptor);
-				sleep(15);
-				free(handshake);
-				atender_cliente_broker(socket);
-				free(socket);
-			}
-		}
-		socket->cant_msg_enviados = cant_msg;
-		enviar_msj_suscript_end(socket, g_logger, id_suscriptor);
-		remove_ended_suscriptor(g_suscriptores,id_suscriptor);
-		free(handshake);
-		free(socket);
-		pthread_exit(EXIT_SUCCESS);
-	case SUSCRIP_GET:
-		handshake = rcv_msj_handshake_suscriptor(cliente_fd);
-		id_suscriptor = handshake->id_suscriptor;
-		cant_msg = handshake->msjs_recibidos;
-		if (cant_msg == 0) {
-			log_info(g_logger,"(SUSCRIPT_RECEIVED: GET_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)", handshake->id_suscriptor, cliente_fd);
-			start_suscription(g_suscriptores,handshake);
-		}
-		while (is_active_suscriptor(g_suscriptores, id_suscriptor)) {
-			socket->cant_msg_enviados = cant_msg;
-			if (cant_msg >= 0 && cant_msg < 10000){
-				enviar_msjs_get(socket);
-				free(handshake);
-				atender_cliente_broker(socket);
-				free(socket);
-			}
-			else {
-				enviar_msj_cola_vacia(socket, g_logger, id_suscriptor);
-				sleep(15);
-				free(handshake);
-				atender_cliente_broker(socket);
-				free(socket);
-			}
-		}
-		socket->cant_msg_enviados = cant_msg;
-		enviar_msj_suscript_end(socket, g_logger, id_suscriptor);
-		remove_ended_suscriptor(g_suscriptores,id_suscriptor);
-		free(handshake);
-		free(socket);
-		pthread_exit(EXIT_SUCCESS);
-	case SUSCRIP_LOCALIZED:
-		handshake = rcv_msj_handshake_suscriptor(cliente_fd);
-		id_suscriptor = handshake->id_suscriptor;
-		cant_msg = handshake->msjs_recibidos;
-		if (cant_msg == 0) {
-			log_info(g_logger,"(SUSCRIPT_RECEIVED: LOCALIZED_POKEMON | ID_SUSCRIPTOR = %d | Socket# = %d)", handshake->id_suscriptor, cliente_fd);
-			start_suscription(g_suscriptores,handshake);
-		}
-		while (is_active_suscriptor(g_suscriptores, id_suscriptor)) {
-			socket->cant_msg_enviados = cant_msg;
-			if (cant_msg >= 0 && cant_msg < 10000){
-				enviar_msjs_localized(socket);
-				free(handshake);
-				atender_cliente_broker(socket);
-				free(socket);
-			}
-			else {
-				enviar_msj_cola_vacia(socket, g_logger, id_suscriptor);
-				sleep(5);
-				free(handshake);
-				atender_cliente_broker(socket);
-				free(socket);
-			}
-		}
-		socket->cant_msg_enviados = cant_msg;
-		enviar_msj_suscript_end(socket, g_logger, id_suscriptor);
-		remove_ended_suscriptor(g_suscriptores,id_suscriptor);
-		free(handshake);
-		free(socket);
-		pthread_exit(EXIT_SUCCESS);
-	case 0:
-		pthread_exit(NULL);
-	case -1:
-		pthread_exit(NULL);
 	}
-	free(handshake);
-	free(socket);
 }
 
 void start_suscription(t_list *suscriptores,t_handsake_suscript *handshake)
@@ -323,7 +164,7 @@ void start_suscription(t_list *suscriptores,t_handsake_suscript *handshake)
 	t_suscriptor_broker *suscriptor=malloc(sizeof(t_suscriptor_broker));
 	suscriptor->id_suscriptor = handshake->id_suscriptor;
 	suscriptor->cant_msg = handshake->msjs_recibidos;
-	suscriptor->is_active = 1;
+	suscriptor->enabled = 1;
 	list_add(suscriptores,suscriptor);
 }
 
@@ -331,7 +172,7 @@ void stop_suscription(t_list *suscriptores, t_handsake_suscript *handshake)
 {
 	int id_suscriptor = handshake->id_suscriptor;
 	t_suscriptor_broker *suscriptor = obtengo_suscriptor(suscriptores , id_suscriptor);
-	suscriptor->is_active = 0;
+	suscriptor->enabled = 0;
 }
 
 void remove_ended_suscriptor(t_list *suscriptores, int id_suscriptor)
@@ -355,7 +196,7 @@ void delete_suscriptor(t_list *suscriptores, void *suscriptor)
 bool is_active_suscriptor(t_list *suscriptores, int id_suscriptor)
 {
 	t_suscriptor_broker *suscriptor = obtengo_suscriptor(suscriptores, id_suscriptor);
-	return suscriptor->is_active;
+	return suscriptor->enabled;
 }
 
 t_suscriptor_broker *obtengo_suscriptor(t_list *suscriptores, int id_suscriptor)
@@ -382,7 +223,7 @@ void devolver_posiciones(int socket_cliente, int id_correlativo, char* pokemon,	
 
 	//Por como funciona la funcion strcat, guardo espacio para la ruta completa en el primer argumento
 	char* ruta = malloc(20 + strlen(pokemon) + 1);
-	strcpy(ruta, "/home/utnso/config/");
+	strcpy(ruta, RUTA_ARCHIVOS);
 
 		//Creo la ruta segun el pokemon
 		char* path = strcat(ruta, pokemon);
@@ -457,10 +298,10 @@ void devolver_posiciones(int socket_cliente, int id_correlativo, char* pokemon,	
 
 			printf("Salgo de leer lista\n");
 
-			int size_pokemon = strlen(pokemon) + 1;
-			msg_localized_broker->pokemon = malloc(size_pokemon);
-			printf("pokemon:%s -tamaño:%d\n", pokemon, size_pokemon);
-			memcpy(msg_localized_broker->pokemon, pokemon, size_pokemon);
+			msg_localized_broker->size_pokemon = strlen(pokemon) + 1;
+			msg_localized_broker->pokemon = malloc(msg_localized_broker->size_pokemon);
+			printf("pokemon:%s -tamaño:%d\n", pokemon, msg_localized_broker->size_pokemon);
+			memcpy(msg_localized_broker->pokemon, pokemon, msg_localized_broker->size_pokemon);
 
 			printf("La cantidad de posiciones en la lista es %d: \n",
 					msg_localized_broker->posiciones->cant_posic);
@@ -509,14 +350,38 @@ void devolver_msj_appeared_broker(t_msg_new_gamecard *msg_new_gamecard, int sock
 {
 	t_msg_appeared_broker *msg_appeared_broker = malloc(sizeof(t_msg_appeared_broker));
 	msg_appeared_broker->coordenada = malloc(sizeof(t_coordenada));
-	int size_pokemon = strlen(msg_new_gamecard->pokemon) + 1;
-	msg_appeared_broker->pokemon = malloc(size_pokemon);
+	msg_appeared_broker->size_pokemon = strlen(msg_new_gamecard->pokemon) + 1;
+	msg_appeared_broker->pokemon = malloc(msg_appeared_broker->size_pokemon);
 	msg_appeared_broker->id_correlativo = msg_new_gamecard->id_mensaje;
 	msg_appeared_broker->coordenada->pos_x = msg_new_gamecard->coord->pos_x;
 	msg_appeared_broker->coordenada->pos_y = msg_new_gamecard->coord->pos_y;
-	memcpy(msg_appeared_broker->pokemon,msg_new_gamecard->pokemon,size_pokemon);
+	memcpy(msg_appeared_broker->pokemon,msg_new_gamecard->pokemon, msg_appeared_broker->size_pokemon);
 	enviar_msj_appeared_broker(socket_cliente, g_logger, msg_appeared_broker);
 	eliminar_msg_appeared_broker(msg_appeared_broker);
+}
+
+void enviar_msjs_cola_broker(t_tipo_mensaje cola, t_socket_cliente_broker *socket)
+{
+	switch(cola) {
+	case GET_POKEMON:;
+		enviar_msjs_get(socket);
+		break;
+	case NEW_POKEMON:;
+		enviar_msjs_new(socket);
+		break;
+	case CATCH_POKEMON:;
+		enviar_msjs_catch(socket);
+		break;
+	case LOCALIZED_POKEMON:;
+		enviar_msjs_localized(socket);
+		break;
+	case APPEARED_POKEMON:;
+		enviar_msjs_appeared(socket);
+		break;
+	case CAUGHT_POKEMON:;
+		enviar_msjs_caught(socket);
+		break;
+	}
 }
 
 void enviar_msjs_get(t_socket_cliente_broker *socket)
@@ -524,6 +389,7 @@ void enviar_msjs_get(t_socket_cliente_broker *socket)
 	t_msg_get_gamecard *msg_get = malloc(sizeof(t_msg_get_gamecard));
 	msg_get->id_mensaje = socket->cant_msg_enviados + 700;
 	msg_get->pokemon = "Charizard";
+	msg_get->size_pokemon = strlen(msg_get->pokemon) + 1;
 	enviar_msj_get_gamecard(socket, g_logger, msg_get);
 	free(msg_get);
 }
@@ -537,6 +403,7 @@ void enviar_msjs_new(t_socket_cliente_broker *socket)
 	msg_new->coord->pos_y = 52;
 	msg_new->cantidad = 73;
 	msg_new->pokemon = "Bulbasaur";
+	msg_new->size_pokemon = strlen(msg_new->pokemon) + 1;
 	enviar_msj_new_gamecard(socket, g_logger, msg_new);
 	free(msg_new->coord);
 	free(msg_new);
@@ -550,6 +417,7 @@ void enviar_msjs_catch(t_socket_cliente_broker *socket)
 	msg_catch->coord->pos_x = 78;
 	msg_catch->coord->pos_y = 39;
 	msg_catch->pokemon = "Charmeleon";
+	msg_catch->size_pokemon = strlen(msg_catch->pokemon) + 1;
 	enviar_msj_catch_gamecard(socket, g_logger, msg_catch);
 	free(msg_catch->coord);
 	free(msg_catch);
@@ -559,10 +427,12 @@ void enviar_msjs_appeared(t_socket_cliente_broker *socket)
 {
 	t_msg_appeared_team *msg_appeared = malloc(sizeof(t_msg_appeared_team));
 	msg_appeared->id_mensaje = socket->cant_msg_enviados + 360;
+	msg_appeared->id_correlativo = socket->cant_msg_enviados + 99;
 	msg_appeared->coord = malloc(sizeof(t_coordenada));
 	msg_appeared->coord->pos_x = 20;
 	msg_appeared->coord->pos_y = 25;
 	msg_appeared->pokemon = "Wartortle";
+	msg_appeared->size_pokemon = strlen(msg_appeared->pokemon) + 1;
 	enviar_msj_appeared_team(socket, g_logger, msg_appeared);
 	free(msg_appeared->coord);
 	free(msg_appeared);
@@ -585,6 +455,7 @@ void enviar_msjs_localized(t_socket_cliente_broker *socket)
 	int cant_coord = cant_coordenadas(socket->cant_msg_enviados);
 	msg_localized->posiciones = generar_posiciones_localized(cant_coord);
 	msg_localized->pokemon = "Venusaur";
+	msg_localized->size_pokemon = strlen(msg_localized->pokemon) + 1;
 	enviar_msj_localized_team(socket, g_logger, msg_localized);
 	list_destroy_and_destroy_elements(msg_localized->posiciones->coordenadas,(void*)free);
 	free(msg_localized->posiciones);
@@ -652,5 +523,5 @@ void eliminar_estructuras(void)
 }
 
 void iniciar_logger(void) {
-	g_logger = log_create("/home/utnso/logs/server.log", "SERVER", 1, LOG_LEVEL_INFO);
+	g_logger = log_create(RUTA_LOG, "SERVER", 1, LOG_LEVEL_INFO);
 }

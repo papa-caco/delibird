@@ -13,7 +13,7 @@
 
 //-------------------Firma de funciones - Servidores ---------------------------//
 
-void iniciar_server_broker(char *ip, char *puerto, t_log* logger, pthread_t thread);
+void iniciar_server_broker(char *ip, char *puerto, t_log* logger);
 
 void esperar_cliente_broker(int socket_servidor, t_log *logger, pthread_t thread);
 

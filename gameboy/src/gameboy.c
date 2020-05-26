@@ -26,7 +26,7 @@ int main(int argcnt, char *argval[])
 	}
 
 	// Leer config -- variable global g_config
-	leer_config_gameboy("/home/utnso/config/gameboy.config");
+	leer_config_gameboy(RUTA_CONFIG);
 	// Iniciar logger -- variable global g_logger
 	iniciar_log_gameboy();
 	// Inicializamos la variable con la estructura para los argumentos ingresados
@@ -85,11 +85,12 @@ int main(int argcnt, char *argval[])
 		int flag_salida =1;
 
 		while(flag_salida) {
+			uint32_t id_recibido;
 			cod_oper_mensaje = rcv_codigo_operacion(conexion);
 			if (cod_oper_mensaje != SUSCRIP_END) {
-				rcv_mensaje_publisher(cod_oper_mensaje, conexion);
+				id_recibido = rcv_mensaje_publisher(cod_oper_mensaje, conexion);
 				g_rcv_msg_qty += 1;
-				enviar_msj_suscripcion_broker(g_suscript_queue, conexion);
+				enviar_msj_suscripcion_broker(g_suscript_queue, id_recibido, conexion);
 			}
 			else if (rcv_msg_suscrip_end(conexion) != g_config_gameboy->id_suscriptor) {
 				return EXIT_FAILURE;
@@ -98,7 +99,7 @@ int main(int argcnt, char *argval[])
 				flag_salida = 0;
 			}
 		}
-		log_info(g_logger,"(END TIME_SUSCRIPTION: %d Sec|RECVD_MSGs: %d)",tiempo_suscripcion, g_rcv_msg_qty);
+		log_debug(g_logger,"(END TIME_SUSCRIPTION: %d Sec|RECVD_MSGs: %d)",tiempo_suscripcion, g_rcv_msg_qty);
 		close(conexion);
 		sleep(1);
 		pthread_exit(&ender_suscript);
@@ -117,8 +118,13 @@ void end_suscript(int *tiempo)
 	if (cliente_fd < 0) {
 		exit(EXIT_FAILURE);
 	}
-
-	enviar_msj_fin_suscripcion(cliente_fd, g_logger, g_config_gameboy->id_suscriptor, g_suscript_queue);
+	t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
+	handshake->id_suscriptor =  g_config_gameboy->id_suscriptor;
+	handshake->id_recibido = g_rcv_msg_qty;
+	handshake->cola_id = g_suscript_queue;
+	handshake->msjs_recibidos = g_rcv_msg_qty;
+	enviar_solicitud_fin_suscripcion(cliente_fd, g_logger, handshake);
+	free(handshake);
 	if(rcv_codigo_operacion(cliente_fd) != MSG_CONFIRMED) {
 		exit(EXIT_FAILURE);
 	}

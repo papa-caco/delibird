@@ -9,32 +9,51 @@
 
 // -------------Funciones Para Servidores----------------------------------------//
 
-void iniciar_server_broker(char *ip, char *puerto, t_log* logger, pthread_t thread)
+void iniciar_server_broker(char *ip, char *puerto, t_log* logger)
 {
 
-	int socket_servidor;
-	struct addrinfo hints, *servinfo, *p; 	//hints no es puntero
+	int socket_servidor, status;
+	struct sockaddr_storage dir_cliente;
+	socklen_t tam_direccion;
+	struct addrinfo hints, *servinfo; 	//hints no es puntero
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;			// No importa si uso IPv4 o IPv6 - vale 0
 	hints.ai_socktype = SOCK_STREAM;		// Indica que usaremos el protocolo TCP
 	hints.ai_flags = AI_PASSIVE;			// Asigna el address del localhost: 127.0.0.1
 
 	getaddrinfo(ip, puerto, &hints, &servinfo);
-	log_info(logger, "(AWAITING CONNECTIONS AT ADDRESS:%s | PORT:%s)", ip, puerto);
 
-	for (p = servinfo; p != NULL; p = p->ai_next) {
-		if ((socket_servidor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
-			continue;
-		if (bind(socket_servidor, p->ai_addr, p->ai_addrlen) == -1) {
-			close(socket_servidor);
-			continue;
-		}
-		break;
+	if ((status = getaddrinfo(NULL, puerto, &hints, &servinfo)) != 0) {
+			fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
+			exit(EXIT_FAILURE);
 	}
-	listen(socket_servidor, SOMAXCONN);	// Maximum queue length specifiable by listen = 128 (default)
-	freeaddrinfo(servinfo);
-	while (1)
-		esperar_cliente_broker(socket_servidor, logger, thread);
+	log_info(logger, "Esperando conexiones en Direccion: %s, Puerto: %s", ip, puerto);
+	socket_servidor = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
+	int yes = 1;
+	setsockopt(socket_servidor, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
+	bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen);
+
+	if (listen(socket_servidor, 10) == -1) {
+		perror("listen");
+	}
+	//freeaddrinfo(servinfo);
+	while (1){
+		tam_direccion = sizeof(dir_cliente);
+		int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
+		pthread_t pid;
+		log_info(logger,"(NEW CLIENT CONNECTED | SOCKET#:%d)", socket_cliente);
+		t_socket_cliente_broker *socket = malloc(sizeof(t_socket_cliente_broker));
+		socket->cliente_fd = socket_cliente;
+		// inicializa contador de mensajes enviados al cliente que se conectó.
+		socket->cant_msg_enviados = 0;
+		int thread_status = pthread_create(&pid, NULL, (void*) atender_cliente_broker,(void*) socket);
+		if( thread_status != 0 ){
+			log_error(logger, "Thread create returno %d", thread_status );
+			log_error(logger, "Thread create returno %s", strerror( thread_status ) );
+		} else {
+			pthread_detach( pid );
+		}
+	}
 }
 
 void esperar_cliente_broker(int socket_servidor,t_log *logger, pthread_t thread)
@@ -55,26 +74,28 @@ void esperar_cliente_broker(int socket_servidor,t_log *logger, pthread_t thread)
 void iniciar_servidor(char *ip, char *puerto, t_log* logger, pthread_t thread)
 {
 
-	int socket_servidor;
-	struct addrinfo hints, *servinfo, *p; 	//hints no es puntero
+	int socket_servidor, status;
+	struct addrinfo hints, *servinfo; 	//hints no es puntero
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;			// No importa si uso IPv4 o IPv6 - vale 0
 	hints.ai_socktype = SOCK_STREAM;		// Indica que usaremos el protocolo TCP
 	hints.ai_flags = AI_PASSIVE;			// Asigna el address del localhost: 127.0.0.1
 
 	getaddrinfo(ip, puerto, &hints, &servinfo);
-	log_info(logger, "Esperando conexiones en Direccion: %s, Puerto: %s", ip, puerto);
 
-	for (p = servinfo; p != NULL; p = p->ai_next) {
-		if ((socket_servidor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
-			continue;
-		if (bind(socket_servidor, p->ai_addr, p->ai_addrlen) == -1) {
-			close(socket_servidor);
-			continue;
-		}
-		break;
+	if ((status = getaddrinfo(NULL, puerto, &hints, &servinfo)) != 0) {
+			fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
+			exit(EXIT_FAILURE);
 	}
-	listen(socket_servidor, SOMAXCONN);	// Maximum queue length specifiable by listen = 128 (default)
+	log_info(logger, "Esperando conexiones en Direccion: %s, Puerto: %s", ip, puerto);
+	socket_servidor = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
+	int yes = 1;
+	setsockopt(socket_servidor, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
+	bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen);
+
+	if (listen(socket_servidor, 10) == -1) {
+		perror("listen");
+	}
 	freeaddrinfo(servinfo);
 	while (1)
 		esperar_cliente(socket_servidor, thread);
@@ -82,8 +103,9 @@ void iniciar_servidor(char *ip, char *puerto, t_log* logger, pthread_t thread)
 
 void esperar_cliente(int socket_servidor, pthread_t thread)
 {
-	struct sockaddr_in dir_cliente;
-	socklen_t tam_direccion = sizeof(struct sockaddr_in);
+	struct sockaddr_storage dir_cliente;
+	pthread_t pid;
+	socklen_t tam_direccion = sizeof(struct sockaddr_storage);
 	int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
 	pthread_create(&thread, NULL, (void*) serve_client, &socket_cliente);
 	pthread_detach(thread);

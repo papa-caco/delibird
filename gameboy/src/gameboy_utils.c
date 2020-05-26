@@ -92,8 +92,9 @@ bool validar_argumentos(t_mensaje_gameboy *argumentos_mensaje) {
 					&& validar_id_mensaje(argumentos_mensaje->argumentos, 3)
 							== 1) {
 				resultado = 1;
-			} else if (proceso == TEAM && cant_argumentos == 3
+			} else if (proceso == TEAM && cant_argumentos == 4
 					&& validar_coordXY(argumentos_mensaje->argumentos, 1, 2)
+					&& validar_id_mensaje(argumentos_mensaje->argumentos, 3) == 1
 							== 1) {
 				resultado = 1;
 			} else {
@@ -369,39 +370,21 @@ void enviar_mensaje_gameboy(t_mensaje_gameboy *msg_gameboy, int socket_cliente) 
 
 void send_msg_gameboy_suscriptor(t_mensaje_gameboy *msg_gameboy, int socket_cliente)
 {
-	int tipo_mensaje = msg_gameboy->tipo_mensaje;
-	enviar_msj_suscripcion_broker(tipo_mensaje, socket_cliente);
+	t_tipo_mensaje tipo_mensaje = msg_gameboy->tipo_mensaje;
+	uint32_t id_recibido = MENSAJE_0;
+	enviar_msj_suscripcion_broker(tipo_mensaje, id_recibido, socket_cliente);
 	list_destroy(msg_gameboy->argumentos);
 	free(msg_gameboy);
 }
 
-void enviar_msj_suscripcion_broker(t_tipo_mensaje tipo_mensaje, int socket_cliente)
+void enviar_msj_suscripcion_broker(t_tipo_mensaje tipo_mensaje, uint32_t id_recibido, int socket_cliente)
 {
-	op_code codigo_operacion;
-	switch (tipo_mensaje) {
-	case CATCH_POKEMON:
-		codigo_operacion = SUSCRIP_CATCH;
-		break;
-	case CAUGHT_POKEMON:
-		codigo_operacion = SUSCRIP_CAUGHT;
-		break;
-	case NEW_POKEMON:
-		codigo_operacion = SUSCRIP_NEW;
-		break;
-	case APPEARED_POKEMON:
-		codigo_operacion = SUSCRIP_APPEARED;
-		break;
-	case GET_POKEMON:
-		codigo_operacion = SUSCRIP_GET;
-		break;
-	case LOCALIZED_POKEMON:
-		codigo_operacion = SUSCRIP_LOCALIZED;
-		break;
-	}
 	t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
 	handshake->id_suscriptor = g_config_gameboy->id_suscriptor;
+	handshake->id_recibido = id_recibido;
+	handshake->cola_id = tipo_mensaje;
 	handshake->msjs_recibidos = g_rcv_msg_qty;
-	enviar_msj_handshake_suscriptor(socket_cliente, g_logger, codigo_operacion, handshake);
+	enviar_msj_handshake_suscriptor(socket_cliente, g_logger, handshake);
 	free(handshake);
 }
 
@@ -412,9 +395,9 @@ void send_msg_catch_broker(t_mensaje_gameboy *msg_gameboy, int socket_cliente, t
 	msg_catch_broker->coordenada->pos_x = atoi(list_get(msg_gameboy->argumentos, 1));
 	msg_catch_broker->coordenada->pos_y = atoi(list_get(msg_gameboy->argumentos, 2));
 	char *pokemon = list_get(msg_gameboy->argumentos, 0);
-	int size_pokemon = strlen(pokemon) + 1;
-	msg_catch_broker->pokemon = malloc(size_pokemon);
-	memcpy(msg_catch_broker->pokemon, pokemon, size_pokemon);
+	msg_catch_broker->size_pokemon = strlen(pokemon) + 1;
+	msg_catch_broker->pokemon = malloc(msg_catch_broker->size_pokemon);
+	memcpy(msg_catch_broker->pokemon, pokemon, msg_catch_broker->size_pokemon);
 	enviar_msj_catch_broker(socket_cliente, logger, msg_catch_broker);
 	eliminar_msg_catch_broker(msg_catch_broker);
 }
@@ -427,9 +410,9 @@ void send_msg_new_broker(t_mensaje_gameboy *msg_gameboy, int socket_cliente, t_l
 	msg_new->coordenada->pos_y = atoi(list_get(msg_gameboy->argumentos, 2));
 	msg_new->cantidad = atoi(list_get(msg_gameboy->argumentos, 3));
 	char *pokemon = list_get(msg_gameboy->argumentos, 0);
-	int size_pokemon = strlen(pokemon) + 1;
-	msg_new->pokemon = malloc(size_pokemon);
-	memcpy(msg_new->pokemon, pokemon, size_pokemon);
+	msg_new->size_pokemon = strlen(pokemon) + 1;
+	msg_new->pokemon = malloc(msg_new->size_pokemon);
+	memcpy(msg_new->pokemon, pokemon, msg_new->size_pokemon);
 	enviar_msj_new_broker(socket_cliente, logger, msg_new);
 	eliminar_msg_new_broker(msg_new);
 }
@@ -438,13 +421,13 @@ void send_msg_new_gamecard(t_mensaje_gameboy *msg_gameboy, int socket_cliente, t
 	t_msg_new_gamecard *msg_new = malloc(sizeof(t_msg_new_gamecard));
 	msg_new->coord = malloc(sizeof(t_coordenada));
 	char *pokemon = list_get(msg_gameboy->argumentos, 0);
-	int size_pokemon = strlen(pokemon) + 1;
 	msg_new->coord->pos_x = atoi(list_get(msg_gameboy->argumentos, 1));
 	msg_new->coord->pos_y = atoi(list_get(msg_gameboy->argumentos, 2));
 	msg_new->cantidad = atoi(list_get(msg_gameboy->argumentos, 3));
 	msg_new->id_mensaje = atoi(list_get(msg_gameboy->argumentos, 4));
-	msg_new->pokemon = malloc(size_pokemon);
-	memcpy(msg_new->pokemon, pokemon, size_pokemon);
+	msg_new->size_pokemon = strlen(pokemon) + 1;
+	msg_new->pokemon = malloc(msg_new->size_pokemon);
+	memcpy(msg_new->pokemon, pokemon, msg_new->size_pokemon);
 	t_socket_cliente_broker *socket = malloc(sizeof(t_socket_cliente_broker));
 	socket->cliente_fd = socket_cliente;
 	socket->cant_msg_enviados = 0;
@@ -456,10 +439,10 @@ void send_msg_new_gamecard(t_mensaje_gameboy *msg_gameboy, int socket_cliente, t
 void send_msg_get_broker(t_mensaje_gameboy *msg_gameboy, int socket_cliente, t_log *logger)
 {
 	char *pokemon = list_get(msg_gameboy->argumentos, 0);
-	int size_pokemon =  strlen(pokemon) + 1;
 	t_msg_get_broker *msg_get = malloc(sizeof(t_msg_get_broker));
-	msg_get->pokemon = malloc(size_pokemon);
-	memcpy(msg_get->pokemon, pokemon, size_pokemon);
+	msg_get->size_pokemon = strlen(pokemon) + 1;
+	msg_get->pokemon = malloc(msg_get->size_pokemon);
+	memcpy(msg_get->pokemon, pokemon, msg_get->size_pokemon);
 	enviar_msj_get_broker(socket_cliente, logger, msg_get);
 	free(msg_get->pokemon);
 	free(msg_get);
@@ -467,12 +450,12 @@ void send_msg_get_broker(t_mensaje_gameboy *msg_gameboy, int socket_cliente, t_l
 
 void send_msg_get_gamecard(t_mensaje_gameboy *msg_gameboy, int socket_cliente, t_log *logger)
 {
-	char *pokemon = list_get(msg_gameboy->argumentos, 0);
-	int size_pokemon =  strlen(pokemon) + 1;
 	t_msg_get_gamecard *msg_get = malloc(sizeof(t_msg_get_gamecard));
+	char *pokemon = list_get(msg_gameboy->argumentos, 0);
 	msg_get->id_mensaje = atoi(list_get(msg_gameboy->argumentos, 1));
-	msg_get->pokemon = malloc(size_pokemon);
-	memcpy(msg_get->pokemon, pokemon, size_pokemon);
+	msg_get->size_pokemon = strlen(pokemon) + 1;
+	msg_get->pokemon = malloc(msg_get->size_pokemon);
+	memcpy(msg_get->pokemon, pokemon, msg_get->size_pokemon);
 	t_socket_cliente_broker *socket = malloc(sizeof(t_socket_cliente_broker));
 	socket->cliente_fd = socket_cliente;
 	socket->cant_msg_enviados = 0;
@@ -486,12 +469,12 @@ void send_msg_catch_gamecard(t_mensaje_gameboy *msg_gameboy, int socket_cliente,
 	t_msg_catch_gamecard *msg_catch = malloc(sizeof(t_msg_catch_gamecard));
 	msg_catch->coord = malloc(sizeof(t_coordenada));
 	char *pokemon = list_get(msg_gameboy->argumentos, 0);
-	int size_pokemon = strlen(pokemon) + 1;
 	msg_catch->coord->pos_x = atoi(list_get(msg_gameboy->argumentos, 1));
 	msg_catch->coord->pos_y = atoi(list_get(msg_gameboy->argumentos, 2));
 	msg_catch->id_mensaje = atoi(list_get(msg_gameboy->argumentos, 3));
-	msg_catch->pokemon = malloc(size_pokemon);
-	memcpy(msg_catch->pokemon ,pokemon, size_pokemon);
+	msg_catch->size_pokemon = strlen(pokemon) + 1;
+	msg_catch->pokemon = malloc(msg_catch->size_pokemon);
+	memcpy(msg_catch->pokemon ,pokemon, msg_catch->size_pokemon);
 	t_socket_cliente_broker *socket = malloc(sizeof(t_socket_cliente_broker));
 	socket->cliente_fd = socket_cliente;
 	socket->cant_msg_enviados = 0;
@@ -515,12 +498,12 @@ void send_msg_appeared_broker(t_mensaje_gameboy *msg_gameboy, int socket_cliente
 	t_msg_appeared_broker *msg_appeared = malloc(sizeof(t_msg_appeared_broker));
 	msg_appeared->coordenada = malloc(sizeof(t_coordenada));
 	char *pokemon = list_get(msg_gameboy->argumentos, 0);
-	int size_pokemon = strlen(pokemon) + 1;
 	msg_appeared->coordenada->pos_x = atoi(list_get(msg_gameboy->argumentos, 1));
 	msg_appeared->coordenada->pos_y = atoi(list_get(msg_gameboy->argumentos, 2));
 	msg_appeared->id_correlativo = atoi(list_get(msg_gameboy->argumentos, 3));
-	msg_appeared->pokemon = malloc(size_pokemon);
-	memcpy(msg_appeared->pokemon, pokemon, size_pokemon);
+	msg_appeared->size_pokemon = strlen(pokemon) + 1;
+	msg_appeared->pokemon = malloc(msg_appeared->size_pokemon);
+	memcpy(msg_appeared->pokemon, pokemon, msg_appeared->size_pokemon);
 	enviar_msj_appeared_broker(socket_cliente, logger, msg_appeared);
 	eliminar_msg_appeared_broker(msg_appeared);
 }
@@ -530,12 +513,13 @@ void send_msg_appeared_team(t_mensaje_gameboy *msg_gameboy, int socket_cliente, 
 	t_msg_appeared_team *msg_appeared = malloc(sizeof(t_msg_appeared_team));
 	msg_appeared->coord = malloc(sizeof(t_coordenada));
 	char *pokemon = list_get(msg_gameboy->argumentos, 0);
-	int size_pokemon = strlen(pokemon) + 1;
 	msg_appeared->coord->pos_x = atoi(list_get(msg_gameboy->argumentos, 1));
 	msg_appeared->coord->pos_y = atoi(list_get(msg_gameboy->argumentos, 2));
-	msg_appeared->id_mensaje = g_config_gameboy->id_mensaje_unico;
-	msg_appeared->pokemon = malloc(size_pokemon);
-	memcpy(msg_appeared->pokemon, pokemon, size_pokemon);
+	msg_appeared->id_mensaje = atoi(list_get(msg_gameboy->argumentos, 3));
+	msg_appeared->id_correlativo = g_config_gameboy->id_mensaje_unico;
+	msg_appeared->size_pokemon = strlen(pokemon) + 1;
+	msg_appeared->pokemon = malloc(msg_appeared->size_pokemon);
+	memcpy(msg_appeared->pokemon, pokemon, msg_appeared->size_pokemon);
 	t_socket_cliente_broker *socket = malloc(sizeof(t_socket_cliente_broker));
 	socket->cliente_fd = socket_cliente;
 	socket->cant_msg_enviados = 0;
@@ -552,12 +536,12 @@ void esperar_rta_servidor(int socket_cliente)
 	if (codigo_operacion == MSG_CONFIRMED) {
 		respuesta = rcv_msg_confirmed(socket_cliente, g_logger);
 		if (respuesta != RESPUESTA_OK) {
-			log_error(g_logger, "(MSG_ERROR)");
+			log_warning(g_logger, "(MSG_ERROR)");
 		}
 	}
 	else if (codigo_operacion == MSG_ERROR) {
 		a_recibir = recibir_buffer(socket_cliente, &respuesta);
-		log_info(g_logger, "(RECEIVING: FROM:GAMECARD | TO:BROKER | %s)", a_recibir);
+		log_warning(g_logger, "(RECEIVING: |%s)", a_recibir);
 		free(a_recibir);
 	}
 	else if (codigo_operacion == APPEARED_BROKER) {
@@ -580,11 +564,13 @@ void esperar_rta_servidor(int socket_cliente)
 	}
 }
 
-void rcv_mensaje_publisher(op_code codigo_operacion, int socket_cliente) {
+uint32_t rcv_mensaje_publisher(op_code codigo_operacion, int socket_cliente)
+{
+	uint32_t id_recibido;
 	void *msg;
 	switch(codigo_operacion){
 	case COLA_VACIA:;
-		int id_recibido = rcv_msj_cola_vacia(socket_cliente, g_logger);
+		id_recibido = rcv_msj_cola_vacia(socket_cliente, g_logger);
 		if (id_recibido != g_config_gameboy->id_suscriptor) {
 			log_error(g_logger,"MSG_ERROR");
 		}
@@ -592,31 +578,37 @@ void rcv_mensaje_publisher(op_code codigo_operacion, int socket_cliente) {
 	case NEW_GAMECARD:;
 		t_msg_new_gamecard *msg_new = (t_msg_new_gamecard*) msg;
 		msg_new = rcv_msj_new_gamecard(socket_cliente, g_logger);
+		id_recibido = msg_new->id_mensaje;
 		eliminar_msg_new_gamecard(msg_new);
 		break;
 	case CATCH_GAMECARD:;
 		t_msg_catch_gamecard *msg_catch = (t_msg_catch_gamecard*) msg;
 		msg_catch = rcv_msj_catch_gamecard(socket_cliente, g_logger);
+		id_recibido = msg_catch->id_mensaje;
 		eliminar_msg_catch_gamecard(msg_catch);
 		break;
 	case GET_GAMECARD:;
 		t_msg_get_gamecard *msg_get = (t_msg_get_gamecard*) msg;
 		msg_get = rcv_msj_get_gamecard(socket_cliente, g_logger);
+		id_recibido = msg_get->id_mensaje;
 		eliminar_msg_get_gamecard(msg_get);
 		break;
 	case APPEARED_TEAM:;
 		t_msg_appeared_team *msg_appeared = (t_msg_appeared_team*) msg;
 		msg_appeared = rcv_msj_appeared_team(socket_cliente, g_logger);
+		id_recibido = msg_appeared->id_mensaje;
 		eliminar_msg_appeared_team(msg_appeared);
 		break;
 	case CAUGHT_TEAM:;
 		t_msg_caught_team *msg_caught = (t_msg_caught_team*) msg;
 		msg_caught = rcv_msj_caught_team(socket_cliente, g_logger);
+		id_recibido = msg_caught->id_mensaje;
 		free(msg_caught);
 		break;
 	case LOCALIZED_TEAM:;
 		t_msg_localized_team *msg_localized = (t_msg_localized_team*) msg;
 		msg_localized = rcv_msj_localized_team(socket_cliente, g_logger);
+		id_recibido = msg_localized->id_mensaje;
 		eliminar_msg_localized_team(msg_localized);
 		break;
 	case 0:
@@ -624,6 +616,7 @@ void rcv_mensaje_publisher(op_code codigo_operacion, int socket_cliente) {
 	case -1:
 		pthread_exit(NULL);
 	}
+	return id_recibido;
 }
 
 void borrar_comienzo_lista(t_list* lista, int cant) {
@@ -636,7 +629,7 @@ void borrar_comienzo_lista(t_list* lista, int cant) {
 }
 
 void iniciar_log_gameboy(void) {
-	g_logger = log_create(g_config_gameboy->ruta_log, "GAME_BOY", 1, LOG_LEVEL_INFO);
+	g_logger = log_create(g_config_gameboy->ruta_log, "GAME_BOY", 1, LOG_LEVEL_TRACE);
 	//------------ Quitar el "1" para que no loguee por Pantalla -------//
 }
 

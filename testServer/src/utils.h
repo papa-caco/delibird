@@ -22,6 +22,8 @@
 #define IP "127.0.0.1"
 #define PUERTO "5001"
 #define IP_BROKER "127.0.0.1"
+#define RUTA_LOG "logs/testserver.log"
+#define RUTA_ARCHIVOS "config/"
 #define PUERTO_BROKER "6009"
 #define ID_MSG_RTA 5535
 #define RESPUESTA_OK 1001
@@ -59,6 +61,8 @@ void devolver_msj_caught_broker(t_msg_catch_gamecard *msg_catch_gamecard, int cl
 void devolver_msj_appeared_broker(t_msg_new_gamecard *msg_new_gamecard,int cliente_fd);
 
 void devolver_posiciones(int socket_cliente, int id_correlativo, char* pokemon, int* encontroPokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
+
+void enviar_msjs_cola_broker(t_tipo_mensaje cola, t_socket_cliente_broker *socket);
 
 void enviar_msjs_get(t_socket_cliente_broker *socket);
 

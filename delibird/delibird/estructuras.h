@@ -57,12 +57,7 @@ typedef enum Codigo_Operacion
 	APPEARED_TEAM = 80,
 	CAUGHT_TEAM,
 	LOCALIZED_TEAM,
-	SUSCRIP_NEW = 120,
-	SUSCRIP_APPEARED,
-	SUSCRIP_CATCH,
-	SUSCRIP_CAUGHT,
-	SUSCRIP_GET,
-	SUSCRIP_LOCALIZED,
+	SUSCRIBER_ACK = 120,
 	SUSCRIP_END,
 	COLA_VACIA,
 } op_code;
@@ -74,13 +69,14 @@ typedef enum Resultado_Caught{
 
 typedef struct Suscriptor_Broker{
 	int id_suscriptor;
-	bool is_active;
+	bool enabled;
+	sem_t sem_cont_msjs;
 	int cant_msg;
 } t_suscriptor_broker;
 
 typedef struct Coordenada{
-	int pos_x;
-	int pos_y;
+	uint32_t pos_x;
+	uint32_t pos_y;
 } t_coordenada;
 
 /* 	Esta Estructura se usa en la lista
@@ -93,7 +89,7 @@ typedef struct Posicion_Pokemon{
 } t_posicion_pokemon;
 
 typedef struct Posiciones_Localized{
-	int cant_posic;
+	uint32_t cant_posic;
 	t_list *coordenadas;
 } t_posiciones_localized;
 
@@ -104,86 +100,99 @@ typedef struct Socket_Cliente{
 
 //------ ESTRUCTURAS PARA MENSAJES QUE RECIBE BROKER - LOS QUE ENVIAN TEAM, GAMECARD y GAMEBOY ----//
 
+typedef struct Msg_Get_Broker{
+	uint32_t size_pokemon;
+	char *pokemon;
+} t_msg_get_broker;
+
 typedef struct Msg_New_Broker{
 	t_coordenada *coordenada;
-	int cantidad;
+	uint32_t cantidad;
+	uint32_t size_pokemon;
 	char *pokemon;
 } t_msg_new_broker;
 
 typedef struct Msg_Catch_Broker{
 	t_coordenada *coordenada;
+	uint32_t size_pokemon;
 	char *pokemon;
 } t_msg_catch_broker;
 
-typedef struct Msg_Get_Broker{
-	char *pokemon;
-} t_msg_get_broker;
-
 typedef struct Msg_Localized_Broker{
-	int id_correlativo;
+	uint32_t id_correlativo;
 	t_posiciones_localized *posiciones;
+	uint32_t size_pokemon;
 	char *pokemon;
 } t_msg_localized_broker;
 
 typedef struct Msg_Caught_Broker{
-	int id_correlativo;
+	uint32_t id_correlativo;
 	t_result_caught resultado;
 } t_msg_caught_broker;
 
 typedef struct Msg_Appeared_Broker{
-	int id_correlativo;
+	uint32_t id_correlativo;
 	t_coordenada *coordenada;
+	uint32_t size_pokemon;
 	char *pokemon;
 } t_msg_appeared_broker;
 
 typedef struct Msg_Handshake_Suscriptor{
-	int id_suscriptor;
-	int msjs_recibidos;
+	uint32_t id_suscriptor;
+	uint32_t id_recibido;
+	t_tipo_mensaje cola_id;
+	uint32_t msjs_recibidos;
 } t_handsake_suscript;
 
 //------ ESTRUCTURAS PARA MENSAJES QUE ENVIA BROKER A SUSCRIPTORES-----------//
 
 typedef struct Msg_New_GameCard{
-	int id_mensaje;
+	uint32_t id_mensaje;
 	t_coordenada *coord;
-	int cantidad;
+	uint32_t cantidad;
+	uint32_t size_pokemon;
 	char *pokemon;
 } t_msg_new_gamecard;
 
 typedef struct Msg_Get_GameCard{
-	int id_mensaje;
+	uint32_t id_mensaje;
+	uint32_t size_pokemon;
 	char *pokemon;
 } t_msg_get_gamecard;
 
 typedef struct Msg_Catch_GameCard{
-	int id_mensaje;
+	uint32_t id_mensaje;
 	t_coordenada *coord;
+	uint32_t size_pokemon;
 	char *pokemon;
 } t_msg_catch_gamecard;
 
 typedef struct Msg_Appeared_Team{
-	int id_mensaje;
+	uint32_t id_mensaje;
+	uint32_t id_correlativo;
 	t_coordenada *coord;
+	uint32_t size_pokemon;
 	char *pokemon;
 } t_msg_appeared_team;
 
 typedef struct Msg_Caught_Team{
-	int id_mensaje;
-	int id_correlativo;
+	uint32_t id_mensaje;
+	uint32_t id_correlativo;
 	t_result_caught resultado;
 } t_msg_caught_team;
 
 typedef struct Msg_Localized_Team{
-	int id_mensaje;
-	int id_correlativo;
+	uint32_t id_mensaje;
+	uint32_t id_correlativo;
 	t_posiciones_localized *posiciones;
+	uint32_t size_pokemon;
 	char *pokemon;
 } t_msg_localized_team;
 
 //----------------------------ESTRUCTURAS DE USO COMUN------------------------------//
 
 typedef struct Stream{
-	int size;
+	uint32_t size;
 	void* data;
 } t_stream;
 

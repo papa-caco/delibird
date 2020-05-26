@@ -7,10 +7,14 @@
 broker/logs/broker.log
 broker/bin/broker
 broker/bin/logs/broker.log
+broker/logs/logdebug.log
+broker/logs/.gitignore
 gameboy/.settings/language.settings.xml
 gameboy/.settings*
 gameboy/.cproject
 gameboy/bin/gameboy
+gameboy/logs/gameboy.log
+gameboy/bin/logs/gameboy.log
 gameboy/debug/*.o
 testServer/.settings*
 testServer/.cproject

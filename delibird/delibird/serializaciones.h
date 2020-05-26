@@ -11,9 +11,9 @@
 
 // -------------------FUNCIONES DE SERIALIZACION PARA MENSAJES QUE ENVIA BROKER A SUSCRIPTORES--------//
 
-t_paquete *empaquetar_msj_cola_vacia(int id_suscriptor);
+t_paquete *empaquetar_msj_cola_vacia(uint32_t id_suscriptor);
 
-t_paquete *empaquetar_msj_suscript_end(int id_suscriptor);
+t_paquete *empaquetar_msj_suscript_end(uint32_t id_suscriptor);
 
 t_paquete *empaquetar_msg_new_gamecard(t_msg_new_gamecard *msg_new_gamecard);
 
@@ -29,7 +29,7 @@ t_paquete *empaquetar_msg_localized_team(t_msg_localized_team *msg_localized_tea
 
 int coordenada_posiciones(t_posiciones_localized* posiciones, int indice);
 
-// --------------FUNCIONES DE SERIALIZACION PARA MENSAJES QUE ENVIAN GAMECARD y TEAM al BROKER o GAMEBOY-----------//
+// --------------FUNCIONES DE SERIALIZACION PARA MENSAJES QUE ENVIAN GAMECARD y TEAM a BROKER-----------//
 
 t_paquete *empaquetar_msg_appeared_broker(t_msg_appeared_broker *msg_appeared_broker);
 
@@ -43,43 +43,43 @@ t_paquete *empaquetar_msg_get_broker(t_msg_get_broker *msg_get_broker);
 
 t_paquete *empaquetar_msg_new_broker(t_msg_new_broker *msg_new_broker);
 
-t_paquete *empaquetar_msg_handshake_suscript(t_handsake_suscript *handshake, op_code codigo_operacion);
+t_paquete *empaquetar_msg_handshake_suscript(t_handsake_suscript *handshake);
 
-t_paquete *empaquetar_fin_suscripcion(int id_suscriptor);
+t_paquete *empaquetar_fin_suscripcion(t_handsake_suscript *handshake);
 
 t_paquete *empaquetar_id_mensaje(int id_mensaje);
 
 // -------------------FUNCIONES DE DESERIALIZACION PARA MENSAJES QUE RECIBE BROKER------------------------//
 
-t_msg_new_broker *deserializar_msg_new_broker(void *msg, int size);
+t_msg_new_broker *deserializar_msg_new_broker(void *msg);
 
-t_msg_catch_broker *deserializar_msg_catch_broker(void *msg, int size);
+t_msg_catch_broker *deserializar_msg_catch_broker(void *msg);
 
-t_msg_get_broker *deserializar_msg_get_broker(void *msg, int size);
+t_msg_get_broker *deserializar_msg_get_broker(void *msg);
 
-t_msg_caught_broker *deserializar_msg_caught_broker(void *msg, int size);
+t_msg_caught_broker *deserializar_msg_caught_broker(void *msg);
 
-t_msg_appeared_broker *deserializar_msg_appeared_broker(void *msg, int size);
+t_msg_appeared_broker *deserializar_msg_appeared_broker(void *msg);
 
-t_msg_localized_broker *deserializar_msg_localized_broker(void *msg, int size);
+t_msg_localized_broker *deserializar_msg_localized_broker(void *msg);
 
-t_handsake_suscript *deserializar_handshake_suscriptor(void *msg, int size);
+t_handsake_suscript *deserializar_handshake_suscriptor(void *msg);
 
 // -------------------FUNCIONES DE DESERIALIZACION PARA MENSAJES QUE RECIBE GAMECARD----------------------//
 
-t_msg_new_gamecard *deserializar_msg_new_gamecard(void *msg, int size);
+t_msg_new_gamecard *deserializar_msg_new_gamecard(void *msg);
 
-t_msg_catch_gamecard *deserializar_msg_catch_gamecard(void *msg, int size);
+t_msg_catch_gamecard *deserializar_msg_catch_gamecard(void *msg);
 
-t_msg_get_gamecard *deserializar_msg_get_gamecard(void *msg, int size);
+t_msg_get_gamecard *deserializar_msg_get_gamecard(void *msg);
 
 // -------------------FUNCIONES DE DESERIALIZACION PARA MENSAJES QUE RECIBE TEAM-------------------------//
 
 t_msg_caught_team *deserializar_msg_caught_team(void *msg);
 
-t_msg_appeared_team *deserializar_msg_appeared_team(void *msg, int size);
+t_msg_appeared_team *deserializar_msg_appeared_team(void *msg);
 
-t_msg_localized_team *deserializar_msg_localized_team(void *msg, int size);
+t_msg_localized_team *deserializar_msg_localized_team(void *msg);
 
 // --------------------- FUNCIONES DE SERIALIZACION PARA USO COMUN -------------------------------------//
 

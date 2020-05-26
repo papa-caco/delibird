@@ -15,7 +15,7 @@
 
 int main(void) {
 
-	leer_config_broker("/home/utnso/config/broker.config");
+	leer_config_broker(RUTA_CONFIG);
 
 	iniciar_log_broker();
 

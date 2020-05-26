@@ -14,6 +14,8 @@
 #include <delibird/serializaciones.h>
 #include <delibird/conexiones.h>
 #include <delibird/mensajeria.h>
+#define MENSAJE_0 0
+#define RUTA_CONFIG "config/gameboy.config"
 
 /* ---  DEFINICION DE ESTRUCTURAS PROPIAS DEL GAMEBOY---*/
 
@@ -89,7 +91,7 @@ void enviar_mensaje_gameboy(t_mensaje_gameboy *msg_gameboy, int socket_cliente);
 
 void send_msg_gameboy_suscriptor(t_mensaje_gameboy *msg_gameboy,int socket_cliente);
 
-void enviar_msj_suscripcion_broker(t_tipo_mensaje tipo_mensaje, int socket_cliente);
+void enviar_msj_suscripcion_broker(t_tipo_mensaje tipo_mensaje, uint32_t id_recibido, int socket_cliente);
 
 void esperar_rta_servidor(int socket_cliente);
 
@@ -111,7 +113,7 @@ void send_msg_appeared_team(t_mensaje_gameboy *msg_gameboy, int socket_cliente, 
 
 void send_msg_get_gamecard(t_mensaje_gameboy *msg_gameboy, int socket_cliente, t_log *logger);
 
-void rcv_mensaje_publisher(op_code codigo_operacion, int socket_cliente);
+uint32_t rcv_mensaje_publisher(op_code codigo_operacion, int socket_cliente);
 
 void borrar_comienzo_lista(t_list* lista, int cant);
 

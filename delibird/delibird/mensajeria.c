@@ -11,38 +11,40 @@
 void enviar_msj_cola_vacia(t_socket_cliente_broker *socket, t_log *logger, int id_suscriptor)
 {
 	t_paquete* paquete = empaquetar_msj_cola_vacia(id_suscriptor);
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger, "(SENDING: EMPTY_QUEUE | ID_SUSCRIPTOR = %d)", id_suscriptor);
+	log_warning(logger, "(SENDING|Socket:%d|EMPTY_QUEUE -- No More Messages...|ID_SUSCRIPTOR:%d)",
+			socket->cliente_fd, id_suscriptor);
 	free(a_enviar);
 }
 
 void enviar_msj_suscript_end(t_socket_cliente_broker *socket, t_log * logger, int id_suscriptor)
 {
 	t_paquete* paquete = empaquetar_msj_suscript_end(id_suscriptor);
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger, "(SENDING: SUSCRIPTION_ENDED|ID_SUSCRIPTOR= %d|SENT-MSGS= %d)", id_suscriptor, socket->cant_msg_enviados);
+	log_debug(logger, "(SENDING|Socket:%d|SUSCRIPTION_ENDED|ID_SUSCRIPTOR:%d|SENT-MSGS:%d)",
+			socket->cliente_fd, id_suscriptor, socket->cant_msg_enviados);
 	free(a_enviar);
 }
 
 void enviar_msj_get_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_msg_get_gamecard *msg_get_gamecard)
 {
 	t_paquete *paquete = empaquetar_msg_get_gamecard(msg_get_gamecard);
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) == bytes) {
-		log_info(logger, "(SENDING: GET_POKEMON |Socket#: %d|ID_MENSAJE: %d Pokemon = %s -- SIZE: %d Bytes)",
-			socket->cliente_fd, msg_get_gamecard->id_mensaje, msg_get_gamecard->pokemon, bytes);
+		log_info(logger, "(SENDING|Socket:%d|GET_POKEMON|ID_MENSAJE:%d|%s|SIZE:%d Bytes)",
+		socket->cliente_fd, msg_get_gamecard->id_mensaje, msg_get_gamecard->pokemon, bytes);
 	}
 	free(a_enviar);
 }
@@ -50,13 +52,13 @@ void enviar_msj_get_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_msg
 void enviar_msj_new_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_msg_new_gamecard *msg_new_gamecard)
 {
 	t_paquete *paquete = empaquetar_msg_new_gamecard(msg_new_gamecard);
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger,"(SENDING: NEW_POKEMON|Socket#:%d|ID_MENSAJE=%d|Pokemon: %s|POS_X=%d|POS_Y=%d|QTY=%d -- SIZE: %d Bytes)",
+	log_info(logger,"(SENDING|Socket:%d|NEW_POKEMON|ID_MENSAJE:%d|%s|POS_X:%d|POS_Y:%d|QTY:%d|SIZE:%d Bytes)",
 			socket->cliente_fd, msg_new_gamecard->id_mensaje,msg_new_gamecard->pokemon, msg_new_gamecard->coord->pos_x,
 			msg_new_gamecard->coord->pos_y, msg_new_gamecard->cantidad,  bytes);
 	free(a_enviar);
@@ -65,13 +67,13 @@ void enviar_msj_new_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_msg
 void enviar_msj_catch_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_msg_catch_gamecard *msg_catch_gamecard)
 {
 	t_paquete* paquete = empaquetar_msg_catch_gamecard(msg_catch_gamecard);
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger,"(SENDING: CATCH_POKEMON|Socket#: %d|ID_MESSAGE=%d|Pokemon: %s|POS_X=%d|POS_Y=%d)",
+	log_info(logger,"(SENDING|Socket:%d|CATCH_POKEMON|ID_MESSAGE:%d|%s|POS_X:%d|POS_Y:%d)",
 			socket->cliente_fd, msg_catch_gamecard->id_mensaje, msg_catch_gamecard->pokemon, msg_catch_gamecard->coord->pos_x, msg_catch_gamecard->coord->pos_y);
 	free(a_enviar);
 }
@@ -85,8 +87,8 @@ void enviar_msj_appeared_team(t_socket_cliente_broker *socket, t_log *logger, t_
 	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger,"(SENDING: APPEARED_POKEMON | Socket#: %d|ID_MSG: %d|Pokemon: %s|POS_X: %d|POS_Y:%d -- SIZE: %d Bytes)",
-			socket->cliente_fd, msg_appeared_team->id_mensaje,msg_appeared_team->pokemon,
+	log_info(logger,"(SENDING|Socket:%d|APPEARED_POKEMON|ID_MSG:%d|ID_CORRELATIVE:%d|%s|POS_X:%d|POS_Y:%d|SIZE:%d Bytes)",
+			socket->cliente_fd, msg_appeared_team->id_mensaje,msg_appeared_team->id_correlativo,msg_appeared_team->pokemon,
 			msg_appeared_team->coord->pos_x, msg_appeared_team->coord->pos_y, bytes);
 	free(a_enviar);
 }
@@ -94,13 +96,13 @@ void enviar_msj_appeared_team(t_socket_cliente_broker *socket, t_log *logger, t_
 void enviar_msj_caught_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_caught_team *msg_caught_team)
 {
 	t_paquete* paquete = empaquetar_msg_caught_team(msg_caught_team);
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger,"(SENDING: CAUGHT_POKEMON|Socket#: %d|ID_MSG:%d|ID_CORRELATIVE=%d|RESULT=%s)",
+	log_info(logger,"(SENDING|Socket:%d|CAUGHT_POKEMON|ID_MSG:%d|ID_CORRELATIVE:%d|RESULT:%s)",
 			socket->cliente_fd, msg_caught_team->id_mensaje, msg_caught_team->id_correlativo, result_caught(msg_caught_team->resultado));
 	free(msg_caught_team);
 	free(a_enviar);
@@ -109,14 +111,14 @@ void enviar_msj_caught_team(t_socket_cliente_broker *socket, t_log *logger, t_ms
 void enviar_msj_localized_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_localized_team *msg_localized_team)
 {
 	t_paquete* paquete = empaquetar_msg_localized_team(msg_localized_team);
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	char *concatenada = concat_posiciones(msg_localized_team->posiciones->coordenadas);
 		if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger,"(SENDING: LOCALIZED_POKEMON|Socket#: %d|ID_MSG:%d|ID_CORRELATIVE:%d|%s|POSIC_QTY=%d|{Xn|Yn}:=%s|SIZE:%d)",
+	log_info(logger,"(SENDING|Socket:%d|LOCALIZED_POKEMON|ID_MSG:%d|ID_CORRELATIVE:%d|%s|POSIC_QTY=%d|{Xn|Yn}:=%s|SIZE:%d)",
 		socket->cliente_fd,  msg_localized_team->id_mensaje,msg_localized_team->id_correlativo,
 		msg_localized_team->pokemon, msg_localized_team->posiciones->cant_posic, concatenada,bytes);
 	free(concatenada);
@@ -126,36 +128,36 @@ void enviar_msj_localized_team(t_socket_cliente_broker *socket, t_log *logger, t
 void enviar_msj_appeared_broker(int cliente_fd, t_log *logger, t_msg_appeared_broker *msg_appeared_broker)
 {
 	t_paquete *paquete = empaquetar_msg_appeared_broker(msg_appeared_broker);
-	int bytes = paquete->buffer->size + 3 * sizeof(int);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
 	free(a_enviar);
-	log_info(logger,"(SENDING: APPEARED_POKEMON|Socket#:%d|ID_CORRELATIVE:%d|%s|POS_X:%d|POS_Y:%d -- SIZE:%d Bytes)",
-			cliente_fd, msg_appeared_broker->id_correlativo, msg_appeared_broker->pokemon,
+	log_info(logger,"(SENDING: APPEARED_POKEMON|%s|ID_CORRELATIVE:%d|POS_X:%d|POS_Y:%d|SIZE:%d Bytes)",
+			msg_appeared_broker->pokemon, msg_appeared_broker->id_correlativo,
 			msg_appeared_broker->coordenada->pos_x, msg_appeared_broker->coordenada->pos_y, bytes);
 }
 
 void enviar_msj_caught_broker(int cliente_fd, t_log *logger, t_msg_caught_broker *msg_caught_broker)
 {
 	t_paquete* paquete = empaquetar_msg_caught_broker(msg_caught_broker);
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger,"(SENDING: CAUGHT_POKEMON|Socket#: %d|ID_CORRELATIVE=%d|RESULT=%s)",
-			cliente_fd, msg_caught_broker->id_correlativo, result_caught(msg_caught_broker->resultado));
+	log_info(logger,"(SENDING: CAUGHT_POKEMON|ID_CORRELATIVE=%d|RESULT=%s|Size:%d Bytes)",
+			msg_caught_broker->id_correlativo, result_caught(msg_caught_broker->resultado),bytes);
 	free(a_enviar);
 }
 
 void enviar_msj_localized_broker(int cliente_fd, t_log *logger, t_msg_localized_broker *msg_localized_broker)
 {
 	t_paquete* paquete = empaquetar_msg_localized_broker(msg_localized_broker);
-	int bytes = paquete->buffer->size + (2 * (sizeof(int)));
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
@@ -176,8 +178,7 @@ void enviar_msj_get_broker(int cliente_fd, t_log *logger,t_msg_get_broker *msg_g
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(cliente_fd, a_enviar, bytes, MSG_WAITALL) == bytes) {
-		log_info(logger, "(SENDING: GET_POKEMON | Socket# = %d | Pokemon = %s -- Size: %d Bytes)",
-			cliente_fd, msg_get_broker->pokemon, bytes);
+		log_info(logger, "(SENDING: GET_POKEMON|%s|Size:%d Bytes)", msg_get_broker->pokemon, bytes);
 	}
 	free(a_enviar);
 }
@@ -191,7 +192,7 @@ void enviar_msj_catch_broker(int cliente_fd, t_log *logger, t_msg_catch_broker *
 	if (send(cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger, "(SENDING: CATCH_POKEMON | %s | POS_X:%d | POS_Y:%d -- SIZE:%d Bytes)",
+	log_info(logger, "(SENDING: CATCH_POKEMON|%s|POS_X:%d|POS_Y:%d|SIZE:%d Bytes)",
 		msg_catch_broker->pokemon, msg_catch_broker->coordenada->pos_x, msg_catch_broker->coordenada->pos_y, bytes);
 	free(a_enviar);
 }
@@ -205,62 +206,61 @@ void enviar_msj_new_broker(int cliente_fd, t_log *logger, t_msg_new_broker *msg_
 	if (send(cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger,"(SENDING: NEW_POKEMON|Socket#:%d|Pokemon: %s|POS_X:%d|POS_Y:%d|QTY=%d -- SIZE: %d)",
-			cliente_fd, msg_new_broker->pokemon, msg_new_broker->coordenada->pos_x,
+	log_info(logger,"(SENDING: NEW_POKEMON|%s|POS_X:%d|POS_Y:%d|QTY=%d|SIZE: %d Bytes)",
+			msg_new_broker->pokemon, msg_new_broker->coordenada->pos_x,
 			msg_new_broker->coordenada->pos_y, msg_new_broker->cantidad, bytes);
 	free(a_enviar);
 }
 
-void enviar_msj_fin_suscripcion(int socket_cliente, t_log *logger, int id_suscriptor, t_tipo_mensaje cola_suscripcion)
+void enviar_solicitud_fin_suscripcion(int socket_cliente, t_log *logger, t_handsake_suscript *handshake)
 {
 	void *a_enviar;
-	int bytes = 0;
-	t_paquete *paquete = empaquetar_fin_suscripcion(id_suscriptor);
-	bytes = paquete->buffer->size + 2 * (sizeof(int));
+	t_paquete *paquete = empaquetar_fin_suscripcion(handshake);
+	int bytes = tamano_paquete(paquete);
 	a_enviar = serializar_paquete(paquete, bytes);
 	if (send(socket_cliente, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	char *name_cola = nombre_cola(cola_suscripcion);
-		log_info(logger, "(REQUIRING END_SUSCRIPTION_TO: %s | ID_SUSCRIPTOR: %d)",name_cola, id_suscriptor);
-
+	char *name_cola = nombre_cola(handshake->cola_id);
+	log_debug(logger, "(REQUIRING END_SUSCRIPTION_TO: %s|ID_SUSCRIPTOR:%d)",
+			name_cola, handshake->id_suscriptor);
 	free(a_enviar);
 	eliminar_paquete(paquete);
 }
 
-void enviar_mensaje_error(int socket_cliente,t_log *logger, char *mensajeError) {
+void enviar_mensaje_error(int socket_cliente, t_log *logger, char *mensajeError) {
 	t_paquete* paquete = empaquetar_msg_fail(mensajeError);
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(socket_cliente, a_enviar, bytes, 0) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger,"(SENDING: %s)", mensajeError);
+	log_warning(logger,"(SENDING_TO Socket:%d|%s)", socket_cliente, mensajeError);
 	free(a_enviar);
 }
 
 void enviar_msg_confirmed(int socket_cliente, t_log *logger) {
 	t_paquete* paquete = empaquetar_msg_confirmed();
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(socket_cliente, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		log_error(logger, "(SEND_TO Socket:%d|MSG_ERROR)", socket_cliente);
 	}
-	log_info(logger, "(SEND_TO Socket:%d|MSG_CONFIRMED)", socket_cliente);
+	log_info(logger, "(SENDING_TO Socket:%d|MSG_CONFIRMED)", socket_cliente);
 	free(a_enviar);
 }
 
 void enviar_id_mensaje(int socket_cliente, t_log *logger, int id_mensaje)
 {
 	t_paquete* paquete = empaquetar_id_mensaje(id_mensaje);
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	if (send(socket_cliente, a_enviar, bytes, 0) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	log_info(logger, "(SEND_TO Socket:%d|ID_MSG:%d)",socket_cliente, id_mensaje);
+	log_info(logger, "(SENDING_TO Socket:%d|ID_MSG:%d)",socket_cliente, id_mensaje);
 	free(a_enviar);
 	eliminar_paquete(paquete);
 }
@@ -284,7 +284,7 @@ char *concat_posiciones(t_list *posiciones)
 		strcpy(auxiliar,posy);
 		strcat(cadena,auxiliar);
 		if (i == cant_elem - 1) {
-			strcat(cadena,"] ");
+			strcat(cadena,"]");
 		}
 		else {
 			strcat(cadena,"|");
@@ -315,175 +315,101 @@ t_msg_new_broker *rcv_msj_new_broker(int socket_cliente, t_log *logger)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
-	t_msg_new_broker *msg_new_broker = deserializar_msg_new_broker(msg, size);
+	t_msg_new_broker *msg_new_broker = deserializar_msg_new_broker(msg);
 	free(msg);
 	int tamano = tamano_recibido(size);
-	log_info(logger, "(MSG-BODY= %s | POS_X:%d | POS_Y:%d | QTY:%d -- SIZE = %d Bytes)",
-			msg_new_broker->pokemon, msg_new_broker->coordenada->pos_x, msg_new_broker->coordenada->pos_y, msg_new_broker->cantidad, tamano);
+	log_info(logger, "(RECEIVING_FROM SOCKET:%d|NEW_POKEMON|%s|POS_X:%d|POS_Y:%d|QTY:%d|SIZE:%d Bytes)",
+		socket_cliente, msg_new_broker->pokemon, msg_new_broker->coordenada->pos_x,
+		msg_new_broker->coordenada->pos_y, msg_new_broker->cantidad, tamano);
 	return msg_new_broker;
-}
-
-t_stream *rcv_msg_new_broker(int socket_cliente, t_log *logger)
-{
-	int size;
-	t_stream *msg = receive_buffer(socket_cliente, &size);
-	t_msg_new_broker *msg_new_broker = deserializar_msg_new_broker(msg->data, size);
-	int tamano = tamano_recibido(size);
-	log_info(logger, "(RCV_FROM Socket:%d|NEW_POKEMON|Pokemon:'%s'|POS_X:%d|POS_Y:%d|QTY:%d|SIZE:%d Bytes)",
-			socket_cliente, msg_new_broker->pokemon, msg_new_broker->coordenada->pos_x,
-			msg_new_broker->coordenada->pos_y, msg_new_broker->cantidad, tamano);
-	eliminar_msg_new_broker(msg_new_broker);
-	return msg;
 }
 
 t_msg_catch_broker *rcv_msj_catch_broker(int socket_cliente, t_log *logger)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
-	t_msg_catch_broker *msg_catch_broker = deserializar_msg_catch_broker(msg, size);
+	t_msg_catch_broker *msg_catch_broker = deserializar_msg_catch_broker(msg);
 	free(msg);
 	int tamano = tamano_recibido(size);
-	log_info(logger, "(MSG-BODY= %s | POS_X:%d | POS_Y:%d -- SIZE = %d Bytes)",
-			msg_catch_broker->pokemon, msg_catch_broker->coordenada->pos_x, msg_catch_broker->coordenada->pos_y, tamano);
+	log_info(logger, "(RECEIVING_FROM SOCKET:%d|CATCH_POKEMON|%s|POS_X:%d|POS_Y:%d|SIZE:%d Bytes)",
+		socket_cliente,	msg_catch_broker->pokemon, msg_catch_broker->coordenada->pos_x,
+		msg_catch_broker->coordenada->pos_y, tamano);
 	return msg_catch_broker;
-}
-
-t_stream *rcv_msg_catch_broker(int socket_cliente, t_log *logger)
-{
-	int size;
-	t_stream *msg = receive_buffer(socket_cliente, &size);
-	t_msg_catch_broker *msg_catch_broker = deserializar_msg_catch_broker(msg->data, size);
-	int tamano = tamano_recibido(size);
-	log_info(logger, "(RCV_FROM Socket:%d|CATCH_POKEMON|Pokemon:'%s'|POS_X:%d|POS_Y:%d|SIZE:%d Bytes)",
-			socket_cliente, msg_catch_broker->pokemon, msg_catch_broker->coordenada->pos_x,
-			msg_catch_broker->coordenada->pos_y, tamano);
-	eliminar_msg_catch_broker(msg_catch_broker);
-	return(msg);
 }
 
 t_msg_get_broker *rcv_msj_get_broker(int socket_cliente, t_log *logger)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
-	t_msg_get_broker *msg_get_broker = deserializar_msg_get_broker(msg, size);
+	t_msg_get_broker *msg_get_broker = deserializar_msg_get_broker(msg);
 	free(msg);
 	int tamano = tamano_recibido(size);
-	log_info(logger, "(MSG-BODY= %s -- SIZE = %d Bytes)", msg_get_broker->pokemon, tamano);
-	return msg_get_broker;
-}
-
-t_stream *rcv_msg_get_broker(int socket_cliente, t_log *logger)
-{
-	int size;
-	t_stream *msg = receive_buffer(socket_cliente, &size);
-	t_msg_get_broker *msg_get_broker = deserializar_msg_get_broker(msg->data, size);
-	int tamano = tamano_recibido(size);
-	log_info(logger, "(RCV_FROM Socket:%d|GET_POKEMON|Pokemon:'%s'|SIZE:%d Bytes)",
+	log_info(logger, "(RECEIVING_FROM SOCKET:%d|GET_POKEMON|%s|SIZE:%d Bytes)",
 			socket_cliente, msg_get_broker->pokemon, tamano);
-	eliminar_msg_get_broker(msg_get_broker);
-	return(msg);
+	return msg_get_broker;
 }
 
 t_msg_caught_broker *rcv_msj_caught_broker(int socket_cliente, t_log *logger)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
-	t_msg_caught_broker *msg_caught_broker = deserializar_msg_caught_broker(msg, size);
+	t_msg_caught_broker *msg_caught_broker = deserializar_msg_caught_broker(msg);
 	free(msg);
 	int tamano = tamano_recibido(size);
-	log_info(logger, "(RECEIVING: From:GAMECARD|To:BROKER|Queue:CAUGHT_POKEMON|ID_CORRELATIVE:%d | RESULT:%s -- SIZE: %d Bytes)",
-			msg_caught_broker->id_correlativo,	result_caught(msg_caught_broker->resultado), tamano);
-	return msg_caught_broker;
-}
-
-t_stream *rcv_msg_caught_broker(int socket_cliente, t_log *logger)
-{
-	int size;
-	t_stream *msg = receive_buffer(socket_cliente, &size);
-	t_msg_caught_broker *msg_caught_broker = deserializar_msg_caught_broker(msg->data, size);
-		int tamano = tamano_recibido(size);
-	log_info(logger, "(RCV_FROM Socket:%d|CAUGHT_POKEMON|ID_CORRELATIVE:%d|RESULT:%s|SIZE:%d Bytes)",
+	log_info(logger, "(RECEIVING_FROM SOCKET:%d|CAUGHT_POKEMON|ID_CORRELATIVE:%d|RESULT:%s|SIZE:%d Bytes)",
 			socket_cliente, msg_caught_broker->id_correlativo,	result_caught(msg_caught_broker->resultado), tamano);
-	free(msg_caught_broker);
-	return(msg);
+	return msg_caught_broker;
 }
 
 t_msg_appeared_broker *rcv_msj_appeared_broker(int socket_cliente, t_log *logger)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
-	t_msg_appeared_broker *msg_appeared_broker = deserializar_msg_appeared_broker(msg, size);
+	t_msg_appeared_broker *msg_appeared_broker = deserializar_msg_appeared_broker(msg);
 	free(msg);
 	int tamano = tamano_recibido(size);
-	log_info(logger, "(RECEIVING: From:GAMECARD|To:BROKER|Queue:APPEARED_POKEMON|ID_CORRELATIVE:%d | %s | POS_X:%d | POS_Y:%d -- SIZE: %d Bytes)",
-		msg_appeared_broker->id_correlativo, msg_appeared_broker->pokemon,
+	log_info(logger, "(RECEIVING_FROM SOCKET:%d|APPEARED_POKEMON|%s|ID_CORRELATIVE:%d|POS_X:%d|POS_Y:%d|SIZE:%d Bytes)",
+		socket_cliente, msg_appeared_broker->pokemon, msg_appeared_broker->id_correlativo,
 		msg_appeared_broker->coordenada->pos_x, msg_appeared_broker->coordenada->pos_y, tamano);
 	return msg_appeared_broker;
-}
-
-t_stream *rcv_msg_appeared_broker(int socket_cliente, t_log *logger)
-{
-	int size;
-	t_stream *msg = receive_buffer(socket_cliente, &size);
-	t_msg_appeared_broker *msg_appeared_broker = deserializar_msg_appeared_broker(msg->data, size);
-	int tamano = tamano_recibido(size);
-	log_info(logger, "(RCV_FROM Socket:%d|APPEARED_POKEMON|ID_CORRELATIVE:%d|Pokemon:'%s'|POS_X:%d|POS_Y:%d|SIZE:%d Bytes)",
-		socket_cliente, msg_appeared_broker->id_correlativo, msg_appeared_broker->pokemon,
-		msg_appeared_broker->coordenada->pos_x, msg_appeared_broker->coordenada->pos_y, tamano);
-	eliminar_msg_appeared_broker(msg_appeared_broker);
-	return msg;
 }
 
 t_msg_localized_broker *rcv_msj_localized_broker(int socket_cliente, t_log *logger)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
-	t_msg_localized_broker *msg_localized_broker = deserializar_msg_localized_broker(msg, size);
+	t_msg_localized_broker *msg_localized_broker = deserializar_msg_localized_broker(msg);
 	free(msg);
 	int tamano = tamano_recibido(size);
 	char *concatenada = concat_posiciones(msg_localized_broker->posiciones->coordenadas);
-	log_info(logger,"(RECEIVING: From:GAMECARD|To:BROKER|Queue:LOCALIZED_POKEMON |ID_CORRELATIVE:%d |%s|POS_QTY=%d|{Xn|Yn}:%s|SIZE:%d Bytes)",
-		msg_localized_broker->id_correlativo, msg_localized_broker->pokemon,
+	log_info(logger,"(RECEIVING_FROM SOCKET:%d|LOCALIZED_POKEMON|%s|ID_CORRELATIVE:%d|POS_QTY=%d|{Xn|Yn}:%s|SIZE:%d Bytes)",
+		socket_cliente, msg_localized_broker->pokemon, msg_localized_broker->id_correlativo,
 		msg_localized_broker->posiciones->cant_posic, concatenada,tamano);
 	free(concatenada);
 	return msg_localized_broker;
-}
-
-t_stream *rcv_msg_localized_broker(int socket_cliente, t_log *logger)
-{
-	int size;
-	t_stream *msg = receive_buffer(socket_cliente, &size);
-	t_msg_localized_broker *msg_localized_broker = deserializar_msg_localized_broker(msg->data, size);
-	char *concatenada = concat_posiciones(msg_localized_broker->posiciones->coordenadas);
-	int tamano = tamano_recibido(size);
-	log_info(logger,"(RCV_FROM Socket:%d|LOCALIZED_POKEMON|ID_CORRELATIVE:%d |%s|POS_QTY=%d|[Xn|Yn]:%s|SIZE:%d Bytes)",
-		socket_cliente, msg_localized_broker->id_correlativo, msg_localized_broker->pokemon,
-		msg_localized_broker->posiciones->cant_posic, concatenada, tamano);
-	free(concatenada);
-	eliminar_msg_localized_broker(msg_localized_broker);
-	return(msg);
 }
 
 t_handsake_suscript *rcv_msj_handshake_suscriptor(int socket_cliente)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
-	t_handsake_suscript *handshake = deserializar_handshake_suscriptor(msg, size);
+	t_handsake_suscript *handshake = deserializar_handshake_suscriptor(msg);
 	free(msg);
 	return handshake;
 }
 
-void enviar_msj_handshake_suscriptor(int socket_cliente, t_log *logger, op_code codigo_operacion, t_handsake_suscript *handshake)
+void enviar_msj_handshake_suscriptor(int socket_cliente, t_log *logger, t_handsake_suscript *handshake)
 {
-	t_paquete* paquete = empaquetar_msg_handshake_suscript(handshake, codigo_operacion);
-	int bytes = paquete->buffer->size + 2 * sizeof(int);
+	t_paquete* paquete = empaquetar_msg_handshake_suscript(handshake);
+	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	if (send(socket_cliente, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		exit(EXIT_FAILURE);
 	}
-	char *cola = obtengo_cola_suscripcion(codigo_operacion);
-	log_info(logger, "(SENDING SUSCRIPTION_TO = %s | ID_SUSCRIPTOR = %d )",cola, handshake->id_suscriptor);
+	char *cola = nombre_cola(handshake->cola_id);
+	log_info(logger,"(SENDING ACK|%s|ID_MSG:%d->CONFIRMED|ID_SUSCRIPTOR:%d)",
+			cola, handshake->id_recibido, handshake->id_suscriptor);
 	free(a_enviar);
 }
 
@@ -491,10 +417,10 @@ t_msg_new_gamecard *rcv_msj_new_gamecard(int socket_cliente, t_log *logger)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
-	t_msg_new_gamecard *msg_new_gamecard = deserializar_msg_new_gamecard(msg, size);
+	t_msg_new_gamecard *msg_new_gamecard = deserializar_msg_new_gamecard(msg);
 	free(msg);
 	int tamano = tamano_recibido(size);
-	log_info(logger, "(RECEIVING: FROM NEW_POKEMON |  ID_MSG:%d | %s | POS_X:%d | POS_Y:%d | QTY:%d -- SIZE = %d Bytes)",
+	log_info(logger, "(RECEIVING: FROM NEW_POKEMON |  ID_MSG:%d | %s | POS_X:%d | POS_Y:%d | QTY:%d|SIZE:%d Bytes)",
 			msg_new_gamecard->id_mensaje, msg_new_gamecard->pokemon, msg_new_gamecard->coord->pos_x,
 			msg_new_gamecard->coord->pos_y, msg_new_gamecard->cantidad, tamano);
 	return msg_new_gamecard;
@@ -504,7 +430,7 @@ t_msg_catch_gamecard *rcv_msj_catch_gamecard(int socket_cliente, t_log *logger)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
-	t_msg_catch_gamecard *msg_catch_gamecard = deserializar_msg_catch_gamecard(msg, size);
+	t_msg_catch_gamecard *msg_catch_gamecard = deserializar_msg_catch_gamecard(msg);
 	free(msg);
 	int tamano = tamano_recibido(size);
 	log_info(logger, "(RECEIVING: FROM CATCH_POKEMON | ID_MSG:%d | %s | POS_X:%d | POS_Y:%d -- SIZE = %d Bytes)",
@@ -517,7 +443,7 @@ t_msg_get_gamecard *rcv_msj_get_gamecard(int socket_cliente, t_log *logger)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
-	t_msg_get_gamecard *msg_get_gamecard = deserializar_msg_get_gamecard(msg, size);
+	t_msg_get_gamecard *msg_get_gamecard = deserializar_msg_get_gamecard(msg);
 	free(msg);
 	int tamano = tamano_recibido(size);
 	log_info(logger, "(RECEIVING: FROM GET_POKEMON | ID_MSG:%d | %s -- SIZE = %d Bytes)", msg_get_gamecard->id_mensaje, msg_get_gamecard->pokemon, tamano);
@@ -540,12 +466,12 @@ t_msg_appeared_team *rcv_msj_appeared_team(int socket_cliente, t_log *logger)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
-	t_msg_appeared_team *msg_appeared_team = deserializar_msg_appeared_team(msg, size);
+	t_msg_appeared_team *msg_appeared_team = deserializar_msg_appeared_team(msg);
 	free(msg);
 	int tamano = tamano_recibido(size);
-	log_info(logger, "(RECEIVING: FROM APPEARED_POKEMON | ID_MSG:%d | %s | POS_X:%d | POS_Y:%d -- SIZE: %d Bytes)",
-		msg_appeared_team->id_mensaje, msg_appeared_team->pokemon,msg_appeared_team->coord->pos_x,
-		msg_appeared_team->coord->pos_y, tamano);
+	log_info(logger, "(RECEIVING: APPEARED_POKEMON|ID_MSG:%d|ID_CORRELATIVE:%d|%s|POS_X:%d|POS_Y:%d|SIZE:%d Bytes)",
+		msg_appeared_team->id_mensaje, msg_appeared_team->id_correlativo, msg_appeared_team->pokemon,
+		msg_appeared_team->coord->pos_x,msg_appeared_team->coord->pos_y, tamano);
 	return msg_appeared_team;
 }
 
@@ -553,7 +479,7 @@ t_msg_localized_team *rcv_msj_localized_team(int socket_cliente, t_log *logger)
 {
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
-	t_msg_localized_team *msg_localized_team = deserializar_msg_localized_team(msg, size);
+	t_msg_localized_team *msg_localized_team = deserializar_msg_localized_team(msg);
 	free(msg);
 	int tamano = tamano_recibido(size);
 	char *concatenada = concat_posiciones(msg_localized_team->posiciones->coordenadas);
@@ -601,7 +527,7 @@ int rcv_msj_cola_vacia(int socket_cliente, t_log *logger)
 	int id_suscriptor;
 	memcpy(&id_suscriptor, a_recibir, size);
 	free(a_recibir);
-	log_info(logger,"(RECEIVING: EMPTY_QUEUE | ID_SUSCRIPTOR = %d )", id_suscriptor);
+	log_warning(logger,"(EMPTY_QUEUE--No More Messages...|ID_SUSCRIPTOR: %d )", id_suscriptor);
 	return id_suscriptor;
 }
 
@@ -672,7 +598,7 @@ void eliminar_msg_get_gamecard(t_msg_get_gamecard *msg_get_gamecard)
 
 int tamano_recibido(int bytes)
 {
-	return bytes + 2 * sizeof(int);
+	return bytes + sizeof(uint32_t) + sizeof(op_code);
 }
 
 char *result_caught(t_result_caught resultado)
@@ -701,17 +627,6 @@ void *recibir_buffer(int socket_cliente, int *size)
 	return msg;
 }
 
-t_stream *receive_buffer(int socket_cliente, int *size)
-{
-	void *msg = recibir_buffer(socket_cliente, size);
-	t_stream *buffer = malloc(sizeof(t_stream));
-	buffer->size = *size;
-	buffer->data = malloc(buffer->size);
-	memcpy(buffer->data, msg, buffer->size);
-	free(msg);
-	return buffer;
-}
-
 void eliminar_lista(t_list *lista)
 {
 	int cant_elem = lista->elements_count;
@@ -719,32 +634,6 @@ void eliminar_lista(t_list *lista)
 		free(list_get(lista,j));
 	}
 	list_destroy(lista);
-}
-
-char *obtengo_cola_suscripcion(op_code codigo_operacion)
-{
-	char *cola_suscripcion;
-	switch(codigo_operacion) {
-		case SUSCRIP_APPEARED:
-			cola_suscripcion = "APPEARED_POKEMON";
-			break;
-		case SUSCRIP_CATCH:
-			cola_suscripcion = "CATCH_POKEMON";
-			break;
-		case SUSCRIP_CAUGHT:
-			cola_suscripcion = "CAUGHT_POKEMON";
-			break;
-		case SUSCRIP_GET:
-			cola_suscripcion = "GET_POKEMON";
-			break;
-		case SUSCRIP_LOCALIZED:
-			cola_suscripcion = "LOCALIZED_POKEMON";
-			break;
-		case SUSCRIP_NEW:
-			cola_suscripcion = "NEW_POKEMON";
-			break;
-	}
-	return cola_suscripcion;
 }
 
 char *nombre_cola(t_tipo_mensaje cola)

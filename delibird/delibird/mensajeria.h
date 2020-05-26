@@ -47,25 +47,9 @@ void enviar_msj_catch_broker(int cliente_fd, t_log *logger, t_msg_catch_broker *
 
 void enviar_msj_new_broker(int cliente_fd, t_log *logger, t_msg_new_broker *msg_new_broker);
 
-void enviar_msj_fin_suscripcion(int socket_cliente, t_log *logger, int id_suscriptor, t_tipo_mensaje cola_suscripcion);
+void enviar_solicitud_fin_suscripcion(int socket_cliente, t_log *logger, t_handsake_suscript *handshake);
 
-// ------FUNCIONES PARA RECEPCION DE MENSAJES DEL BROKER ENVIADOS POR OTROS PROCESOS---------------//
-
-t_stream *rcv_msg_new_broker(int socket_cliente, t_log *logger);
-
-t_stream *rcv_msg_get_broker(int socket_cliente, t_log *logger);
-
-t_stream *rcv_msg_catch_broker(int socket_cliente, t_log *logger);
-
-t_stream *rcv_msg_caught_broker(int socket_cliente, t_log *logger);
-
-t_stream *rcv_msg_appeared_broker(int socket_cliente, t_log *logger);
-
-t_stream *rcv_msg_localized_broker(int socket_cliente, t_log *logger);
-
-t_stream *receive_buffer(int socket_cliente, int *size);
-
-// ------FUNCIONES PARA RECEPCION DE MENSAJES DEL TEST_SERVER ENVIADOS POR OTROS PROCESOS----------//
+// ------FUNCIONES PARA RECEPCION DE MENSAJES DEL DEL BROKER ENVIADOS POR OTROS PROCESOS----------//
 
 t_msg_new_broker *rcv_msj_new_broker(int socket_cliente, t_log *logger);
 
@@ -81,7 +65,7 @@ t_msg_localized_broker *rcv_msj_localized_broker(int socket_cliente, t_log *logg
 
 t_handsake_suscript *rcv_msj_handshake_suscriptor(int socket_cliente);
 
-void enviar_msj_handshake_suscriptor(int socket_cliente, t_log *logger, op_code codigo_operacion, t_handsake_suscript *handshake);
+void enviar_msj_handshake_suscriptor(int socket_cliente, t_log *logger, t_handsake_suscript *handshake);
 
 // --------------FUNCIONES PARA RECEPCION DE MENSAJES DEL GAMECARD ENVIADOS POR BROKER O GAMBOY----------//
 
