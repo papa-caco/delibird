@@ -41,9 +41,9 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 	case GET_BROKER:;
 		t_msg_get_broker *msg_get = rcv_msj_get_broker(cliente_fd, g_logger);
 		if(cache_espacio_suficiente(espacio_cache_msg_get(msg_get)) == true) {
-			sem_wait(&g_mutex_sent_msg);
+			sem_wait(&g_mutex_msjs);
 				enqueue_msg_get(msg_get, g_logger, cliente_fd);
-			sem_post(&g_mutex_sent_msg);
+			sem_post(&g_mutex_msjs);
 		} else {
 			enviar_mensaje_error(cliente_fd, g_logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
 			eliminar_msg_get_broker(msg_get);
@@ -52,9 +52,9 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 	case NEW_BROKER:;
 		t_msg_new_broker *msg_new = rcv_msj_new_broker(cliente_fd, g_logger);
 		if(cache_espacio_suficiente(espacio_cache_msg_new(msg_new)) == true) {
-			sem_wait(&g_mutex_sent_msg);
+			sem_wait(&g_mutex_msjs);
 				enqueue_msg_new(msg_new, g_logger, cliente_fd);
-			sem_post(&g_mutex_sent_msg);
+			sem_post(&g_mutex_msjs);
 		} else {
 			enviar_mensaje_error(cliente_fd, g_logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
 			eliminar_msg_new_broker(msg_new);
@@ -63,9 +63,9 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 	case CATCH_BROKER:;
 		t_msg_catch_broker *msg_catch = rcv_msj_catch_broker(cliente_fd, g_logger);
 		if(cache_espacio_suficiente(espacio_cache_msg_catch(msg_catch)) == true) {
-			sem_wait(&g_mutex_sent_msg);
+			sem_wait(&g_mutex_msjs);
 				enqueue_msg_catch(msg_catch, g_logger, cliente_fd);
-			sem_post(&g_mutex_sent_msg);
+			sem_post(&g_mutex_msjs);
 		} else {
 			enviar_mensaje_error(cliente_fd, g_logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
 			eliminar_msg_catch_broker(msg_catch);
@@ -74,9 +74,9 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 	case APPEARED_BROKER:;
 		t_msg_appeared_broker *msg_appeared = rcv_msj_appeared_broker(cliente_fd, g_logger);
 		if(cache_espacio_suficiente(espacio_cache_msg_appeared(msg_appeared)) == true) {
-			sem_wait(&g_mutex_sent_msg);
+			sem_wait(&g_mutex_msjs);
 				enqueue_msg_appeared(msg_appeared, g_logger, cliente_fd);
-			sem_post(&g_mutex_sent_msg);
+			sem_post(&g_mutex_msjs);
 		} else {
 			enviar_mensaje_error(cliente_fd, g_logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
 			eliminar_msg_appeared_broker(msg_appeared);
@@ -84,9 +84,9 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 	case CAUGHT_BROKER:;
 		t_msg_caught_broker *msg_caught = rcv_msj_caught_broker(cliente_fd, g_logger);
 		if(cache_espacio_suficiente(espacio_cache_msg_caught(msg_caught)) == true) {
-			sem_wait(&g_mutex_sent_msg);
+			sem_wait(&g_mutex_msjs);
 				enqueue_msg_caught(msg_caught, g_logger, cliente_fd);
-			sem_post(&g_mutex_sent_msg);
+			sem_post(&g_mutex_msjs);
 		} else {
 			enviar_mensaje_error(cliente_fd, g_logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
 			free(msg_caught);
@@ -95,9 +95,9 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 	case LOCALIZED_BROKER:;
 		t_msg_localized_broker *msg_localized = rcv_msj_localized_broker(cliente_fd, g_logdebug);
 		if(cache_espacio_suficiente(espacio_cache_msg_localized(msg_localized)) == true) {
-			sem_wait(&g_mutex_sent_msg);
+			sem_wait(&g_mutex_msjs);
 				enqueue_msg_localized(msg_localized, g_logger, cliente_fd);
-			sem_post(&g_mutex_sent_msg);
+			sem_post(&g_mutex_msjs);
 		} else {
 			enviar_mensaje_error(cliente_fd, g_logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
 			eliminar_msg_localized_broker(msg_localized);
@@ -108,9 +108,9 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 		log_info(g_logger,"(RECEIVING: END_SUSCRIPTION|%s|ID_SUSCRIPTOR = %d|Socket# = %d)"
 				,nombre_cola(handshake->cola_id),handshake->id_suscriptor, cliente_fd);
 		deshabilitar_suscriptor_cola(handshake);
-		sem_wait(&g_mutex_sent_msg);
+		sem_wait(&g_mutex_msjs);
 			enviar_msg_confirmed(cliente_fd, g_logger);
-		sem_post(&g_mutex_sent_msg);
+		sem_post(&g_mutex_msjs);
 		free(handshake);
 
 	}
@@ -157,8 +157,7 @@ void iniciar_estructuras_broker(void)
 	g_msg_counter = 1;
 	g_cache_segment_id = 1;
 	g_cache_space_used = 0;
-	sem_init(&g_mutex_rcvd_msg, 0, 1);
-	sem_init(&g_mutex_sent_msg, 0, 1);
+	sem_init(&g_mutex_msjs, 0, 1);
 	sem_init(&g_mutex_queue_new, 0, 1);
 	sem_init(&g_mutex_queue_get, 0, 1);
 	sem_init(&g_mutex_queue_localized, 0, 1);
@@ -319,7 +318,6 @@ void leer_config_broker(char *path) {
 	g_config_broker->algoritmo_reemplazo = algoritmo_reemplazo(config_get_string_value(g_config,"ALGORITMO_REEMPLAZO"));
 	g_config_broker->freceuncia_compactacion = config_get_int_value(g_config,"FRECUENCIA_COMPACTACION");
 	g_config_broker->ruta_log = config_get_string_value(g_config, "LOG_FILE");
-	//config_destroy(g_config);
 }
 
 t_algoritmo_memoria algoritmo_memoria(char *valor)

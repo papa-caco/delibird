@@ -49,9 +49,7 @@ t_broker_queue *g_queue_caught_pokemon;
 
 pthread_t g_thread_server;
 
-sem_t g_mutex_sent_msg;
-
-sem_t g_mutex_rcvd_msg;
+sem_t g_mutex_msjs;
 
 sem_t g_mutex_queue_get;
 

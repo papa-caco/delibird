@@ -170,7 +170,7 @@ void despachar_msjs_get(t_socket_cliente_broker *socket,t_suscriptor_broker *sus
 	t_queue_msg *msg_queue_get;
 	// Queda en espera si recibió todos los msjs hasta el próximo mensaje en cola o fin de suscripción
 	sem_wait(&suscriptor->sem_cont_msjs);
-	sem_wait(&g_mutex_sent_msg);
+	sem_wait(&g_mutex_msjs);
 	msg_queue_get = get_msg_sin_enviar(g_queue_get_pokemon, suscriptor->id_suscriptor);
 	if (msg_queue_get == NULL) {
 		enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
@@ -180,14 +180,14 @@ void despachar_msjs_get(t_socket_cliente_broker *socket,t_suscriptor_broker *sus
 		enviar_msj_get_gamecard(socket, logger, msg_get_gamecard);
 		eliminar_msg_get_gamecard(msg_get_gamecard);
 	}
-	sem_post(&g_mutex_sent_msg);
+	sem_post(&g_mutex_msjs);
 }
 
 void despachar_msjs_new(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger)
 {
 	t_queue_msg *msg_queue_new;
 	sem_wait(&suscriptor->sem_cont_msjs);
-	sem_wait(&g_mutex_sent_msg);
+	sem_wait(&g_mutex_msjs);
 	msg_queue_new =  get_msg_sin_enviar(g_queue_new_pokemon, suscriptor->id_suscriptor);
 	if (msg_queue_new == NULL) {
 		enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
@@ -197,14 +197,14 @@ void despachar_msjs_new(t_socket_cliente_broker *socket, t_suscriptor_broker *su
 		enviar_msj_new_gamecard(socket, logger, msg_new_gamecard);
 		eliminar_msg_new_gamecard(msg_new_gamecard);
 	}
-	sem_post(&g_mutex_sent_msg);
+	sem_post(&g_mutex_msjs);
 }
 
 void despachar_msjs_catch(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger)
 {
 	t_queue_msg *msg_queue_catch;
 	sem_wait(&suscriptor->sem_cont_msjs);
-	sem_wait(&g_mutex_sent_msg);
+	sem_wait(&g_mutex_msjs);
 	msg_queue_catch = get_msg_sin_enviar(g_queue_catch_pokemon, suscriptor->id_suscriptor);
 	if (msg_queue_catch == NULL) {
 		enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
@@ -214,14 +214,14 @@ void despachar_msjs_catch(t_socket_cliente_broker *socket, t_suscriptor_broker *
 		enviar_msj_catch_gamecard(socket, logger, msg_catch_gamecard);
 		eliminar_msg_catch_gamecard(msg_catch_gamecard);
 	}
-	sem_post(&g_mutex_sent_msg);
+	sem_post(&g_mutex_msjs);
 }
 
 void despachar_msjs_localized(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger)
 {
 	t_queue_msg *msg_queue_localized;
 	sem_wait(&suscriptor->sem_cont_msjs);
-	sem_wait(&g_mutex_sent_msg);
+	sem_wait(&g_mutex_msjs);
 	msg_queue_localized = get_msg_sin_enviar(g_queue_localized_pokemon, suscriptor->id_suscriptor);
 	if (msg_queue_localized == NULL) {
 		enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
@@ -232,14 +232,14 @@ void despachar_msjs_localized(t_socket_cliente_broker *socket, t_suscriptor_brok
 		enviar_msj_localized_team(socket, logger, msg_localized_team);
 		eliminar_msg_localized_team(msg_localized_team);
 	}
-	sem_post(&g_mutex_sent_msg);
+	sem_post(&g_mutex_msjs);
 }
 
 void despachar_msjs_appeared(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger)
 {
 	t_queue_msg *msg_queue_appeared;
 	sem_wait(&suscriptor->sem_cont_msjs);
-	sem_wait(&g_mutex_sent_msg);
+	sem_wait(&g_mutex_msjs);
 	msg_queue_appeared = get_msg_sin_enviar(g_queue_appeared_pokemon, suscriptor->id_suscriptor);
 	if (msg_queue_appeared == NULL) {
 		enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
@@ -250,14 +250,14 @@ void despachar_msjs_appeared(t_socket_cliente_broker *socket, t_suscriptor_broke
 		enviar_msj_appeared_team(socket, logger, msg_appeared_team);
 		eliminar_msg_appeared_team(msg_appeared_team);
 	}
-	sem_post(&g_mutex_sent_msg);
+	sem_post(&g_mutex_msjs);
 }
 
 void despachar_msjs_caught(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger)
 {
 	t_queue_msg *msg_queue_caught;
 	sem_wait(&suscriptor->sem_cont_msjs);
-	sem_wait(&g_mutex_sent_msg);
+	sem_wait(&g_mutex_msjs);
 	msg_queue_caught = get_msg_sin_enviar(g_queue_caught_pokemon, suscriptor->id_suscriptor);
 	if (msg_queue_caught == NULL) {
 		enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
@@ -268,7 +268,7 @@ void despachar_msjs_caught(t_socket_cliente_broker *socket, t_suscriptor_broker 
 		msg_caught_team->id_correlativo = msg_queue_caught->id_correlativo;
 		enviar_msj_caught_team(socket, logger, msg_caught_team);
 	}
-	sem_post(&g_mutex_sent_msg);
+	sem_post(&g_mutex_msjs);
 }
 
 
