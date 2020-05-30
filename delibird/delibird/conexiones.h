@@ -19,11 +19,13 @@ void esperar_cliente_broker(int socket_servidor, t_log *logger, pthread_t thread
 
 void atender_cliente_broker(t_socket_cliente_broker *socket);
 
-void iniciar_servidor(char *ip, char *puerto, t_log* logger, pthread_t thread);
+void iniciar_servidor(char *ip, char *puerto, t_log* logger);
 
 void esperar_cliente(int socket_servidor, pthread_t thread);
 
 void serve_client(int *cliente_fd);
+
+void atender_gameboy(int *cliente_fd);
 
 //-------------------Firma de funciones - Clientes ---------------------------//
 

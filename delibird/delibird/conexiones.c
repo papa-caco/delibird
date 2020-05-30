@@ -71,10 +71,11 @@ void esperar_cliente_broker(int socket_servidor,t_log *logger, pthread_t thread)
 }
 
 
-void iniciar_servidor(char *ip, char *puerto, t_log* logger, pthread_t thread)
+void iniciar_servidor(char *ip, char *puerto, t_log* logger)
 {
-
 	int socket_servidor, status;
+	struct sockaddr_storage dir_cliente;
+	socklen_t tam_direccion;
 	struct addrinfo hints, *servinfo; 	//hints no es puntero
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;			// No importa si uso IPv4 o IPv6 - vale 0
@@ -96,9 +97,20 @@ void iniciar_servidor(char *ip, char *puerto, t_log* logger, pthread_t thread)
 	if (listen(socket_servidor, 10) == -1) {
 		perror("listen");
 	}
-	freeaddrinfo(servinfo);
-	while (1)
-		esperar_cliente(socket_servidor, thread);
+	//freeaddrinfo(servinfo);
+	while (1){
+		tam_direccion = sizeof(dir_cliente);
+		int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
+		pthread_t pid;
+		log_info(logger,"(NEW CLIENT CONNECTED | SOCKET#:%d)", socket_cliente);
+		int thread_status = pthread_create(&pid,NULL,(void*) atender_gameboy,&socket_cliente);
+		if( thread_status != 0 ){
+			log_error(logger, "Thread create returno %d", thread_status );
+			log_error(logger, "Thread create returno %s", strerror( thread_status ) );
+		} else {
+			pthread_detach( pid );
+		}
+	}
 }
 
 void esperar_cliente(int socket_servidor, pthread_t thread)
@@ -142,6 +154,11 @@ void atender_cliente_broker(t_socket_cliente_broker *socket)
 }
 
 void serve_client(int *cliente_fd)
+{
+
+}
+
+void atender_gameboy(int *cliente_fd)
 {
 
 }

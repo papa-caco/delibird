@@ -74,6 +74,13 @@ typedef struct Suscriptor_Broker{
 	int cant_msg;
 } t_suscriptor_broker;
 
+typedef struct Msg_Handshake_Suscriptor{
+	uint32_t id_suscriptor;
+	uint32_t id_recibido;
+	t_tipo_mensaje cola_id;
+	uint32_t msjs_recibidos;
+} t_handsake_suscript;
+
 typedef struct Coordenada{
 	uint32_t pos_x;
 	uint32_t pos_y;
@@ -136,13 +143,6 @@ typedef struct Msg_Appeared_Broker{
 	uint32_t size_pokemon;
 	char *pokemon;
 } t_msg_appeared_broker;
-
-typedef struct Msg_Handshake_Suscriptor{
-	uint32_t id_suscriptor;
-	uint32_t id_recibido;
-	t_tipo_mensaje cola_id;
-	uint32_t msjs_recibidos;
-} t_handsake_suscript;
 
 //------ ESTRUCTURAS PARA MENSAJES QUE ENVIA BROKER A SUSCRIPTORES-----------//
 

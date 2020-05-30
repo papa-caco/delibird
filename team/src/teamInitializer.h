@@ -1,27 +1,34 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<sys/socket.h>
-#include<unistd.h>
-#include<netdb.h>
-#include<commons/log.h>
-#include<commons/string.h>
-#include<commons/config.h>
-#include<commons/txt.h>
-#include<commons/collections/list.h>
-#include<commons/collections/queue.h>
-#include<string.h>
-#include<pthread.h>
-#include<stdbool.h>
-#include"utilsTeam.h"
+#ifndef SRC_TEAMINITIALIZER_H_
+#define SRC_TEAMINITIALIZER_H_
 
-#define IP "127.0.0.1"
-#define PUERTO "5001"
+#include<delibird/estructuras.h>
+#include<delibird/mensajeria.h>
+#include<delibird/serializaciones.h>
+#include<delibird/conexiones.h>
+#include "utilsTeam.h"
+
 #define ID_MSG_RTA 65535
-#define RESPUESTA_OK "RECIBIDO_OK"
+#define RUTA_CONFIG_TEAM "config/team.config"
 #define HANDSHAKE_SUSCRIPTOR 255
-//t_queue* new;
-//t_list* objetivoGlobal;
 
+typedef struct Configuracion_Team
+{
+	char *ip_broker;
+	char *puerto_broker;
+	char *ip_team;
+	char *puerto_team;
+	int tiempo_reconexion;
+	int retardo_ciclo_cpu;
+	char *algoritmo_planificion;
+	int quantum;
+	int estimacion_inicial;
+	char *ruta_log;
+	int id_suscriptor;
+} t_config_team;
+
+
+/*t_queue* new;
+//t_list* objetivoGlobal;*/
 
 typedef struct Posicion_Entrenador{
 	int pos_x;
@@ -49,90 +56,39 @@ typedef struct Entrenador{
 	//La otra es crear los hilos por otro lado e ir manejándolos a tu criterio.
 } t_entrenador;
 
+
 //-----------------Variables Globales----------------------------
-
-pthread_t thread;
-
-
-t_log *g_logger;
 
 t_queue* colaNewEntrenadores;
 
 t_list* objetivoGlobalEntrenadores;
 
+t_config *g_config;
+
+t_config_team *g_config_team;
+
+t_log *g_logger;
+
+pthread_t tid_localized;
+
+pthread_t tid_appeared;
+
+pthread_t tid_caught;
+
+pthread_t tid_send_msjs;
+
+int g_cnt_msjs_caught;
+
+int g_cnt_msjs_appeared;
+
+int g_cnt_msjs_localized;
+
+
 //-----------------Firma de Funciones----------------------------
-
-t_list * extraer_posiciones_entrenadores();
-
-void* recibir_buffer(int*, int);
-
-int recibir_operacion(int socket);
 
 void iniciar_team(void);
 
-void iniciar_servidor(void);
-
-void iniciar_logger(void);
-
-void serve_client(t_socket_cliente *socket);
-
-void process_request(op_code cod_op, t_socket_cliente *socket);
-
-void process_suscript(op_code cod_op, t_socket_cliente *socket);
-
-void* recibir_mensaje(int socket_cliente, int* size);
-
-void* rcv_catch_broker(int socket_cliente, int* size);
-
-void *rcv_caught_broker(int socket_cliente,int *size);
-
-void* rcv_new_broker(int socket_cliente, int* size);
-
-void* rcv_new_gamecard(int socket_cliente, int* size);
-
-void* rcv_get_broker(int socket_cliente, int* size);
-
-void *rcv_get_gamecard(int socket_cliente, int *size);
-
-void* rcv_catch_gamecard(int socket_cliente, int* size);
-
-void* rcv_appeared_broker(int socket_cliente, int* size);
-
-void* rcv_appeared_team(int socket_cliente, int* size);
-
-//t_handsake_suscript *rcv_handshake_suscripcion(t_socket_cliente *socket, int *size);
-
-//t_handsake_suscript *rcv_fin_suscripcion(t_socket_cliente *socket, int *size);
-
-//void *serializar_paquete(t_paquete* paquete, int bytes);
-
-void devolver_id_mensaje_propio(int socket_cliente);
-
-void devolver_recepcion_ok(int socket_cliente);
-
-void devolver_recepcion_fail(int socket_cliente, char* mensajeError);
-
-void devolver_caught_broker(void *msg, int socket_cliente);
-
-void devolver_appeared_broker(void *msg, int size, int socket_cliente);
-
-void devolver_id_mensaje(void *msg,int socket_cliente);
-
-void devolver_posiciones(int socket_cliente, char* pokemon, int* encontroPokemon); //Hace un send de la lista de posiciones y cantidad de un pokemon
-
-void enviar_cola_vacia(int socket_cliente, int id_suscriptor);
-
-void enviar_msjs_get(int socket_cliente,int  id_mensaje);
-
-void enviar_msjs_new(int socket_cliente,int  id_mensaje);
-
-void esperar_cliente(int socket);
-
-void liberar_lista_posiciones(t_list* list);
-
-int tamano_recibido(int bytes);
-
-//void eliminar_paquete (t_paquete *paquete);
+t_list * extraer_posiciones_entrenadores();
 
 t_pokemon_entrenador* list_buscar(t_list* lista, char* elementoAbuscar);
 
@@ -145,3 +101,5 @@ void cargar_objetivo_global(t_list* objetivosDeTodosEntrenadores);
 void liberar_lista(t_list* lista);
 
 void liberar_cola(t_queue* cola);
+
+#endif /* SRC_TEAMINITIALIZER_H_ */
