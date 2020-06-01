@@ -26,6 +26,10 @@ typedef struct Configuracion_Team
 	int id_suscriptor;
 } t_config_team;
 
+typedef struct Pokemon_Entrenador{
+	int cantidad;
+	char* pokemon;
+} t_pokemon_entrenador;
 
 /*t_queue* new;
 //t_list* objetivoGlobal;*/
@@ -34,11 +38,6 @@ typedef struct Posicion_Entrenador{
 	int pos_x;
 	int pos_y;
 } t_posicion_entrenador;
-
-typedef struct Pokemon_Entrenador{
-	char* pokemon;
-	int cantidad;
-} t_pokemon_entrenador;
 
 typedef enum Estado_Entrenador{
 	NEW,
@@ -69,13 +68,15 @@ t_config_team *g_config_team;
 
 t_log *g_logger;
 
-pthread_t tid_localized;
+pthread_t tid_send_get;
 
-pthread_t tid_appeared;
+pthread_t tid_send_catch;
 
-pthread_t tid_caught;
+pthread_mutex_t mutex_reconexion;
 
-pthread_t tid_send_msjs;
+pthread_t tid_reconexion;
+
+sem_t sem_mutex_msjs;
 
 int g_cnt_msjs_caught;
 
@@ -83,6 +84,7 @@ int g_cnt_msjs_appeared;
 
 int g_cnt_msjs_localized;
 
+bool status_conn_broker;
 
 //-----------------Firma de Funciones----------------------------
 
@@ -97,6 +99,10 @@ t_list *extraer_pokemones_entrenadores(char* configKey);
 void iniciar_entrenadores_and_objetivoGlobal();
 
 void cargar_objetivo_global(t_list* objetivosDeTodosEntrenadores);
+
+void print_pokemones_objetivo(t_pokemon_entrenador *poke);
+
+void enviar_msjs_get_por_clase_de_pokemon(t_pokemon_entrenador *poke);
 
 void liberar_lista(t_list* lista);
 

@@ -20,7 +20,13 @@ testServer/.settings*
 testServer/.cproject
 testServer/bin/testServer
 testServer/bin/log/*.log
+testServer/logs/testserver.log
 testServer/debug/*.o
+team/logs/team.log
+team/bin/logs/team.log
+team/bin/team
+
+
 
 # Object files
 *.o

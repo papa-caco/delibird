@@ -12,6 +12,10 @@ void iniciar_team(void){
 	leer_config_team(RUTA_CONFIG_TEAM);
 	iniciar_log_team();
 	iniciar_cnt_msjs();
+	status_conn_broker = true;
+	sem_init(&sem_mutex_msjs, 0, 1);
+	iniciar_suscripciones_broker();
+	lanzar_reconexion_broker(g_logger);
 }
 
 t_list * extraer_posiciones_entrenadores() {
@@ -139,7 +143,7 @@ void cargar_objetivo_global(t_list* objetivosEntrenadores){
 				pokemonNuevo -> pokemon = ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->pokemon;
 				pokemonNuevo -> cantidad = ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->cantidad;
 				list_add(objetivoGlobalEntrenadores, pokemonNuevo);
-			}
+				}
 
 		}
 	}
@@ -175,6 +179,18 @@ void destroy_pokemon_entrenador(t_pokemon_entrenador* objetivoEntrenador){
 
 void destroy_pokemonProcesado(char* pokemonProcesado){
 	free(pokemonProcesado);
+}
+
+void print_pokemones_objetivo(t_pokemon_entrenador *poke)
+{
+	printf("(%d|%s)\n",poke->cantidad,poke->pokemon);
+}
+
+void enviar_msjs_get_por_clase_de_pokemon(t_pokemon_entrenador *poke)
+{
+	for (int i = 0; i < poke->cantidad; i ++) {
+		enviar_get_pokemon_broker(poke->pokemon, g_logger);
+	}
 }
 
 void liberar_lista(t_list* lista) {

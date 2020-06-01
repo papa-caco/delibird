@@ -7,11 +7,17 @@
 
 void inicio_server_team(void);
 
-int enviar_mensaje_get(t_msg_get_broker *msg_get);
+void iniciar_suscripciones_broker(void);
 
-void enviar_mensaje_catch(t_msg_catch_broker *msg_catch);
+int iniciar_suscripcion_cola(t_tipo_mensaje cola_suscripta, t_log *logger);
 
-int enviar_catch_pokemon_broker(t_msg_catch_broker *msg_catch, t_log *logger);
+int enviar_get_pokemon_broker(char *pokemon, t_log *logger);
+
+int connect_broker_y_enviar_mensaje_get(t_msg_get_broker *msg_get);
+
+int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon, t_log *logger);
+
+int connect_broker_y_enviar_mensaje_catch(t_msg_catch_broker *msg_catch);
 
 void inicio_suscripcion(t_tipo_mensaje *cola);
 
@@ -19,7 +25,17 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 
 void enviar_catch_de_appeared(t_msg_appeared_team *msg_appeared);
 
+void enviar_get_de_appeared(t_msg_appeared_team *msg_appeared);
+
 void iniciar_cnt_msjs(void);
+
+void enviar_msjs_get_objetivos(void);
+
+void lanzar_reconexion_broker(t_log *logger);
+
+void funciones_reconexion(void);
+
+bool codigo_operacion_valido(op_code code_op);
 
 void iniciar_log_team(void);
 

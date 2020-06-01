@@ -45,10 +45,12 @@ int main(void) {
 
 	 liberar_lista(objetivosEntrenadores);
 	 */
-
+	sem_wait(&sem_mutex_msjs);
 	iniciar_entrenadores_and_objetivoGlobal();
 
 	printf("----------------------------------\n");
+
+	int id_recibido;
 
 	for (int i = 0; queue_is_empty(colaNewEntrenadores) == 0; i++) {
 		t_entrenador* unEntrenador = (t_entrenador*) queue_pop(colaNewEntrenadores);
@@ -61,16 +63,6 @@ int main(void) {
 					unEntrenador->objetivoEntrenador, j);
 			char* nombrePok = pok->pokemon;
 			printf("%s(%d)\n", nombrePok, pok->cantidad);
-			for (int l = 0; l < pok->cantidad; l ++) {
-				int id_recibido;
-				t_msg_get_broker *msg_get = malloc(sizeof(t_msg_get_broker));
-				msg_get->size_pokemon = strlen(nombrePok) + 1;
-				msg_get->pokemon = malloc(sizeof(msg_get->pokemon));
-				memcpy(msg_get->pokemon, nombrePok, msg_get->size_pokemon);
-				id_recibido = enviar_mensaje_get(msg_get);
-				//TODO Usar id_mensaje que envía BROKER en alguna función de TEAM
-				eliminar_msg_get_broker(msg_get);
-			}
 		}
 		printf("LOS POKEMONES QUE YA TIENE SON: \n");
 		for (int j = 0; list_get(unEntrenador->pokemonesObtenidos, j) != NULL;
@@ -93,35 +85,15 @@ int main(void) {
 					pokemonPrint->pokemon, pokemonPrint->cantidad);
 
 	}
+	sem_post(&sem_mutex_msjs);
 
-	liberar_lista(objetivoGlobalEntrenadores);
+	enviar_msjs_get_objetivos();
+
+	//liberar_lista(objetivoGlobalEntrenadores);
 
 	liberar_cola(colaNewEntrenadores);
 
-	t_tipo_mensaje cola_appeared = APPEARED_POKEMON;
-	t_tipo_mensaje cola_caught = CAUGHT_POKEMON;
-	t_tipo_mensaje cola_localized = LOCALIZED_POKEMON;
-
-	int status_appeared = pthread_create(&tid_appeared, NULL,(void*) inicio_suscripcion, &(cola_appeared));
-	if (status_appeared != 0) {
-		log_error(g_logger, "Thread create returned %d | %s", status_appeared, strerror(status_appeared));
-	} else {
-		pthread_detach(tid_appeared);
-	}
-
-	int status_caught = pthread_create(&tid_caught, NULL,(void*) inicio_suscripcion, &(cola_caught));
-	if (status_caught != 0) {
-		log_error(g_logger, "Thread create returned %d | %s", status_caught, strerror(status_caught));
-	} else {
-		pthread_detach(tid_caught);
-	}
-
-	int status_localized = pthread_create(&tid_localized, NULL,(void*) inicio_suscripcion, &(cola_localized));
-	if (status_localized != 0) {
-		log_error(g_logger, "Thread create returned %d | %s", status_localized, strerror(status_localized));
-	} else {
-		pthread_detach(tid_localized);
-	}
+	sleep(1);
 
 	inicio_server_team();
 
