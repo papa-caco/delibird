@@ -34,25 +34,29 @@ void poner_msj_en_cola(t_queue_msg *mensaje_cola, t_broker_queue *cola_broker);
 
 void incremento_sem_cont_suscriptor(t_suscriptor_broker *suscriptor);
 
-void despachar_mensaje_a_suscriptor(t_socket_cliente_broker *socket, t_tipo_mensaje id_cola, t_suscriptor_broker *suscriptor, t_log *logger);
+ssize_t despachar_mensaje_a_suscriptor(t_socket_cliente_broker *socket, t_tipo_mensaje id_cola, int ult_id_recibido, t_suscriptor_broker *suscriptor, t_log *logger);
 
-void despachar_msjs_get(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log *logger);
+ssize_t despachar_msjs_get(t_socket_cliente_broker *socket, int ult_id_recibido, t_suscriptor_broker *suscriptor, t_log *logger);
 
-void despachar_msjs_new(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger);
+ssize_t despachar_msjs_new(t_socket_cliente_broker *socket, int ult_id_recibido, t_suscriptor_broker *suscriptor, t_log * logger);
 
-void despachar_msjs_catch(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger);
+ssize_t despachar_msjs_catch(t_socket_cliente_broker *socket, int ult_id_recibido, t_suscriptor_broker *suscriptor, t_log * logger);
 
-void despachar_msjs_localized(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger);
+ssize_t despachar_msjs_localized(t_socket_cliente_broker *socket, int ult_id_recibido, t_suscriptor_broker *suscriptor, t_log * logger);
 
-void despachar_msjs_appeared(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger);
+ssize_t despachar_msjs_appeared(t_socket_cliente_broker *socket, int ult_id_recibido, t_suscriptor_broker *suscriptor, t_log * logger);
 
-void despachar_msjs_caught(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger);
+ssize_t despachar_msjs_caught(t_socket_cliente_broker *socket, int ult_id_recibido, t_suscriptor_broker *suscriptor, t_log * logger);
+
+void set_msg_enviado_a_suscriptor(t_broker_queue *cola_broker, int id_suscriptor, int id_mensaje);
 
 t_queue_msg *get_msg_sin_enviar(t_broker_queue *cola_broker, int id_suscriptor);
 
 int cant_msjs_sin_enviar(t_broker_queue *cola_broker, int id_suscriptor);
 
 void eliminar_msj_cola_broker(void *mensaje);
+
+bool es_msj_con_mismo_id(t_queue_msg *mensaje, int id_mensaje);
 
 bool es_msj_sin_enviar(t_queue_msg *queue_msg, int id_suscriptor);
 

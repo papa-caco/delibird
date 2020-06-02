@@ -23,11 +23,12 @@ void inicio_server_broker(void)
 
 void atender_cliente_broker(t_socket_cliente_broker *socket) {
 	int cliente_fd = socket->cliente_fd;
-	int cod_op = rcv_codigo_operacion(cliente_fd);
-	if (cod_op == -1) {
-		log_info(g_logger,"(MSG_ERROR!)");
+	op_code cod_op = rcv_codigo_operacion(cliente_fd);
+	if (!codigo_operacion_valido_broker(cod_op)) {
+		log_error(g_logger,"(SUSCRIBER DISCONNECTED: Socket:%d)", cliente_fd);
+		close(cliente_fd);
 	}
-	if (cod_op < SUSCRIBER_ACK) {
+	else if (cod_op < SUSCRIBER_ACK) {
 		atender_publicacion(cod_op, socket);
 	} else {
 		atender_suscripcion(cod_op, socket);
@@ -121,33 +122,45 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 void atender_suscripcion(op_code cod_op, t_socket_cliente_broker *socket)
 {
 	int id_suscriptor;
+	int ult_id_recibido;
 	int cliente_fd = socket->cliente_fd;
 	int cant_msg = socket->cant_msg_enviados;
+	ssize_t sent_bytes;
+	bool suscr_down = false;
 	switch (cod_op) {
 	case SUSCRIBER_ACK:;
 		t_handsake_suscript *handshake = rcv_msj_handshake_suscriptor(cliente_fd);
 		id_suscriptor = handshake->id_suscriptor;
+		ult_id_recibido = handshake->id_recibido;
 		t_tipo_mensaje id_cola = handshake->cola_id;
 		cant_msg = handshake->msjs_recibidos;
 		t_broker_queue *cola_suscript = cola_broker_suscripcion(id_cola);
 		int sem_val;
 		t_suscriptor_broker *suscriptor;
 		if (cant_msg == 0) {
-			log_info(g_logger,"(ATTENDIG_SUSCRIBER|SOCKET:%d|%s|ID_SUSCRIPTOR:%d)",
+			log_info(g_logger,"(ATTENDING_SUSCRIBER|SOCKET:%d|%s|ID_SUSCRIPTOR:%d)",
 				cliente_fd,nombre_cola(handshake->cola_id),handshake->id_suscriptor);
 			alta_suscriptor_cola(cola_suscript,handshake);
 		}
 		free(handshake);
 		suscriptor = obtengo_suscriptor_cola(cola_suscript, id_suscriptor);
 		while(suscriptor->enabled) {
-			despachar_mensaje_a_suscriptor(socket, id_cola, suscriptor, g_logger);
+			sent_bytes = despachar_mensaje_a_suscriptor(socket, id_cola, ult_id_recibido, suscriptor, g_logger);
+			if (sent_bytes == -1) {
+				log_error(g_logger, "(SUSCRIBER_IS_DOWN|%s|ID_SUSCRIPTOR:%d)", nombre_cola(id_cola), id_suscriptor);
+				suscriptor->enabled = false;
+				suscr_down = true;
+			} else {
 			atender_cliente_broker(socket);
 			free(socket);
+			}
 		}
-		socket->cant_msg_enviados = cant_msg;
-		enviar_msj_suscript_end(socket, g_logger, id_suscriptor);
-		eliminar_suscriptor_por_id(cola_suscript,id_suscriptor);
-		free(socket);
+		if (!suscr_down) {
+			socket->cant_msg_enviados = cant_msg;
+			enviar_msj_suscript_end(socket, g_logger, id_suscriptor);
+			free(socket);
+		}
+		eliminar_suscriptor_por_id(cola_suscript, id_suscriptor);
 		pthread_exit(EXIT_SUCCESS);
 	}
 }
@@ -306,6 +319,13 @@ void quitar_suscriptor_cola(t_broker_queue *cola_broker, void *suscriptor)
 	list_remove_by_condition(cola_broker->suscriptores, compare_suscript);
 }
 
+bool codigo_operacion_valido_broker(op_code cod_oper)
+{
+	return (cod_oper == NEW_BROKER || cod_oper == GET_BROKER || cod_oper == CATCH_BROKER
+			|| cod_oper == APPEARED_BROKER || cod_oper == CAUGHT_BROKER || cod_oper == LOCALIZED_BROKER
+			|| cod_oper == SUSCRIBER_ACK  || cod_oper == FIN_SUSCRIPCION );
+}
+
 void leer_config_broker(char *path) {
 	g_config = config_create(path);
 	g_config_broker = malloc(sizeof(t_config_broker));
@@ -316,7 +336,7 @@ void leer_config_broker(char *path) {
 	g_config_broker->algoritmo_memoria = algoritmo_memoria(config_get_string_value(g_config,"ALGORITMO_MEMORIA"));
 	g_config_broker->algoritmo_particion_libre = algoritmo_part_libre(config_get_string_value(g_config,"ALGORITMO_PARTICION_LIBRE"));
 	g_config_broker->algoritmo_reemplazo = algoritmo_reemplazo(config_get_string_value(g_config,"ALGORITMO_REEMPLAZO"));
-	g_config_broker->freceuncia_compactacion = config_get_int_value(g_config,"FRECUENCIA_COMPACTACION");
+	g_config_broker->frecuencia_compactacion = config_get_int_value(g_config,"FRECUENCIA_COMPACTACION");
 	g_config_broker->ruta_log = config_get_string_value(g_config, "LOG_FILE");
 }
 

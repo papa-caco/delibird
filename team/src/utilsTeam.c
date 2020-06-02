@@ -154,7 +154,7 @@ void inicio_suscripcion(t_tipo_mensaje *cola)
 				enviar_msj_handshake_suscriptor(cliente_fd, g_logger, handshake);
 			}
 			else if (rcv_msg_suscrip_end(cliente_fd) != g_config_team->id_suscriptor) {
-				exit(EXIT_FAILURE);
+				pthread_exit(EXIT_FAILURE);
 			} else {
 				flag_salida = 0;
 			}

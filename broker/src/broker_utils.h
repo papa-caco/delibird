@@ -107,6 +107,8 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket);
 
 void atender_suscripcion(op_code cod_op, t_socket_cliente_broker *socket);
 
+bool codigo_operacion_valido_broker(op_code cod_oper);
+
 t_algoritmo_memoria algoritmo_memoria(char *valor);
 
 t_algoritmo_part_libre algoritmo_part_libre(char *valor);

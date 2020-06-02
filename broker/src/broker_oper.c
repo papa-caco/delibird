@@ -109,7 +109,6 @@ t_queue_msg *new_queue_msg(void)
 	queue_msg->msg_data = NULL;
 	queue_msg->es_victima_reemplazo = false;
 	queue_msg->sended_suscriptors = list_create();
-	queue_msg->receipt_confirmed = list_create();
 	return queue_msg;
 }
 
@@ -141,154 +140,182 @@ void incremento_sem_cont_suscriptor(t_suscriptor_broker *suscriptor)
 	sem_post(&suscriptor->sem_cont_msjs);
 }
 
-void despachar_mensaje_a_suscriptor(t_socket_cliente_broker *socket, t_tipo_mensaje id_cola, t_suscriptor_broker * suscriptor, t_log *logger)
+ssize_t despachar_mensaje_a_suscriptor(t_socket_cliente_broker *socket, t_tipo_mensaje id_cola, int ult_id_recibido, t_suscriptor_broker * suscriptor, t_log *logger)
 {
+	ssize_t sent_bytes;
 	switch(id_cola) {
+		case APPEARED_POKEMON:;
+			sent_bytes = despachar_msjs_appeared(socket, ult_id_recibido, suscriptor, logger);
+			break;
 		case GET_POKEMON:;
-			despachar_msjs_get(socket, suscriptor, logger);
+			sent_bytes = despachar_msjs_get(socket, ult_id_recibido, suscriptor, logger);
 			break;
 		case NEW_POKEMON:;
-			despachar_msjs_new(socket, suscriptor, logger);
+			sent_bytes = despachar_msjs_new(socket, ult_id_recibido, suscriptor, logger);
 			break;
 		case CATCH_POKEMON:;
-			despachar_msjs_catch(socket, suscriptor, logger);
+			sent_bytes = despachar_msjs_catch(socket, ult_id_recibido, suscriptor, logger);
 			break;
 		case LOCALIZED_POKEMON:;
-			despachar_msjs_localized(socket, suscriptor, logger);
-			break;
-		case APPEARED_POKEMON:;
-			despachar_msjs_appeared(socket, suscriptor, logger);
+			sent_bytes = despachar_msjs_localized(socket, ult_id_recibido, suscriptor, logger);
 			break;
 		case CAUGHT_POKEMON:;
-			despachar_msjs_caught(socket, suscriptor, logger);
+			sent_bytes = despachar_msjs_caught(socket, ult_id_recibido, suscriptor, logger);
 			break;
 	}
+	return sent_bytes;
 }
 
-void despachar_msjs_get(t_socket_cliente_broker *socket,t_suscriptor_broker *suscriptor,t_log *logger)
+ssize_t despachar_msjs_get(t_socket_cliente_broker *socket, int ult_id_recibido,t_suscriptor_broker *suscriptor,t_log *logger)
 {
 	t_queue_msg *msg_queue_get;
+	ssize_t sent_bytes = 0;
 	// Queda en espera si recibió todos los msjs hasta el próximo mensaje en cola o fin de suscripción
 	sem_wait(&suscriptor->sem_cont_msjs);
 	sem_wait(&g_mutex_msjs);
+	set_msg_enviado_a_suscriptor(g_queue_get_pokemon, suscriptor->id_suscriptor, ult_id_recibido);
 	msg_queue_get = get_msg_sin_enviar(g_queue_get_pokemon, suscriptor->id_suscriptor);
 	if (msg_queue_get == NULL) {
-		enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
+		sent_bytes = enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
 	} else {
 		t_msg_get_gamecard *msg_get_gamecard = deserializar_msg_get(msg_queue_get->msg_data);
 		msg_get_gamecard->id_mensaje = msg_queue_get->id_mensaje;
-		enviar_msj_get_gamecard(socket, logger, msg_get_gamecard);
+		sent_bytes = enviar_msj_get_gamecard(socket, logger, msg_get_gamecard);
 		eliminar_msg_get_gamecard(msg_get_gamecard);
 	}
 	sem_post(&g_mutex_msjs);
+	return sent_bytes;
 }
 
-void despachar_msjs_new(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger)
+ssize_t despachar_msjs_new(t_socket_cliente_broker *socket, int ult_id_recibido, t_suscriptor_broker *suscriptor, t_log * logger)
 {
 	t_queue_msg *msg_queue_new;
+	ssize_t sent_bytes = 0;
 	sem_wait(&suscriptor->sem_cont_msjs);
 	sem_wait(&g_mutex_msjs);
+	set_msg_enviado_a_suscriptor(g_queue_new_pokemon, suscriptor->id_suscriptor, ult_id_recibido);
 	msg_queue_new =  get_msg_sin_enviar(g_queue_new_pokemon, suscriptor->id_suscriptor);
 	if (msg_queue_new == NULL) {
-		enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
+		sent_bytes = enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
 	} else {
 		t_msg_new_gamecard *msg_new_gamecard = deserializar_msg_new(msg_queue_new->msg_data);
 		msg_new_gamecard->id_mensaje = msg_queue_new->id_mensaje;
-		enviar_msj_new_gamecard(socket, logger, msg_new_gamecard);
+		sent_bytes = enviar_msj_new_gamecard(socket, logger, msg_new_gamecard);
 		eliminar_msg_new_gamecard(msg_new_gamecard);
 	}
 	sem_post(&g_mutex_msjs);
+	return sent_bytes;
 }
 
-void despachar_msjs_catch(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger)
+ssize_t despachar_msjs_catch(t_socket_cliente_broker *socket, int ult_id_recibido, t_suscriptor_broker *suscriptor, t_log * logger)
 {
 	t_queue_msg *msg_queue_catch;
+	ssize_t sent_bytes = 0;
 	sem_wait(&suscriptor->sem_cont_msjs);
 	sem_wait(&g_mutex_msjs);
+	set_msg_enviado_a_suscriptor(g_queue_catch_pokemon, suscriptor->id_suscriptor, ult_id_recibido);
 	msg_queue_catch = get_msg_sin_enviar(g_queue_catch_pokemon, suscriptor->id_suscriptor);
 	if (msg_queue_catch == NULL) {
-		enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
+		sent_bytes = enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
 	} else {
 		t_msg_catch_gamecard *msg_catch_gamecard = deserializar_msg_catch(msg_queue_catch->msg_data);
 		msg_catch_gamecard->id_mensaje = msg_queue_catch->id_mensaje;
-		enviar_msj_catch_gamecard(socket, logger, msg_catch_gamecard);
+		sent_bytes = enviar_msj_catch_gamecard(socket, logger, msg_catch_gamecard);
 		eliminar_msg_catch_gamecard(msg_catch_gamecard);
 	}
 	sem_post(&g_mutex_msjs);
+	return sent_bytes;
 }
 
-void despachar_msjs_localized(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger)
+ssize_t despachar_msjs_localized(t_socket_cliente_broker *socket, int ult_id_recibido, t_suscriptor_broker *suscriptor, t_log * logger)
 {
 	t_queue_msg *msg_queue_localized;
+	ssize_t sent_bytes = 0;
 	sem_wait(&suscriptor->sem_cont_msjs);
 	sem_wait(&g_mutex_msjs);
+	set_msg_enviado_a_suscriptor(g_queue_localized_pokemon, suscriptor->id_suscriptor, ult_id_recibido);
 	msg_queue_localized = get_msg_sin_enviar(g_queue_localized_pokemon, suscriptor->id_suscriptor);
 	if (msg_queue_localized == NULL) {
-		enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
+		sent_bytes = enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
 	} else {
 		t_msg_localized_team *msg_localized_team = deserializar_msg_localized(msg_queue_localized->msg_data);
 		msg_localized_team->id_mensaje = msg_queue_localized->id_mensaje;
 		msg_localized_team->id_correlativo = msg_queue_localized->id_correlativo;
-		enviar_msj_localized_team(socket, logger, msg_localized_team);
+		sent_bytes = enviar_msj_localized_team(socket, logger, msg_localized_team);
 		eliminar_msg_localized_team(msg_localized_team);
 	}
 	sem_post(&g_mutex_msjs);
+	return sent_bytes;
 }
 
-void despachar_msjs_appeared(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger)
+ssize_t despachar_msjs_appeared(t_socket_cliente_broker *socket, int ult_id_recibido, t_suscriptor_broker *suscriptor, t_log * logger)
 {
 	t_queue_msg *msg_queue_appeared;
+	ssize_t sent_bytes = 0;
 	sem_wait(&suscriptor->sem_cont_msjs);
 	sem_wait(&g_mutex_msjs);
+	set_msg_enviado_a_suscriptor(g_queue_appeared_pokemon, suscriptor->id_suscriptor, ult_id_recibido);
 	msg_queue_appeared = get_msg_sin_enviar(g_queue_appeared_pokemon, suscriptor->id_suscriptor);
 	if (msg_queue_appeared == NULL) {
-		enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
+		sent_bytes = enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
 	} else {
 		t_msg_appeared_team *msg_appeared_team = deserializar_msg_appeared(msg_queue_appeared->msg_data);
 		msg_appeared_team->id_mensaje = msg_queue_appeared->id_mensaje;
 		msg_appeared_team->id_correlativo = msg_queue_appeared->id_correlativo;
-		enviar_msj_appeared_team(socket, logger, msg_appeared_team);
+		sent_bytes = enviar_msj_appeared_team(socket, logger, msg_appeared_team);
 		eliminar_msg_appeared_team(msg_appeared_team);
 	}
 	sem_post(&g_mutex_msjs);
+	return sent_bytes;
 }
 
-void despachar_msjs_caught(t_socket_cliente_broker *socket, t_suscriptor_broker *suscriptor, t_log * logger)
+ssize_t despachar_msjs_caught(t_socket_cliente_broker *socket, int ult_id_recibido, t_suscriptor_broker *suscriptor, t_log * logger)
 {
 	t_queue_msg *msg_queue_caught;
+	ssize_t sent_bytes = 0;
 	sem_wait(&suscriptor->sem_cont_msjs);
 	sem_wait(&g_mutex_msjs);
+	set_msg_enviado_a_suscriptor(g_queue_caught_pokemon, suscriptor->id_suscriptor, ult_id_recibido);
 	msg_queue_caught = get_msg_sin_enviar(g_queue_caught_pokemon, suscriptor->id_suscriptor);
 	if (msg_queue_caught == NULL) {
-		enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
+		sent_bytes = enviar_msj_cola_vacia(socket, logger, suscriptor->id_suscriptor);
 	}
 	else {
 		t_msg_caught_team *msg_caught_team = deserializar_msg_caught(msg_queue_caught->msg_data);
 		msg_caught_team->id_mensaje = msg_queue_caught->id_mensaje;
 		msg_caught_team->id_correlativo = msg_queue_caught->id_correlativo;
-		enviar_msj_caught_team(socket, logger, msg_caught_team);
+		sent_bytes = enviar_msj_caught_team(socket, logger, msg_caught_team);
 	}
 	sem_post(&g_mutex_msjs);
+	return sent_bytes;
 }
 
+void set_msg_enviado_a_suscriptor(t_broker_queue *cola_broker, int id_suscriptor, int id_mensaje)
+{
+	bool mismo_id_mensaje(void *mensaje)
+	{
+		t_queue_msg *queue_msg = (t_queue_msg*) mensaje;
+		bool condition = es_msj_con_mismo_id(queue_msg, id_mensaje);
+		return condition;
+	}
+	t_queue_msg *queue_msg = list_find(cola_broker->mensajes_cola, mismo_id_mensaje);
+	if (queue_msg != NULL) {
+		void *suscript_id = malloc(sizeof(int));
+		memcpy(suscript_id,&id_suscriptor,sizeof(int));
+		list_add(queue_msg->sended_suscriptors,suscript_id);
+	}
+}
 
 t_queue_msg *get_msg_sin_enviar(t_broker_queue *cola_broker,int id_suscriptor)
 {
-	int cant_msj = cola_broker->mensajes_cola->elements_count;
 	bool no_fue_enviado(void *mensaje)
 	{
 		t_queue_msg *queue_msg = (t_queue_msg*) mensaje;
 		bool condition = es_msj_sin_enviar(queue_msg,id_suscriptor);
 		return condition;
 	}
-
 	t_queue_msg *queue_msg = list_find(cola_broker->mensajes_cola, no_fue_enviado);
 	//TODO traer los datos del mensaje que estan en la particion
-	if (queue_msg != NULL) {
-		void *suscript_id = malloc(sizeof(int));
-		memcpy(suscript_id,&id_suscriptor,sizeof(int));
-		list_add(queue_msg->sended_suscriptors,suscript_id);
-	}
 	return queue_msg;
 }
 
@@ -304,6 +331,13 @@ int cant_msjs_sin_enviar(t_broker_queue *cola_broker, int id_suscriptor)
 	int cant_msjs = msjs_sin_enviar->elements_count;
 	return cant_msjs;
 }
+
+
+bool es_msj_con_mismo_id(t_queue_msg *mensaje, int id_mensaje)
+{
+	return mensaje->id_mensaje == id_mensaje;
+}
+
 
 bool es_msj_sin_enviar(t_queue_msg *mensaje, int id_suscriptor)
 {

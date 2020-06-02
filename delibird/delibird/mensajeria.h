@@ -15,21 +15,21 @@
 
 // -------------------FUNCIONES PARA ENVIO DE MENSAJES DESDE EL BROKER A SUSCRIPTORES--------//
 
-void enviar_msj_cola_vacia(t_socket_cliente_broker *socket, t_log *logger, int id_suscriptor);
+ssize_t enviar_msj_cola_vacia(t_socket_cliente_broker *socket, t_log *logger, int id_suscriptor);
 
 void enviar_msj_suscript_end(t_socket_cliente_broker *socket, t_log * logger, int id_suscriptor);
 
-void enviar_msj_get_gamecard(t_socket_cliente_broker *socket, t_log *logger, t_msg_get_gamecard *msg_get_gamecard);
+ssize_t enviar_msj_get_gamecard(t_socket_cliente_broker *socket, t_log *logger, t_msg_get_gamecard *msg_get_gamecard);
 
-void enviar_msj_new_gamecard(t_socket_cliente_broker *socket, t_log *logger, t_msg_new_gamecard *msg_new_gamecard);
+ssize_t enviar_msj_new_gamecard(t_socket_cliente_broker *socket, t_log *logger, t_msg_new_gamecard *msg_new_gamecard);
 
-void enviar_msj_catch_gamecard(t_socket_cliente_broker *socket, t_log *logger, t_msg_catch_gamecard *msg_catch_gamecard);
+ssize_t enviar_msj_catch_gamecard(t_socket_cliente_broker *socket, t_log *logger, t_msg_catch_gamecard *msg_catch_gamecard);
 
-void enviar_msj_appeared_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_appeared_team *msg_appeared_team);
+ssize_t enviar_msj_appeared_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_appeared_team *msg_appeared_team);
 
-void enviar_msj_caught_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_caught_team *msg_caught_team);
+ssize_t enviar_msj_caught_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_caught_team *msg_caught_team);
 
-void enviar_msj_localized_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_localized_team *msg_localized_team);
+ssize_t enviar_msj_localized_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_localized_team *msg_localized_team);
 
 void enviar_id_mensaje(int socket_cliente, t_log *logger, int id_mensaje);
 

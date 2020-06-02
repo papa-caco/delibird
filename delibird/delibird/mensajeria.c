@@ -8,19 +8,22 @@
  */
 #include "mensajeria.h"
 
-void enviar_msj_cola_vacia(t_socket_cliente_broker *socket, t_log *logger, int id_suscriptor)
+ssize_t enviar_msj_cola_vacia(t_socket_cliente_broker *socket, t_log *logger, int id_suscriptor)
 {
 	t_paquete* paquete = empaquetar_msj_cola_vacia(id_suscriptor);
+	ssize_t sent_bytes = 0;
 	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
-	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
-		exit(EXIT_FAILURE);
+	sent_bytes = send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL);
+	if (sent_bytes != bytes) {
+		log_error(logger, "(SENDING: EMPTY_QUEUE FAILED)");
 	} else {
 		log_warning(logger, "(SENDING|Socket:%d|EMPTY_QUEUE -- No More Messages...|ID_SUSCRIPTOR:%d)",
 			socket->cliente_fd, id_suscriptor);
 	}
 	free(a_enviar);
+	return sent_bytes;
 }
 
 void enviar_msj_suscript_end(t_socket_cliente_broker *socket, t_log * logger, int id_suscriptor)
@@ -38,28 +41,33 @@ void enviar_msj_suscript_end(t_socket_cliente_broker *socket, t_log * logger, in
 	free(a_enviar);
 }
 
-void enviar_msj_get_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_msg_get_gamecard *msg_get_gamecard)
+ssize_t enviar_msj_get_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_msg_get_gamecard *msg_get_gamecard)
 {
 	t_paquete *paquete = empaquetar_msg_get_gamecard(msg_get_gamecard);
+	ssize_t sent_bytes = 0;
 	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
-	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
+	sent_bytes = send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL);
+	if ( sent_bytes != bytes) {
 		log_error(logger, "(SENDING: GET_POKEMON FAILED)");
 	} else {
 		log_info(logger, "(SENDING|Socket:%d|GET_POKEMON|ID_MENSAJE:%d|%s|SIZE:%d Bytes)",
 		socket->cliente_fd, msg_get_gamecard->id_mensaje, msg_get_gamecard->pokemon, bytes);
 	}
 	free(a_enviar);
+	return sent_bytes;
 }
 
-void enviar_msj_new_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_msg_new_gamecard *msg_new_gamecard)
+ssize_t enviar_msj_new_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_msg_new_gamecard *msg_new_gamecard)
 {
 	t_paquete *paquete = empaquetar_msg_new_gamecard(msg_new_gamecard);
+	ssize_t sent_bytes = 0;
 	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
-	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
+	sent_bytes = send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL);
+ 	if ( sent_bytes != bytes) {
 		log_error(logger, "(SENDING: NEW_POKEMON FAILED)");
 	} else {
 		log_info(logger,"(SENDING|Socket:%d|NEW_POKEMON|ID_MENSAJE:%d|%s|POS_X:%d|POS_Y:%d|QTY:%d|SIZE:%d Bytes)",
@@ -67,15 +75,18 @@ void enviar_msj_new_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_msg
 			msg_new_gamecard->coord->pos_y, msg_new_gamecard->cantidad,  bytes);
 	}
 	free(a_enviar);
+	return sent_bytes;
 }
 
-void enviar_msj_catch_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_msg_catch_gamecard *msg_catch_gamecard)
+ssize_t enviar_msj_catch_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_msg_catch_gamecard *msg_catch_gamecard)
 {
 	t_paquete* paquete = empaquetar_msg_catch_gamecard(msg_catch_gamecard);
+	ssize_t sent_bytes = 0;
 	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
-	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
+	sent_bytes = send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL);
+	if (sent_bytes != bytes) {
 		log_error(logger, "(SENDING: CATCH_POKEMON FAILED)");
 	} else {
 		log_info(logger,"(SENDING|Socket:%d|CATCH_POKEMON|ID_MESSAGE:%d|%s|POS_X:%d|POS_Y:%d)",
@@ -83,15 +94,17 @@ void enviar_msj_catch_gamecard(t_socket_cliente_broker *socket,t_log *logger,t_m
 			msg_catch_gamecard->coord->pos_x, msg_catch_gamecard->coord->pos_y);
 	}
 	free(a_enviar);
+	return sent_bytes;
 }
 
-void enviar_msj_appeared_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_appeared_team *msg_appeared_team)
+ssize_t enviar_msj_appeared_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_appeared_team *msg_appeared_team)
 {
 	t_paquete *paquete = empaquetar_msg_appeared_team(msg_appeared_team);
 	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
-	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
+	ssize_t sent_bytes = send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL);
+	if (sent_bytes != bytes) {
 		log_error(logger, "(SENDING APPEARED_POKEMON FAILED)");
 	} else {
 		log_info(logger,"(SENDING|Socket:%d|APPEARED_POKEMON|ID_MSG:%d|ID_CORRELATIVE:%d|%s|POS_X:%d|POS_Y:%d|SIZE:%d Bytes)",
@@ -99,15 +112,18 @@ void enviar_msj_appeared_team(t_socket_cliente_broker *socket, t_log *logger, t_
 			msg_appeared_team->coord->pos_x, msg_appeared_team->coord->pos_y, bytes);
 	}
 	free(a_enviar);
+	return sent_bytes;
 }
 
-void enviar_msj_caught_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_caught_team *msg_caught_team)
+ssize_t enviar_msj_caught_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_caught_team *msg_caught_team)
 {
 	t_paquete* paquete = empaquetar_msg_caught_team(msg_caught_team);
+	ssize_t sent_bytes;
 	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
-	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
+	sent_bytes = send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL);
+	if (sent_bytes != bytes) {
 		log_error(logger, "(SENDING: CAUGHT_POKEMON FAILED)");
 	} else {
 		log_info(logger,"(SENDING|Socket:%d|CAUGHT_POKEMON|ID_MSG:%d|ID_CORRELATIVE:%d|RESULT:%s)",
@@ -115,16 +131,19 @@ void enviar_msj_caught_team(t_socket_cliente_broker *socket, t_log *logger, t_ms
 		free(msg_caught_team);
 	}
 	free(a_enviar);
+	return sent_bytes;
 }
 
-void enviar_msj_localized_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_localized_team *msg_localized_team)
+ssize_t enviar_msj_localized_team(t_socket_cliente_broker *socket, t_log *logger, t_msg_localized_team *msg_localized_team)
 {
 	t_paquete* paquete = empaquetar_msg_localized_team(msg_localized_team);
+	ssize_t sent_bytes;
 	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
 	eliminar_paquete(paquete);
 	char *concatenada = concat_posiciones(msg_localized_team->posiciones->coordenadas);
-	if (send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
+	sent_bytes = send(socket->cliente_fd, a_enviar, bytes, MSG_WAITALL);
+	if (sent_bytes != bytes) {
 		log_error(logger, "(SENDING: LOCALIZED_POKEMON FAILED)");
 	} else {
 		log_info(logger,"(SENDING|Socket:%d|LOCALIZED_POKEMON|ID_MSG:%d|ID_CORRELATIVE:%d|%s|POSIC_QTY=%d|{Xn|Yn}:=%s|SIZE:%d)",
@@ -133,6 +152,7 @@ void enviar_msj_localized_team(t_socket_cliente_broker *socket, t_log *logger, t
 		free(concatenada);
 	}
 	free(a_enviar);
+	return sent_bytes;
 }
 
 void enviar_msj_appeared_broker(int cliente_fd, t_log *logger, t_msg_appeared_broker *msg_appeared_broker)
