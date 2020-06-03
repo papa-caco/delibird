@@ -4,30 +4,28 @@
  *  Created on: 20 abr. 2020
  *      Author: utnso
  */
-#include "utilsGc.h"
-
-void inicio_server_game_card(void){
+// export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/utnso/2020/tp-2020-1c-Los-Que-Aprueban/delibird/build
+#include "utils_gc.h"
+void iniciar_game_card(void){
 	leer_config();
 	iniciar_log_game_card();
-	//iniciar_cnt_msjs();
+	inicio_server_game_card();
 }
 
 void iniciar_log_game_card(void) {
-	//------------ Ver de tener un modo de inicio que indique que imprima por pantalla o no! -------//
 	g_logger = log_create(PATH_LOG, "GAME_CARD", 1, LOG_LEVEL_INFO);
 	log_info(g_logger,"INICIO_LOG_SUCESS");
-
-
 }
-t_config* leer_config(void){
+
+void leer_config(void){
 	t_config* g_config;
 	g_config = config_create(PATH_CONFIG);
-	g_config = malloc(sizeof(t_config_game_card));
-	g_config->ip_game_card = config_get_string_value(g_config, "IP_GAME_CARD");
-	g_config->puerto_game_card = config_get_string_value(g_config, "PUERTO_GAME_CARD");
-	g_config->ip_broker = config_get_string_value(g_config, "IP_BROKER");
-	g_config->puerto_broker = config_get_string_value(g_config, "PUERTO_BROKER");
-
+	g_config_game_card = malloc(sizeof(t_config_game_card));
+	g_config_game_card->ip_gamecard = config_get_string_value(g_config, "IP_GAMECARD");
+	g_config_game_card->puerto_gamecard = config_get_string_value(g_config, "PUERTO_GAMECARD");
+	g_config_game_card->ip_broker = config_get_string_value(g_config, "IP_BROKER");
+	g_config_game_card->puerto_broker = config_get_string_value(g_config, "PUERTO_BROKER");
+	g_config_game_card->path_pokemon = config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS");
 }
 
 void finalizar_log(void){
@@ -39,97 +37,28 @@ void destruir_config(void){
 
 void inicio_server_game_card(void)
 {
-	char *ip = g_config->ip_game_card;
-	char *puerto = g_config->puerto_game_card;
+	char *ip = g_config_game_card->ip_gamecard;
+	char *puerto = g_config_game_card->puerto_gamecard;
 	iniciar_servidor(ip, puerto, g_logger);
 }
 
-void iniciar_servidor()
-{
-	int socket_servidor;
-    struct addrinfo hints, *servinfo, *p;
-
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;
-
-   // t_config* config = leer_config();
-    g_config = leer_config();
-    char* ip = config_get_string_value(g_config, "IP_LOCAL");
-	char* puerto = config_get_string_value(g_config, "PUERTO_LOCAL");
-
-    getaddrinfo(ip, puerto, &hints, &servinfo);
-
-    for (p=servinfo; p != NULL; p = p->ai_next)
-    {
-        if ((socket_servidor = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
-            continue;
-
-        if (bind(socket_servidor, p->ai_addr, p->ai_addrlen) == -1) {
-            close(socket_servidor);
-            continue;
-        }
-        break;
-    }
-	if( socket_servidor == -1 ){
-    	log_error(g_logger,	"(SERVER_ERROR |  LOCAL_IP=%s | PORT=%s  | SOCKET=%d)", ip, puerto, socket_servidor);
-    }
-    else{
-    	log_info(g_logger,"(SERVER_SUCCESS | SOCKET=%d |  REMOTE_IP=%s | PORT=%s)",socket_servidor, ip, puerto);
-    }
-
-	listen(socket_servidor, SOMAXCONN);
-	//servidor = &socket_servidor;
-//log_info(logger,"socket servidor %d %d",*servidor,socket_servidor);
-//suscribirse(*servidor);
-    freeaddrinfo(servinfo);
-
-    while(1)
-    	esperar_cliente(socket_servidor);
-    config_destroy(g_config);
-}
-/*
-void esperar_cliente(int socket_servidor) {
-	struct sockaddr_in dir_cliente;
-
-	socklen_t tam_direccion = sizeof(struct sockaddr_in);
-
-	int socket_cliente = accept(socket_servidor, (void*) &dir_cliente,
-			&tam_direccion);
-
-	t_socket_cliente *socket = malloc(sizeof(t_socket_cliente));
-	socket->cliente_fd = socket_cliente;
-	// inicializa contador de mensajes de algun cliente suscriptor
-	socket->cant_msg_enviados = 0;
-
-	pthread_create(&thread, NULL, (void*) serve_client, socket);
-	pthread_detach(thread);
+/**
+ * Recibe los mensajes del gameboy.
+ * reenvia los mensajes al procesamiento de request
+ */
+void atender_gameboy(int *cliente_fd) {
+	op_code cod_op;
+	process_request(cod_op, *cliente_fd);
 }
 
-*/
-/*
-void serve_client(t_socket_cliente *socket)
-{
-	int cod_op;
-	int cliente_fd = socket->cliente_fd;
 
-	//if(recv(*socket, &cod_op, sizeof(int), MSG_WAITALL) == -1)
-	if (recv(cliente_fd, &cod_op, sizeof(int), MSG_WAITALL) == -1) {
-			cod_op = -1;
-	}
-	process_request(cod_op, socket);
-	//log_info(g_logger,"SE RECIBE MENSAJE DEL SOCKET: %d",*socket);
-
-}
-*/
-
-// RECIBE todos los TIPOS de MENSAJE QUE MANEJA el GAMECARD y resuelve segun el CODIGO_OPERACION del MENSAJE
-void process_request(op_code cod_op, t_socket_cliente *socket) {
+/**
+ * Procesa los diferentes mensajes que recibe ele gamecard
+ */
+void process_request(op_code cod_op, int cliente_fd) {
 	int size;
-	int cliente_fd = socket->cliente_fd;
 	int error = 0;
-
+	log_info(g_logger, "(RECEIVING: NEW_POKEMON | SOCKET#: %d)",cliente_fd);
 	int existePokemon;
 	char* nombrePokemon;
 	void* msg;
@@ -143,7 +72,7 @@ void process_request(op_code cod_op, t_socket_cliente *socket) {
 			msg = rcv_new_pokemon(cliente_fd, &size);
 			devolver_recepcion_ok(cliente_fd);
 			devolver_appeared_pokemon(msg, size, cliente_fd);
-			// El GameBoy tiene que recibir un mensaje op_code = APPEARED_BROKER
+			// La respuesta debe ser op_code = APPEARED_BROKER
 			break;
 		case CATCH_POKEMON:
 			log_info(g_logger, "(RECEIVING: CATCH_POKEMON | Socket#: %d)",
@@ -152,7 +81,7 @@ void process_request(op_code cod_op, t_socket_cliente *socket) {
 
 			devolver_recepcion_ok(cliente_fd);
 			devolver_caught_pokemon(msg, cliente_fd);
-			//El GameBoy tiene que recibir un mensaje op_code = CAUGHT_BROKER como respuesta
+			// La respuesta debe ser op_code = CAUGHT_BROKER como respuesta
 			break;
 		case GET_POKEMON:
 			log_info(g_logger, "(RECEIVING: GAMECARD@GET_POKEMON | SOCKET#: %d)",
@@ -188,26 +117,11 @@ void process_request(op_code cod_op, t_socket_cliente *socket) {
 	}
 	if(!error){
 		free(msg);
-		free(socket);
 	}
 
 }
-/*
-void* serializar_paquete(t_paquete* paquete, int bytes)
-{
-	void * magic = malloc(bytes);
-	int desplazamiento = 0;
 
-	memcpy(magic + desplazamiento, &(paquete->codigo_operacion), sizeof(int));
-	desplazamiento+= sizeof(int);
-	memcpy(magic + desplazamiento, &(paquete->buffer->size), sizeof(int));
-	desplazamiento+= sizeof(int);
-	memcpy(magic + desplazamiento, paquete->buffer->data, paquete->buffer->size);
-	desplazamiento+= paquete->buffer->size;
 
-	return magic;
-}
-*/
 /**
  * Verificar si el Pokémon existe dentro de nuestro Filesystem.
  * Para esto se deberá buscar dentro del directorio Pokemon si existe el archivo con el nombre de nuestro pokémon.
@@ -246,11 +160,11 @@ void *rcv_new_pokemon(int socket_cliente, int *size) {
 			posicion->cantidad, tamano);
 	///Guarda la informacion en el FS
 
-	char* dirPokemon = config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS");
-	char* pathPokemon = malloc(strlen(dirPokemon)+ 8); //9= /pokemon/; 3 = .txt
+	//char* dirPokemon = config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS");
+	char* pathPokemon = malloc(strlen(g_config_game_card->path_pokemon)+ 8); //9= /pokemon/; 3 = .txt
 
 
-	strcpy(pathPokemon, dirPokemon);
+	strcpy(pathPokemon, g_config_game_card->path_pokemon);
 	strcat(pathPokemon, "/Pokemon");
 	//log_info(g_logger,"VERIFICACION PATH INICIAL %s ", pathPokemon);
 
@@ -361,14 +275,14 @@ void *rcv_get_pokemon(int socket_cliente, int *size) {
 
 void devolver_recepcion_ok(int socket_cliente) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
-	char *respuesta = RESPUESTA_OK;
+	int respuesta = RESPUESTA_OK;
 	log_info(g_logger, "(SENDING: %s)", respuesta);
 
 	paquete->codigo_operacion = MSG_CONFIRMED;
 	paquete->buffer = malloc(sizeof(t_stream));
-	paquete->buffer->size = strlen(respuesta) + 1;
+	paquete->buffer->size = sizeof(int);
 	paquete->buffer->data = malloc(paquete->buffer->size);
-	memcpy(paquete->buffer->data, respuesta, paquete->buffer->size);
+	memcpy(paquete->buffer->data, &respuesta, paquete->buffer->size);
 
 	int bytes = paquete->buffer->size + 2 * sizeof(int);
 	void* a_enviar = serializar_paquete(paquete, bytes);
@@ -703,10 +617,10 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 	hints.ai_flags = AI_PASSIVE;
 
 	//t_config* config = leer_config();
-	char* ip = config_get_string_value(g_config, "IP_BROKER");
-	char* puerto = config_get_string_value(g_config, "PUERTO_BROKER");
+	//char* ip = config_get_string_value(g_config, "IP_BROKER");
+	//char* puerto = config_get_string_value(g_config, "PUERTO_BROKER");
 
-	getaddrinfo(ip, puerto, &hints, &server_info);
+	getaddrinfo(g_config_game_card->ip_broker,  g_config_game_card->puerto_broker, &hints, &server_info);
 
 	int socket_broker = socket(server_info->ai_family,
 			server_info->ai_socktype, server_info->ai_protocol);
@@ -716,7 +630,7 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 
 	if (conexion < 0) {
 		log_error(g_logger,
-				"(BROKER_CONN_FAILED | REMOTE_IP=%s | PORT=%s)", ip, puerto);
+				"(BROKER_CONN_FAILED | REMOTE_IP=%s | PORT=%s)", g_config_game_card->ip_broker, g_config_game_card->puerto_broker);
 		socket_broker = conexion;
 	}
 
@@ -729,7 +643,7 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 	}
 	else{
 		log_info(g_logger,"(SEND_MESSAGE_TO: BROKER SUCCESS | SOCKET# %d  | REMOTE_IP=%s | PORT=%s | COLA_MENSAJE=%s)",
-				socket_broker , ip, puerto, cola);
+				socket_broker ,  g_config_game_card->ip_broker, g_config_game_card->puerto_broker, cola);
 	}
 	free(a_enviar);
 	eliminar_paquete(paquete);
@@ -737,4 +651,3 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 	//config_destroy(config);
 
 }
-

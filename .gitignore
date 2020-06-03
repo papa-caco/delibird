@@ -25,6 +25,10 @@ testServer/debug/*.o
 team/logs/team.log
 team/bin/logs/team.log
 team/bin/team
+gamecard/logs/
+gameCard/.autotools
+gameCard/.project
+gameCard/.settings/language.settings.xml
 
 
 

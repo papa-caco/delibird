@@ -25,15 +25,39 @@
 #include<netdb.h>
 #include<pthread.h>
 
-#define RESPUESTA_OK "RECIBIDO_OK"
+
+#include <delibird/estructuras.h>
+#include <delibird/conexiones.h>
+#include <delibird/mensajeria.h>
+#include <delibird/serializaciones.h>
+
+
+// #define RESPUESTA_OK "RECIBIDO_OK"
 #include <sys/stat.h>
 //#include <unistd.h>
 
+#define PATH_CONFIG "config/gameCard.config"
+#define PATH_LOG "config/gameCard.log"
 
 
 /*** ESTRUCTURAS **/
+typedef struct Configuracion_GameCard
+{
+	char *ip_broker;
+	char *puerto_broker;
+	char *ip_game_card;
+	char *puerto_game_card;
+/*	int tiempo_reconexion;
+	int retardo_ciclo_cpu;
+	char *algoritmo_planificion;
+	int quantum;
+	int estimacion_inicial;
+	char *ruta_log;
+	int id_suscriptor;*/
+} t_config_game_card;
 
 
+/*
 typedef enum Codigo_Operacion{
 	ID_MENSAJE = 10,
 	MSG_CONFIRMED,
@@ -59,7 +83,7 @@ typedef enum Codigo_Operacion{
 	SUSCRIP_END,
 	COLA_VACIA,
 } op_code;  //MODO_SERVIDOR
-
+*/
 /*ID_MENSAJE = 10,
 	MSG_CONFIRMED,
 	MSG_ERROR,
@@ -71,7 +95,7 @@ typedef enum Codigo_Operacion{
 	CAUGHT_POKEMON,
 	GET_POKEMON,
 	LOCALIZED_POKEMON,*/
-
+/*
 typedef enum Tipo_Mensaje{
 	UNKNOWN_QUEUE = 9,
 	//NEW_POKEMON,
@@ -81,33 +105,39 @@ typedef enum Tipo_Mensaje{
 	//GET_POKEMON,
 	LOCALIZED_POKEMON = 15,
 } t_tipo_mensaje;
+*/
 
 typedef struct socket_cliente{
 	int cliente_fd;
 	int cant_msg_enviados;
 } t_socket_cliente; //MODO_SERVIDOR
 
-
+/*
 typedef struct Stream{
 	int size;
 	void* data;
 } t_stream; //MODO_SERVIDOR
+*/
 
+/*
 typedef struct
 {
 	op_code codigo_operacion;
 	t_stream* buffer;
 } t_paquete;//MODO_SERVIDOR
-
+*/
+/*
 typedef struct Posicion_Pokemon{
 	int pos_x;
 	int pos_y;
 	int cantidad;
 } t_posicion_pokemon;//MODO_SERVIDOR
-
+*/
+/*
 typedef enum Resultado_Caught{
 	FAIL, OK,
 } t_result_caught;
+*/
 //
 
 
@@ -115,7 +145,7 @@ typedef enum Resultado_Caught{
 /* ---  DEFINICION DE VARIABLES GLOBALES ---*/
 pthread_t thread;
 t_log *g_logger;
-t_config* g_config;
+
 
 
 /* ---  DEFINICION DE LAS INTERFACES ---*/
@@ -128,12 +158,16 @@ void destruir_config(void);
 //t_config* config = leer_config();
 //
 
+/*** DEFINICION DE FUNCIONES **/
+
+
+void inicio_server_game_card();
+void iniciar_log_game_card();
 
 //// MODO SERVIDOR
-void iniciar_servidor();
-void esperar_cliente(int);
+//void esperar_cliente(int);
 
-void serve_client(t_socket_cliente *socket);
+//void serve_client(t_socket_cliente *socket);
 
 void process_request(op_code cod_op, t_socket_cliente *socket);
 
