@@ -11,22 +11,20 @@
 
 void iniciar_suscripcion(void)
 {
-	log_info(g_logger, "antes inicioINICIANDO SUSCRIPCION");
-	t_tipo_mensaje cola_suscripta = APPEARED_POKEMON;
-	pthread_t tid;
+	pthread_t thread;
 	t_tipo_mensaje *cola = malloc(sizeof(t_tipo_mensaje));
-	memcpy(cola, &cola_suscripta, sizeof(t_tipo_mensaje));
+		t_tipo_mensaje cola_suscripta = NEW_POKEMON;
+		memcpy(cola, &cola_suscripta, sizeof(t_tipo_mensaje));
+	//	sem_wait(&sem_mutex_msjs);
+	  int createerror = pthread_create(&thread, NULL, (void*) suscripcion,(void*) cola);
+	  if (!createerror) /*check whether the thread creation was successful*/
+	    {
+		  printf("TODO BIEN \n");
+	      pthread_join(thread, NULL); /*wait until the created thread terminates*/
 
-	//sem_wait(&sem_mutex_msjs);
-	int tid_status = pthread_create(&tid, NULL,(void*) suscripcion,(void*) cola);
-	log_info(g_logger, "por aca %d", tid_status);
-	if (tid_status != 0) {
-		log_error(g_logger, "Thread create returned %d | %s", tid_status, strerror(tid_status));
-	} else {
-		log_error(g_logger, "Thread create returned %d | %s", tid_status, strerror(tid_status));
-		pthread_detach(tid);
-	}
-	// return tid_status;
+	    }
+	  printf("error %s \n", strerror(createerror));
+
 }
 
 
@@ -51,7 +49,10 @@ void suscripcion(t_tipo_mensaje *cola)
 		int flag_salida =1;
 		//En este bucle se queda recibiendo los mensajes que va enviando el BROKER al suscriptor
 		while( flag_salida ) {
+			//En este punto estamos suscriptos al broker
+			//Y escuchando los mensajes que nos pueda enviar.
 			//TODO
+				//Empezar a procesar los mensajes a los que nos hemos suscripto.
 		}
 
 		free(handshake);
@@ -61,5 +62,12 @@ void suscripcion(t_tipo_mensaje *cola)
 	}
 
 }
+
+void *threadfunction(void *parametro)
+{
+  printf("dendro del hijo hijo Hello, World !\n"); /*printf() is specified as thread-safe as of C11*/
+  return 0;
+}
+
 
 

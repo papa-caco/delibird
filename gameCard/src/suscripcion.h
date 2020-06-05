@@ -12,4 +12,6 @@
 
 void iniciar_suscripcion(void);
 void suscripcion(t_tipo_mensaje *cola);
+void *threadfunction(void *parametro);
+
 #endif /* SRC_SUSCRIPCION_H_ */
