@@ -73,6 +73,7 @@ int connect_broker_y_enviar_mensaje_get(t_msg_get_broker *msg_get)
 	close(cliente_fd);
 	pthread_exit(&tid_send_get);
 	eliminar_msg_get_broker(msg_get);
+
 	return id_mensaje;
 }
 
@@ -114,6 +115,11 @@ int connect_broker_y_enviar_mensaje_catch(t_msg_catch_broker *msg_catch)
 	close(cliente_fd);
 	eliminar_msg_catch_broker(msg_catch);
 	pthread_exit(&tid_send_catch);
+
+	sem_wait(&mutex_idCorrelativos);
+	list_add(idCorrelativosCatch,id_mensaje);
+	sem_post(&mutex_idCorrelativos);
+
 	return id_mensaje;
 }
 
