@@ -14,7 +14,7 @@ int main(void) {
 
 	//iniciar_log();
 	//iniciar_servidor();
-	iniciar_game_card();
+	iniciar_gamecard();
 
 }
 

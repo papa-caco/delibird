@@ -6,13 +6,17 @@
  */
 // export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/utnso/2020/tp-2020-1c-Los-Que-Aprueban/delibird/build
 #include "utils_gc.h"
-void iniciar_game_card(void){
+#include "suscripcion.h"
+
+void iniciar_gamecard(void){
 	leer_config();
-	iniciar_log_game_card();
-	inicio_server_game_card();
+	iniciar_log_gamecard();
+
+	iniciar_suscripcion();
+	//inicio_server_game_card();
 }
 
-void iniciar_log_game_card(void) {
+void iniciar_log_gamecard(void) {
 	g_logger = log_create(PATH_LOG, "GAME_CARD", 1, LOG_LEVEL_INFO);
 	log_info(g_logger,"INICIO_LOG_SUCESS");
 }
@@ -20,12 +24,12 @@ void iniciar_log_game_card(void) {
 void leer_config(void){
 	t_config* g_config;
 	g_config = config_create(PATH_CONFIG);
-	g_config_game_card = malloc(sizeof(t_config_game_card));
-	g_config_game_card->ip_gamecard = config_get_string_value(g_config, "IP_GAMECARD");
-	g_config_game_card->puerto_gamecard = config_get_string_value(g_config, "PUERTO_GAMECARD");
-	g_config_game_card->ip_broker = config_get_string_value(g_config, "IP_BROKER");
-	g_config_game_card->puerto_broker = config_get_string_value(g_config, "PUERTO_BROKER");
-	g_config_game_card->path_pokemon = config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS");
+	g_config_gc = malloc(sizeof(t_config_gamecard));
+	g_config_gc->ip_gamecard = config_get_string_value(g_config, "IP_GAMECARD");
+	g_config_gc->puerto_gamecard = config_get_string_value(g_config, "PUERTO_GAMECARD");
+	g_config_gc->ip_broker = config_get_string_value(g_config, "IP_BROKER");
+	g_config_gc->puerto_broker = config_get_string_value(g_config, "PUERTO_BROKER");
+	g_config_gc->path_pokemon = config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS");
 }
 
 void finalizar_log(void){
@@ -35,10 +39,10 @@ void destruir_config(void){
 	//config_destroy(config);
 }
 
-void inicio_server_game_card(void)
+void inicio_server_gamecard(void)
 {
-	char *ip = g_config_game_card->ip_gamecard;
-	char *puerto = g_config_game_card->puerto_gamecard;
+	char *ip = g_config_gc->ip_gamecard;
+	char *puerto = g_config_gc->puerto_gamecard;
 	iniciar_servidor(ip, puerto, g_logger);
 }
 
@@ -161,10 +165,10 @@ void *rcv_new_pokemon(int socket_cliente, int *size) {
 	///Guarda la informacion en el FS
 
 	//char* dirPokemon = config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS");
-	char* pathPokemon = malloc(strlen(g_config_game_card->path_pokemon)+ 8); //9= /pokemon/; 3 = .txt
+	char* pathPokemon = malloc(strlen(g_config_gc->path_pokemon)+ 8); //9= /pokemon/; 3 = .txt
 
 
-	strcpy(pathPokemon, g_config_game_card->path_pokemon);
+	strcpy(pathPokemon, g_config_gc->path_pokemon);
 	strcat(pathPokemon, "/Pokemon");
 	//log_info(g_logger,"VERIFICACION PATH INICIAL %s ", pathPokemon);
 
@@ -620,7 +624,7 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 	//char* ip = config_get_string_value(g_config, "IP_BROKER");
 	//char* puerto = config_get_string_value(g_config, "PUERTO_BROKER");
 
-	getaddrinfo(g_config_game_card->ip_broker,  g_config_game_card->puerto_broker, &hints, &server_info);
+	getaddrinfo(g_config_gc->ip_broker,  g_config_gc->puerto_broker, &hints, &server_info);
 
 	int socket_broker = socket(server_info->ai_family,
 			server_info->ai_socktype, server_info->ai_protocol);
@@ -630,7 +634,7 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 
 	if (conexion < 0) {
 		log_error(g_logger,
-				"(BROKER_CONN_FAILED | REMOTE_IP=%s | PORT=%s)", g_config_game_card->ip_broker, g_config_game_card->puerto_broker);
+				"(BROKER_CONN_FAILED | REMOTE_IP=%s | PORT=%s)", g_config_gc->ip_broker, g_config_gc->puerto_broker);
 		socket_broker = conexion;
 	}
 
@@ -643,7 +647,7 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 	}
 	else{
 		log_info(g_logger,"(SEND_MESSAGE_TO: BROKER SUCCESS | SOCKET# %d  | REMOTE_IP=%s | PORT=%s | COLA_MENSAJE=%s)",
-				socket_broker ,  g_config_game_card->ip_broker, g_config_game_card->puerto_broker, cola);
+				socket_broker ,  g_config_gc->ip_broker, g_config_gc->puerto_broker, cola);
 	}
 	free(a_enviar);
 	eliminar_paquete(paquete);
@@ -651,3 +655,6 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 	//config_destroy(config);
 
 }
+
+
+
