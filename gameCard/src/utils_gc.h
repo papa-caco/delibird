@@ -64,7 +64,7 @@ typedef struct socket_cliente{
 t_config_gamecard  *g_config_gc;
 t_log *g_logger;
 t_config* g_config;
-sem_t sem_mutex_msjs;
+sem_t sem_mutex_suscripcion;
 bool status_conn_broker;
 pthread_t tid;
 
