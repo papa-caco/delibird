@@ -13,26 +13,31 @@
  */
 void iniciar_suscripcion(void)
 {
+	int i;
 	t_tipo_mensaje colas_de_suscripcion[3] = {NEW_POKEMON,GET_POKEMON,CATCH_POKEMON};
 	pthread_t id_pthread[3];
-	t_tipo_mensaje cola_suscripta;
+	pthread_attr_t attr;
 	t_tipo_mensaje *cola = malloc(sizeof(t_tipo_mensaje));
+	//t_tipo_mensaje cola_suscripta;
+
 	sem_init(&sem_mutex_suscripcion, 0, 1);
+//	pthread_mutex_init(&sem_mutex_suscripcion, NULL);
+//	pthread_attr_init(&attr);
+//    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+	for ( i =0; i< 3 ; i++ ){
 
-	for (int i =0; i< 3 ; i++ ){
-		printf("la cola es %d \n",colas_de_suscripcion[i]);
-		cola_suscripta = colas_de_suscripcion[i] ;
-		memcpy(cola, &cola_suscripta, sizeof(t_tipo_mensaje));
-
+		//cola_suscripta = colas_de_suscripcion[i] ;
+		//memcpy(cola, &cola_suscripta, sizeof(t_tipo_mensaje));
 		sem_wait(&sem_mutex_suscripcion);
-		int status_thread = pthread_create(&(id_pthread[i]), NULL, (void*) suscripcion,(void*) cola);
-		if (!status_thread){
-		  pthread_join(id_pthread[i], NULL); /*wait until the created thread terminates*/
-		}
-		else{
+		memcpy(cola, &(colas_de_suscripcion[i]), sizeof(t_tipo_mensaje));
+		int status_thread = pthread_create(&id_pthread[i], NULL, (void*) suscripcion,(void*) cola);
+
+		if (status_thread ){
 			log_error(g_logger, "NO SE PUEDE ESTABLECER SUSCRIPCION %s %s",colas_de_suscripcion[i],strerror(status_thread) );
 		}
-
+	}
+	for ( i =0; i< 3 ; i++ ){
+		pthread_join(id_pthread[i], NULL);
 	}
 }
 
@@ -40,12 +45,11 @@ void iniciar_suscripcion(void)
 
 void suscripcion(t_tipo_mensaje *cola)
 {
-	log_info(g_logger, "INICIANDO SUSCRIPCION");
+
 	char *proceso = "BROKER";
 	char *name_cola = nombre_cola(*cola);
 	int cliente_fd = crear_conexion(g_config_gc->ip_broker, g_config_gc->puerto_broker, g_logger, proceso, name_cola);
-	sem_post(&sem_mutex_suscripcion);
-	log_info(g_logger, "ACA TIRO SIGNAL DEL SEMAFORO");
+
 	if (cliente_fd >= 0) {
 		status_conn_broker = true;
 		t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
@@ -56,15 +60,26 @@ void suscripcion(t_tipo_mensaje *cola)
 		enviar_msj_handshake_suscriptor(cliente_fd, g_logger, handshake);
 		op_code cod_oper_mensaje = 0;
 		uint32_t contador_msjs = 0;
+
+		sem_post(&sem_mutex_suscripcion);
+
 		int flag_salida =1;
+	//	pthread_mutex_lock (&sem_mutex_suscripcion);
 		//En este bucle se queda recibiendo los mensajes que va enviando el BROKER al suscriptor
 		while( flag_salida ) {
-			//En este punto estamos suscriptos al broker
-			//Y escuchando los mensajes que nos pueda enviar.
+			uint32_t id_recibido;
+			cod_oper_mensaje = rcv_codigo_operacion(cliente_fd);
+			log_info(g_logger,"RECIBI MENSAJE DE SUSCRIPCION COD_OPER %d", cod_oper_mensaje);
 			//TODO
-				//Empezar a procesar los mensajes a los que nos hemos suscripto.
-			//pthread_exit(EXIT_FAILURE);
-			flag_salida = 0;
+			//Procesar los mensajes recibidos
+			//No se por que la ultima suscripcion se queda esperando!!!
+
+		//	  pthread_mutex_unlock (&sem_mutex_suscripcion);
+		//	  pthread_exit(NULL);
+			//sem_post(&sem_mutex_suscripcion);
+		  //	sem_wait(&sem_mutex_suscripcion);
+
+		//	flag_salida = 0;
 
 		}
 
