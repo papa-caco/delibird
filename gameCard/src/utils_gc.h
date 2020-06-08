@@ -77,10 +77,13 @@ void iniciar_log_gamecard();
 void leer_config(void);
 
 void process_request(op_code cod_op, int cliente_fd);
-void *rcv_new_pokemon(int socket_cliente, int *size);
+void rcv_new_pokemon(t_msg_new_gamecard *msg);
+
 void devolver_appeared_pokemon(void *msg, int size, int socket_cliente);
 void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon);
-void* rcv_catch_pokemon(int socket_cliente, int *size);
+
+void rcv_catch_pokemon(op_code codigo_operacion, int socket_cliente);
+
 void devolver_caught_pokemon(void *msg, int socket_cliente);
 void *rcv_get_pokemon(int socket_cliente, int *size);
 void devolver_recepcion_ok(int socket_cliente);

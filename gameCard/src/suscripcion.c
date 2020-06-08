@@ -69,11 +69,12 @@ void suscripcion(t_tipo_mensaje *cola)
 		while( flag_salida ) {
 			uint32_t id_recibido;
 			cod_oper_mensaje = rcv_codigo_operacion(cliente_fd);
-			log_info(g_logger,"RECIBI MENSAJE DE SUSCRIPCION COD_OPER %d", cod_oper_mensaje);
+			log_info(g_logger,"RECIBI MENSAJE DE SUSCRIPCION COLA %s | COD_OPER %d", name_cola,cod_oper_mensaje);
 			//TODO
 			//Procesar los mensajes recibidos
 			//No se por que la ultima suscripcion se queda esperando!!!
-
+			enviar_msj_handshake_suscriptor(cliente_fd, g_logger, handshake);
+			process_request(cod_oper_mensaje,cliente_fd);
 		//	  pthread_mutex_unlock (&sem_mutex_suscripcion);
 		//	  pthread_exit(NULL);
 			//sem_post(&sem_mutex_suscripcion);
