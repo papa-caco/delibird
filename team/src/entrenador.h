@@ -60,6 +60,12 @@ t_list* objetivosPendientes(t_entrenador* entrenador);
 
 int calcularDistancia(t_posicion_entrenador* posicionActual, t_posicion_entrenador* posicionAMoverse);
 
+void intercambiarPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2);
+
+void agregarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon);
+
+void quitarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon);
+
 
 
 
