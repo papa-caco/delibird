@@ -110,6 +110,10 @@ void print_pokemones_objetivo(t_pokemon_entrenador *poke);
 
 void enviar_msjs_get_por_clase_de_pokemon(t_pokemon_entrenador *poke);
 
+void liberar_lista_de_pokemones(t_list* lista);
+
+//void liberar_lista_de_entrenadores(t_list* lista);
+
 void liberar_lista(t_list* lista);
 
 void liberar_cola(t_queue* cola);

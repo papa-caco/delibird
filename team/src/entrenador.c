@@ -171,11 +171,9 @@ void quitarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon) {
 	}
 
 	if (hayQueEliminarPokemon == 1) {
-		printf("Se está eliminando a pikachu \n");
 		t_pokemon_entrenador* pokemonAEliminar=list_remove(entrenador->pokemonesObtenidos, indicePokemon);
 		//free(pokemonAEliminar->pokemon);
 		free(pokemonAEliminar);
-		printf("La función termino y no rompio \n");
 	}
 }
 

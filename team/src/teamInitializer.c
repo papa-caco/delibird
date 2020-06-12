@@ -192,6 +192,10 @@ void enviar_msjs_get_por_clase_de_pokemon(t_pokemon_entrenador *poke)
 	}
 }
 
+void liberar_lista_de_pokemones(t_list* lista){
+
+}
+
 void liberar_lista(t_list* lista) {
 
     int contador = 0;
