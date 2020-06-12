@@ -74,6 +74,7 @@ pthread_t tid;
 void iniciar_gamecard(void);
 void inicio_server_gamecard();
 void iniciar_log_gamecard();
+void iniciar_estructuras_gamecard();
 void leer_config(void);
 
 void process_request(op_code cod_op, int cliente_fd);

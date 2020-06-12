@@ -11,6 +11,7 @@
 void iniciar_gamecard(void){
 	leer_config();
 	iniciar_log_gamecard();
+	iniciar_estructuras_gamecard();
 
 	iniciar_suscripcion();
 	//inicio_server_game_card();
@@ -45,6 +46,10 @@ void inicio_server_gamecard(void)
 	char *ip = g_config_gc->ip_gamecard;
 	char *puerto = g_config_gc->puerto_gamecard;
 	iniciar_servidor(ip, puerto, g_logger);
+}
+
+void iniciar_estructuras_gamecard(){
+	sem_init(&sem_mutex_suscripcion, 0, 1);
 }
 
 /**
