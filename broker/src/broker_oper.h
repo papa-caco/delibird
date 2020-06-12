@@ -54,29 +54,25 @@ t_queue_msg *get_msg_sin_enviar(t_broker_queue *cola_broker, int id_suscriptor);
 
 int cant_msjs_sin_enviar(t_broker_queue *cola_broker, int id_suscriptor);
 
-void eliminar_msj_cola_broker(void *mensaje);
+void set_sin_recibir_por_todos(t_queue_msg *mensaje_cola);
 
 bool es_msj_con_mismo_id(t_queue_msg *mensaje, int id_mensaje);
 
 bool es_msj_sin_enviar(t_queue_msg *queue_msg, int id_suscriptor);
 
-bool cache_espacio_suficiente(int data_size);
+int poner_datos_msj_en_particion_cache(t_queue_msg *msg_queue, t_log *logger);
 
-void guardar_datos_en_segmento(t_queue_msg *msg_queue, t_log *logger);
+t_particion_dinamica *generar_particion_dinamica(t_queue_msg *msg_queue);
 
-t_queue_msg *new_queue_msg(void);
+t_particion_dinamica *buscar_particion_dinamica_libre(t_queue_msg *msg_queue);
 
-int espacio_cache_msg_get(t_msg_get_broker *msg_get);
+void obtener_datos_msj_de_particion_cache(t_queue_msg *msg_queue, t_log *g_logger);
 
-int espacio_cache_msg_new(t_msg_new_broker *msg_new);
+void eliminar_msg_data_particion_cache(int id_mensaje, t_log *logger);
 
-int espacio_cache_msg_catch(t_msg_catch_broker *msg_catch);
+t_particion_dinamica *get_particion_cache_por_id_mensaje(int id_mensaje);
 
-int espacio_cache_msg_appeared(t_msg_appeared_broker *msg_appeared);
-
-int espacio_cache_msg_caught(t_msg_caught_broker *msg_caught);
-
-int espacio_cache_msg_localized(t_msg_localized_broker *msg_localized);
+t_queue_msg *generar_nuevo_mensaje_cola(void);
 
 t_broker_queue *cola_broker_suscripcion(t_tipo_mensaje tipo_mensaje);
 
@@ -84,10 +80,6 @@ sem_t semaforo_cola(t_tipo_mensaje tipo_mensaje);
 
 int espacio_disponible_en_cache(void);
 
-void incremento_espacio_cache_usado(int tamano);
-
 void incremento_cnt_id_mensajes(void);
-
-void incremento_id_partition(void);
 
 #endif /* SRC_BROKER_OPER_H_ */

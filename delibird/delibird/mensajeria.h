@@ -121,6 +121,8 @@ void eliminar_msg_get_gamecard(t_msg_get_gamecard *msg_get_gamecard);
 
 void eliminar_msg_appeared_team(t_msg_appeared_team *msg_appeared_team);
 
+void eliminar_msg_data(t_stream *msg_buffer);
+
 // -------------------------------------------FUNCIONES AUXILIARES---------------------------------------//
 
 void *recibir_buffer(int socket_cliente, int *size);

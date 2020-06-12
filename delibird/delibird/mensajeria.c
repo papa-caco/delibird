@@ -164,7 +164,7 @@ void enviar_msj_appeared_broker(int cliente_fd, t_log *logger, t_msg_appeared_br
 	if (send(cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		log_error(logger, "(SENDING: APPEARED_POKEMON FAILED)");
 	} else {
-		log_info(logger,"(SENDING: APPEARED_POKEMON|%s|ID_CORRELATIVE:%d|POS_X:%d|POS_Y:%d|SIZE:%d Bytes)",
+		log_info(logger,"(SENDING: APPEARED_POKEMON|%s|ID_CORRELATIVE:%d|Pos_X:%lu|Pos_Y:%lu|SIZE:%d Bytes)",
 			msg_appeared_broker->pokemon, msg_appeared_broker->id_correlativo,
 			msg_appeared_broker->coordenada->pos_x, msg_appeared_broker->coordenada->pos_y, bytes);
 	}
@@ -636,6 +636,12 @@ void eliminar_msg_get_gamecard(t_msg_get_gamecard *msg_get_gamecard)
 {
 	free(msg_get_gamecard->pokemon);
 	free(msg_get_gamecard);
+}
+
+void eliminar_msg_data(t_stream *msg_buffer)
+{
+	free(msg_buffer->data);
+	free(msg_buffer);
 }
 
 int tamano_recibido(int bytes)

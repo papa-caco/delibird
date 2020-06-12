@@ -13,6 +13,7 @@
  */
 #ifndef SRC_BROKER_ESTRUCTURAS_H_
 #define SRC_BROKER_ESTRUCTURAS_H_
+#include <signal.h>
 #include <delibird/estructuras.h>
 #include <delibird/conexiones.h>
 #include <delibird/mensajeria.h>
@@ -46,12 +47,29 @@ typedef struct Mensaje_Cola{
 	int id_mensaje;
 	int id_correlativo;
 	t_tipo_mensaje tipo_mensaje;
-	int id_cache_segmemt;
+	int dir_base_part_inicial;
 	t_stream *msg_data;
 	t_list *sended_suscriptors;
-	t_list *receipt_confirmed;
-	bool es_victima_reemplazo;
+	bool recibido_por_todos;
 } t_queue_msg;
+
+typedef struct Cache_Part_Din{
+	int id_partition;
+	int dir_base_part;
+	int used_space;
+	int total_space;
+	t_list *partition_table;
+	void *partition_repo;
+} t_cache_part_din;
+
+typedef struct Particion_Dinamica{
+	int id_particion;
+	int dir_base;
+	uint32_t data_size;
+	bool presencia;
+	int id_mensaje;
+	t_tipo_mensaje id_cola;
+} t_particion_dinamica;
 
 typedef struct Configuracion_Broker
 {
@@ -59,7 +77,7 @@ typedef struct Configuracion_Broker
 	char *puerto_broker;
 	size_t tamano_memoria;
 	int tamano_minimo_particion;
-	int freceuncia_compactacion;
+	int frecuencia_compactacion;
 	t_algoritmo_memoria algoritmo_memoria;
 	t_algoritmo_reemplazo algoritmo_reemplazo;
 	t_algoritmo_part_libre algoritmo_particion_libre;

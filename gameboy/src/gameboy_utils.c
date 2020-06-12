@@ -92,10 +92,8 @@ bool validar_argumentos(t_mensaje_gameboy *argumentos_mensaje) {
 					&& validar_id_mensaje(argumentos_mensaje->argumentos, 3)
 							== 1) {
 				resultado = 1;
-			} else if (proceso == TEAM && cant_argumentos == 4
-					&& validar_coordXY(argumentos_mensaje->argumentos, 1, 2)
-					&& validar_id_mensaje(argumentos_mensaje->argumentos, 3) == 1
-							== 1) {
+			} else if (proceso == TEAM && cant_argumentos == 3
+					&& validar_coordXY(argumentos_mensaje->argumentos, 1, 2) == 1) {
 				resultado = 1;
 			} else {
 				resultado = 0;
@@ -515,8 +513,8 @@ void send_msg_appeared_team(t_mensaje_gameboy *msg_gameboy, int socket_cliente, 
 	char *pokemon = list_get(msg_gameboy->argumentos, 0);
 	msg_appeared->coord->pos_x = atoi(list_get(msg_gameboy->argumentos, 1));
 	msg_appeared->coord->pos_y = atoi(list_get(msg_gameboy->argumentos, 2));
-	msg_appeared->id_mensaje = atoi(list_get(msg_gameboy->argumentos, 3));
-	msg_appeared->id_correlativo = g_config_gameboy->id_mensaje_unico;
+	msg_appeared->id_mensaje = g_config_gameboy->id_mensaje_unico;
+	msg_appeared->id_correlativo = msg_appeared->id_mensaje + 1;
 	msg_appeared->size_pokemon = strlen(pokemon) + 1;
 	msg_appeared->pokemon = malloc(msg_appeared->size_pokemon);
 	memcpy(msg_appeared->pokemon, pokemon, msg_appeared->size_pokemon);

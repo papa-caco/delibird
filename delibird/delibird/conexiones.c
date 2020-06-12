@@ -27,7 +27,7 @@ void iniciar_server_broker(char *ip, char *puerto, t_log* logger)
 			fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
 			exit(EXIT_FAILURE);
 	}
-	log_info(logger, "Esperando conexiones en Direccion: %s, Puerto: %s", ip, puerto);
+	log_trace(logger, "(Esperando conexiones en Direccion: %s, Puerto: %s)", ip, puerto);
 	socket_servidor = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
 	int yes = 1;
 	setsockopt(socket_servidor, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
@@ -36,7 +36,9 @@ void iniciar_server_broker(char *ip, char *puerto, t_log* logger)
 	if (listen(socket_servidor, 10) == -1) {
 		perror("listen");
 	}
-	//freeaddrinfo(servinfo);
+
+	freeaddrinfo(servinfo);
+
 	while (1){
 		tam_direccion = sizeof(dir_cliente);
 		int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
