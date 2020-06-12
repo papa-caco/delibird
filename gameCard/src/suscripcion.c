@@ -19,8 +19,6 @@ void iniciar_suscripcion(void)
 	pthread_attr_t attr;
 	t_tipo_mensaje *cola = malloc(sizeof(t_tipo_mensaje));
 	//t_tipo_mensaje cola_suscripta;
-
-	sem_init(&sem_mutex_suscripcion, 0, 1);
 //	pthread_mutex_init(&sem_mutex_suscripcion, NULL);
 //	pthread_attr_init(&attr);
 //    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
