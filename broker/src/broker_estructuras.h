@@ -59,7 +59,7 @@ typedef struct Configuracion_Broker
 	char *puerto_broker;
 	size_t tamano_memoria;
 	int tamano_minimo_particion;
-	int freceuncia_compactacion;
+	int frecuencia_compactacion;
 	t_algoritmo_memoria algoritmo_memoria;
 	t_algoritmo_reemplazo algoritmo_reemplazo;
 	t_algoritmo_part_libre algoritmo_particion_libre;

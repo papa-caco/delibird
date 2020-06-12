@@ -1,7 +1,7 @@
 #ifndef SRC_UTILSTEAM_H_
 #define SRC_UTILSTEAM_H_
 
-#include "teamInitializer.h"
+//#include "teamInitializer.h"
 #include <semaphore.h>
 
 

@@ -14,38 +14,11 @@
 #include<delibird/conexiones.h>
 
 
-#include "utilsTeam.h"
+#include "teamInitializer.h"
 
 
 
-typedef struct Pokemon_Entrenador{
-	int cantidad;
-	char* pokemon;
-} t_pokemon_entrenador;
 
-/*t_queue* new;
-//t_list* objetivoGlobal;*/
-
-typedef struct Posicion_Entrenador{
-	int pos_x;
-	int pos_y;
-} t_posicion_entrenador;
-
-typedef enum Estado_Entrenador{
-	NEW,
-	READY,
-	BLOCKED,
-	EXEC,
-	EXIT,
-} t_estado;
-
-typedef struct Entrenador{
-	t_posicion_entrenador* posicion;
-	t_list* objetivoEntrenador;
-	t_list* pokemonesObtenidos;
-	//Tal vez como opción podrías agregar una variable hilo acá e ir inicializándoselo a cada uno.
-	//La otra es crear los hilos por otro lado e ir manejándolos a tu criterio.
-} t_entrenador;
 
 
 void moverEntrenador(t_entrenador* entrenador, t_posicion_entrenador* posicionAMoverse);
@@ -56,7 +29,7 @@ char puedeIntercambiarPokemon(t_entrenador* entrenador1, t_entrenador* entrenado
 
 t_list* pokemonesInnecesarios(t_entrenador* entrenador);
 
-t_list* objetivosPendientes(t_entrenador* entrenador);
+t_list* pokemonesPendientes(t_entrenador* entrenador);
 
 int calcularDistancia(t_posicion_entrenador* posicionActual, t_posicion_entrenador* posicionAMoverse);
 

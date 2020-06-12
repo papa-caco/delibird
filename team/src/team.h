@@ -8,7 +8,8 @@
 #ifndef SRC_TEAM_H_
 #define SRC_TEAM_H_
 
-#include "utilsTeam.h"
-#include "teamInitializer.h"
+
+#include "entrenador.h"
+
 
 #endif /* SRC_TEAM_H */

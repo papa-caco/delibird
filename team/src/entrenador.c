@@ -36,6 +36,25 @@ void moverEntrenador(t_entrenador* entrenador, t_posicion_entrenador* posicionAM
 	ciclosCPU++;
 	sem_post(&mutex_ciclosCPU);
 
+
+}
+
+int calcularDistancia(t_posicion_entrenador* posicionActual, t_posicion_entrenador* posicionAMoverse){
+	 int distanciaTotal = 0;
+	    if (posicionActual->pos_x > posicionAMoverse->pos_x){
+	        distanciaTotal += posicionActual->pos_x - posicionAMoverse->pos_x;
+	    } else {
+	        distanciaTotal += posicionAMoverse->pos_x -posicionActual->pos_x;
+	    }
+
+	    if(posicionActual->pos_y > posicionAMoverse->pos_y){
+	        distanciaTotal += posicionActual->pos_y - posicionAMoverse->pos_y;
+	    } else {
+	        distanciaTotal += posicionAMoverse->pos_y - posicionActual->pos_y ;
+	    }
+
+	    return distanciaTotal;
+
 }
 
 //////ATRAPAR UN POKEMON//////////////////
@@ -130,6 +149,7 @@ void agregarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon){
 }
 
 void quitarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon) {
+	printf("Entro a quitarPOkemon \n");
 	char hayQueEliminarPokemon = 0;
 	int indicePokemon;
 
@@ -151,9 +171,11 @@ void quitarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon) {
 	}
 
 	if (hayQueEliminarPokemon == 1) {
+		printf("Se está eliminando a pikachu \n");
 		t_pokemon_entrenador* pokemonAEliminar=list_remove(entrenador->pokemonesObtenidos, indicePokemon);
-		free(pokemonAEliminar->pokemon);
+		//free(pokemonAEliminar->pokemon);
 		free(pokemonAEliminar);
+		printf("La función termino y no rompio \n");
 	}
 }
 
@@ -209,23 +231,7 @@ char puedeIntercambiarPokemon(t_entrenador* entrenador1,
 }
 
 
-int calcularDistancia(t_posicion_entrenador* posicionActual, t_posicion_entrenador* posicionAMoverse){
-	 int distanciaTotal = 0;
-	    if (posicionActual->pos_x > posicionAMoverse->pos_x){
-	        distanciaTotal += posicionActual->pos_x - posicionAMoverse->pos_x;
-	    } else {
-	        distanciaTotal += posicionAMoverse->pos_x -posicionActual->pos_x;
-	    }
 
-	    if(posicionActual->pos_y > posicionAMoverse->pos_y){
-	        distanciaTotal += posicionActual->pos_y - posicionAMoverse->pos_y;
-	    } else {
-	        distanciaTotal += posicionAMoverse->pos_y - posicionActual->pos_y ;
-	    }
-
-	    return distanciaTotal;
-
-}
 
 t_list* pokemonesInnecesarios(t_entrenador* entrenador){
 
@@ -268,42 +274,58 @@ t_list* pokemonesInnecesarios(t_entrenador* entrenador){
 	return pokemonesInnesarios;
 }
 
-t_list* objetivosPendientes(t_entrenador* entrenador){
+t_list* pokemonesPendientes(t_entrenador* entrenador) {
 
 	t_list* pokemonesPendientes = list_create();
 
-		for(int i=0; i< list_size(entrenador->objetivoEntrenador); i++){
-			char esPendiente= 0;
-			int cantidadObjetivo=0;
-			t_pokemon_entrenador* pokemonObjetivo= ((t_pokemon_entrenador*)list_get(entrenador->objetivoEntrenador, i));
+	for (int i = 0; i < list_size(entrenador->objetivoEntrenador); i++) {
+		char esPendiente = 0;
+		int cantidadObjetivo = 0;
+		t_pokemon_entrenador* pokemonObjetivo =
+				((t_pokemon_entrenador*) list_get(
+						entrenador->objetivoEntrenador, i));
 
-			for(int j=0; j< list_size(entrenador->pokemonesObtenidos); j++){
-				t_pokemon_entrenador* pokemonObtenido= ((t_pokemon_entrenador*)list_get(entrenador->pokemonesObtenidos, j));
+		for (int j = 0; j < list_size(entrenador->pokemonesObtenidos); j++) {
+			t_pokemon_entrenador* pokemonObtenido =
+					((t_pokemon_entrenador*) list_get(
+							entrenador->pokemonesObtenidos, j));
 
-				if(strcmp(pokemonObtenido->pokemon,pokemonObjetivo->pokemon)== 0 &&
-						(pokemonObtenido->cantidad< pokemonObjetivo->cantidad)){
+			if (strcmp(pokemonObtenido->pokemon, pokemonObjetivo->pokemon)
+					== 0) {
 
-					cantidadObjetivo= pokemonObjetivo->cantidad -pokemonObtenido->cantidad;
-					esPendiente=1;
+				if (pokemonObtenido->cantidad < pokemonObjetivo->cantidad) {
+					cantidadObjetivo = pokemonObjetivo->cantidad
+							- pokemonObtenido->cantidad;
+					esPendiente = 1;
+				}
+				else{
+					cantidadObjetivo = -1;
 				}
 
 
 			}
 
-			if(!esPendiente){
-
-				t_pokemon_entrenador* pokemonPendiente = malloc(sizeof(t_pokemon_entrenador));
-				pokemonPendiente->cantidad = ((t_pokemon_entrenador*)list_get(entrenador->objetivoEntrenador, i))->cantidad;
-				pokemonPendiente->pokemon = ((t_pokemon_entrenador*)list_get(entrenador->objetivoEntrenador, i))->pokemon;
-				list_add(pokemonesPendientes, pokemonPendiente);
-
-			}else if(cantidadObjetivo>0){
-				t_pokemon_entrenador* pokemonPendiente = malloc(sizeof(t_pokemon_entrenador));
-				pokemonPendiente->cantidad = cantidadObjetivo;
-				pokemonPendiente->pokemon = ((t_pokemon_entrenador*)list_get(entrenador->objetivoEntrenador, i))->pokemon;
-				list_add(pokemonesPendientes, pokemonPendiente);
-			}
-
 		}
-		return pokemonesPendientes;
+
+		if (esPendiente == 0 && cantidadObjetivo != -1) {
+
+			t_pokemon_entrenador* pokemonPendiente = malloc(
+					sizeof(t_pokemon_entrenador));
+			pokemonPendiente->cantidad = ((t_pokemon_entrenador*) list_get(
+					entrenador->objetivoEntrenador, i))->cantidad;
+			pokemonPendiente->pokemon = ((t_pokemon_entrenador*) list_get(
+					entrenador->objetivoEntrenador, i))->pokemon;
+			list_add(pokemonesPendientes, pokemonPendiente);
+
+		} else if (cantidadObjetivo > 0) {
+			t_pokemon_entrenador* pokemonPendiente = malloc(
+					sizeof(t_pokemon_entrenador));
+			pokemonPendiente->cantidad = cantidadObjetivo;
+			pokemonPendiente->pokemon = ((t_pokemon_entrenador*) list_get(
+					entrenador->objetivoEntrenador, i))->pokemon;
+			list_add(pokemonesPendientes, pokemonPendiente);
+		}
+
+	}
+	return pokemonesPendientes;
 }
