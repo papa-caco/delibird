@@ -5,7 +5,6 @@
  *      Author: Los Que Aprueban
  */
 #include "teamInitializer.h"
-#include "utilsTeam.h"
 
 void inicio_server_team(void)
 {
@@ -73,6 +72,7 @@ int connect_broker_y_enviar_mensaje_get(t_msg_get_broker *msg_get)
 	close(cliente_fd);
 	pthread_exit(&tid_send_get);
 	eliminar_msg_get_broker(msg_get);
+
 	return id_mensaje;
 }
 
@@ -114,6 +114,11 @@ int connect_broker_y_enviar_mensaje_catch(t_msg_catch_broker *msg_catch)
 	close(cliente_fd);
 	eliminar_msg_catch_broker(msg_catch);
 	pthread_exit(&tid_send_catch);
+
+	sem_wait(&mutex_idCorrelativos);
+	list_add(idCorrelativosCatch,&id_mensaje);
+	sem_post(&mutex_idCorrelativos);
+
 	return id_mensaje;
 }
 
@@ -154,7 +159,7 @@ void inicio_suscripcion(t_tipo_mensaje *cola)
 				enviar_msj_handshake_suscriptor(cliente_fd, g_logger, handshake);
 			}
 			else if (rcv_msg_suscrip_end(cliente_fd) != g_config_team->id_suscriptor) {
-				pthread_exit(NULL);
+				pthread_exit((int*)EXIT_FAILURE);
 			} else {
 				flag_salida = 0;
 			}

@@ -7,6 +7,7 @@
 #include<delibird/conexiones.h>
 #include "utilsTeam.h"
 
+
 #define ID_MSG_RTA 65535
 #define RUTA_CONFIG_TEAM "config/team.config"
 #define HANDSHAKE_SUSCRIPTOR 255
@@ -31,8 +32,6 @@ typedef struct Pokemon_Entrenador{
 	char* pokemon;
 } t_pokemon_entrenador;
 
-/*t_queue* new;
-//t_list* objetivoGlobal;*/
 
 typedef struct Posicion_Entrenador{
 	int pos_x;
@@ -56,7 +55,14 @@ typedef struct Entrenador{
 } t_entrenador;
 
 
+
+
+
 //-----------------Variables Globales----------------------------
+
+/*t_queue* new;
+//t_list* objetivoGlobal;*/
+
 
 t_queue* colaNewEntrenadores;
 
@@ -103,6 +109,10 @@ void cargar_objetivo_global(t_list* objetivosDeTodosEntrenadores);
 void print_pokemones_objetivo(t_pokemon_entrenador *poke);
 
 void enviar_msjs_get_por_clase_de_pokemon(t_pokemon_entrenador *poke);
+
+void liberar_lista_de_pokemones(t_list* lista);
+
+//void liberar_lista_de_entrenadores(t_list* lista);
 
 void liberar_lista(t_list* lista);
 

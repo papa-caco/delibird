@@ -6,7 +6,6 @@
  */
 
 #include "teamInitializer.h"
-#include "utilsTeam.h"
 
 void iniciar_team(void){
 	leer_config_team(RUTA_CONFIG_TEAM);
@@ -172,13 +171,20 @@ void destroy_posicion_entrenador(t_posicion_entrenador* posicion){
 	free(posicion);
 }
 
-void destroy_pokemon_entrenador(t_pokemon_entrenador* objetivoEntrenador){
-	free(objetivoEntrenador->pokemon);
-	free(objetivoEntrenador);
+void destroy_pokemon_entrenador(t_pokemon_entrenador* pokemon){
+	//free(pokemon->pokemon);
+	free(pokemon);
 }
 
 void destroy_pokemonProcesado(char* pokemonProcesado){
 	free(pokemonProcesado);
+}
+
+void destroy_entrenador(t_entrenador* entrenador){
+	destroy_posicion_entrenador(entrenador->posicion);
+	liberar_lista_de_pokemones(entrenador->pokemonesObtenidos);
+	liberar_lista_de_pokemones(entrenador->objetivoEntrenador);
+	free(entrenador);
 }
 
 void print_pokemones_objetivo(t_pokemon_entrenador *poke)
@@ -191,6 +197,10 @@ void enviar_msjs_get_por_clase_de_pokemon(t_pokemon_entrenador *poke)
 	for (int i = 0; i < poke->cantidad; i ++) {
 		enviar_get_pokemon_broker(poke->pokemon, g_logger);
 	}
+}
+
+void liberar_lista_de_pokemones(t_list* lista){
+	liberar_lista(lista);
 }
 
 void liberar_lista(t_list* lista) {
@@ -213,11 +223,6 @@ void liberar_cola(t_queue* cola) {
     free(cola);
 }
 
-/*void destroy_entrenador(t_entrenador* entrenador){
-	list_destroy_and_destroy_elements(entrenador->objetivoEntrenador, destroy_pokemon_entrenador);
-	list_destroy_and_destroy_elements(entrenador->pokemonesObtenidos, destroy_pokemon_entrenador);
-	free(entrenador);
-}*/
 
 
 //Con las tres funciones anteriores ya podemos crear dos funciones: Una que defina el objetivo

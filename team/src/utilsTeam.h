@@ -1,7 +1,15 @@
 #ifndef SRC_UTILSTEAM_H_
 #define SRC_UTILSTEAM_H_
 
-#include "teamInitializer.h"
+//#include "teamInitializer.h"
+#include <semaphore.h>
+
+
+int ciclosCPU;
+t_list* idCorrelativosCatch;
+sem_t mutex_ciclosCPU;
+sem_t mutex_idCorrelativos;
+sem_t mutex_entrenador;
 
 //-----------------Firma de Funciones----------------------------
 

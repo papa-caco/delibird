@@ -6,14 +6,16 @@
  Description :
  ============================================================================
  */
-#include "utilsGc.h"
-// #include "servidor.h"
+// #include "utilsGc.h"
+#include "utils_gc.h"
 
 
 int main(void) {
 
-	iniciar_log();
-	iniciar_servidor();
+	//iniciar_log();
+	//iniciar_servidor();
+	iniciar_gamecard();
+	inicio_server_gamecard();
 
 }
 

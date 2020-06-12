@@ -6,13 +6,28 @@
  */
 #include "utilsGc.h"
 
-void iniciar_log(void) {
+void inicio_server_game_card(void){
+	leer_config();
+	iniciar_log_game_card();
+	//iniciar_cnt_msjs();
+}
+
+void iniciar_log_game_card(void) {
 	//------------ Ver de tener un modo de inicio que indique que imprima por pantalla o no! -------//
-	g_logger = log_create("log/gameCard.log", "GAME_CARD", 1, LOG_LEVEL_INFO);
+	g_logger = log_create(PATH_LOG, "GAME_CARD", 1, LOG_LEVEL_INFO);
 	log_info(g_logger,"INICIO_LOG_SUCESS");
+
+
 }
 t_config* leer_config(void){
-	return config_create("config/gameCard.config");
+	t_config* g_config;
+	g_config = config_create(PATH_CONFIG);
+	g_config = malloc(sizeof(t_config_game_card));
+	g_config->ip_game_card = config_get_string_value(g_config, "IP_GAME_CARD");
+	g_config->puerto_game_card = config_get_string_value(g_config, "PUERTO_GAME_CARD");
+	g_config->ip_broker = config_get_string_value(g_config, "IP_BROKER");
+	g_config->puerto_broker = config_get_string_value(g_config, "PUERTO_BROKER");
+
 }
 
 void finalizar_log(void){
@@ -22,9 +37,12 @@ void destruir_config(void){
 	//config_destroy(config);
 }
 
-
-//// modo servidor
-
+void inicio_server_game_card(void)
+{
+	char *ip = g_config->ip_game_card;
+	char *puerto = g_config->puerto_game_card;
+	iniciar_servidor(ip, puerto, g_logger);
+}
 
 void iniciar_servidor()
 {
@@ -71,7 +89,7 @@ void iniciar_servidor()
     	esperar_cliente(socket_servidor);
     config_destroy(g_config);
 }
-
+/*
 void esperar_cliente(int socket_servidor) {
 	struct sockaddr_in dir_cliente;
 
@@ -89,6 +107,8 @@ void esperar_cliente(int socket_servidor) {
 	pthread_detach(thread);
 }
 
+*/
+/*
 void serve_client(t_socket_cliente *socket)
 {
 	int cod_op;
@@ -102,6 +122,7 @@ void serve_client(t_socket_cliente *socket)
 	//log_info(g_logger,"SE RECIBE MENSAJE DEL SOCKET: %d",*socket);
 
 }
+*/
 
 // RECIBE todos los TIPOS de MENSAJE QUE MANEJA el GAMECARD y resuelve segun el CODIGO_OPERACION del MENSAJE
 void process_request(op_code cod_op, t_socket_cliente *socket) {
@@ -171,7 +192,7 @@ void process_request(op_code cod_op, t_socket_cliente *socket) {
 	}
 
 }
-
+/*
 void* serializar_paquete(t_paquete* paquete, int bytes)
 {
 	void * magic = malloc(bytes);
@@ -186,7 +207,7 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
 
 	return magic;
 }
-
+*/
 /**
  * Verificar si el Pokémon existe dentro de nuestro Filesystem.
  * Para esto se deberá buscar dentro del directorio Pokemon si existe el archivo con el nombre de nuestro pokémon.
@@ -575,13 +596,13 @@ void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon
 
 	free(ruta);
 }
-
+/*
 void eliminar_paquete(t_paquete* paquete) {
 	free(paquete->buffer->data);
 	free(paquete->buffer);
 	free(paquete);
 }
-
+*/
 int tamano_recibido(int bytes) {
 	return bytes + 2 * sizeof(int);
 }
