@@ -67,7 +67,6 @@ void intentarAtraparPokemon(t_entrenador* entrenador, t_pokemon_entrenador* poke
 
 //////INTERCAMBIAR UN POKEMON/////////////
 
-//FALTA LIBERAR LAS 4 LISTAS AUXILIARES
 void intercambiarPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2) {
 
 	t_list* pokemonesInnecesariosDT1 = pokemonesInnecesarios(entrenador1);
@@ -124,6 +123,10 @@ void intercambiarPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2) {
 
 		}
 	}
+	liberar_lista_de_pokemones(pokemonesInnecesariosDT1);
+	liberar_lista_de_pokemones(pokemonesInnecesariosDT2);
+	liberar_lista_de_pokemones(pokemonesPendientesDT1);
+	liberar_lista_de_pokemones(pokemonesPendientesDT2);
 
 }
 
@@ -190,14 +193,16 @@ char puedeIntercambiarPokemon(t_entrenador* entrenador1,
 	char leSirveAlDT2 = 0;
 
 	//Evalúo que le sirva al entrenador 2
-	for(int i=0; i < list_size(pokemonesInnecesariosDT1); i++){
+	for (int i = 0; i < list_size(pokemonesInnecesariosDT1); i++) {
 
-		char* pokemonInnecesario= ((t_pokemon_entrenador*)list_get(pokemonesInnecesariosDT1, i))->pokemon;
+		char* pokemonInnecesario = ((t_pokemon_entrenador*) list_get(
+				pokemonesInnecesariosDT1, i))->pokemon;
 
-		for(int j=0; j < list_size(pokemonesPendientesDT2); j++){
-			char* pokemonPendiente= ((t_pokemon_entrenador*)list_get(pokemonesPendientesDT2, j))->pokemon;
+		for (int j = 0; j < list_size(pokemonesPendientesDT2); j++) {
+			char* pokemonPendiente = ((t_pokemon_entrenador*) list_get(
+					pokemonesPendientesDT2, j))->pokemon;
 
-			if(strcmp(pokemonInnecesario,pokemonPendiente)== 0){
+			if (strcmp(pokemonInnecesario, pokemonPendiente) == 0) {
 
 				leSirveAlDT2 = 1;
 
@@ -207,21 +212,28 @@ char puedeIntercambiarPokemon(t_entrenador* entrenador1,
 	}
 
 	//Evalúo que le sirva al entrenador 1
-	for(int i=0; i < list_size(pokemonesInnecesariosDT2); i++){
+	for (int i = 0; i < list_size(pokemonesInnecesariosDT2); i++) {
 
-			char* pokemonInnecesario= ((t_pokemon_entrenador*)list_get(pokemonesInnecesariosDT2, i))->pokemon;
+		char* pokemonInnecesario = ((t_pokemon_entrenador*) list_get(
+				pokemonesInnecesariosDT2, i))->pokemon;
 
-			for(int j=0; j < list_size(pokemonesPendientesDT1); j++){
-				char* pokemonPendiente= ((t_pokemon_entrenador*)list_get(pokemonesPendientesDT1, j))->pokemon;
+		for (int j = 0; j < list_size(pokemonesPendientesDT1); j++) {
+			char* pokemonPendiente = ((t_pokemon_entrenador*) list_get(
+					pokemonesPendientesDT1, j))->pokemon;
 
-				if(strcmp(pokemonInnecesario,pokemonPendiente)== 0){
+			if (strcmp(pokemonInnecesario, pokemonPendiente) == 0) {
 
-					leSirveAlDT1 = 1;
-
-				}
+				leSirveAlDT1 = 1;
 
 			}
+
 		}
+	}
+
+	liberar_lista_de_pokemones(pokemonesInnecesariosDT1);
+	liberar_lista_de_pokemones(pokemonesInnecesariosDT2);
+	liberar_lista_de_pokemones(pokemonesPendientesDT1);
+	liberar_lista_de_pokemones(pokemonesPendientesDT2);
 
 	//Para poder intercambiar, a los dos les debe interesar el intercambio
 	return leSirveAlDT1 && leSirveAlDT2;
