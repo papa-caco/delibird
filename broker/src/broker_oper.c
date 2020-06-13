@@ -139,13 +139,14 @@ int poner_datos_msj_en_particion_cache(t_queue_msg *msg, t_log *logger)
 			particion = generar_particion_dinamica(msg);
 		}
 		int offset =  particion->dir_base;
+		memset((g_cache_part->partition_repo) + offset, 0, tamano_particion_dinamica(particion));
 		memcpy((g_cache_part->partition_repo) + offset, msg->msg_data->data, particion->data_size);
 		char *name_cola = nombre_cola(msg->tipo_mensaje);
 		dir_base_particion = particion->dir_base;
-		int dir_limite = particion->dir_base + particion->data_size - 1;
 		int espacio = g_cache_part->total_space - g_cache_part->used_space;
-		log_trace(logger,"(DATA_STORED|ID_PART:%d|START_ADDR:%d|END_ADDR:%d|SIZE:%d Bytes|QUEUE:%s|ID_MSG:%d|CACHE_SPACE:%d Bytes)",
-			particion->id_particion,particion->dir_base, dir_limite, particion->data_size,name_cola,particion->id_mensaje,  espacio);
+		log_trace(logger,"(DATA_STORED|ID_PART:%d|START_ADDR:%d|END_ADDR:%d|DATA_SIZE:%d Bytes|QUEUE:%s|ID_MSG:%d|CACHE_SPACE:%d Bytes)",
+			particion->id_particion,particion->dir_base, particion->dir_heap, particion->data_size,
+			name_cola, particion->id_mensaje,  espacio);
 		break;
 	}
 	return dir_base_particion;
@@ -158,6 +159,7 @@ t_particion_dinamica *generar_particion_dinamica(t_queue_msg *msg_queue)
 		particion = malloc(sizeof(t_particion_dinamica));
 		particion->id_particion = g_cache_part->id_partition;
 		particion->dir_base = g_cache_part->dir_base_part;
+		particion->dir_heap = particion->dir_base + dir_heap_part_dinamica(msg_queue);
 		particion->data_size = msg_queue->msg_data->size;
 		particion->id_mensaje = msg_queue->id_mensaje;
 		particion->id_cola = msg_queue->tipo_mensaje;
@@ -165,8 +167,8 @@ t_particion_dinamica *generar_particion_dinamica(t_queue_msg *msg_queue)
 		void *part = (t_particion_dinamica*) particion;
 		list_add(g_cache_part->partition_table, part);
 		g_cache_part->id_partition += 1;
-		g_cache_part->dir_base_part += particion->data_size;
-		g_cache_part->used_space +=  particion->data_size;
+		g_cache_part->dir_base_part += tamano_particion_dinamica(particion);
+		g_cache_part->used_space +=  tamano_particion_dinamica(particion);
 	} else {
 		printf("Hay espacio en cache pero No hay particion con espacio para este mensaje -- Se debe compactar!\n");
 		particion = NULL;
@@ -181,7 +183,7 @@ t_particion_dinamica *buscar_particion_dinamica_libre(t_queue_msg *msg_queue)
 	t_algoritmo_part_libre algoritmo = g_config_broker->algoritmo_particion_libre;
 	bool tamano_suficiente(void *part) {
 		t_particion_dinamica *particion = (t_particion_dinamica*) part;
-		return particion->data_size >= msg_queue->msg_data->size;
+		return tamano_particion_dinamica(particion) >= msg_queue->msg_data->size;
 	}
 	switch (algoritmo) {
 	case (FF):;
@@ -200,7 +202,7 @@ t_particion_dinamica *buscar_particion_dinamica_libre(t_queue_msg *msg_queue)
 		particion->id_cola = msg_queue->tipo_mensaje;
 		particion->data_size = msg_queue->msg_data->size;
 		particion->presencia = true;
-		g_cache_part->used_space += particion->data_size;
+		g_cache_part->used_space += tamano_particion_dinamica(particion);
 	}
 	return particion;
 }
@@ -234,14 +236,14 @@ void eliminar_msg_data_particion_cache(int id_mensaje, t_log *logger)
 		t_particion_dinamica *particion = get_particion_cache_por_id_mensaje(id_mensaje);
 		particion->id_mensaje = 0;
 		particion->id_cola = 0;
+		particion->data_size = 0;
 		particion->presencia = false;
 		int offset = particion->dir_base;
-		memset((g_cache_part->partition_repo) + offset, 0, particion->data_size);
-		int dir_limite = particion->dir_base + particion->data_size - 1;
-		g_cache_part->used_space =  g_cache_part->used_space - particion->data_size;
+		memset((g_cache_part->partition_repo) + offset, 0, tamano_particion_dinamica(particion));
+		g_cache_part->used_space =  g_cache_part->used_space - tamano_particion_dinamica(particion);
 		int espacio = g_cache_part->total_space - g_cache_part->used_space;
-		log_debug(logger,"(REMOVED_DATA ID_PART:%d|START_ADDR:0x%X|END_ADDR:0x%X|SIZE:%d Bytes|CACHE_SPACE:%d Bytes)",
-					particion->id_particion,particion->dir_base, dir_limite, particion->data_size, espacio);
+		log_debug(logger,"(REMOVED_DATA ID_PART:%d|START_ADDR:%d|END_ADDR:%d|PARTITION_SIZE:%d Bytes|CACHE_SPACE:%d Bytes)",
+					particion->id_particion,particion->dir_base, particion->dir_heap, tamano_particion_dinamica(particion), espacio);
 		break;
 	}
 }
@@ -517,7 +519,6 @@ bool es_msj_sin_enviar(t_queue_msg *mensaje, int id_suscriptor)
 	}
 	return resultado;
 }
-
 
 t_broker_queue *cola_broker_suscripcion(t_tipo_mensaje tipo_mensaje)
 {

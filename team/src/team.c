@@ -46,7 +46,7 @@ int main(void) {
 	//LAS VARIABLES "objetivoGlobal" y "new" TIENEN QUE SER VARIABLES GLOBALES, es decir que vamos a tener que sacar
 	//su hardcodeo de las funciones "iniciar_entrenadores_and_objetivoGLobal" y "cargar_objetivoGLobal"
 
-	*/
+	 */
 
 	return EXIT_SUCCESS;
 }

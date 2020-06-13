@@ -133,6 +133,10 @@ bool es_particion_libre(void *part);
 
 bool es_particion_ocupada(void *part);
 
+int dir_heap_part_dinamica(t_queue_msg *msg_queue);
+
+int tamano_particion_dinamica(t_particion_dinamica *particion);
+
 int dir_base_ultimo_bloque_part_din(void);
 
 int ultimo_bloque_part_din(void);

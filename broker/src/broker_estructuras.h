@@ -55,6 +55,7 @@ typedef struct Mensaje_Cola{
 
 typedef struct Cache_Part_Din{
 	int id_partition;
+	int min_size_part;
 	int dir_base_part;
 	int used_space;
 	int total_space;
@@ -65,6 +66,7 @@ typedef struct Cache_Part_Din{
 typedef struct Particion_Dinamica{
 	int id_particion;
 	int dir_base;
+	int dir_heap;
 	uint32_t data_size;
 	bool presencia;
 	int id_mensaje;

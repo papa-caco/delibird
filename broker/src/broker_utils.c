@@ -169,10 +169,12 @@ void atender_suscripcion(op_code cod_op, t_socket_cliente_broker *socket)
 void iniciar_estructuras_broker(void)
 {
 	t_algoritmo_memoria algoritmo = g_config_broker->algoritmo_memoria;
-	log_debug(g_logdebug,"(Tamaño_Cache:%d)", g_config_broker->tamano_memoria);
+	log_debug(g_logdebug,"(Tamaño_Cache:%d Bytes)", g_config_broker->tamano_memoria);
+	log_debug(g_logdebug,"(Tamaño_Mínimo_Particiones:%d Bytes)", g_config_broker->tamano_minimo_particion);
 	log_debug(g_logdebug,"(Algoritmo_Memoria:%s)", config_get_string_value(g_config, "ALGORITMO_MEMORIA"));
 	log_debug(g_logdebug,"(Algoritmo_Particion_Libre:%s)",config_get_string_value(g_config,"ALGORITMO_PARTICION_LIBRE"));
 	log_debug(g_logdebug,"(Algoritmo_Reemplazo:%s)",config_get_string_value(g_config,"ALGORITMO_REEMPLAZO"));
+	log_debug(g_logdebug,"(Frecuencia_Compactacion:%d)", g_config_broker->frecuencia_compactacion);
 	g_msg_counter = 1;
 	sem_init(&g_mutex_msjs, 0, 1);
 	sem_init(&g_mutex_queue_new, 0, 1);
@@ -190,6 +192,7 @@ void iniciar_estructuras_broker(void)
 		g_cache_part = malloc(sizeof(t_cache_part_din));
 		g_cache_part->id_partition = 1;
 		g_cache_part->dir_base_part = 0;
+		g_cache_part->min_size_part = g_config_broker->tamano_minimo_particion;
 		g_cache_part->used_space = 0;
 		g_cache_part->total_space = g_config_broker->tamano_memoria;
 		g_cache_part->partition_table = list_create();
@@ -437,29 +440,27 @@ int compactar_particiones_dinamicas(t_log *logger)
 	int size1 = ultimo_bloque_part_din();
 	void *auxiliar;
 	t_particion_dinamica* part0 = list_get(g_cache_part->partition_table,0);
-	int dir_base_part_id1 = part0->dir_base;
-	if (dir_base_part_id1 != 0) {   // Si La 1° particion ocupada no está al comienzo del cache
-		uint32_t size_part_id1 = part0->data_size;
+	int desplazamiento = part0->dir_base;
+	if (desplazamiento != 0) {   // Si La 1° particion ocupada no está al comienzo del cache
+		int size_part_id1 = tamano_particion_dinamica(part0);
 		auxiliar = malloc(size_part_id1);
-		int desplazamiento = dir_base_part_id1;
-		dir_base_part_id1 = 0;
-		memcpy(auxiliar, (g_cache_part->partition_repo + desplazamiento), size_part_id1);
-		memset((g_cache_part->partition_repo + dir_base_part_id1),0,desplazamiento);
-		memcpy(g_cache_part->partition_repo + dir_base_part_id1, auxiliar, size_part_id1);
-		part0->dir_base = dir_base_part_id1;
+		memcpy(auxiliar, g_cache_part->partition_repo + desplazamiento, size_part_id1);
+		memset(g_cache_part->partition_repo, 0, desplazamiento);
+		memcpy(g_cache_part->partition_repo, auxiliar, size_part_id1);
+		part0->dir_base = 0;
+		part0->dir_heap = part0->dir_base + size_part_id1 - 1;
 		free(auxiliar);
 	}
 	for (int i = 0; i < (cant_part - 1); i ++) {  //Solo entra si hay más de 2 particiones ocupadas
-		int dir_base1 = ((t_particion_dinamica*)list_get(g_cache_part->partition_table, i))->dir_base;
-		uint32_t size_part1 = ((t_particion_dinamica*)list_get(g_cache_part->partition_table, i))->data_size;
-		int dir_base2_new = dir_base1 + size_part1;
+		int dir_heap1 = ((t_particion_dinamica*)list_get(g_cache_part->partition_table, i))->dir_heap;
+		int dir_base2_new = dir_heap1 + 1;
 		int dir_base2 = ((t_particion_dinamica*)list_get(g_cache_part->partition_table, i + 1))->dir_base;
-		uint32_t size_part2 = ((t_particion_dinamica*)list_get(g_cache_part->partition_table,i + 1))->data_size;
+		int dir_heap2 = ((t_particion_dinamica*)list_get(g_cache_part->partition_table,i + 1))->dir_heap;
 		int id_part2 = ((t_particion_dinamica*)list_get(g_cache_part->partition_table,i + 1))->id_particion;
-		bool status_part2 = ((t_particion_dinamica*)list_get(g_cache_part->partition_table,i + 1))->presencia;
 		int gap = dir_base2 - dir_base2_new;
 		if (gap > 0 )  {
-			log_trace(logger,"(Comprimiendo_Partición:%d|%dBytes)", id_part2,gap);
+			log_trace(logger,"(Comprimiendo_Partición:%d|%dBytes)", id_part2, gap);
+			int size_part2 = dir_heap2 - dir_base2 + 1;
 			auxiliar = malloc(size_part2);
 			int clean_bytes = gap + size_part2;
 			memcpy(auxiliar, (g_cache_part->partition_repo + dir_base2), size_part2);
@@ -467,6 +468,7 @@ int compactar_particiones_dinamicas(t_log *logger)
 			memcpy(g_cache_part->partition_repo + dir_base2_new, auxiliar, size_part2);
 			t_particion_dinamica* particion = list_get(g_cache_part->partition_table,i + 1);
 			particion->dir_base = dir_base2_new;
+			particion->dir_heap = particion->dir_base + size_part2 - 1;
 			free(auxiliar);
 		}
 	}
@@ -499,7 +501,7 @@ void reorganizar_particiones_dinamicas_libres(t_log *logger)
 {
 	t_list *particiones_ocupadas = list_filter(g_cache_part->partition_table, (void*) es_particion_ocupada);
 	int cant_total = g_cache_part->partition_table->elements_count;
-	t_list *particiones_libres =obtengo_particiones_dinamicas_libres();
+	t_list *particiones_libres = obtengo_particiones_dinamicas_libres();
 	int a_borrar = particiones_libres->elements_count;
 	list_destroy(particiones_libres);
 	t_list *auxiliar = list_duplicate(particiones_ocupadas);
@@ -527,7 +529,7 @@ bool ordenar_por_tamano(void *part1, void *part2)
 {
 		t_particion_dinamica *particion1 = (t_particion_dinamica*) part1;
 		t_particion_dinamica *particion2 = (t_particion_dinamica*) part2;
-		return particion1->data_size < particion2->data_size;
+		return tamano_particion_dinamica(particion1) < tamano_particion_dinamica(particion2);
 }
 
 bool es_particion_libre(void *part) {
@@ -540,6 +542,23 @@ bool es_particion_ocupada(void *part) {
 	return particion->id_mensaje != 0 && particion->presencia == true;
 }
 
+int dir_heap_part_dinamica(t_queue_msg *msg_queue)
+{
+	int data_size = msg_queue->msg_data->size;
+	int heap = 0;
+	if (data_size > g_cache_part->min_size_part) {
+		heap = data_size - 1;
+	} else {
+		heap = (g_cache_part->min_size_part) - 1;
+	}
+	return heap;
+}
+
+int tamano_particion_dinamica(t_particion_dinamica *particion)
+{
+	return particion->dir_heap - particion->dir_base + 1;
+}
+
 int dir_base_ultimo_bloque_part_din(void)
 {
 	int ultima_dir_base;
@@ -547,9 +566,8 @@ int dir_base_ultimo_bloque_part_din(void)
 	list_sort(tabla_particiones, ordenar_por_direccion_base);
 	if (tabla_particiones->elements_count > 0) {
 		int index = tabla_particiones->elements_count - 1;
-		int dir_ult_part = ((t_particion_dinamica*) list_get(tabla_particiones,index))->dir_base;
-		int size_ult_part = ((t_particion_dinamica*) list_get(tabla_particiones,index))->data_size;
-		ultima_dir_base = dir_ult_part + size_ult_part;
+		int dir_heap_ult_part = ((t_particion_dinamica*) list_get(tabla_particiones,index))->dir_heap;
+		ultima_dir_base = dir_heap_ult_part + 1;
 	} else {
 		ultima_dir_base = 0;
 	}
@@ -563,12 +581,24 @@ int ultimo_bloque_part_din(void)
 
 bool sin_espacio_ult_bloque_cache_part_din(t_queue_msg *msg_queue)
 {
-	return msg_queue->msg_data->size > ultimo_bloque_part_din();
+	bool resultado;
+	if (msg_queue->msg_data->size > g_cache_part->min_size_part) {
+		resultado = msg_queue->msg_data->size > ultimo_bloque_part_din();
+	} else {
+		resultado = g_cache_part->min_size_part > ultimo_bloque_part_din();
+	}
+	return resultado;
 }
 
 bool cache_espacio_suficiente(int data_size)
 {
-	return espacio_disponible_en_cache() >= data_size;
+	bool resultado;
+	if ( data_size > g_cache_part->min_size_part) {
+		resultado = espacio_disponible_en_cache() >= data_size;
+	} else {
+		resultado = espacio_disponible_en_cache() >= g_cache_part->min_size_part;
+	}
+	return resultado;
 }
 
 int espacio_cache_msg_get(t_msg_get_broker *msg_get)
