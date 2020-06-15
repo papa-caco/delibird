@@ -30,6 +30,7 @@ typedef struct Configuracion_Team
 typedef struct Pokemon_Entrenador{
 	int cantidad;
 	char* pokemon;
+	t_posicion_entrenador* posicion;
 } t_pokemon_entrenador;
 
 
@@ -39,17 +40,22 @@ typedef struct Posicion_Entrenador{
 } t_posicion_entrenador;
 
 typedef enum Estado_Entrenador{
-	NEW,
-	READY,
-	BLOCKED,
-	EXEC,
-	EXIT,
-} t_estado;
+	MOVERSE_A_POKEMON,
+	MOVERSE_A_ENTRENADOR,
+	ATRAPAR,
+	INTERCAMBIAR,
+	ESPERAR_CAUGHT,
+	DEADLOCK,
+} t_estado_entrenador;
 
 typedef struct Entrenador{
 	t_posicion_entrenador* posicion;
 	t_list* objetivoEntrenador;
 	t_list* pokemonesObtenidos;
+	sem_t sem_entrenador;
+	t_estado_entrenador estado_entrenador;
+	pthread_t hilo_entrenador;
+
 	//Tal vez como opción podrías agregar una variable hilo acá e ir inicializándoselo a cada uno.
 	//La otra es crear los hilos por otro lado e ir manejándolos a tu criterio.
 } t_entrenador;
@@ -60,13 +66,22 @@ typedef struct Entrenador{
 
 //-----------------Variables Globales----------------------------
 
-/*t_queue* new;
-//t_list* objetivoGlobal;*/
-
 
 t_queue* colaNewEntrenadores;
 
+t_queue* colaReadyEntrenadores;
+
+t_queue* colaBlockedEntrenadores;
+
+t_queue* colaExecEntrenadores;
+
+t_queue* colaExitEntrenadores;
+
 t_list* objetivoGlobalEntrenadores;
+
+t_list* pokemonesLibresEnElMapa;
+
+t_list* pokemonesReservadosEnElMapa;
 
 t_config *g_config;
 
@@ -83,6 +98,10 @@ pthread_mutex_t mutex_reconexion;
 pthread_t tid_reconexion;
 
 sem_t sem_mutex_msjs;
+
+sem_t sem_listas_pokemones;
+
+sem_t sem_planificador_cplazo;
 
 int g_cnt_msjs_caught;
 

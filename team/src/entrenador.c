@@ -10,11 +10,128 @@
 
 //------------------------------FUNCIONES BÁSICAS DEL ENTRENADOR-------------------------------------------
 
+
+void comportamiento_entrenador(t_entrenador* entrenador){
+
+	while(true){
+
+		sem_wait(entrenador->sem_entrenador);
+
+		switch (entrenador->estado_entrenador) {
+			case MOVERSE_A_POKEMON:
+				t_pokemon_entrenador* pokemon = buscarPokemonMasCercano(entrenador);
+				int distancia = calcularDistancia(entrenador->posicion, pokemon->posicion);
+					for(int i=0; i<distancia; i++){
+						moverEntrenador(entrenador, pokemon->posicion);
+
+					}
+					sem_wait(sem_listas_pokemones);
+			moverPokemonAReservados(pokemonesLibresEnElMapa,pokemonesReservadosEnElMapa, pokemon);
+					sem_post(sem_listas_pokemones);
+
+					entrenador->estado_entrenador = ATRAPAR;
+
+					sem_post(sem_planificador_cplazo);
+
+					//// SIGNAL A PLANIFICADOR?????????
+
+				break;
+		case MOVERSE_A_ENTRENADOR:
+
+			//for(int i=0; )
+
+							break;
+			case ATRAPAR:
+				t_pokemon_entrenador* pokemon = buscarPokemonMasCercano(entrenador);
+				intentarAtraparPokemon(entrenador, pokemon);
+
+				entrenador->estado_entrenador = ESPERAR_CAUGHT;
+
+				sem_post(sem_planificador_cplazo);
+
+
+				break;
+			case 0:
+					pthread_exit(NULL);
+				case -1:
+					pthread_exit(NULL);
+				}
+
+	}
+
+}
+
+t_pokemon_entrenador* buscarPokemonMasCercano(t_posicion_entrenador* posicion_Entrenador){
+
+	t_pokemon_entrenador* pokemonMasCercano;
+	int distanciaMasCercana = 0;
+	int distanciaAux = 0;
+
+
+
+	for (int i = 0; i < list_size(pokemonesLibresEnElMapa); i++) {
+
+
+		t_pokemon_entrenador* pokLibreAux = ((t_pokemon_entrenador*) list_get(pokemonesLibresEnElMapa, i));
+
+
+		distanciaAux = calcularDistancia(posicion_Entrenador, pokLibreAux->posicion );
+
+		if(distanciaAux < distanciaMasCercana){
+			distanciaMasCercana = distanciaAux;
+			pokemonMasCercano = pokLibreAux;
+		}
+
+	}
+
+	return pokemonMasCercano;
+
+}
+
+void moverPokemonAReservados(t_list* listaQueContieneElPokemon,
+		t_list* listaReceptoraDelPokemon, t_pokemon_entrenador* pokemonAMover){
+
+	t_pokemon_entrenador* pokemonAux;
+
+	t_pokemon_entrenador* pokemonAAgregar = malloc(sizeof(t_pokemon_entrenador));
+	pokemonAAgregar->cantidad = 1;
+	pokemonAAgregar->pokemon = pokemonAMover->pokemon;
+	pokemonAAgregar->posicion->pos_x = pokemonAMover->posicion->pos_x;
+	pokemonAAgregar->posicion->pos_y = pokemonAMover->posicion->pos_y;
+
+	list_add(listaReceptoraDelPokemon, pokemonAAgregar);
+
+	int indice;
+
+	for(int i=0; i < list_size(listaQueContieneElPokemon); i++){
+
+		pokemonAux = ((t_pokemon_entrenador*) list_get(listaQueContieneElPokemon, i));
+
+		if(pokemonAux == pokemonAMover){
+			indice=i;
+		}
+	}
+
+	if(pokemonAMover->cantidad == 1){
+		pokemonAux = list_remove(listaQueContieneElPokemon, indice);
+		free(pokemonAux->posicion);
+		free(pokemonAux);
+
+	}else{
+
+		pokemonAMover->cantidad--;
+	}
+
+
+
+}
+
+
 /////MOVER ENTRENADOR///////////////////
 
 void moverEntrenador(t_entrenador* entrenador, t_posicion_entrenador* posicionAMoverse){
 
-	//AGREGAR SEMAFORO DEL ENTRENADOR EN PARTICULAR
+	//AGREGAR SEMAFORO DEL ENTRENADOR EN PARTICULAR  (ADENTRO O AFUERA?????)
 
 	if(entrenador->posicion->pos_x != posicionAMoverse->pos_x){
 		if(entrenador -> posicion -> pos_x > posicionAMoverse->pos_x ){
@@ -123,6 +240,12 @@ void intercambiarPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2) {
 
 		}
 	}
+	//VER SI TENEMOS QUE HACERLO AFUERA POR LA PLANIFICACION RR DE QUANTUM
+		sleep((g_config_team->retardo_ciclo_cpu)*5);
+		sem_wait(&mutex_ciclosCPU);
+		ciclosCPU+=5;
+		sem_post(&mutex_ciclosCPU);
+
 	liberar_lista_de_pokemones(pokemonesInnecesariosDT1);
 	liberar_lista_de_pokemones(pokemonesInnecesariosDT2);
 	liberar_lista_de_pokemones(pokemonesPendientesDT1);
@@ -338,4 +461,6 @@ t_list* pokemonesPendientes(t_entrenador* entrenador) {
 
 	}
 	return pokemonesPendientes;
+
+
 }
