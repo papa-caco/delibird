@@ -13,49 +13,79 @@
 
 void comportamiento_entrenador(t_entrenador* entrenador){
 
+	int distancia;
+	t_pokemon_entrenador* pokemon;
+	t_posicion_entrenador* posicionEntrenador;
+	t_entrenador* entrenador2;
+
 	while(true){
 
-		sem_wait(entrenador->sem_entrenador);
+		sem_wait(&(entrenador->sem_entrenador));
 
 		switch (entrenador->estado_entrenador) {
 			case MOVERSE_A_POKEMON:
-				t_pokemon_entrenador* pokemon = buscarPokemonMasCercano(entrenador);
-				int distancia = calcularDistancia(entrenador->posicion, pokemon->posicion);
+				pokemon = buscarPokemonMasCercano(entrenador->posicion);
+				distancia = calcularDistancia(entrenador->posicion, pokemon->posicion);
+
 					for(int i=0; i<distancia; i++){
 						moverEntrenador(entrenador, pokemon->posicion);
 
 					}
-					sem_wait(sem_listas_pokemones);
+					sem_wait(&(sem_listas_pokemones));
 			moverPokemonAReservados(pokemonesLibresEnElMapa,pokemonesReservadosEnElMapa, pokemon);
-					sem_post(sem_listas_pokemones);
+					sem_post(&(sem_listas_pokemones));
 
 					entrenador->estado_entrenador = ATRAPAR;
 
-					sem_post(sem_planificador_cplazo);
+					sem_post(&(sem_planificador_cplazo));
 
 					//// SIGNAL A PLANIFICADOR?????????
 
 				break;
 		case MOVERSE_A_ENTRENADOR:
+			posicionEntrenador = buscarEntrenadorAMoverse(entrenador);
 
-			//for(int i=0; )
+			distancia = calcularDistancia(entrenador->posicion, posicionEntrenador);
+
+			for(int i=0; i<distancia; i++){
+
+			moverEntrenador(entrenador, posicionEntrenador);
+
+			}
+
+			entrenador->estado_entrenador = INTERCAMBIAR;
+
+			sem_post(&(sem_planificador_cplazo));
+
 
 							break;
 			case ATRAPAR:
-				t_pokemon_entrenador* pokemon = buscarPokemonMasCercano(entrenador);
+				pokemon = buscarPokemonMasCercano(entrenador->posicion);
 				intentarAtraparPokemon(entrenador, pokemon);
 
 				entrenador->estado_entrenador = ESPERAR_CAUGHT;
 
-				sem_post(sem_planificador_cplazo);
-
+				sem_post(&(sem_planificador_cplazo));
 
 				break;
-			case 0:
-					pthread_exit(NULL);
+
+			case INTERCAMBIAR:
+
+				entrenador2 = buscarEntrenadorDelIntercambio(entrenador);
+
+				intercambiarPokemon(entrenador, entrenador2);
+
+				entrenador->estado_entrenador = ACABO_INTERCAMBIO;
+
+				entrenador2->estado_entrenador = ACABO_INTERCAMBIO;
+
+				sem_post(&(sem_planificador_cplazo));
+
+				break;
 				case -1:
 					pthread_exit(NULL);
 				}
+		//FALTA DETERMINAR EL CASO DEL FINALIZADO DEL ENTRENADOR
 
 	}
 
@@ -85,6 +115,75 @@ t_pokemon_entrenador* buscarPokemonMasCercano(t_posicion_entrenador* posicion_En
 	}
 
 	return pokemonMasCercano;
+
+}
+
+t_entrenador* buscarEntrenadorDelIntercambio(t_entrenador* entrenador){
+
+	t_entrenador* entrenadorMasCercano;
+	t_entrenador* entrenadorAux;
+	int distanciaAux = 0;
+
+	sem_wait(&(sem_cola_blocked));
+
+	for (int i = 0; i < queue_size(colaBlockedEntrenadores); i++) {
+
+
+
+		entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
+
+
+		distanciaAux = calcularDistancia(entrenador->posicion, entrenadorAux->posicion);
+
+		if(distanciaAux == 0 && entrenadorAux->estado_entrenador == DEADLOCK
+				&& puedeIntercambiarPokemon(entrenador, entrenadorAux)){
+
+			entrenadorMasCercano = entrenadorAux;
+
+		}
+
+
+		queue_push(colaBlockedEntrenadores, entrenadorAux);
+
+		}
+
+	sem_post(&(sem_cola_blocked));
+
+
+	return entrenadorMasCercano;
+
+}
+
+t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador){
+
+	t_posicion_entrenador* posicionAMoverse;
+	t_entrenador* entrenadorAux;
+
+	sem_wait(&(sem_cola_blocked));
+
+	for (int i = 0; i < queue_size(colaBlockedEntrenadores); i++) {
+
+
+
+		entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
+
+
+		if(entrenadorAux->estado_entrenador == DEADLOCK
+				&& puedeIntercambiarPokemon(entrenador, entrenadorAux)){
+
+			posicionAMoverse = entrenadorAux->posicion;
+
+		}
+
+
+		queue_push(colaBlockedEntrenadores, entrenadorAux);
+
+		}
+
+	sem_post(&(sem_cola_blocked));
+
+
+	return posicionAMoverse;
 
 }
 

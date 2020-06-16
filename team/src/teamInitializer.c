@@ -113,7 +113,7 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 	t_list* pokemonesObtenidos = extraer_pokemones_entrenadores("POKEMON_ENTRENADORES");
 	t_list* posiciones = extraer_posiciones_entrenadores();
 	cargar_objetivo_global(objetivosEntrenadores);
-
+	cargar_obtenidos_global(pokemonesObtenidos);
 
 	for(int i=0; list_get(posiciones, i) != NULL; i++){
 		t_entrenador* unEntrenador = malloc(sizeof(t_entrenador));
@@ -146,6 +146,28 @@ void cargar_objetivo_global(t_list* objetivosEntrenadores){
 
 		}
 	}
+}
+
+void cargar_obtenidos_global(t_list* pokemonesObtenidos){
+
+	for(int i=0; list_get(pokemonesObtenidos, i) != NULL; i++){
+			t_list* obtenidosUnEntrenador = (t_list*)list_get(pokemonesObtenidos, i);
+
+
+			for(int j=0; list_get(obtenidosUnEntrenador, j) != NULL; j++){
+				t_pokemon_entrenador *pokemonNuevo = malloc(sizeof(t_pokemon_entrenador));
+				t_pokemon_entrenador* pokemonEncontrado = list_buscar(pokemonesAtrapadosGlobal, ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->pokemon);
+				if(pokemonEncontrado != NULL){
+					pokemonEncontrado -> cantidad+=((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->cantidad;
+				}
+				else{
+					pokemonNuevo -> pokemon = ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->pokemon;
+					pokemonNuevo -> cantidad = ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->cantidad;
+					list_add(pokemonesAtrapadosGlobal, pokemonNuevo);
+					}
+
+			}
+		}
 }
 
 //------------FUNCION QUE BUSCA UN ELEMENTO DENTRO DE UNA LISTA Y SI LO ENCUENTRA, LO RETORNA, SI NO, NULL
