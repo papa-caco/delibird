@@ -11,6 +11,11 @@ sem_t mutex_ciclosCPU;
 sem_t mutex_idCorrelativos;
 sem_t mutex_entrenador;
 
+typedef struct mensaje_Caugth_and_IdEntrenador{
+	t_msg_catch_broker* msg_catch_broker;
+	int id_entrenador;
+}t_mensaje_Caugth_and_IdEntrenador;
+
 //-----------------Firma de Funciones----------------------------
 
 void inicio_server_team(void);
@@ -23,9 +28,9 @@ int enviar_get_pokemon_broker(char *pokemon, t_log *logger);
 
 int connect_broker_y_enviar_mensaje_get(t_msg_get_broker *msg_get);
 
-int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon, t_log *logger);
+int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon, t_log *logger, int id_entrenador);
 
-int connect_broker_y_enviar_mensaje_catch(t_msg_catch_broker *msg_catch);
+int connect_broker_y_enviar_mensaje_catch(t_mensaje_Caugth_and_IdEntrenador* args);
 
 void inicio_suscripcion(t_tipo_mensaje *cola);
 

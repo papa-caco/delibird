@@ -78,7 +78,7 @@ int connect_broker_y_enviar_mensaje_get(t_msg_get_broker *msg_get)
 
 
 // ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES CATCH_POKEMON AL BROKER ----------//
-int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon, t_log *logger)
+int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon, t_log *logger, int id_entrenador)
 {
 	t_msg_catch_broker *msg_catch = malloc(sizeof(t_msg_catch_broker));
 	msg_catch->coordenada = malloc(sizeof(t_coordenada));
@@ -87,7 +87,10 @@ int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon, t_log *logg
 	msg_catch->size_pokemon = strlen(pokemon) + 1;
 	msg_catch->pokemon = malloc(msg_catch->size_pokemon);
 	memcpy(msg_catch->pokemon, pokemon, msg_catch->size_pokemon);
-	int thread_status = pthread_create(&tid_send_catch, NULL,(void*) connect_broker_y_enviar_mensaje_catch,(void*) msg_catch);
+	t_mensaje_Caugth_and_IdEntrenador* args;
+	args->msg_catch_broker = msg_catch;
+	args->id_entrenador = id_entrenador;
+	int thread_status = pthread_create(&tid_send_catch, NULL,(void*) connect_broker_y_enviar_mensaje_catch,(void*) args);
 	if (thread_status != 0) {
 		log_error(logger, "Thread create returned %d | %s", thread_status, strerror(thread_status));
 	} else {
@@ -96,7 +99,7 @@ int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon, t_log *logg
 	return thread_status;
 }
 
-int connect_broker_y_enviar_mensaje_catch(t_msg_catch_broker *msg_catch)
+int connect_broker_y_enviar_mensaje_catch(t_mensaje_Caugth_and_IdEntrenador* args)
 {
 	char *ip = g_config_team->ip_broker;
 	char *puerto = g_config_team->puerto_broker;
@@ -104,19 +107,25 @@ int connect_broker_y_enviar_mensaje_catch(t_msg_catch_broker *msg_catch)
 	char *name_cola = nombre_cola(CATCH_POKEMON);
 	sem_wait(&sem_mutex_msjs);
 	int cliente_fd = crear_conexion(ip, puerto, g_logger, proceso, name_cola);
-	enviar_msj_catch_broker(cliente_fd, g_logger, msg_catch);
+	enviar_msj_catch_broker(cliente_fd, g_logger, args->msg_catch_broker);
 	int id_mensaje = -1;
 	if ( rcv_codigo_operacion(cliente_fd) == ID_MENSAJE) {
 		id_mensaje = rcv_id_mensaje(cliente_fd, g_logger);
 		//TODO Guardar ID_MENSAJE que envia el BROKER de CATCH_POKEMON
 	}
+
+
 	sem_post(&sem_mutex_msjs);
 	close(cliente_fd);
-	eliminar_msg_catch_broker(msg_catch);
+	eliminar_msg_catch_broker(args->msg_catch_broker);
 	pthread_exit(&tid_send_catch);
 
+	t_id_Correlativo_and_Entrenador* ids = malloc (sizeof(t_id_Correlativo_and_Entrenador));
+	ids->id_Correlativo = id_mensaje;
+	ids->id_Entrenador = args->id_entrenador;
+
 	sem_wait(&mutex_idCorrelativos);
-	list_add(idCorrelativosCatch,&id_mensaje);
+	list_add(idCorrelativosCatch,&ids);
 	sem_post(&mutex_idCorrelativos);
 
 	return id_mensaje;
@@ -206,6 +215,42 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 		g_cnt_msjs_caught ++;
 		//TODO Agregar la función que corresponda y tome al msg_caught
 		id_recibido = msg_caught->id_mensaje;
+
+		t_id_Correlativo_and_Entrenador* idAux;
+		char meSirve= 0;
+
+		sem_wait(&mutex_idCorrelativos);
+
+		for(int i=0; i < list_size(idCorrelativosCatch); i++){
+
+			idAux = (t_id_Correlativo_and_Entrenador) list_get(idCorrelativosCatch,i);
+
+			if(idAux->id_Correlativo == id_recibido){
+
+				meSirve= 1;
+			}
+		}
+		sem_post(&mutex_idCorrelativos);
+
+		if(meSirve == 1){
+			if(msg_caught->resultado == OK ){
+
+				//AGREGAR POKEMON A LA LISTA DE ENTRENADORES DEL POKEMON
+				//IR SACANDO DE LA COLA DE BLOCKED LOS ENTRENADORES Y COMPARAR CON EL ID_ENTRENADOR
+				//UNA VEZ ENCONTRADO, AHI LLAMAR A LA FUNCION DE AGREGAR POKEMON.
+				//AGREGAR POKEMON A LA LISTA GLOBAL DE ATRAPADOS
+				//ELIMINAR POKEMON DE LA LISTA DE RESERVADOS
+				//VERIFICAR SI EL ENTRENADOR PUEDE PASAR A EXIT O SI TIENE DEADLOCK (CAMBIAR ESTADO)
+
+
+				//SEMAFORO MUTEX AL ENTRENADOR
+
+			}else{
+
+			}
+
+		}
+
 		free(msg_caught);
 		break;
 	case LOCALIZED_TEAM:;
@@ -256,7 +301,7 @@ void enviar_catch_de_appeared(t_msg_appeared_team *msg_appeared)
 {
 	int pos_x = msg_appeared->coord->pos_x;
 	int pos_y = msg_appeared->coord->pos_y;
-	enviar_catch_pokemon_broker(pos_x, pos_y, msg_appeared->pokemon, g_logger);
+	enviar_catch_pokemon_broker(pos_x, pos_y, msg_appeared->pokemon, g_logger, 1);
 }
 
 //Función de prueba - Envía un mensaje GET_POKEMON para probar la función.

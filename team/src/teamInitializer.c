@@ -120,6 +120,7 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		unEntrenador->posicion = (t_posicion_entrenador*)list_get(posiciones, i);
 		unEntrenador->objetivoEntrenador = (t_list*)list_get(objetivosEntrenadores, i);
 		unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
+		unEntrenador->id = i;
 		queue_push(colaNewEntrenadores, unEntrenador);
 	}
 	//Al finalizar el programa vamos a tener que destruir la lista de entrenadores, lo cual implicará destruir

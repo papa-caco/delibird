@@ -230,7 +230,7 @@ void moverPokemonAReservados(t_list* listaQueContieneElPokemon,
 
 void moverEntrenador(t_entrenador* entrenador, t_posicion_entrenador* posicionAMoverse){
 
-	//AGREGAR SEMAFORO DEL ENTRENADOR EN PARTICULAR  (ADENTRO O AFUERA?????)
+	//AGREGAR SEMAFORO MUTEX DEL ENTRENADOR EN PARTICULAR  (ADENTRO O AFUERA?????)
 
 	if(entrenador->posicion->pos_x != posicionAMoverse->pos_x){
 		if(entrenador -> posicion -> pos_x > posicionAMoverse->pos_x ){
@@ -277,7 +277,7 @@ int calcularDistancia(t_posicion_entrenador* posicionActual, t_posicion_entrenad
 
 void intentarAtraparPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon){
 
-	enviar_catch_pokemon_broker(entrenador->posicion->pos_x, entrenador->posicion->pos_y, pokemon->pokemon, g_logger);
+	enviar_catch_pokemon_broker(entrenador->posicion->pos_x, entrenador->posicion->pos_y, pokemon->pokemon, g_logger, entrenador->id);
 
 }
 

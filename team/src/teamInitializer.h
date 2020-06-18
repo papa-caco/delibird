@@ -56,10 +56,16 @@ typedef struct Entrenador{
 	sem_t sem_entrenador;
 	t_estado_entrenador estado_entrenador;
 	pthread_t hilo_entrenador;
+	int id;
 
-	//Tal vez como opción podrías agregar una variable hilo acá e ir inicializándoselo a cada uno.
-	//La otra es crear los hilos por otro lado e ir manejándolos a tu criterio.
+	//FIJARSE SI HAY QUE AGREGAR UN SEMAFORO MUTEX PARA EL ENTRENADOR CUANDO SE MODIFIQUE O SE LEA.
 } t_entrenador;
+
+typedef struct id_Correlativo_and_Entrenador{
+	int id_Correlativo;
+	int id_Entrenador;
+} t_id_Correlativo_and_Entrenador;
+
 
 
 
