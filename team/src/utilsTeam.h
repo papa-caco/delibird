@@ -16,6 +16,13 @@ typedef struct mensaje_Caugth_and_IdEntrenador{
 	int id_entrenador;
 }t_mensaje_Caugth_and_IdEntrenador;
 
+typedef struct Pokemon_Entrenador_Reservado{
+	int id_entrenadorReserva;
+	int cantidad;
+	char* pokemon;
+	t_posicion_entrenador* posicion;
+} t_pokemon_entrenador_reservado;
+
 //-----------------Firma de Funciones----------------------------
 
 void inicio_server_team(void);
@@ -61,5 +68,13 @@ void liberar_listas(char** lista);
 void liberar_lista_posiciones(t_list* list);
 
 int contador_msjs_cola(t_tipo_mensaje cola_suscripcion);
+
+////////
+
+t_pokemon_entrenador_reservado* buscarPokemonReservado(int id_Entrenador);
+
+t_entrenador* buscarEntrenadorDeLaReserva(int idEntrenadorBuscado);
+
+void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon);
 
 #endif /* SRC_UTILSTEAM_H_ */

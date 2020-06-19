@@ -25,15 +25,16 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 		switch (entrenador->estado_entrenador) {
 			case MOVERSE_A_POKEMON:
 				pokemon = buscarPokemonMasCercano(entrenador->posicion);
+				sem_wait(&(sem_listas_pokemones));
+				moverPokemonAReservados(pokemonesLibresEnElMapa,pokemonesReservadosEnElMapa, pokemon, entrenador->id);
+				sem_post(&(sem_listas_pokemones));
 				distancia = calcularDistancia(entrenador->posicion, pokemon->posicion);
 
 					for(int i=0; i<distancia; i++){
 						moverEntrenador(entrenador, pokemon->posicion);
 
 					}
-					sem_wait(&(sem_listas_pokemones));
-			moverPokemonAReservados(pokemonesLibresEnElMapa,pokemonesReservadosEnElMapa, pokemon);
-					sem_post(&(sem_listas_pokemones));
+
 
 					entrenador->estado_entrenador = ATRAPAR;
 
@@ -188,15 +189,17 @@ t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador){
 }
 
 void moverPokemonAReservados(t_list* listaQueContieneElPokemon,
-		t_list* listaReceptoraDelPokemon, t_pokemon_entrenador* pokemonAMover){
+		t_list* listaReceptoraDelPokemon, t_pokemon_entrenador* pokemonAMover, int idReservador){
 
 	t_pokemon_entrenador* pokemonAux;
 
-	t_pokemon_entrenador* pokemonAAgregar = malloc(sizeof(t_pokemon_entrenador));
+	t_pokemon_entrenador_reservado* pokemonAAgregar = malloc(sizeof(t_pokemon_entrenador_reservado));
 	pokemonAAgregar->cantidad = 1;
 	pokemonAAgregar->pokemon = pokemonAMover->pokemon;
+	pokemonAAgregar->posicion = malloc(sizeof(t_posicion_entrenador));
 	pokemonAAgregar->posicion->pos_x = pokemonAMover->posicion->pos_x;
 	pokemonAAgregar->posicion->pos_y = pokemonAMover->posicion->pos_y;
+	pokemonAAgregar->id_entrenadorReserva = idReservador;
 
 	list_add(listaReceptoraDelPokemon, pokemonAAgregar);
 

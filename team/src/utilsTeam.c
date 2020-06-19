@@ -223,7 +223,7 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 
 		for(int i=0; i < list_size(idCorrelativosCatch); i++){
 
-			idAux = (t_id_Correlativo_and_Entrenador) list_get(idCorrelativosCatch,i);
+			idAux = (t_id_Correlativo_and_Entrenador*) list_get(idCorrelativosCatch,i);
 
 			if(idAux->id_Correlativo == id_recibido){
 
@@ -236,10 +236,39 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 			if(msg_caught->resultado == OK ){
 
 				//AGREGAR POKEMON A LA LISTA DE ENTRENADORES DEL POKEMON
-				//IR SACANDO DE LA COLA DE BLOCKED LOS ENTRENADORES Y COMPARAR CON EL ID_ENTRENADOR
-				//UNA VEZ ENCONTRADO, AHI LLAMAR A LA FUNCION DE AGREGAR POKEMON.
-				//AGREGAR POKEMON A LA LISTA GLOBAL DE ATRAPADOS
-				//ELIMINAR POKEMON DE LA LISTA DE RESERVADOS
+				//Primero busco el pokemon que corresponde al entrenador, es decir, el que él reservó
+				t_pokemon_entrenador_reservado* pokemonReservadoAAgregar = buscarPokemonReservado(idAux->id_Entrenador);
+				//Transformo el pokemonReservado al tipo pokemon_entrenador
+				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(sizeof(t_pokemon_entrenador));
+				pokemonAAgregarConvertido->cantidad = pokemonReservadoAAgregar->cantidad;
+				pokemonAAgregarConvertido->pokemon = pokemonReservadoAAgregar->pokemon;
+				pokemonAAgregarConvertido->posicion = malloc(sizeof(t_posicion_entrenador));
+				pokemonAAgregarConvertido->posicion->pos_x = pokemonReservadoAAgregar->posicion->pos_x;
+				pokemonAAgregarConvertido->posicion->pos_y = pokemonReservadoAAgregar->posicion->pos_y;
+
+				//Borro de la lista al pokemon reservado
+				int indice;
+				for(int i=0; i < list_size(pokemonesReservadosEnElMapa); i++){
+
+						t_pokemon_entrenador_reservado aux = ((t_pokemon_entrenador_reservado*) list_get(pokemonesReservadosEnElMapa, i));
+
+						if(aux == pokemonReservadoAAgregar){
+							indice=i;
+						}
+				}
+				pokemonReservadoAAgregar = list_remove(pokemonesReservadosEnElMapa, indice);
+				free(pokemonReservadoAAgregar->posicion);
+				free(pokemonReservadoAAgregar);
+
+				//Busco al entrenador que hizo la reserva
+				t_entrenador* entrenadorReservador = buscarEntrenadorDeLaReserva(idAux->id_Entrenador);
+				//Agrego el Poke
+				agregarPokemon(entrenadorReservador, pokemonAAgregarConvertido);
+
+				//Muevo el pokemon a la lista global de atrapados
+				agregarPokemonAGlobalesAtrapados(pokemonAAgregarConvertido);
+
+
 				//VERIFICAR SI EL ENTRENADOR PUEDE PASAR A EXIT O SI TIENE DEADLOCK (CAMBIAR ESTADO)
 
 
@@ -420,4 +449,62 @@ int contador_msjs_cola(t_tipo_mensaje cola_suscripcion)
 			break;
 	}
 	return contador_global;
+}
+
+
+////////////
+
+t_pokemon_entrenador_reservado* buscarPokemonReservado(int id_Entrenador) {
+
+	for (int i = 0; list_get(pokemonesReservadosEnElMapa, i) != NULL; i++) {
+		int idAux = ((t_pokemon_entrenador_reservado*) list_get(pokemonesReservadosEnElMapa, i))->id_entrenadorReserva;
+		if (idAux == id_Entrenador) {
+
+			return (t_pokemon_entrenador_reservado*) list_get(pokemonesReservadosEnElMapa, i);
+
+		}
+	}
+	return NULL;
+}
+
+t_entrenador* buscarEntrenadorDeLaReserva(int idEntrenadorBuscado) {
+
+	t_entrenador* entrenadorAux;
+	t_entrenador* entrenadorBuscado;
+
+	for (int i = 0; i < queue_size(colaBlockedEntrenadores); i++) {
+
+		entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
+
+		if (idEntrenadorBuscado == entrenadorAux->id) {
+
+			entrenadorBuscado = entrenadorAux;
+
+		}
+
+		queue_push(colaBlockedEntrenadores, entrenadorAux);
+
+	}
+	return entrenadorBuscado;
+}
+
+void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon){
+
+	char loEncontro = 0;
+
+		for(int i=0; i < list_size(pokemonesAtrapadosGlobal); i++){
+			t_pokemon_entrenador* pokemonABuscar =
+							((t_pokemon_entrenador*) list_get(pokemonesAtrapadosGlobal, i));
+			if(strcmp(pokemonABuscar->pokemon, pokemon->pokemon)==0){
+				pokemonABuscar->cantidad++;
+				loEncontro=1;
+				free(pokemon->posicion);
+				free(pokemon);
+			}
+		}
+
+		if(loEncontro==0){
+			list_add(pokemonesAtrapadosGlobal, pokemon);
+		}
+
 }

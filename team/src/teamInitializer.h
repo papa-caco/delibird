@@ -39,6 +39,8 @@ typedef struct Pokemon_Entrenador{
 } t_pokemon_entrenador;
 
 
+
+
 typedef enum Estado_Entrenador{
 	MOVERSE_A_POKEMON,
 	MOVERSE_A_ENTRENADOR,
