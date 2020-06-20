@@ -8,48 +8,54 @@
 #include "utils_gc.h"
 #include "suscripcion.h"
 
-void iniciar_gamecard(void){
+void iniciar_gamecard(void) {
 	leer_config();
 	iniciar_log_gamecard();
 	iniciar_estructuras_gamecard();
 
-	iniciar_suscripcion();
+	prueba_semaforo();
+
+	//iniciar_suscripcion();
 	//inicio_server_game_card();
 }
 
 void iniciar_log_gamecard(void) {
 	g_logger = log_create(PATH_LOG, "GAME_CARD", 1, LOG_LEVEL_INFO);
-	log_info(g_logger,"INICIO_LOG_SUCESS");
+	log_info(g_logger, "INICIO_LOG_SUCESS");
 }
 
-void leer_config(void){
+void leer_config(void) {
 	t_config* g_config;
 	g_config = config_create(PATH_CONFIG);
 	g_config_gc = malloc(sizeof(t_config_gamecard));
 	g_config_gc->ip_gamecard = config_get_string_value(g_config, "IP_GAMECARD");
-	g_config_gc->puerto_gamecard = config_get_string_value(g_config, "PUERTO_GAMECARD");
+	g_config_gc->puerto_gamecard = config_get_string_value(g_config,
+			"PUERTO_GAMECARD");
 	g_config_gc->ip_broker = config_get_string_value(g_config, "IP_BROKER");
-	g_config_gc->puerto_broker = config_get_string_value(g_config, "PUERTO_BROKER");
-	g_config_gc->path_pokemon = config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS");
-	g_config_gc->id_suscriptor = config_get_int_value(g_config, "ID_SUSCRIPTOR");
+	g_config_gc->puerto_broker = config_get_string_value(g_config,
+			"PUERTO_BROKER");
+	g_config_gc->path_pokemon = config_get_string_value(g_config,
+			"PUNTO_MONTAJE_TALLGRASS");
+	g_config_gc->id_suscriptor = config_get_int_value(g_config,
+			"ID_SUSCRIPTOR");
 }
 
-void finalizar_log(void){
+void finalizar_log(void) {
 	log_destroy(g_logger);
 }
-void destruir_config(void){
+void destruir_config(void) {
 	//config_destroy(config);
 }
 
-void inicio_server_gamecard(void)
-{
+void inicio_server_gamecard(void) {
 	char *ip = g_config_gc->ip_gamecard;
 	char *puerto = g_config_gc->puerto_gamecard;
 	iniciar_servidor(ip, puerto, g_logger);
 }
 
-void iniciar_estructuras_gamecard(){
+void iniciar_estructuras_gamecard() {
 	sem_init(&sem_mutex_suscripcion, 0, 1);
+	semaforos_pokemon = list_create();
 }
 
 /**
@@ -61,79 +67,79 @@ void atender_gameboy(int *cliente_fd) {
 	process_request(cod_op, *cliente_fd);
 }
 
-
 /**
  * Procesa los diferentes mensajes que recibe ele gamecard
  */
 void process_request(op_code cod_op, int cliente_fd) {
 	int size;
 	int error = 0;
-	log_info(g_logger, "(PROCESANDO MENSAJE | SOCKET#: %d cod_op %d)",cliente_fd, cod_op);
+	log_info(g_logger, "(PROCESANDO MENSAJE | SOCKET#: %d cod_op %d)",
+			cliente_fd, cod_op);
 	int existePokemon;
 	char* nombrePokemon;
 	uint32_t id_mensaje;
-	t_msg_new_gamecard *msg_new_gamecard ;
+	t_msg_new_gamecard *msg_new_gamecard;
 
 	switch (cod_op) {
-		case ID_MENSAJE:
-			break;
-		case NEW_GAMECARD:
-			msg_new_gamecard = rcv_msj_new_gamecard(cliente_fd, g_logger);
-			id_mensaje = msg_new_gamecard->id_mensaje;
-			rcv_new_pokemon(msg_new_gamecard);
-			//id_recibido = msg->id_mensaje;
+	case ID_MENSAJE:
+		break;
+	case NEW_GAMECARD:
+		msg_new_gamecard = rcv_msj_new_gamecard(cliente_fd, g_logger);
+		id_mensaje = msg_new_gamecard->id_mensaje;
+		rcv_new_pokemon(msg_new_gamecard);
+		//id_recibido = msg->id_mensaje;
 
-			//devolver_recepcion_ok(cliente_fd);
-			//devolver_appeared_pokemon(msg, size, cliente_fd);
-			// La respuesta debe ser op_code = APPEARED_BROKER
-			break;
-		case CATCH_POKEMON:
-			log_info(g_logger, "(RECEIVING: CATCH_POKEMON | Socket#: %d)", cliente_fd);
+		//devolver_recepcion_ok(cliente_fd);
+		//devolver_appeared_pokemon(msg, size, cliente_fd);
+		// La respuesta debe ser op_code = APPEARED_BROKER
+		break;
+	case CATCH_POKEMON:
+		log_info(g_logger, "(RECEIVING: CATCH_POKEMON | Socket#: %d)",
+				cliente_fd);
 
-			devolver_recepcion_ok(cliente_fd);
-			//devolver_caught_pokemon(msg, cliente_fd);
-			// La respuesta debe ser op_code = CAUGHT_BROKER como respuesta
-			break;
-		case GET_POKEMON:
-			log_info(g_logger, "(RECEIVING: GAMECARD@GET_POKEMON | SOCKET#: %d)",
-					cliente_fd);
-			t_msg_new_gamecard *msg3 ;
-						rcv_new_pokemon(msg3);
-			//id_mensaje = rcv_get_pokemon(cliente_fd, &size);
-			/*nombrePokemon = msg + sizeof(int);
-			log_info(g_logger, "POKEMON: %s", nombrePokemon);
-			devolver_recepcion_ok(cliente_fd);
-			devolver_posiciones(cliente_fd, nombrePokemon, &existePokemon);
+		devolver_recepcion_ok(cliente_fd);
+		//devolver_caught_pokemon(msg, cliente_fd);
+		// La respuesta debe ser op_code = CAUGHT_BROKER como respuesta
+		break;
+	case GET_POKEMON:
+		log_info(g_logger, "(RECEIVING: GAMECARD@GET_POKEMON | SOCKET#: %d)",
+				cliente_fd);
+		t_msg_new_gamecard *msg3;
+		rcv_new_pokemon(msg3);
+		//id_mensaje = rcv_get_pokemon(cliente_fd, &size);
+		/*nombrePokemon = msg + sizeof(int);
+		 log_info(g_logger, "POKEMON: %s", nombrePokemon);
+		 devolver_recepcion_ok(cliente_fd);
+		 devolver_posiciones(cliente_fd, nombrePokemon, &existePokemon);
 
-			log_info(g_logger, "VALOR ENCONTRO POKEMON: %d", existePokemon);
-*/
-			//Verifico si encontro o no el archivo
-			if (existePokemon == 0) {
-				devolver_recepcion_fail(cliente_fd,
-						"NO SE ENCONTRO EL ARCHIVO DEL POKEMON");
-			}
+		 log_info(g_logger, "VALOR ENCONTRO POKEMON: %d", existePokemon);
+		 */
+		//Verifico si encontro o no el archivo
+		if (existePokemon == 0) {
+			devolver_recepcion_fail(cliente_fd,
+					"NO SE ENCONTRO EL ARCHIVO DEL POKEMON");
+		}
 
-			//devolver_posiciones(cliente_fd, "Pokemon");
-			//devolver_localized_broker(cliente_fd, size, msg);
-			// El GameBoy tiene que recibir un mensaje op_code = LOCALIZED_BROKER como respuesta
-			break;
+		//devolver_posiciones(cliente_fd, "Pokemon");
+		//devolver_localized_broker(cliente_fd, size, msg);
+		// El GameBoy tiene que recibir un mensaje op_code = LOCALIZED_BROKER como respuesta
+		break;
 
-		case 0:
-			pthread_exit(NULL);
-		case -1:
-			pthread_exit(NULL);
-		default:
-			log_info(g_logger, "(COD_OPERACION#: %d NOT FOUND! | SOCKET#: %d)",
-								cod_op,cliente_fd);
-			error = 1;
-			break;
+	case 0:
+		pthread_exit(NULL);
+	case -1:
+		pthread_exit(NULL);
+	default:
+		log_info(g_logger, "(COD_OPERACION#: %d NOT FOUND! | SOCKET#: %d)",
+				cod_op, cliente_fd);
+		error = 1;
+		break;
 	}
-	if(!error){
-	//	free(msg);
+	if (!error) {
+		//	free(msg);
 	}
 
 }
-
 
 /**
  * Verificar si el Pokémon existe dentro de nuestro Filesystem.
@@ -148,41 +154,42 @@ void process_request(op_code cod_op, int cliente_fd) {
 void rcv_new_pokemon(t_msg_new_gamecard *msg) {
 
 	t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
-	posicion->pos_x =  msg->coord->pos_x;
-	posicion->pos_y =   msg->coord->pos_y;
-	posicion->cantidad =  msg->cantidad;
+	posicion->pos_x = msg->coord->pos_x;
+	posicion->pos_y = msg->coord->pos_y;
+	posicion->cantidad = msg->cantidad;
 
 	///Guarda la informacion en el FS
-	char* pathPokemon = malloc(strlen(g_config_gc->path_pokemon)+ 8); //9= /pokemon/; 3 = .txt
+	char* pathPokemon = malloc(strlen(g_config_gc->path_pokemon) + 8); //9= /pokemon/; 3 = .txt
 
 	strcpy(pathPokemon, g_config_gc->path_pokemon);
 	strcat(pathPokemon, "/Pokemon");
 
-	struct stat st = {0};
+	struct stat st = { 0 };
 	if (stat(pathPokemon, &st) == -1) {
-		log_error(g_logger,"CREATE_DIR Pokemon");
+		log_error(g_logger, "CREATE_DIR Pokemon");
 		mkdir(pathPokemon, 0774);
 	}
-	pathPokemon = realloc( pathPokemon, strlen(pathPokemon) +strlen(msg->pokemon) +4); //9= /pokemon/; 3 = .txt
+	pathPokemon = realloc(pathPokemon,
+			strlen(pathPokemon) + strlen(msg->pokemon) + 4); //9= /pokemon/; 3 = .txt
 
 	strcat(pathPokemon, "/");
 	strcat(pathPokemon, msg->pokemon);
 	strcat(pathPokemon, ".txt");
 
-	verificarPokemon(pathPokemon,posicion);
+	verificarPokemon(pathPokemon, posicion);
 
 	free(pathPokemon);
 	free(posicion);
-/*	log_info(g_logger, "(ID-MSG= %d | %s | %d | %d | %d -- SIZE = %d Bytes)",
-					msg->id_mensaje, msg->pokemon, msg->coord->pos_x, msg->coord->pos_y,
-					msg->cantidad);
-*/
+	/*	log_info(g_logger, "(ID-MSG= %d | %s | %d | %d | %d -- SIZE = %d Bytes)",
+	 msg->id_mensaje, msg->pokemon, msg->coord->pos_x, msg->coord->pos_y,
+	 msg->cantidad);
+	 */
 
 }
 
 void devolver_appeared_pokemon(void *msg, int size, int socket_cliente) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
-	paquete->codigo_operacion = APPEARED_BROKER;//APPEARED_POKEMON;
+	paquete->codigo_operacion = APPEARED_BROKER; //APPEARED_POKEMON;
 	paquete->buffer = malloc(sizeof(t_stream));
 	paquete->buffer->size = size - sizeof(int);
 	int long_pokemon = paquete->buffer->size - 3 * sizeof(int);
@@ -201,32 +208,32 @@ void devolver_appeared_pokemon(void *msg, int size, int socket_cliente) {
 
 }
 
-void rcv_catch_pokemon(op_code codigo_operacion, int socket_cliente){
+void rcv_catch_pokemon(op_code codigo_operacion, int socket_cliente) {
 	/*void *msg;
-	int size;
-	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
-	msg = malloc(*size);
-	recv(socket_cliente, msg, *size, MSG_WAITALL);
+	 int size;
+	 recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
+	 msg = malloc(*size);
+	 recv(socket_cliente, msg, *size, MSG_WAITALL);
 
-	int offset = 0;
-	int *idUnico = msg + offset;
-	offset += sizeof(int);
-	int *pos_x = msg + offset;
-	offset += sizeof(int);
-	int *pos_y = msg + offset;
-	offset += sizeof(int);
-	char *pokemon = msg + offset;
-	int tamano = tamano_recibido(*size);
+	 int offset = 0;
+	 int *idUnico = msg + offset;
+	 offset += sizeof(int);
+	 int *pos_x = msg + offset;
+	 offset += sizeof(int);
+	 int *pos_y = msg + offset;
+	 offset += sizeof(int);
+	 char *pokemon = msg + offset;
+	 int tamano = tamano_recibido(*size);
 
-	log_info(g_logger, "(MSG-BODY= %d | POKEMON: %s | POS_X: %d | POS_Y: %d -- SIZE = %d Bytes)",
-			*idUnico, pokemon, *pos_x, *pos_y, tamano);
+	 log_info(g_logger, "(MSG-BODY= %d | POKEMON: %s | POS_X: %d | POS_Y: %d -- SIZE = %d Bytes)",
+	 *idUnico, pokemon, *pos_x, *pos_y, tamano);
 
-	return msg;*/
+	 return msg;*/
 }
 
 void devolver_caught_pokemon(void *msg, int socket_cliente) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
-	paquete->codigo_operacion = CAUGHT_BROKER;//Luego debe ser CAUGHT_POKEMON
+	paquete->codigo_operacion = CAUGHT_BROKER; //Luego debe ser CAUGHT_POKEMON
 	paquete->buffer = malloc(sizeof(t_stream));
 	paquete->buffer->size = 2 * sizeof(int);
 	void *stream = malloc(paquete->buffer->size);
@@ -242,11 +249,11 @@ void devolver_caught_pokemon(void *msg, int socket_cliente) {
 //	void* a_enviar = serializar_paquete(paquete, bytes);
 
 	enviar_mensaje_a_broker(paquete, bytes);
-/*	void* a_enviar = serializar_paquete(paquete, bytes);
-	send(socket_cliente, a_enviar, bytes, 0);
+	/*	void* a_enviar = serializar_paquete(paquete, bytes);
+	 send(socket_cliente, a_enviar, bytes, 0);
 
-	free(a_enviar);
-	eliminar_paquete(paquete);*/
+	 free(a_enviar);
+	 eliminar_paquete(paquete);*/
 }
 
 void *rcv_get_pokemon(int socket_cliente, int *size) {
@@ -266,7 +273,6 @@ void *rcv_get_pokemon(int socket_cliente, int *size) {
 
 	return msg;
 }
-
 
 void devolver_recepcion_ok(int socket_cliente) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
@@ -307,9 +313,9 @@ void devolver_recepcion_fail(int socket_cliente, char* mensajeError) {
 	eliminar_paquete(paquete);
 }
 
-void liberar_lista_posiciones(t_list* lista){
-	for(int i = 0; i< list_size(lista); i++){
-		free(list_get(lista,i));
+void liberar_lista_posiciones(t_list* lista) {
+	for (int i = 0; i < list_size(lista); i++) {
+		free(list_get(lista, i));
 	}
 
 	list_destroy(lista);
@@ -326,7 +332,8 @@ void liberar_listas(char** lista) {
 	free(lista);
 }
 
-void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon) {
+void devolver_posiciones(int socket_cliente, char* pokemon,
+		int* encontroPokemon) {
 
 	printf("El socket es : %d \n", socket_cliente);
 
@@ -468,15 +475,15 @@ void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon
 
 			printf("El total del tamanio de a_enviar es: %d \n", totalBuffer);
 
-		//	void* a_enviar = serializar_paquete(paquete, totalBuffer);
+			//	void* a_enviar = serializar_paquete(paquete, totalBuffer);
 
 			printf("Termine de serializar paquete \n");
 
 			//send(socket_cliente, a_enviar, totalBuffer, MSG_WAITALL);
-			enviar_mensaje_a_broker(paquete,totalBuffer);
+			enviar_mensaje_a_broker(paquete, totalBuffer);
 			printf("Enviado el paquete \n");
 
-		//	free(a_enviar);
+			//	free(a_enviar);
 
 			printf("Liberado a_enviar \n");
 
@@ -485,7 +492,6 @@ void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon
 			free(paquete);
 
 			printf("Liberado el paquete \n");
-
 
 			liberar_lista_posiciones(listaPosiciones);
 
@@ -506,12 +512,12 @@ void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon
 	free(ruta);
 }
 /*
-void eliminar_paquete(t_paquete* paquete) {
-	free(paquete->buffer->data);
-	free(paquete->buffer);
-	free(paquete);
-}
-*/
+ void eliminar_paquete(t_paquete* paquete) {
+ free(paquete->buffer->data);
+ free(paquete->buffer);
+ free(paquete);
+ }
+ */
 int tamano_recibido(int bytes) {
 	return bytes + 2 * sizeof(int);
 }
@@ -523,29 +529,29 @@ int tamano_recibido(int bytes) {
  * la cantidad de pokémon pasadas.
  * Cerrar el archivo.
  */
-void verificarPokemon(char* pathPokemon,t_posicion_pokemon* posicion){
+void verificarPokemon(char* pathPokemon, t_posicion_pokemon* posicion) {
 
 	int encontroPosicion = 0;
 	char *line_buf = NULL;
 	size_t line_buf_size = 0;
 	int line_count = 1, line_size;
 
-	struct stat st = {0};
+	struct stat st = { 0 };
 	if (stat(pathPokemon, &st) == -1) {
 		//El pokemon no existe
 
 		FILE* fd = fopen(pathPokemon, "w");
-		fprintf( fd, "%d-%d=%d\n",posicion->pos_x, posicion->pos_y, posicion->cantidad);
-		fclose (fd);
-	}
-	else{
+		fprintf(fd, "%d-%d=%d\n", posicion->pos_x, posicion->pos_y,
+				posicion->cantidad);
+		fclose(fd);
+	} else {
 		FILE* fd = fopen(pathPokemon, "r+");
 		if (fd != NULL) {
 			line_size = getline(&line_buf, &line_buf_size, fd);
 
 			while (line_size >= 0) {
 				/* printf("line[%06d]: chars=%06zd, buf size=%06zu, contents: %s", line_count,
-									line_size, line_buf_size, line_buf);*/
+				 line_size, line_buf_size, line_buf);*/
 				char** keyValue = string_split(line_buf, "=");
 				char* key = keyValue[0];
 				int cantidad = atoi(keyValue[1]);
@@ -553,23 +559,28 @@ void verificarPokemon(char* pathPokemon,t_posicion_pokemon* posicion){
 				int posicionX = atoi(posiciones[0]);
 				int posicionY = atoi(posiciones[1]);
 
-				if( posicionX == posicion->pos_x && posicionY == posicion->pos_y ){
+				if (posicionX == posicion->pos_x
+						&& posicionY == posicion->pos_y) {
 					encontroPosicion = 1;
 					cantidad += posicion->cantidad;
-					if( fseek(fd,-line_size, SEEK_CUR)==0 ){
-						fprintf( fd, "%d-%d=%d\n",posicionX, posicionY, cantidad);
-						log_info(g_logger, "(POKEMON_POSITION_FOUND: %d-%d| UPDATE_COUNT= %d )", posicionX,
-								posicionY, cantidad);
+					if (fseek(fd, -line_size, SEEK_CUR) == 0) {
+						fprintf(fd, "%d-%d=%d\n", posicionX, posicionY,
+								cantidad);
+						log_info(g_logger,
+								"(POKEMON_POSITION_FOUND: %d-%d| UPDATE_COUNT= %d )",
+								posicionX, posicionY, cantidad);
 						fflush(fd);
 					}
 				}
 				line_size = getline(&line_buf, &line_buf_size, fd);
 
 			}
-			if( !encontroPosicion ){
-				fprintf( fd, "%d-%d=%d\n",posicion->pos_x, posicion->pos_y, posicion->cantidad);
-				log_info(g_logger, "(POKEMON_POSITION_NOT_FOUND| CREATED_POKEMON: %d-%d=%d )", posicion->pos_x,
-						posicion->pos_y, posicion->cantidad);
+			if (!encontroPosicion) {
+				fprintf(fd, "%d-%d=%d\n", posicion->pos_x, posicion->pos_y,
+						posicion->cantidad);
+				log_info(g_logger,
+						"(POKEMON_POSITION_NOT_FOUND| CREATED_POKEMON: %d-%d=%d )",
+						posicion->pos_x, posicion->pos_y, posicion->cantidad);
 			}
 			free(line_buf);
 
@@ -582,19 +593,18 @@ void verificarPokemon(char* pathPokemon,t_posicion_pokemon* posicion){
 char* obtengo_cola_mensaje(int codigo_operacion) {
 	char *cola_mensaje;
 	switch (codigo_operacion) {
-		case APPEARED_BROKER:
-			cola_mensaje = "APPEARED_POKEMON";
-			break;
-		case LOCALIZED_BROKER:
-			cola_mensaje = "LOCALIZED_POKEMON";
-			break;
-		case CAUGHT_BROKER:
-			cola_mensaje = "CAUGHT_POKEMON";
-			break;
+	case APPEARED_BROKER:
+		cola_mensaje = "APPEARED_POKEMON";
+		break;
+	case LOCALIZED_BROKER:
+		cola_mensaje = "LOCALIZED_POKEMON";
+		break;
+	case CAUGHT_BROKER:
+		cola_mensaje = "CAUGHT_POKEMON";
+		break;
 	}
 	return cola_mensaje;
 }
-
 
 //// fin modo servidor
 
@@ -602,7 +612,7 @@ char* obtengo_cola_mensaje(int codigo_operacion) {
  * @Desc inicia una conexion con el broken, de forma
  * TODO ESTO DESAPARECE CUANDO SE TENGA LA SUSCRIPCION
  */
-void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
+void enviar_mensaje_a_broker(t_paquete* paquete, int bytes) {
 	struct addrinfo hints;
 	struct addrinfo *server_info;
 
@@ -618,17 +628,18 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 	//char* ip = config_get_string_value(g_config, "IP_BROKER");
 	//char* puerto = config_get_string_value(g_config, "PUERTO_BROKER");
 
-	getaddrinfo(g_config_gc->ip_broker,  g_config_gc->puerto_broker, &hints, &server_info);
+	getaddrinfo(g_config_gc->ip_broker, g_config_gc->puerto_broker, &hints,
+			&server_info);
 
-	int socket_broker = socket(server_info->ai_family,
-			server_info->ai_socktype, server_info->ai_protocol);
+	int socket_broker = socket(server_info->ai_family, server_info->ai_socktype,
+			server_info->ai_protocol);
 
 	int conexion = connect(socket_broker, server_info->ai_addr,
 			server_info->ai_addrlen);
 
 	if (conexion < 0) {
-		log_error(g_logger,
-				"(BROKER_CONN_FAILED | REMOTE_IP=%s | PORT=%s)", g_config_gc->ip_broker, g_config_gc->puerto_broker);
+		log_error(g_logger, "(BROKER_CONN_FAILED | REMOTE_IP=%s | PORT=%s)",
+				g_config_gc->ip_broker, g_config_gc->puerto_broker);
 		socket_broker = conexion;
 	}
 
@@ -636,12 +647,13 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 
 	void* a_enviar = serializar_paquete(paquete, bytes);
 
-	if( send(socket_broker, a_enviar, bytes, 0) == -1 ){
-		log_error(g_logger,"No se pudo entregar el mensaje al broker");
-	}
-	else{
-		log_info(g_logger,"(SEND_MESSAGE_TO: BROKER SUCCESS | SOCKET# %d  | REMOTE_IP=%s | PORT=%s | COLA_MENSAJE=%s)",
-				socket_broker ,  g_config_gc->ip_broker, g_config_gc->puerto_broker, cola);
+	if (send(socket_broker, a_enviar, bytes, 0) == -1) {
+		log_error(g_logger, "No se pudo entregar el mensaje al broker");
+	} else {
+		log_info(g_logger,
+				"(SEND_MESSAGE_TO: BROKER SUCCESS | SOCKET# %d  | REMOTE_IP=%s | PORT=%s | COLA_MENSAJE=%s)",
+				socket_broker, g_config_gc->ip_broker,
+				g_config_gc->puerto_broker, cola);
 	}
 	free(a_enviar);
 	eliminar_paquete(paquete);
@@ -650,5 +662,78 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 
 }
 
+t_pokemon_semaforo *obtener_semaforo_pokemon(char* pokemon) {
 
+	for (int i = 0; i < list_size(semaforos_pokemon); i++) {
+		t_pokemon_semaforo *actual = list_get(semaforos_pokemon, i);
+		char* nombrePokemon = actual->pokemon;
+		if (strcmp(nombrePokemon, pokemon) == 0) {
+			return actual;
+		}
+	}
+
+	return NULL;
+}
+
+void eliminar_semaforo_pokemon(char* pokemon) {
+
+	for (int i = 0; i < list_size(semaforos_pokemon); i++) {
+		t_pokemon_semaforo *actual = list_get(semaforos_pokemon, i);
+		char* nombrePokemon = actual->pokemon;
+		if (strcmp(nombrePokemon, pokemon) == 0) {
+			list_remove(semaforos_pokemon, i);
+			free(&actual->semaforo);
+			free(actual);
+		}
+	}
+
+}
+
+void crear_semaforo_pokemon(char* pokemon) {
+	if (obtener_semaforo_pokemon(pokemon) == NULL) {
+		t_pokemon_semaforo *pok = malloc(sizeof(t_pokemon_semaforo));
+		pok->pokemon = pokemon;
+		sem_t semaforo;
+		sem_init(&semaforo, 0, 1);
+		pok->semaforo = semaforo;
+		list_add(semaforos_pokemon, pok);
+	} else {
+		log_info(g_logger, "POKEMON YA CREADO \n");
+	}
+}
+
+void prueba_semaforo() {
+	log_info(g_logger, "INICIA LAS PRUEBAS \n");
+	int size = list_size(semaforos_pokemon);
+	log_info(g_logger, "LA LISTA ARRANCA CON %d POKEMONES \n", size);
+	char* pokemon = "Pildachu";
+	log_info(g_logger, "SE AGREGA EL POKEMON PILDACHU \n");
+	crear_semaforo_pokemon(pokemon);
+	size = list_size(semaforos_pokemon);
+	log_info(g_logger, " LA LISTA AHORA TIENE %d POKEMONES \n", size);
+	char *pokemon2 = "Charmander";
+	char *pokemon3 = "Bulbasaur";
+	char *pokemon4 = "Ratata";
+	crear_semaforo_pokemon(pokemon2);
+	crear_semaforo_pokemon(pokemon3);
+	crear_semaforo_pokemon(pokemon4);
+	int sizeActualizado;
+	sizeActualizado = list_size(semaforos_pokemon);
+	log_info(g_logger,
+			"SE AGREGAN 3 POKEMONS Y AHORA LA LISTA TIENE %d POKEMONES \n",
+			sizeActualizado);
+
+	log_info(g_logger, "MUESTRO TODOS LOS POKEMONS EN LA LISTA \n");
+	for (int i = 0; i < list_size(semaforos_pokemon); i++) {
+		t_pokemon_semaforo *pok = list_get(semaforos_pokemon, i);
+		log_info(g_logger, "POKEMON : %s ", pok->pokemon);
+	}
+
+	eliminar_semaforo_pokemon(pokemon4);
+	log_info(g_logger, "ELIMINO A RATATA Y MUESTRO LOS POKEMONES RESTANTES");
+	for (int i = 0; i < list_size(semaforos_pokemon); i++) {
+		t_pokemon_semaforo *pok = list_get(semaforos_pokemon, i);
+		log_info(g_logger, "POKEMON : %s ", pok->pokemon);
+	}
+}
 

@@ -34,8 +34,8 @@
 
 
 
-#define PATH_CONFIG "config/gameCard.config"
-#define PATH_LOG "log/gameCard.log"
+#define PATH_CONFIG "/home/utnso/config/gameCard.config"
+#define PATH_LOG "/home/utnso/log/gameCard.log"
 
 
 /*** ESTRUCTURAS **/
@@ -57,6 +57,11 @@ typedef struct socket_cliente{
 } t_socket_cliente; //MODO_SERVIDOR
 
 
+typedef struct pokemon_semaforo{
+	char* pokemon;
+	sem_t semaforo;
+} t_pokemon_semaforo; //Para verificar si un archivo de pokemon está siendo utilizado
+
 
 /* --- VARIABLES GLOBALES ---*/
 // pthread_t thread;
@@ -68,6 +73,8 @@ sem_t sem_mutex_suscripcion;
 //pthread_mutex_t sem_mutex_suscripcion;
 bool status_conn_broker;
 pthread_t tid;
+
+t_list *semaforos_pokemon; // Lista global de semaforos
 
 /*** DEFINICION INTERFACES **/
 
@@ -96,4 +103,13 @@ int tamano_recibido(int bytes);
 void verificarPokemon(char* pathPokemon,t_posicion_pokemon* posicion);
 char* obtengo_cola_mensaje(int codigo_operacion);
 void enviar_mensaje_a_broker(t_paquete* paquete,int bytes);
+
+// Funciones para la lista de semaforos global
+
+t_pokemon_semaforo *obtener_semaforo_pokemon(char* pokemon);
+void eliminar_semaforo_pokemon(char* pokemon);
+void crear_semaforo_pokemon(char* pokemon);
+
+void prueba_semaforo(void);
+
 #endif
