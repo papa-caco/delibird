@@ -8,14 +8,16 @@
  */
 // #include "utilsGc.h"
 #include "utils_gc.h"
-
+#include "tall_grass.h"
 
 int main(void) {
+
+
 
 	//iniciar_log();
 	//iniciar_servidor();
 	iniciar_gamecard();
-	inicio_server_gamecard();
+	//inicio_server_gamecard();
 
 }
 

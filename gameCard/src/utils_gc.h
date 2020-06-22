@@ -46,6 +46,9 @@ typedef struct Configuracion_GameCard
 	char *ip_gamecard;
 	char *puerto_gamecard;
 	char *path_pokemon; //PUNTO_MONTAJE_TALLGRASS
+	char *path_blocks;
+	char *path_files;
+	char *file_metadata;
 	int id_suscriptor;
 	int tiempo_reconexion;
 } t_config_gamecard;
@@ -63,6 +66,7 @@ typedef struct pokemon_semaforo{
 } t_pokemon_semaforo; //Para verificar si un archivo de pokemon está siendo utilizado
 
 
+
 /* --- VARIABLES GLOBALES ---*/
 // pthread_t thread;
 
@@ -75,6 +79,7 @@ bool status_conn_broker;
 pthread_t tid;
 
 t_list *semaforos_pokemon; // Lista global de semaforos
+
 
 /*** DEFINICION INTERFACES **/
 
@@ -111,5 +116,7 @@ void eliminar_semaforo_pokemon(char* pokemon);
 void crear_semaforo_pokemon(char* pokemon);
 
 void prueba_semaforo(void);
+
+
 
 #endif

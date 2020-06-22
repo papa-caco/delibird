@@ -7,17 +7,24 @@
 // export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/utnso/tp-2020-1c-Los-Que-Aprueban/delibird/build
 #include "utils_gc.h"
 #include "suscripcion.h"
+#include "tall_grass.h"
 
 void iniciar_gamecard(void) {
+
 	leer_config();
 	iniciar_log_gamecard();
 	iniciar_estructuras_gamecard();
 
-	prueba_semaforo();
+	//prueba_semaforo();
+
+	prueba_file_system();
 
 	//iniciar_suscripcion();
 	//inicio_server_game_card();
 }
+
+
+
 
 void iniciar_log_gamecard(void) {
 	g_logger = log_create(PATH_LOG, "GAME_CARD", 1, LOG_LEVEL_INFO);
@@ -25,9 +32,11 @@ void iniciar_log_gamecard(void) {
 }
 
 void leer_config(void) {
+
 	t_config* g_config;
 	g_config = config_create(PATH_CONFIG);
 	g_config_gc = malloc(sizeof(t_config_gamecard));
+
 	g_config_gc->ip_gamecard = config_get_string_value(g_config, "IP_GAMECARD");
 	g_config_gc->puerto_gamecard = config_get_string_value(g_config,
 			"PUERTO_GAMECARD");
@@ -36,8 +45,27 @@ void leer_config(void) {
 			"PUERTO_BROKER");
 	g_config_gc->path_pokemon = config_get_string_value(g_config,
 			"PUNTO_MONTAJE_TALLGRASS");
+
 	g_config_gc->id_suscriptor = config_get_int_value(g_config,
 			"ID_SUSCRIPTOR");
+
+	char *dirname_tall_grass =  config_get_string_value(g_config,"PUNTO_MONTAJE_TALLGRASS");
+	char *dirname_blocks =  config_get_string_value(g_config,"DIRNAME_BLOCKS");
+	char *dirname_files  =  config_get_string_value(g_config,"DIRNAME_FILES");
+	char *file_metadata  =  config_get_string_value(g_config,"FILE_METADATA");
+
+	g_config_gc->path_blocks = malloc(strlen(dirname_tall_grass) + strlen(dirname_blocks) );
+	strcpy(g_config_gc->path_blocks, dirname_tall_grass);
+	strcat(g_config_gc->path_blocks,dirname_blocks);
+
+	g_config_gc->path_files = malloc(strlen(dirname_tall_grass) + strlen(dirname_files) );
+	strcpy(g_config_gc->path_files, dirname_tall_grass);
+	strcat(g_config_gc->path_files,dirname_files);
+
+	g_config_gc->file_metadata = malloc(strlen(dirname_tall_grass) + strlen(file_metadata) );
+	strcpy(g_config_gc->file_metadata, dirname_tall_grass);
+	strcat(g_config_gc->file_metadata,file_metadata);
+
 }
 
 void finalizar_log(void) {
@@ -736,4 +764,6 @@ void prueba_semaforo() {
 		log_info(g_logger, "POKEMON : %s ", pok->pokemon);
 	}
 }
+
+
 
