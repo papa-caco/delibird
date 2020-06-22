@@ -43,7 +43,7 @@ void grabar_bloque(int block_nro, char *block_buffer);
 void grabar_metadata_pokemon(t_pokemon_medatada *pokemon_metadata, char *pokemon);
 void crear_dirname_pokemon(char *pokemon);
 void leer_metadata_tall_grass();
-void  get_bloque_libre();
+int  get_bloque_libre();
 t_pokemon_posiciones* leer_bloques();
 char* int_to_string(int x);
 
