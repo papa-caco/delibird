@@ -49,14 +49,16 @@ typedef enum Estado_Entrenador{
 	ACABO_INTERCAMBIO,
 	ESPERAR_CAUGHT,
 	DEADLOCK,
+	EXIT,
 } t_estado_entrenador;
 
 typedef struct Entrenador{
 	t_posicion_entrenador* posicion;
 	t_list* objetivoEntrenador;
 	t_list* pokemonesObtenidos;
-	sem_t sem_entrenador;
 	t_estado_entrenador estado_entrenador;
+	sem_t sem_entrenador;
+	sem_t mutex_entrenador;
 	pthread_t hilo_entrenador;
 	int id;
 
@@ -68,6 +70,13 @@ typedef struct id_Correlativo_and_Entrenador{
 	int id_Entrenador;
 } t_id_Correlativo_and_Entrenador;
 
+
+typedef struct Pokemon_Entrenador_Reservado{
+	int id_entrenadorReserva;
+	int cantidad;
+	char* pokemon;
+	t_posicion_entrenador* posicion;
+} t_pokemon_entrenador_reservado;
 
 
 
@@ -110,9 +119,17 @@ pthread_t tid_reconexion;
 
 sem_t sem_mutex_msjs;
 
+//--------------SEMAFOROS LISTAS DE POKEMONES------------------------------
+
 sem_t sem_listas_pokemones;
+sem_t sem_pokemonesGlobalesAtrapados;
+sem_t sem_pokemonesReservados;
+
+//---------------SEMAFOROS COLAS DE ENTRENADORES---------------------------
 
 sem_t sem_cola_blocked;
+
+//--------------SEMAFOROS PLANIFICADORES-----------------------------------
 
 sem_t sem_planificador_cplazo;
 

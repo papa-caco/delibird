@@ -4,7 +4,8 @@
  *  Created on: 3 mar. 2019
  *      Author: Los Que Aprueban
  */
-#include "teamInitializer.h"
+#include "utilsTeam.h"
+//Lo que cambié fue que esto importe a su .h, y su .h importe al teamInitializer
 
 void inicio_server_team(void)
 {
@@ -213,9 +214,9 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 		t_msg_caught_team *msg_caught = (t_msg_caught_team*) msg;
 		msg_caught = rcv_msj_caught_team(socket_cliente, logger);
 		g_cnt_msjs_caught ++;
-		//TODO Agregar la función que corresponda y tome al msg_caught
 		id_recibido = msg_caught->id_mensaje;
 
+		//FIltramos los ids que nos corresponden por id correlativo
 		t_id_Correlativo_and_Entrenador* idAux;
 		char meSirve= 0;
 
@@ -233,11 +234,19 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 		sem_post(&mutex_idCorrelativos);
 
 		if(meSirve == 1){
+			//Busco al entrenador que hizo la reserva
+			sem_wait(&(sem_cola_blocked));
+			t_entrenador* entrenadorReservador = buscarEntrenadorDeLaReserva(idAux->id_Entrenador);
+			sem_post(&(sem_cola_blocked));
+
 			if(msg_caught->resultado == OK ){
 
 				//AGREGAR POKEMON A LA LISTA DE ENTRENADORES DEL POKEMON
 				//Primero busco el pokemon que corresponde al entrenador, es decir, el que él reservó
+				sem_wait(&(sem_pokemonesReservados));
 				t_pokemon_entrenador_reservado* pokemonReservadoAAgregar = buscarPokemonReservado(idAux->id_Entrenador);
+				sem_post(&(sem_pokemonesReservados));
+
 				//Transformo el pokemonReservado al tipo pokemon_entrenador
 				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(sizeof(t_pokemon_entrenador));
 				pokemonAAgregarConvertido->cantidad = pokemonReservadoAAgregar->cantidad;
@@ -247,35 +256,47 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 				pokemonAAgregarConvertido->posicion->pos_y = pokemonReservadoAAgregar->posicion->pos_y;
 
 				//Borro de la lista al pokemon reservado
+				sem_wait(&(sem_pokemonesReservados));
 				int indice;
 				for(int i=0; i < list_size(pokemonesReservadosEnElMapa); i++){
 
-						t_pokemon_entrenador_reservado aux = ((t_pokemon_entrenador_reservado*) list_get(pokemonesReservadosEnElMapa, i));
+						t_pokemon_entrenador_reservado* aux = ((t_pokemon_entrenador_reservado*) list_get(pokemonesReservadosEnElMapa, i));
 
 						if(aux == pokemonReservadoAAgregar){
 							indice=i;
 						}
 				}
 				pokemonReservadoAAgregar = list_remove(pokemonesReservadosEnElMapa, indice);
+				sem_post(&(sem_pokemonesReservados));
+
 				free(pokemonReservadoAAgregar->posicion);
 				free(pokemonReservadoAAgregar);
 
-				//Busco al entrenador que hizo la reserva
-				t_entrenador* entrenadorReservador = buscarEntrenadorDeLaReserva(idAux->id_Entrenador);
-				//Agrego el Poke
-				agregarPokemon(entrenadorReservador, pokemonAAgregarConvertido);
+
+
+				//Agrego el Poke usano una funcion de nombre rancio que hace LO MISMO que la de entrenador.c
+				sem_wait(&(entrenadorReservador->mutex_entrenador));
+				agregarPokemonDos(entrenadorReservador, pokemonAAgregarConvertido);
+				sem_post(&(entrenadorReservador->mutex_entrenador));
 
 				//Muevo el pokemon a la lista global de atrapados
+				sem_wait(&(sem_pokemonesGlobalesAtrapados));
 				agregarPokemonAGlobalesAtrapados(pokemonAAgregarConvertido);
+				sem_post(&(sem_pokemonesGlobalesAtrapados));
 
-
-				//VERIFICAR SI EL ENTRENADOR PUEDE PASAR A EXIT O SI TIENE DEADLOCK (CAMBIAR ESTADO)
+				//VERIFICAR SI EL ENTRENADOR PUEDE PASAR A EXIT O SI TIENE DEADLOCK, O SI DEBE BUSCAR MAS POKEMONES (CAMBIAR ESTADO)
+				sem_wait(&(entrenadorReservador->mutex_entrenador));
+				verificarYCambiarEstadoEntrenador(entrenadorReservador);
+				sem_post(&(entrenadorReservador->mutex_entrenador));
 
 
 				//SEMAFORO MUTEX AL ENTRENADOR
 
 			}else{
-
+				//Si entra acá quiere decir que la respuesta fue FAIL y no pudo atrapar, entonces sigue pudiendo atrapar poke
+				sem_wait(&(entrenadorReservador->mutex_entrenador));
+				entrenadorReservador->estado_entrenador=MOVERSE_A_POKEMON;
+				sem_post(&(entrenadorReservador->mutex_entrenador));
 			}
 
 		}
@@ -452,7 +473,7 @@ int contador_msjs_cola(t_tipo_mensaje cola_suscripcion)
 }
 
 
-////////////
+////////////----------------------------------------------------------------------------------------------------------------
 
 t_pokemon_entrenador_reservado* buscarPokemonReservado(int id_Entrenador) {
 
@@ -506,5 +527,100 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon){
 		if(loEncontro==0){
 			list_add(pokemonesAtrapadosGlobal, pokemon);
 		}
+
+}
+
+void agregarPokemonDos(t_entrenador* entrenador, t_pokemon_entrenador* pokemon){
+
+char loEncontro = 0;
+
+	for(int i=0; i < list_size(entrenador->pokemonesObtenidos); i++){
+		t_pokemon_entrenador* pokemonABuscar =
+						((t_pokemon_entrenador*) list_get(entrenador->pokemonesObtenidos, i));
+		if(strcmp(pokemonABuscar->pokemon, pokemon->pokemon)==0){
+			pokemonABuscar->cantidad++;
+			loEncontro=1;
+		}
+	}
+
+	if(loEncontro==0){
+		t_pokemon_entrenador* pokemonAAgregar = malloc(sizeof(t_pokemon_entrenador));
+		pokemonAAgregar->cantidad=1;
+		pokemonAAgregar->pokemon=pokemon->pokemon;
+		list_add(entrenador->pokemonesObtenidos, pokemonAAgregar);
+	}
+}
+
+void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador){
+	t_list* pokemonesPendiente = pokemonesPendientesDos(unEntrenador);
+	int cantidadPokemonesPendientes = list_size(pokemonesPendiente);
+
+	if(cantidadPokemonesPendientes == 0){
+		unEntrenador->estado_entrenador = EXIT;
+	}
+	else if(list_size(unEntrenador->pokemonesObtenidos) == list_size(unEntrenador->objetivoEntrenador)){
+		unEntrenador->estado_entrenador = DEADLOCK;
+	}
+	else{
+		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
+	}
+
+}
+
+t_list* pokemonesPendientesDos(t_entrenador* entrenador) {
+
+	t_list* pokemonesPendientes = list_create();
+
+	for (int i = 0; i < list_size(entrenador->objetivoEntrenador); i++) {
+		char esPendiente = 0;
+		int cantidadObjetivo = 0;
+		t_pokemon_entrenador* pokemonObjetivo =
+				((t_pokemon_entrenador*) list_get(
+						entrenador->objetivoEntrenador, i));
+
+		for (int j = 0; j < list_size(entrenador->pokemonesObtenidos); j++) {
+			t_pokemon_entrenador* pokemonObtenido =
+					((t_pokemon_entrenador*) list_get(
+							entrenador->pokemonesObtenidos, j));
+
+			if (strcmp(pokemonObtenido->pokemon, pokemonObjetivo->pokemon)
+					== 0) {
+
+				if (pokemonObtenido->cantidad < pokemonObjetivo->cantidad) {
+					cantidadObjetivo = pokemonObjetivo->cantidad
+							- pokemonObtenido->cantidad;
+					esPendiente = 1;
+				}
+				else{
+					cantidadObjetivo = -1;
+				}
+
+
+			}
+
+		}
+
+		if (esPendiente == 0 && cantidadObjetivo != -1) {
+
+			t_pokemon_entrenador* pokemonPendiente = malloc(
+					sizeof(t_pokemon_entrenador));
+			pokemonPendiente->cantidad = ((t_pokemon_entrenador*) list_get(
+					entrenador->objetivoEntrenador, i))->cantidad;
+			pokemonPendiente->pokemon = ((t_pokemon_entrenador*) list_get(
+					entrenador->objetivoEntrenador, i))->pokemon;
+			list_add(pokemonesPendientes, pokemonPendiente);
+
+		} else if (cantidadObjetivo > 0) {
+			t_pokemon_entrenador* pokemonPendiente = malloc(
+					sizeof(t_pokemon_entrenador));
+			pokemonPendiente->cantidad = cantidadObjetivo;
+			pokemonPendiente->pokemon = ((t_pokemon_entrenador*) list_get(
+					entrenador->objetivoEntrenador, i))->pokemon;
+			list_add(pokemonesPendientes, pokemonPendiente);
+		}
+
+	}
+	return pokemonesPendientes;
+
 
 }
