@@ -1,7 +1,8 @@
 #ifndef SRC_UTILSTEAM_H_
 #define SRC_UTILSTEAM_H_
 
-//#include "teamInitializer.h"
+#include "teamInitializer.h"
+
 #include <semaphore.h>
 
 
@@ -16,12 +17,7 @@ typedef struct mensaje_Caugth_and_IdEntrenador{
 	int id_entrenador;
 }t_mensaje_Caugth_and_IdEntrenador;
 
-typedef struct Pokemon_Entrenador_Reservado{
-	int id_entrenadorReserva;
-	int cantidad;
-	char* pokemon;
-	t_posicion_entrenador* posicion;
-} t_pokemon_entrenador_reservado;
+
 
 //-----------------Firma de Funciones----------------------------
 
@@ -76,5 +72,17 @@ t_pokemon_entrenador_reservado* buscarPokemonReservado(int id_Entrenador);
 t_entrenador* buscarEntrenadorDeLaReserva(int idEntrenadorBuscado);
 
 void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon);
+
+void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador);
+
+//Estas ultimas dos funciones simplemente las agregue para solucionar momentaneamente problemas de imports, son copiadas y pegadas
+//de entrenador.c
+
+void agregarPokemonDos(t_entrenador* entrenador, t_pokemon_entrenador* pokemon);
+
+t_list* pokemonesPendientesDos(t_entrenador* entrenador);
+
+
+
 
 #endif /* SRC_UTILSTEAM_H_ */
