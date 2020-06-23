@@ -5,7 +5,9 @@
  *      Author: utnso
  */
 
-#include "teamInitializer.h"
+//#include "teamInitializer.h"
+#include "utilsTeam.h"
+
 
 void iniciar_team(void){
 	leer_config_team(RUTA_CONFIG_TEAM);

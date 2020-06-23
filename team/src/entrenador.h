@@ -14,7 +14,7 @@
 #include<delibird/conexiones.h>
 
 
-#include "teamInitializer.h"
+#include "utilsTeam.h"
 
 void comportamiento_entrenador(t_entrenador* entrenador);
 

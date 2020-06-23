@@ -5,6 +5,7 @@
  *      Author: Los Que Aprueban
  */
 #include "utilsTeam.h"
+#include "entrenador.h"
 //Lo que cambié fue que esto importe a su .h, y su .h importe al teamInitializer
 
 void inicio_server_team(void)
@@ -276,7 +277,7 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 
 				//Agrego el Poke usano una funcion de nombre rancio que hace LO MISMO que la de entrenador.c
 				sem_wait(&(entrenadorReservador->mutex_entrenador));
-				agregarPokemonDos(entrenadorReservador, pokemonAAgregarConvertido);
+				agregarPokemon(entrenadorReservador, pokemonAAgregarConvertido);
 				sem_post(&(entrenadorReservador->mutex_entrenador));
 
 				//Muevo el pokemon a la lista global de atrapados
@@ -530,35 +531,15 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon){
 
 }
 
-void agregarPokemonDos(t_entrenador* entrenador, t_pokemon_entrenador* pokemon){
-
-char loEncontro = 0;
-
-	for(int i=0; i < list_size(entrenador->pokemonesObtenidos); i++){
-		t_pokemon_entrenador* pokemonABuscar =
-						((t_pokemon_entrenador*) list_get(entrenador->pokemonesObtenidos, i));
-		if(strcmp(pokemonABuscar->pokemon, pokemon->pokemon)==0){
-			pokemonABuscar->cantidad++;
-			loEncontro=1;
-		}
-	}
-
-	if(loEncontro==0){
-		t_pokemon_entrenador* pokemonAAgregar = malloc(sizeof(t_pokemon_entrenador));
-		pokemonAAgregar->cantidad=1;
-		pokemonAAgregar->pokemon=pokemon->pokemon;
-		list_add(entrenador->pokemonesObtenidos, pokemonAAgregar);
-	}
-}
-
 void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador){
-	t_list* pokemonesPendiente = pokemonesPendientesDos(unEntrenador);
+	t_list* pokemonesPendiente = pokemonesPendientes(unEntrenador);
 	int cantidadPokemonesPendientes = list_size(pokemonesPendiente);
 
 	if(cantidadPokemonesPendientes == 0){
 		unEntrenador->estado_entrenador = EXIT;
 	}
 	else if(list_size(unEntrenador->pokemonesObtenidos) == list_size(unEntrenador->objetivoEntrenador)){
+		///ALGORITMO DEADLOCK
 		unEntrenador->estado_entrenador = DEADLOCK;
 	}
 	else{
@@ -567,60 +548,3 @@ void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador){
 
 }
 
-t_list* pokemonesPendientesDos(t_entrenador* entrenador) {
-
-	t_list* pokemonesPendientes = list_create();
-
-	for (int i = 0; i < list_size(entrenador->objetivoEntrenador); i++) {
-		char esPendiente = 0;
-		int cantidadObjetivo = 0;
-		t_pokemon_entrenador* pokemonObjetivo =
-				((t_pokemon_entrenador*) list_get(
-						entrenador->objetivoEntrenador, i));
-
-		for (int j = 0; j < list_size(entrenador->pokemonesObtenidos); j++) {
-			t_pokemon_entrenador* pokemonObtenido =
-					((t_pokemon_entrenador*) list_get(
-							entrenador->pokemonesObtenidos, j));
-
-			if (strcmp(pokemonObtenido->pokemon, pokemonObjetivo->pokemon)
-					== 0) {
-
-				if (pokemonObtenido->cantidad < pokemonObjetivo->cantidad) {
-					cantidadObjetivo = pokemonObjetivo->cantidad
-							- pokemonObtenido->cantidad;
-					esPendiente = 1;
-				}
-				else{
-					cantidadObjetivo = -1;
-				}
-
-
-			}
-
-		}
-
-		if (esPendiente == 0 && cantidadObjetivo != -1) {
-
-			t_pokemon_entrenador* pokemonPendiente = malloc(
-					sizeof(t_pokemon_entrenador));
-			pokemonPendiente->cantidad = ((t_pokemon_entrenador*) list_get(
-					entrenador->objetivoEntrenador, i))->cantidad;
-			pokemonPendiente->pokemon = ((t_pokemon_entrenador*) list_get(
-					entrenador->objetivoEntrenador, i))->pokemon;
-			list_add(pokemonesPendientes, pokemonPendiente);
-
-		} else if (cantidadObjetivo > 0) {
-			t_pokemon_entrenador* pokemonPendiente = malloc(
-					sizeof(t_pokemon_entrenador));
-			pokemonPendiente->cantidad = cantidadObjetivo;
-			pokemonPendiente->pokemon = ((t_pokemon_entrenador*) list_get(
-					entrenador->objetivoEntrenador, i))->pokemon;
-			list_add(pokemonesPendientes, pokemonPendiente);
-		}
-
-	}
-	return pokemonesPendientes;
-
-
-}

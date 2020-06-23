@@ -75,14 +75,4 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon);
 
 void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador);
 
-//Estas ultimas dos funciones simplemente las agregue para solucionar momentaneamente problemas de imports, son copiadas y pegadas
-//de entrenador.c
-
-void agregarPokemonDos(t_entrenador* entrenador, t_pokemon_entrenador* pokemon);
-
-t_list* pokemonesPendientesDos(t_entrenador* entrenador);
-
-
-
-
 #endif /* SRC_UTILSTEAM_H_ */
