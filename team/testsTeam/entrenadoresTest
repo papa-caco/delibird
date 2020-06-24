@@ -331,5 +331,59 @@
 	printf("----------------------------------\n");
 
 	
+	------------------------------------------------------------------------------------------------------------------------------------------
 	
+	--------------------------------------------TEST POKEMON MAS CERCANO-------------------------------------------------------
+	
+	
+	pokemonesLibresEnElMapa = list_create();
+
+
+
+	t_pokemon_entrenador* pokemonLibre1 = malloc(sizeof(t_pokemon_entrenador));
+	pokemonLibre1->posicion = malloc(sizeof(t_posicion_entrenador));
+	pokemonLibre1->cantidad = 1;
+	pokemonLibre1->pokemon = "Pikachu";
+	pokemonLibre1->posicion->pos_x = 1;
+	pokemonLibre1->posicion->pos_y = 1;
+
+
+	t_pokemon_entrenador* pokemonLibre2 = malloc(sizeof(t_pokemon_entrenador));
+	pokemonLibre2->posicion = malloc(sizeof(t_posicion_entrenador));
+	pokemonLibre2->cantidad = 2;
+	pokemonLibre2->pokemon = "Pepito";
+	pokemonLibre2->posicion->pos_x= 4;
+	pokemonLibre2->posicion->pos_y= 0;
+
+	t_pokemon_entrenador* pokemonLibre3 = malloc(sizeof(t_pokemon_entrenador));
+	pokemonLibre3->posicion = malloc(sizeof(t_posicion_entrenador));
+		pokemonLibre3->cantidad = 3;
+		pokemonLibre3->pokemon = "Pepito";
+		pokemonLibre3->posicion->pos_x= 4;
+		pokemonLibre3->posicion->pos_y= 4;
+
+		t_entrenador* unEntrenador = malloc(sizeof(t_entrenador));
+		unEntrenador->posicion = malloc(sizeof(t_posicion_entrenador));
+		unEntrenador->posicion->pos_x = 0;
+		unEntrenador->posicion->pos_y = 0;
+
+	list_add(pokemonesLibresEnElMapa, pokemonLibre1);
+	list_add(pokemonesLibresEnElMapa, pokemonLibre2);
+	list_add(pokemonesLibresEnElMapa, pokemonLibre3);
+
+	t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(unEntrenador->posicion);
+
+	printf("La cantidad de el pokemon mas cercano es : %d \n", pokemonCercano->cantidad);
+	printf("El pokemon mas cercano es : %s \n", pokemonCercano->pokemon);
+
+
+	free(pokemonLibre1->posicion);
+	free(pokemonLibre2->posicion);
+	free(pokemonLibre3->posicion);
+	free(unEntrenador->posicion);
+	free(pokemonLibre1);
+	free(pokemonLibre2);
+	free(pokemonLibre3);
+	free(unEntrenador);
+	free(pokemonesLibresEnElMapa);
 	

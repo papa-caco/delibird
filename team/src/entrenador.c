@@ -95,7 +95,7 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 t_pokemon_entrenador* buscarPokemonMasCercano(t_posicion_entrenador* posicion_Entrenador){
 
 	t_pokemon_entrenador* pokemonMasCercano;
-	int distanciaMasCercana = 0;
+	int distanciaMasCercana = 100000;
 	int distanciaAux = 0;
 
 
