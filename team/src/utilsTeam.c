@@ -476,6 +476,8 @@ int contador_msjs_cola(t_tipo_mensaje cola_suscripcion)
 
 ////////////----------------------------------------------------------------------------------------------------------------
 
+
+///Ya leagregué semaforos en los lugares en las que se la llama
 t_pokemon_entrenador_reservado* buscarPokemonReservado(int id_Entrenador) {
 
 	for (int i = 0; list_get(pokemonesReservadosEnElMapa, i) != NULL; i++) {
@@ -489,6 +491,7 @@ t_pokemon_entrenador_reservado* buscarPokemonReservado(int id_Entrenador) {
 	return NULL;
 }
 
+///Ya tiene los sem{aforos afuera
 t_entrenador* buscarEntrenadorDeLaReserva(int idEntrenadorBuscado) {
 
 	t_entrenador* entrenadorAux;
@@ -510,6 +513,7 @@ t_entrenador* buscarEntrenadorDeLaReserva(int idEntrenadorBuscado) {
 	return entrenadorBuscado;
 }
 
+//Ya tiene el semaforo correspondiente afuera
 void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon){
 
 	char loEncontro = 0;
@@ -525,6 +529,8 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon){
 			}
 		}
 
+		//OJO cuando recibamos un poke desde broker, va a tener que asignar pokemones de cantidad 1, por mas que aparezcan varios
+		//de la misma especie en una posicion
 		if(loEncontro==0){
 			list_add(pokemonesAtrapadosGlobal, pokemon);
 		}
