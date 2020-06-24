@@ -79,3 +79,35 @@ Código con el que podemos probar que las listas de las config se extraen correc
 	}
 	
 	*/
+	
+	
+	
+	*/
+	 --------------------------------------------------------------------------------------------------------
+	 
+	 -------------------------INICIALIZACION ENTRENADORES Y OBJETIVO GLOBAL,  CARGA ATRAPADOS GLOBALES-------------------------------------------
+	
+	
+	
+	
+	iniciar_entrenadores_and_objetivoGlobal();
+
+	printf("CANTIDAD DE ELEMENTO EN LA LISTA ATRAPADOS ES.... %d \n", list_size(pokemonesAtrapadosGlobal));
+
+	printf("CANTIDAD DE ELEMENTO EN LA LISTA OBJETIVOS ES.... %d \n", list_size(objetivoGlobalEntrenadores));
+
+
+	printf("Los pokemones atrapados globales son: \n");
+
+	for (int j = 0; list_get(pokemonesAtrapadosGlobal, j) != NULL; j++) {
+
+		t_pokemon_entrenador* pok = (t_pokemon_entrenador*) list_get(pokemonesAtrapadosGlobal, j);
+				char* nombrePok = pok->pokemon;
+				printf("%s(%d)\n", nombrePok, pok->cantidad);
+
+	}
+			printf("----------------------------------\n");
+			
+			
+			--------------------------------------------------------------------------------------------------------
+	

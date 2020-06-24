@@ -111,11 +111,18 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 void iniciar_entrenadores_and_objetivoGlobal(){
 	colaNewEntrenadores = queue_create();
 	objetivoGlobalEntrenadores = list_create();
+	pokemonesAtrapadosGlobal = list_create();
+
 	t_list* objetivosEntrenadores = extraer_pokemones_entrenadores("OBJETIVOS_ENTRENADORES");
+	printf("-------YA TERMNINO DE EXTRAER LOS OBJETIVOS------\n");
 	t_list* pokemonesObtenidos = extraer_pokemones_entrenadores("POKEMON_ENTRENADORES");
+	printf("-------YA TERMNINO DE EXTRAER LOS OBTENIDOS------\n");
 	t_list* posiciones = extraer_posiciones_entrenadores();
+	printf("-------YA TERMNINO DE EXTRAER LAS POSICIONES DE LOS ENTRENADORES------\n");
 	cargar_objetivo_global(objetivosEntrenadores);
+	printf("-------YA TERMNINO DE CARGAR EL OBJETIVO GLOBAL------\n");
 	cargar_obtenidos_global(pokemonesObtenidos);
+	printf("-------YA TERMNINO DE CARGAR EL OBTENIDOS GLOBAL------\n");
 
 	for(int i=0; list_get(posiciones, i) != NULL; i++){
 		t_entrenador* unEntrenador = malloc(sizeof(t_entrenador));
