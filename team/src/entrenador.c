@@ -15,7 +15,7 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 	int distancia;
 	t_pokemon_entrenador* pokemon;
-	t_posicion_entrenador* posicionEntrenador;
+	t_posicion_entrenador* posicionEntrenadorAMoverse;
 	t_entrenador* entrenador2;
 
 	while(true){
@@ -44,13 +44,16 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 				break;
 		case MOVERSE_A_ENTRENADOR:
-			posicionEntrenador = buscarEntrenadorAMoverse(entrenador);
 
-			distancia = calcularDistancia(entrenador->posicion, posicionEntrenador);
+			//RECORDAR que el entrenador que se está moviendo ahora, debería de dejar de estar en la cola de blocked
+			//y estar en exit.
+			posicionEntrenadorAMoverse = buscarEntrenadorAMoverse(entrenador);
+
+			distancia = calcularDistancia(entrenador->posicion, posicionEntrenadorAMoverse);
 
 			for(int i=0; i<distancia; i++){
 
-			moverEntrenador(entrenador, posicionEntrenador);
+			moverEntrenador(entrenador, posicionEntrenadorAMoverse);
 
 			}
 

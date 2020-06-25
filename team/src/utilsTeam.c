@@ -240,13 +240,15 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 			t_entrenador* entrenadorReservador = buscarEntrenadorDeLaReserva(idAux->id_Entrenador);
 			sem_post(&(sem_cola_blocked));
 
+			//Busco el pokemon que corresponde al entrenador, es decir, el que él reservó
+			sem_wait(&(sem_pokemonesReservados));
+			t_pokemon_entrenador_reservado* pokemonReservadoAAgregar =buscarPokemonReservado(idAux->id_Entrenador);
+			sem_post(&(sem_pokemonesReservados));
+
 			if(msg_caught->resultado == OK ){
 
 				//AGREGAR POKEMON A LA LISTA DE ENTRENADORES DEL POKEMON
-				//Primero busco el pokemon que corresponde al entrenador, es decir, el que él reservó
-				sem_wait(&(sem_pokemonesReservados));
-				t_pokemon_entrenador_reservado* pokemonReservadoAAgregar = buscarPokemonReservado(idAux->id_Entrenador);
-				sem_post(&(sem_pokemonesReservados));
+
 
 				//Transformo el pokemonReservado al tipo pokemon_entrenador
 				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(sizeof(t_pokemon_entrenador));
@@ -295,9 +297,32 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 
 			}else{
 				//Si entra acá quiere decir que la respuesta fue FAIL y no pudo atrapar, entonces sigue pudiendo atrapar poke
-				//PERO OJO! Falta eliminar al pokemon de los reservados.
+				//PERO OJO! Falta eliminar al pokemon de los reservados porque por algo falló. EN realidad deberíamos pre-
+				//guntar bien a los chicos del broker por qué es que eso sucede, pero por lo pronto dejo la lógica de borrado
+
+				//Borro de la lista al pokemon reservado
+				sem_wait(&(sem_pokemonesReservados));
+				int indice;
+				for (int i = 0; i < list_size(pokemonesReservadosEnElMapa);
+						i++) {
+
+					t_pokemon_entrenador_reservado* aux =
+							((t_pokemon_entrenador_reservado*) list_get(
+									pokemonesReservadosEnElMapa, i));
+
+					if (aux == pokemonReservadoAAgregar) {
+						indice = i;
+					}
+				}
+				pokemonReservadoAAgregar = list_remove(
+						pokemonesReservadosEnElMapa, indice);
+				sem_post(&(sem_pokemonesReservados));
+
+				free(pokemonReservadoAAgregar->posicion);
+				free(pokemonReservadoAAgregar);
+
 				sem_wait(&(entrenadorReservador->mutex_entrenador));
-				entrenadorReservador->estado_entrenador=MOVERSE_A_POKEMON;
+				entrenadorReservador->estado_entrenador = MOVERSE_A_POKEMON;
 				sem_post(&(entrenadorReservador->mutex_entrenador));
 			}
 
