@@ -295,6 +295,7 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 
 			}else{
 				//Si entra acá quiere decir que la respuesta fue FAIL y no pudo atrapar, entonces sigue pudiendo atrapar poke
+				//PERO OJO! Falta eliminar al pokemon de los reservados.
 				sem_wait(&(entrenadorReservador->mutex_entrenador));
 				entrenadorReservador->estado_entrenador=MOVERSE_A_POKEMON;
 				sem_post(&(entrenadorReservador->mutex_entrenador));
