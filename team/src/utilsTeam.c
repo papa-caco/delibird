@@ -8,32 +8,32 @@
 #include "entrenador.h"
 //Lo que cambié fue que esto importe a su .h, y su .h importe al teamInitializer
 
-void inicio_server_team(void)
-{
+void inicio_server_team(void) {
 	char *ip = g_config_team->ip_team;
 	char *puerto = g_config_team->puerto_team;
 	puts("");
 	iniciar_servidor(ip, puerto, g_logger);
 }
 
-void iniciar_suscripciones_broker(void)
-{
+void iniciar_suscripciones_broker(void) {
 	puts("Estableciendo conexiones con el BROKER -- Iniciando Suscripciones");
 	puts("");
 	int status_appeared = iniciar_suscripcion_cola(APPEARED_POKEMON, g_logger);
-	int status_localized = iniciar_suscripcion_cola(LOCALIZED_POKEMON, g_logger);
+	int status_localized = iniciar_suscripcion_cola(LOCALIZED_POKEMON,
+			g_logger);
 	int status_caught = iniciar_suscripcion_cola(CAUGHT_POKEMON, g_logger);
 }
 
-int iniciar_suscripcion_cola(t_tipo_mensaje cola_suscripta, t_log *logger)
-{
+int iniciar_suscripcion_cola(t_tipo_mensaje cola_suscripta, t_log *logger) {
 	pthread_t tid;
 	t_tipo_mensaje *cola = malloc(sizeof(t_tipo_mensaje));
 	memcpy(cola, &cola_suscripta, sizeof(t_tipo_mensaje));
 	sem_wait(&sem_mutex_msjs);
-	int tid_status = pthread_create(&tid, NULL,(void*) inicio_suscripcion,(void*) cola);
+	int tid_status = pthread_create(&tid, NULL, (void*) inicio_suscripcion,
+			(void*) cola);
 	if (tid_status != 0) {
-		log_error(logger, "Thread create returned %d | %s", tid_status, strerror(tid_status));
+		log_error(logger, "Thread create returned %d | %s", tid_status,
+				strerror(tid_status));
 	} else {
 		pthread_detach(tid);
 	}
@@ -41,24 +41,24 @@ int iniciar_suscripcion_cola(t_tipo_mensaje cola_suscripta, t_log *logger)
 }
 
 // ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES GET_POKEMON AL BROKER ----------//
-int enviar_get_pokemon_broker(char *pokemon, t_log *logger)
-{
+int enviar_get_pokemon_broker(char *pokemon, t_log *logger) {
 	t_msg_get_broker *msj_get = malloc(sizeof(t_msg_get_broker));
 	msj_get->size_pokemon = strlen(pokemon) + 1;
 	msj_get->pokemon = malloc(sizeof(msj_get->size_pokemon));
 	memcpy(msj_get->pokemon, pokemon, msj_get->size_pokemon);
 	sem_wait(&sem_mutex_msjs);
-	int thread_status = pthread_create(&tid_send_get, NULL,(void*) connect_broker_y_enviar_mensaje_get,(void*) msj_get);
+	int thread_status = pthread_create(&tid_send_get, NULL,
+			(void*) connect_broker_y_enviar_mensaje_get, (void*) msj_get);
 	if (thread_status != 0) {
-		log_error(logger, "Thread create returned %d | %s", thread_status, strerror(thread_status));
+		log_error(logger, "Thread create returned %d | %s", thread_status,
+				strerror(thread_status));
 	} else {
 		pthread_detach(tid_send_get);
 	}
 	return thread_status;
 }
 
-int connect_broker_y_enviar_mensaje_get(t_msg_get_broker *msg_get)
-{
+int connect_broker_y_enviar_mensaje_get(t_msg_get_broker *msg_get) {
 	char *ip = g_config_team->ip_broker;
 	char *puerto = g_config_team->puerto_broker;
 	char *proceso = "BROKER";
@@ -66,7 +66,7 @@ int connect_broker_y_enviar_mensaje_get(t_msg_get_broker *msg_get)
 	int cliente_fd = crear_conexion(ip, puerto, g_logger, proceso, name_cola);
 	enviar_msj_get_broker(cliente_fd, g_logger, msg_get);
 	int id_mensaje = -1;
-	if ( rcv_codigo_operacion(cliente_fd) == ID_MENSAJE) {
+	if (rcv_codigo_operacion(cliente_fd) == ID_MENSAJE) {
 		id_mensaje = rcv_id_mensaje(cliente_fd, g_logger);
 		//TODO Guardar ID_MENSAJE que envia el BROKER de GET_POKEMON
 	}
@@ -75,13 +75,16 @@ int connect_broker_y_enviar_mensaje_get(t_msg_get_broker *msg_get)
 	pthread_exit(&tid_send_get);
 	eliminar_msg_get_broker(msg_get);
 
+	sem_wait(&mutex_idCorrelativosGet);
+	list_add(idCorrelativosGet, &id_mensaje);
+	sem_post(&mutex_idCorrelativosGet);
+
 	return id_mensaje;
 }
 
-
 // ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES CATCH_POKEMON AL BROKER ----------//
-int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon, t_log *logger, int id_entrenador)
-{
+int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon,
+		t_log *logger, int id_entrenador) {
 	t_msg_catch_broker *msg_catch = malloc(sizeof(t_msg_catch_broker));
 	msg_catch->coordenada = malloc(sizeof(t_coordenada));
 	msg_catch->coordenada->pos_x = pos_x;
@@ -92,17 +95,19 @@ int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon, t_log *logg
 	t_mensaje_Caugth_and_IdEntrenador* args;
 	args->msg_catch_broker = msg_catch;
 	args->id_entrenador = id_entrenador;
-	int thread_status = pthread_create(&tid_send_catch, NULL,(void*) connect_broker_y_enviar_mensaje_catch,(void*) args);
+	int thread_status = pthread_create(&tid_send_catch, NULL,
+			(void*) connect_broker_y_enviar_mensaje_catch, (void*) args);
 	if (thread_status != 0) {
-		log_error(logger, "Thread create returned %d | %s", thread_status, strerror(thread_status));
+		log_error(logger, "Thread create returned %d | %s", thread_status,
+				strerror(thread_status));
 	} else {
 		pthread_detach(tid_send_catch);
 	}
 	return thread_status;
 }
 
-int connect_broker_y_enviar_mensaje_catch(t_mensaje_Caugth_and_IdEntrenador* args)
-{
+int connect_broker_y_enviar_mensaje_catch(
+		t_mensaje_Caugth_and_IdEntrenador* args) {
 	char *ip = g_config_team->ip_broker;
 	char *puerto = g_config_team->puerto_broker;
 	char *proceso = "BROKER";
@@ -111,30 +116,29 @@ int connect_broker_y_enviar_mensaje_catch(t_mensaje_Caugth_and_IdEntrenador* arg
 	int cliente_fd = crear_conexion(ip, puerto, g_logger, proceso, name_cola);
 	enviar_msj_catch_broker(cliente_fd, g_logger, args->msg_catch_broker);
 	int id_mensaje = -1;
-	if ( rcv_codigo_operacion(cliente_fd) == ID_MENSAJE) {
+	if (rcv_codigo_operacion(cliente_fd) == ID_MENSAJE) {
 		id_mensaje = rcv_id_mensaje(cliente_fd, g_logger);
 		//TODO Guardar ID_MENSAJE que envia el BROKER de CATCH_POKEMON
 	}
-
 
 	sem_post(&sem_mutex_msjs);
 	close(cliente_fd);
 	eliminar_msg_catch_broker(args->msg_catch_broker);
 	pthread_exit(&tid_send_catch);
 
-	t_id_Correlativo_and_Entrenador* ids = malloc (sizeof(t_id_Correlativo_and_Entrenador));
+	t_id_Correlativo_and_Entrenador* ids = malloc(
+			sizeof(t_id_Correlativo_and_Entrenador));
 	ids->id_Correlativo = id_mensaje;
 	ids->id_Entrenador = args->id_entrenador;
 
 	sem_wait(&mutex_idCorrelativos);
-	list_add(idCorrelativosCatch,&ids);
+	list_add(idCorrelativosCatch, &ids);
 	sem_post(&mutex_idCorrelativos);
 
 	return id_mensaje;
 }
 
-void inicio_suscripcion(t_tipo_mensaje *cola)
-{
+void inicio_suscripcion(t_tipo_mensaje *cola) {
 	char *ip = g_config_team->ip_broker;
 	char *puerto = g_config_team->puerto_broker;
 	char *proceso = "BROKER";
@@ -151,32 +155,36 @@ void inicio_suscripcion(t_tipo_mensaje *cola)
 		enviar_msj_handshake_suscriptor(cliente_fd, g_logger, handshake);
 		op_code cod_oper_mensaje = 0;
 		uint32_t contador_msjs = 0;
-		int flag_salida =1;
+		int flag_salida = 1;
 		//En este bucle se queda recibiendo los mensajes que va enviando el BROKER al suscriptor
-		while(flag_salida) {
+		while (flag_salida) {
 			uint32_t id_recibido;
 			cod_oper_mensaje = rcv_codigo_operacion(cliente_fd);
 			if (!codigo_operacion_valido(cod_oper_mensaje)) { // Posible desconexión del BROKER
-				log_error(g_logger, "(Se perdió Conexión con BROKER|%s)", nombre_cola(handshake->cola_id));
+				log_error(g_logger, "(Se perdió Conexión con BROKER|%s)",
+						nombre_cola(handshake->cola_id));
 				status_conn_broker = false;
 				flag_salida = 0;
-			}
-			else if (cod_oper_mensaje != SUSCRIP_END) {
-				id_recibido = rcv_msjs_broker_publish(cod_oper_mensaje, cliente_fd, g_logger);
+			} else if (cod_oper_mensaje != SUSCRIP_END) {
+				id_recibido = rcv_msjs_broker_publish(cod_oper_mensaje,
+						cliente_fd, g_logger);
 				contador_msjs += 1;
 				handshake->msjs_recibidos = contador_msjs;
 				handshake->id_recibido = id_recibido;
 				//Actualizo el ID_RECIBIDO porque en el próximo envío confirmo recepción del mensaje anterior
-				enviar_msj_handshake_suscriptor(cliente_fd, g_logger, handshake);
-			}
-			else if (rcv_msg_suscrip_end(cliente_fd) != g_config_team->id_suscriptor) {
-				pthread_exit((int*)EXIT_FAILURE);
+				enviar_msj_handshake_suscriptor(cliente_fd, g_logger,
+						handshake);
+			} else if (rcv_msg_suscrip_end(cliente_fd)
+					!= g_config_team->id_suscriptor) {
+				pthread_exit((int*) EXIT_FAILURE);
 			} else {
 				flag_salida = 0;
 			}
 		}
 		int contador_global = contador_msjs_cola(*cola);
-		log_debug(g_logger,"(TEAM END_SUSCRIPTION: |RECVD_MSGs:%d|TOTAL_MSGS:%d)" , contador_msjs, contador_global);
+		log_debug(g_logger,
+				"(TEAM END_SUSCRIPTION: |RECVD_MSGs:%d|TOTAL_MSGS:%d)",
+				contador_msjs, contador_global);
 		free(handshake);
 		close(cliente_fd);
 	} else {
@@ -185,97 +193,132 @@ void inicio_suscripcion(t_tipo_mensaje *cola)
 
 }
 
-uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t_log *logger)
-{
+uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
+		t_log *logger) {
 	uint32_t id_recibido;
 	void *msg;
-	switch(codigo_operacion){
-	case COLA_VACIA:;
+	switch (codigo_operacion) {
+	case COLA_VACIA:
+		;
 		id_recibido = rcv_msj_cola_vacia(socket_cliente, logger);
 		if (id_recibido != g_config_team->id_suscriptor) {
-			log_error(logger,"MSG_ERROR");
+			log_error(logger, "MSG_ERROR");
 		}
 		break;
-	case APPEARED_TEAM:;
+	case APPEARED_TEAM:
+		;
 		t_msg_appeared_team *msg_appeared = (t_msg_appeared_team*) msg;
 		msg_appeared = rcv_msj_appeared_team(socket_cliente, logger);
-		g_cnt_msjs_appeared ++;
+		g_cnt_msjs_appeared++;
 		//TODO Agregar la función que corresponda y tome al msg_appeared
 		id_recibido = msg_appeared->id_mensaje;
+
+		if (meSirvePokemon(msg_appeared->pokemon)) {
+
+			sem_wait(&mutex_listaPokemonesLlegadosDelBroker);
+			list_add(pokemonesLlegadosDelBroker, msg_appeared->pokemon);
+			sem_post(&mutex_listaPokemonesLlegadosDelBroker);
+
+			t_pokemon_entrenador* pokemonAAgregarAlMapa = malloc(sizeof(t_pokemon_entrenador));
+			pokemonAAgregarAlMapa->cantidad = 1;
+			pokemonAAgregarAlMapa->pokemon = msg_appeared->pokemon;
+			pokemonAAgregarAlMapa->posicion = malloc(sizeof(t_posicion_entrenador));
+			pokemonAAgregarAlMapa->posicion->pos_x =msg_appeared->coord->pos_x;
+			pokemonAAgregarAlMapa->posicion->pos_y =msg_appeared->coord->pos_y;
+
+			sem_wait(&sem_pokemonesLibresEnElMapa);
+			list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
+			sem_post(&sem_pokemonesLibresEnElMapa);
+
+			////ANALIZAR SI TENEMOS QUE ACTIVAR EL PLANIFICADOR MEDIANO PLAZO PARA IR A ATRAPAR A UN POKEMON
+
+		}
+
 		// Las funciones comentadas de abajo estuvieron para prueba, no tienen lógica
 		// Se pusieron para probar el reenvío de CATCH_POKEMON y GET_POKEMON. FUNCIONAN las DOS.
 		/*if (id_recibido > 20 && id_recibido < 30) {
-			enviar_catch_de_appeared(msg_appeared);
-		}
-		else if (id_recibido > 30) {
-			enviar_get_de_appeared(msg_appeared);
-		}*/
+		 enviar_catch_de_appeared(msg_appeared);
+		 }
+		 else if (id_recibido > 30) {
+		 enviar_get_de_appeared(msg_appeared);
+		 }*/
 		break;
-	case CAUGHT_TEAM:;
+	case CAUGHT_TEAM:
+		;
 		t_msg_caught_team *msg_caught = (t_msg_caught_team*) msg;
 		msg_caught = rcv_msj_caught_team(socket_cliente, logger);
-		g_cnt_msjs_caught ++;
+		g_cnt_msjs_caught++;
 		id_recibido = msg_caught->id_mensaje;
 
 		//FIltramos los ids que nos corresponden por id correlativo
 		t_id_Correlativo_and_Entrenador* idAux;
-		char meSirve= 0;
+		char meSirve = 0;
 
 		sem_wait(&mutex_idCorrelativos);
 
-		for(int i=0; i < list_size(idCorrelativosCatch); i++){
+		for (int i = 0; i < list_size(idCorrelativosCatch); i++) {
 
-			idAux = (t_id_Correlativo_and_Entrenador*) list_get(idCorrelativosCatch,i);
+			idAux = (t_id_Correlativo_and_Entrenador*) list_get(
+					idCorrelativosCatch, i);
 
-			if(idAux->id_Correlativo == id_recibido){
+			if (idAux->id_Correlativo == id_recibido) {
 
-				meSirve= 1;
+				meSirve = 1;
 			}
 		}
 		sem_post(&mutex_idCorrelativos);
 
-		if(meSirve == 1){
+		if (meSirve == 1) {
 			//Busco al entrenador que hizo la reserva
 			sem_wait(&(sem_cola_blocked));
-			t_entrenador* entrenadorReservador = buscarEntrenadorDeLaReserva(idAux->id_Entrenador);
+			t_entrenador* entrenadorReservador = buscarEntrenadorDeLaReserva(
+					idAux->id_Entrenador);
 			sem_post(&(sem_cola_blocked));
 
 			//Busco el pokemon que corresponde al entrenador, es decir, el que él reservó
 			sem_wait(&(sem_pokemonesReservados));
-			t_pokemon_entrenador_reservado* pokemonReservadoAAgregar =buscarPokemonReservado(idAux->id_Entrenador);
+			t_pokemon_entrenador_reservado* pokemonReservadoAAgregar =
+					buscarPokemonReservado(idAux->id_Entrenador);
 			sem_post(&(sem_pokemonesReservados));
 
-			if(msg_caught->resultado == OK ){
+			if (msg_caught->resultado == OK) {
 
 				//AGREGAR POKEMON A LA LISTA DE ENTRENADORES DEL POKEMON
 
-
 				//Transformo el pokemonReservado al tipo pokemon_entrenador
-				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(sizeof(t_pokemon_entrenador));
-				pokemonAAgregarConvertido->cantidad = pokemonReservadoAAgregar->cantidad;
-				pokemonAAgregarConvertido->pokemon = pokemonReservadoAAgregar->pokemon;
-				pokemonAAgregarConvertido->posicion = malloc(sizeof(t_posicion_entrenador));
-				pokemonAAgregarConvertido->posicion->pos_x = pokemonReservadoAAgregar->posicion->pos_x;
-				pokemonAAgregarConvertido->posicion->pos_y = pokemonReservadoAAgregar->posicion->pos_y;
+				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(
+						sizeof(t_pokemon_entrenador));
+				pokemonAAgregarConvertido->cantidad =
+						pokemonReservadoAAgregar->cantidad;
+				pokemonAAgregarConvertido->pokemon =
+						pokemonReservadoAAgregar->pokemon;
+				pokemonAAgregarConvertido->posicion = malloc(
+						sizeof(t_posicion_entrenador));
+				pokemonAAgregarConvertido->posicion->pos_x =
+						pokemonReservadoAAgregar->posicion->pos_x;
+				pokemonAAgregarConvertido->posicion->pos_y =
+						pokemonReservadoAAgregar->posicion->pos_y;
 
 				//Borro de la lista al pokemon reservado
 				sem_wait(&(sem_pokemonesReservados));
 				int indice;
-				for(int i=0; i < list_size(pokemonesReservadosEnElMapa); i++){
+				for (int i = 0; i < list_size(pokemonesReservadosEnElMapa);
+						i++) {
 
-						t_pokemon_entrenador_reservado* aux = ((t_pokemon_entrenador_reservado*) list_get(pokemonesReservadosEnElMapa, i));
+					t_pokemon_entrenador_reservado* aux =
+							((t_pokemon_entrenador_reservado*) list_get(
+									pokemonesReservadosEnElMapa, i));
 
-						if(aux == pokemonReservadoAAgregar){
-							indice=i;
-						}
+					if (aux == pokemonReservadoAAgregar) {
+						indice = i;
+					}
 				}
-				pokemonReservadoAAgregar = list_remove(pokemonesReservadosEnElMapa, indice);
+				pokemonReservadoAAgregar = list_remove(
+						pokemonesReservadosEnElMapa, indice);
 				sem_post(&(sem_pokemonesReservados));
 
 				free(pokemonReservadoAAgregar->posicion);
 				free(pokemonReservadoAAgregar);
-
-
 
 				//Agrego el Poke usano una funcion de nombre rancio que hace LO MISMO que la de entrenador.c
 				sem_wait(&(entrenadorReservador->mutex_entrenador));
@@ -292,10 +335,9 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 				verificarYCambiarEstadoEntrenador(entrenadorReservador);
 				sem_post(&(entrenadorReservador->mutex_entrenador));
 
-
 				//SEMAFORO MUTEX AL ENTRENADOR
 
-			}else{
+			} else {
 				//Si entra acá quiere decir que la respuesta fue FAIL y no pudo atrapar, entonces sigue pudiendo atrapar poke
 				//PERO OJO! Falta eliminar al pokemon de los reservados porque por algo falló. EN realidad deberíamos pre-
 				//guntar bien a los chicos del broker por qué es que eso sucede, pero por lo pronto dejo la lógica de borrado
@@ -330,12 +372,62 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t
 
 		free(msg_caught);
 		break;
-	case LOCALIZED_TEAM:;
+	case LOCALIZED_TEAM:
+		;
 		t_msg_localized_team *msg_localized = (t_msg_localized_team*) msg;
 		msg_localized = rcv_msj_localized_team(socket_cliente, logger);
-		g_cnt_msjs_localized ++;
-		//TODO Agregar la función que corresponda y tome al msg_localized
+		g_cnt_msjs_localized++;
 		id_recibido = msg_localized->id_mensaje;
+
+		char meSirveGet = 0;
+		int idAuxGet = 0;
+		char* nombreAux;
+		char yaMeLlego = 0;
+
+		//FILTRO POR ID CORRELATIVO
+
+		sem_wait(&mutex_idCorrelativosGet);
+
+		for (int i = 0; i < list_size(idCorrelativosGet); i++) {
+
+			idAuxGet = (int) list_get(idCorrelativosCatch, i);
+
+			if (idAuxGet == id_recibido) {
+
+				meSirveGet = 1;
+			}
+		}
+		sem_post(&mutex_idCorrelativosGet);
+
+
+
+		if(meSirveGet == 1){
+
+			//SI ES CORRELATIVO, ME FIJO QUE NO ME HAYA LLEGADO UN APPEARED O LOCALIZED DE LA MISMA ESPECIE ANTERIORMENTE
+
+			for (int i = 0; i < list_size(pokemonesLlegadosDelBroker); i++) {
+
+						nombreAux = (char*) list_get(pokemonesLlegadosDelBroker, i);
+
+						if (nombreAux == msg_localized->pokemon) {
+
+							yaMeLlego = 1;
+
+
+
+						}
+					}
+
+			if(yaMeLlego == 0){
+
+				//LOS SEMAFOROS ESTAN INCLUIDOS EN LA FUNCION
+				agregarPokemonesDelLocalized(msg_localized);
+			}
+
+			/////ANALIZAR SI TENEMOS QUE ACTIVAR EL PLANIFICADOR MEDIANO PLAZO PARA IR A ATRAPAR A UN POKEMON
+
+		}
+
 		eliminar_msg_localized_team(msg_localized);
 		break;
 	case 0:
@@ -354,41 +446,40 @@ void atender_gameboy(int *cliente_fd) {
 	if (cod_op == APPEARED_TEAM) {
 		process_msjs_gameboy(cod_op, *cliente_fd, g_logger);
 	} else {
-		log_error(g_logger,"RECIBI MSJ EQUIVOCADO DEL GAMEBOY");
+		log_error(g_logger, "RECIBI MSJ EQUIVOCADO DEL GAMEBOY");
 	}
 }
 
 // RECIBE MENSAJES QUE ENVIA el GAMEBOY: APPEARED_POKEMON
-void process_msjs_gameboy(op_code cod_op, int  cliente_fd, t_log *logger) {
+void process_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger) {
 	void* msg;
 	switch (cod_op) {
-	case APPEARED_TEAM:;
+	case APPEARED_TEAM:
+		;
 		t_msg_appeared_team *msg_appeared = (t_msg_appeared_team*) msg;
 		msg_appeared = rcv_msj_appeared_team(cliente_fd, logger);
-		g_cnt_msjs_appeared ++;
+		g_cnt_msjs_appeared++;
 		//TODO Hacer lo que corresponda con el msg_appeared
-		enviar_msg_confirmed(cliente_fd,logger);
+		enviar_msg_confirmed(cliente_fd, logger);
 		eliminar_msg_appeared_team(msg_appeared);
 		break;
 	}
 }
 
 //Función de prueba - Envía un mensaje CATCH_POKEMON para probar la función.
-void enviar_catch_de_appeared(t_msg_appeared_team *msg_appeared)
-{
+void enviar_catch_de_appeared(t_msg_appeared_team *msg_appeared) {
 	int pos_x = msg_appeared->coord->pos_x;
 	int pos_y = msg_appeared->coord->pos_y;
-	enviar_catch_pokemon_broker(pos_x, pos_y, msg_appeared->pokemon, g_logger, 1);
+	enviar_catch_pokemon_broker(pos_x, pos_y, msg_appeared->pokemon, g_logger,
+			1);
 }
 
 //Función de prueba - Envía un mensaje GET_POKEMON para probar la función.
-void enviar_get_de_appeared(t_msg_appeared_team *msg_appeared)
-{
+void enviar_get_de_appeared(t_msg_appeared_team *msg_appeared) {
 	enviar_get_pokemon_broker(msg_appeared->pokemon, g_logger);
 }
 
-void enviar_msjs_get_objetivos(void)
-{
+void enviar_msjs_get_objetivos(void) {
 	sem_wait(&sem_mutex_msjs);
 	puts("Pokemones Objetivo Global:");
 	puts("");
@@ -398,28 +489,29 @@ void enviar_msjs_get_objetivos(void)
 	if (status_conn_broker == true) {
 		puts("Se envía un mensaje GET_POKEMON al BROKER por cada pokemon.");
 		puts("");
-		list_iterate(objetivoGlobalEntrenadores, (void*) enviar_msjs_get_por_clase_de_pokemon);
+		list_iterate(objetivoGlobalEntrenadores,
+				(void*) enviar_msjs_get_por_clase_de_pokemon);
 	}
 }
 
-void lanzar_reconexion_broker(t_log *logger)
-{
-	pthread_mutex_init(&mutex_reconexion, NULL );
+void lanzar_reconexion_broker(t_log *logger) {
+	pthread_mutex_init(&mutex_reconexion, NULL);
 	sem_wait(&sem_mutex_msjs);
-    int thread_status = pthread_create(&tid_reconexion, NULL, (void*) funciones_reconexion, NULL );
-    if ( thread_status != 0 ) {
-        log_error(logger, "Error al crear el thread para reconexión con BROKER");
-        exit(EXIT_FAILURE);
-    }
-    else {
-    	pthread_detach(tid_reconexion);
-    }
+	int thread_status = pthread_create(&tid_reconexion, NULL,
+			(void*) funciones_reconexion, NULL);
+	if (thread_status != 0) {
+		log_error(logger,
+				"Error al crear el thread para reconexión con BROKER");
+		exit(EXIT_FAILURE);
+	} else {
+		pthread_detach(tid_reconexion);
+	}
 }
 
-void funciones_reconexion(void)
-{
+void funciones_reconexion(void) {
 	int intervalo = g_config_team->tiempo_reconexion;
-	log_debug(g_logger, "(Intervalo para reconexión con Broker: %d segundos)", intervalo);
+	log_debug(g_logger, "(Intervalo para reconexión con Broker: %d segundos)",
+			intervalo);
 	sem_post(&sem_mutex_msjs);
 	while (1) {
 		sleep(intervalo);
@@ -430,42 +522,47 @@ void funciones_reconexion(void)
 	}
 }
 
-bool codigo_operacion_valido(op_code code_op)
-{
-	return (code_op == CAUGHT_TEAM || code_op == APPEARED_TEAM || code_op == LOCALIZED_TEAM || code_op == SUSCRIP_END);
+bool codigo_operacion_valido(op_code code_op) {
+	return (code_op == CAUGHT_TEAM || code_op == APPEARED_TEAM
+			|| code_op == LOCALIZED_TEAM || code_op == SUSCRIP_END);
 }
 
-void iniciar_cnt_msjs(void)
-{
+void iniciar_cnt_msjs(void) {
 	g_cnt_msjs_appeared = 0;
 	g_cnt_msjs_caught = 0;
 	g_cnt_msjs_localized = 0;
 }
 
 void iniciar_log_team(void) {
-	g_logger = log_create(g_config_team->ruta_log, "TEAM", 1,
-			LOG_LEVEL_TRACE);
+	g_logger = log_create(g_config_team->ruta_log, "TEAM", 1, LOG_LEVEL_TRACE);
 }
 
 void leer_config_team(char *path) {
 	g_config = config_create(path);
 	g_config_team = malloc(sizeof(t_config_team));
 	g_config_team->ip_broker = config_get_string_value(g_config, "IP_BROKER");
-	g_config_team->puerto_broker = config_get_string_value(g_config, "PUERTO_BROKER");
+	g_config_team->puerto_broker = config_get_string_value(g_config,
+			"PUERTO_BROKER");
 	g_config_team->ip_team = config_get_string_value(g_config, "IP_TEAM");
-	g_config_team->puerto_team = config_get_string_value(g_config, "PUERTO_TEAM");
-	g_config_team->tiempo_reconexion = config_get_int_value(g_config, "TIEMPO_RECONEXION");
-	g_config_team->retardo_ciclo_cpu = config_get_int_value(g_config, "RETARDO_CICLO_CPU");
-	g_config_team->algoritmo_planificion = config_get_string_value(g_config, "ALGORITMO_PLANIFICACION");
+	g_config_team->puerto_team = config_get_string_value(g_config,
+			"PUERTO_TEAM");
+	g_config_team->tiempo_reconexion = config_get_int_value(g_config,
+			"TIEMPO_RECONEXION");
+	g_config_team->retardo_ciclo_cpu = config_get_int_value(g_config,
+			"RETARDO_CICLO_CPU");
+	g_config_team->algoritmo_planificion = config_get_string_value(g_config,
+			"ALGORITMO_PLANIFICACION");
 	g_config_team->quantum = config_get_int_value(g_config, "QUANTUM");
-	g_config_team->estimacion_inicial = config_get_int_value(g_config, "ESTIMACION_INICIAL");
+	g_config_team->estimacion_inicial = config_get_int_value(g_config,
+			"ESTIMACION_INICIAL");
 	g_config_team->ruta_log = config_get_string_value(g_config, "RUTA_LOG");
-	g_config_team->id_suscriptor = config_get_int_value(g_config, "ID_SUSCRIPTOR");
+	g_config_team->id_suscriptor = config_get_int_value(g_config,
+			"ID_SUSCRIPTOR");
 }
 
-void liberar_lista_posiciones(t_list* lista){
-	for(int i = 0; i< list_size(lista); i++){
-		free(list_get(lista,i));
+void liberar_lista_posiciones(t_list* lista) {
+	for (int i = 0; i < list_size(lista); i++) {
+		free(list_get(lista, i));
 	}
 
 	list_destroy(lista);
@@ -482,35 +579,37 @@ void liberar_listas(char** lista) {
 	free(lista);
 }
 
-int contador_msjs_cola(t_tipo_mensaje cola_suscripcion)
-{
+int contador_msjs_cola(t_tipo_mensaje cola_suscripcion) {
 	int contador_global;
-	switch(cola_suscripcion) {
-		case APPEARED_POKEMON:;
-			contador_global = g_cnt_msjs_appeared;
-			break;
-		case CAUGHT_POKEMON:;
-			contador_global = g_cnt_msjs_caught;
-			break;
-		case LOCALIZED_POKEMON:;
-			contador_global = g_cnt_msjs_localized;
-			break;
+	switch (cola_suscripcion) {
+	case APPEARED_POKEMON:
+		;
+		contador_global = g_cnt_msjs_appeared;
+		break;
+	case CAUGHT_POKEMON:
+		;
+		contador_global = g_cnt_msjs_caught;
+		break;
+	case LOCALIZED_POKEMON:
+		;
+		contador_global = g_cnt_msjs_localized;
+		break;
 	}
 	return contador_global;
 }
 
-
 ////////////----------------------------------------------------------------------------------------------------------------
-
 
 ///Ya leagregué semaforos en los lugares en las que se la llama
 t_pokemon_entrenador_reservado* buscarPokemonReservado(int id_Entrenador) {
 
 	for (int i = 0; list_get(pokemonesReservadosEnElMapa, i) != NULL; i++) {
-		int idAux = ((t_pokemon_entrenador_reservado*) list_get(pokemonesReservadosEnElMapa, i))->id_entrenadorReserva;
+		int idAux = ((t_pokemon_entrenador_reservado*) list_get(
+				pokemonesReservadosEnElMapa, i))->id_entrenadorReserva;
 		if (idAux == id_Entrenador) {
 
-			return (t_pokemon_entrenador_reservado*) list_get(pokemonesReservadosEnElMapa, i);
+			return (t_pokemon_entrenador_reservado*) list_get(
+					pokemonesReservadosEnElMapa, i);
 
 		}
 	}
@@ -540,43 +639,65 @@ t_entrenador* buscarEntrenadorDeLaReserva(int idEntrenadorBuscado) {
 }
 
 //Ya tiene el semaforo correspondiente afuera
-void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon){
+void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon) {
 
 	char loEncontro = 0;
 
-		for(int i=0; i < list_size(pokemonesAtrapadosGlobal); i++){
-			t_pokemon_entrenador* pokemonABuscar =
-							((t_pokemon_entrenador*) list_get(pokemonesAtrapadosGlobal, i));
-			if(strcmp(pokemonABuscar->pokemon, pokemon->pokemon)==0){
-				pokemonABuscar->cantidad++;
-				loEncontro=1;
-				free(pokemon->posicion);
-				free(pokemon);
-			}
+	for (int i = 0; i < list_size(pokemonesAtrapadosGlobal); i++) {
+		t_pokemon_entrenador* pokemonABuscar =
+				((t_pokemon_entrenador*) list_get(pokemonesAtrapadosGlobal, i));
+		if (strcmp(pokemonABuscar->pokemon, pokemon->pokemon) == 0) {
+			pokemonABuscar->cantidad++;
+			loEncontro = 1;
+			free(pokemon->posicion);
+			free(pokemon);
 		}
+	}
 
-		//OJO cuando recibamos un poke desde broker, va a tener que asignar pokemones de cantidad 1, por mas que aparezcan varios
-		//de la misma especie en una posicion
-		if(loEncontro==0){
-			list_add(pokemonesAtrapadosGlobal, pokemon);
-		}
+	//OJO cuando recibamos un poke desde broker, va a tener que asignar pokemones de cantidad 1, por mas que aparezcan varios
+	//de la misma especie en una posicion
+	if (loEncontro == 0) {
+		list_add(pokemonesAtrapadosGlobal, pokemon);
+	}
 
 }
 
-void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador){
+void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
 	t_list* pokemonesPendiente = pokemonesPendientes(unEntrenador);
 	int cantidadPokemonesPendientes = list_size(pokemonesPendiente);
 
-	if(cantidadPokemonesPendientes == 0){
+	if (cantidadPokemonesPendientes == 0) {
 		unEntrenador->estado_entrenador = EXIT;
-	}
-	else if(list_size(unEntrenador->pokemonesObtenidos) == list_size(unEntrenador->objetivoEntrenador)){
+	} else if (list_size(unEntrenador->pokemonesObtenidos)
+			== list_size(unEntrenador->objetivoEntrenador)) {
 		///ALGORITMO DEADLOCK
 		unEntrenador->estado_entrenador = DEADLOCK;
-	}
-	else{
+	} else {
 		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
 	}
 
+
+}
+
+void agregarPokemonesDelLocalized(t_msg_localized_team* mensajeLocalized){
+
+	t_posiciones_localized* posiciones = mensajeLocalized->posiciones;
+
+	for (int i = 0; i < posiciones->cant_posic; i++) {
+
+		t_coordenada* coordenada = ((t_coordenada*) list_get(posiciones->coordenadas, i));
+
+		t_pokemon_entrenador* pokemonAAgregarAlMapa = malloc(sizeof(t_pokemon_entrenador));
+		pokemonAAgregarAlMapa->cantidad = 1;
+		pokemonAAgregarAlMapa->pokemon = mensajeLocalized->pokemon;
+		pokemonAAgregarAlMapa->posicion = malloc(sizeof(t_posicion_entrenador));
+		pokemonAAgregarAlMapa->posicion->pos_x =coordenada->pos_x;
+		pokemonAAgregarAlMapa->posicion->pos_y =coordenada->pos_y;
+
+		sem_wait(&sem_pokemonesLibresEnElMapa);
+		list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
+		sem_post(&sem_pokemonesLibresEnElMapa);
+
+			}
 }
 

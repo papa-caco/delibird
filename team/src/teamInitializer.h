@@ -126,6 +126,7 @@ sem_t sem_mutex_msjs;
 sem_t sem_listas_pokemones;
 sem_t sem_pokemonesGlobalesAtrapados;
 sem_t sem_pokemonesReservados;
+sem_t sem_pokemonesLibresEnElMapa;
 
 //---------------SEMAFOROS COLAS DE ENTRENADORES---------------------------
 
