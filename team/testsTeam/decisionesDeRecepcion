@@ -1,0 +1,9 @@
+-----------------------------------------------------------------------------------------------------------
+	
+------------------------------------TEST ME SIRVE POKEMON--------------------------------------------------
+Esta funcion lo que hace es, dado un nombre de un pokemon, revisar si la cantidad que tenemos de esa especie
+en nuestro "mundo Team" (pokemonesLibres, pokemonesObtenidosGlobales y pokemonesReservados) es menor a lo
+que necesito según los objetivos globales. ENtonces devuelve true indicando que ese poke me sirve, porque
+me falta.
+
+ 

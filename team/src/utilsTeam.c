@@ -213,6 +213,7 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 		//TODO Agregar la función que corresponda y tome al msg_appeared
 		id_recibido = msg_appeared->id_mensaje;
 
+		//meSirvePokemon ya tiene semaforos dentro
 		if (meSirvePokemon(msg_appeared->pokemon)) {
 
 			sem_wait(&mutex_listaPokemonesLlegadosDelBroker);

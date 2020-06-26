@@ -127,6 +127,7 @@ sem_t sem_listas_pokemones;
 sem_t sem_pokemonesGlobalesAtrapados;
 sem_t sem_pokemonesReservados;
 sem_t sem_pokemonesLibresEnElMapa;
+sem_t sem_pokemonesObjetivoGlobal;
 
 //---------------SEMAFOROS COLAS DE ENTRENADORES---------------------------
 
