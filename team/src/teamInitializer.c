@@ -5,7 +5,9 @@
  *      Author: utnso
  */
 
-#include "teamInitializer.h"
+//#include "teamInitializer.h"
+#include "utilsTeam.h"
+
 
 void iniciar_team(void){
 	leer_config_team(RUTA_CONFIG_TEAM);
@@ -109,17 +111,25 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 void iniciar_entrenadores_and_objetivoGlobal(){
 	colaNewEntrenadores = queue_create();
 	objetivoGlobalEntrenadores = list_create();
-	t_list* objetivosEntrenadores = extraer_pokemones_entrenadores("OBJETIVOS_ENTRENADORES");
-	t_list* pokemonesObtenidos = extraer_pokemones_entrenadores("POKEMON_ENTRENADORES");
-	t_list* posiciones = extraer_posiciones_entrenadores();
-	cargar_objetivo_global(objetivosEntrenadores);
+	pokemonesAtrapadosGlobal = list_create();
 
+	t_list* objetivosEntrenadores = extraer_pokemones_entrenadores("OBJETIVOS_ENTRENADORES");
+	printf("-------YA TERMNINO DE EXTRAER LOS OBJETIVOS------\n");
+	t_list* pokemonesObtenidos = extraer_pokemones_entrenadores("POKEMON_ENTRENADORES");
+	printf("-------YA TERMNINO DE EXTRAER LOS OBTENIDOS------\n");
+	t_list* posiciones = extraer_posiciones_entrenadores();
+	printf("-------YA TERMNINO DE EXTRAER LAS POSICIONES DE LOS ENTRENADORES------\n");
+	cargar_objetivo_global(objetivosEntrenadores);
+	printf("-------YA TERMNINO DE CARGAR EL OBJETIVO GLOBAL------\n");
+	cargar_obtenidos_global(pokemonesObtenidos);
+	printf("-------YA TERMNINO DE CARGAR EL OBTENIDOS GLOBAL------\n");
 
 	for(int i=0; list_get(posiciones, i) != NULL; i++){
 		t_entrenador* unEntrenador = malloc(sizeof(t_entrenador));
 		unEntrenador->posicion = (t_posicion_entrenador*)list_get(posiciones, i);
 		unEntrenador->objetivoEntrenador = (t_list*)list_get(objetivosEntrenadores, i);
 		unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
+		unEntrenador->id = i;
 		queue_push(colaNewEntrenadores, unEntrenador);
 	}
 	//Al finalizar el programa vamos a tener que destruir la lista de entrenadores, lo cual implicará destruir
@@ -146,6 +156,28 @@ void cargar_objetivo_global(t_list* objetivosEntrenadores){
 
 		}
 	}
+}
+
+void cargar_obtenidos_global(t_list* pokemonesObtenidos){
+
+	for(int i=0; list_get(pokemonesObtenidos, i) != NULL; i++){
+			t_list* obtenidosUnEntrenador = (t_list*)list_get(pokemonesObtenidos, i);
+
+
+			for(int j=0; list_get(obtenidosUnEntrenador, j) != NULL; j++){
+				t_pokemon_entrenador *pokemonNuevo = malloc(sizeof(t_pokemon_entrenador));
+				t_pokemon_entrenador* pokemonEncontrado = list_buscar(pokemonesAtrapadosGlobal, ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->pokemon);
+				if(pokemonEncontrado != NULL){
+					pokemonEncontrado -> cantidad+=((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->cantidad;
+				}
+				else{
+					pokemonNuevo -> pokemon = ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->pokemon;
+					pokemonNuevo -> cantidad = ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->cantidad;
+					list_add(pokemonesAtrapadosGlobal, pokemonNuevo);
+					}
+
+			}
+		}
 }
 
 //------------FUNCION QUE BUSCA UN ELEMENTO DENTRO DE UNA LISTA Y SI LO ENCUENTRA, LO RETORNA, SI NO, NULL
