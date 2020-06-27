@@ -21,7 +21,8 @@ typedef struct pokemon_metadada{
 	char *directory;
 	int size;
 	t_list* blocks;
-	char open;
+	char *open;
+	char *file_metatada_pokemon;
 } t_pokemon_medatada;
 
 
@@ -38,16 +39,21 @@ t_config_tall_grass *g_config_tg;
 //Funciones
 
 
-void file_system_pokemon(t_pokemon_medatada *pokemon_metadata, t_list *lista_posiciones, char *pokemon);
+void file_system_pokemon( t_list *lista_posiciones, char *pokemon);
 void grabar_bloque(int block_nro, char *block_buffer);
-void grabar_metadata_pokemon(t_pokemon_medatada *pokemon_metadata, char *pokemon);
+void grabar_metadata_pokemon(t_list *blocks, char *pokemon);
 void crear_dirname_pokemon(char *pokemon);
 void leer_metadata_tall_grass();
 int  get_bloque_libre();
-t_pokemon_posiciones* leer_bloques();
 char* int_to_string(int x);
 
 void prueba_file_system(void);
+void prueba_leer_bloques_pokemon();
 
+t_list * leer_bloques( char *pokemon);
+char *get_contenido_bloques(t_list *bloques);
+char *get_contenido_bloque(char *block);
+t_posicion_pokemon *string_to_posicion(char* str_posicion);
+t_pokemon_medatada * leer_metadata_pokemon(char *pokemon);
 
 #endif /* SRC_TALL_GRASS_H_ */

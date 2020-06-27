@@ -9,6 +9,7 @@ broker/bin/broker
 broker/bin/logs/broker.log
 broker/logs/logdebug.log
 broker/logs/.gitignore
+broker/.settings/language.settings.xml
 gameboy/.settings/language.settings.xml
 gameboy/.settings*
 gameboy/.cproject
@@ -30,7 +31,6 @@ gameCard/.autotools
 gameCard/.project
 gameCard/.settings/language.settings.xml
 delibird/.settings/language.settings.xml
-
 
 # Object files
 *.o

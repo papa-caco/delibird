@@ -66,19 +66,39 @@ t_particion_dinamica *generar_particion_dinamica(t_queue_msg *msg_queue);
 
 t_particion_dinamica *buscar_particion_dinamica_libre(t_queue_msg *msg_queue);
 
+t_particion_dinamica *particion_proxima_victima(void);
+
+t_particion_dinamica *reemplazar_particion_dinamica(t_queue_msg *msg, t_log *logger);
+
+t_particion_dinamica *consolidar_particion_dinamica(t_particion_dinamica *particion, t_log *logger);
+
+void mover_datos_particion_dinamica_a_swap(t_particion_dinamica *particion, t_log *logger);
+
 void obtener_datos_msj_de_particion_cache(t_queue_msg *msg_queue, t_log *g_logger);
 
 void eliminar_msg_data_particion_cache(int id_mensaje, t_log *logger);
 
-t_particion_dinamica *get_particion_cache_por_id_mensaje(int id_mensaje);
+t_particion_dinamica *generar_particion_swap(t_particion_dinamica *part_din);
+
+t_particion_dinamica *buscar_particion_swap_libre(uint32_t data_size);
+
+t_particion_dinamica *get_particion_cache_por_id_mensaje(t_cache_particiones *cache, int id_mensaje);
+
+t_particion_dinamica *get_particion_cache_por_id_particion(t_cache_particiones *cache, int id_partcion);
 
 t_queue_msg *generar_nuevo_mensaje_cola(void);
 
 t_broker_queue *cola_broker_suscripcion(t_tipo_mensaje tipo_mensaje);
 
-sem_t semaforo_cola(t_tipo_mensaje tipo_mensaje);
+pthread_mutex_t *semaforo_cola(t_tipo_mensaje tipo_mensaje);
 
-int espacio_disponible_en_cache(void);
+int espacio_disponible_en_cache(t_cache_particiones *cache);
+
+int espacio_disponible_en_swap(void);
+
+int tamano_particiones_libres(int index);
+
+int tamano_particiones_proximo_reemplazo(int data_size);
 
 void incremento_cnt_id_mensajes(void);
 

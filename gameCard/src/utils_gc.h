@@ -45,9 +45,9 @@ typedef struct Configuracion_GameCard
 	char *puerto_broker;
 	char *ip_gamecard;
 	char *puerto_gamecard;
-	char *path_pokemon; //PUNTO_MONTAJE_TALLGRASS
-	char *path_blocks;
-	char *path_files;
+	char *path_tall_grass; //PUNTO_MONTAJE_TALLGRASS
+	char *dirname_blocks;
+	char *dirname_files;
 	char *file_metadata;
 	int id_suscriptor;
 	int tiempo_reconexion;
@@ -74,6 +74,7 @@ t_config_gamecard  *g_config_gc;
 t_log *g_logger;
 t_config* g_config;
 sem_t sem_mutex_suscripcion;
+sem_t sem_mutex_semaforos;
 //pthread_mutex_t sem_mutex_suscripcion;
 bool status_conn_broker;
 pthread_t tid;
@@ -97,7 +98,7 @@ void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon
 
 void rcv_catch_pokemon(op_code codigo_operacion, int socket_cliente);
 
-void devolver_caught_pokemon(void *msg, int socket_cliente);
+void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente);
 void *rcv_get_pokemon(int socket_cliente, int *size);
 void devolver_recepcion_ok(int socket_cliente);
 void devolver_recepcion_fail(int socket_cliente, char* mensajeError) ;
