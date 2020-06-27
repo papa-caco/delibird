@@ -15,7 +15,7 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 	int distancia;
 	t_pokemon_entrenador* pokemon;
-	t_posicion_entrenador* posicionEntrenador;
+	t_posicion_entrenador* posicionEntrenadorAMoverse;
 	t_entrenador* entrenador2;
 
 	while(true){
@@ -44,13 +44,16 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 				break;
 		case MOVERSE_A_ENTRENADOR:
-			posicionEntrenador = buscarEntrenadorAMoverse(entrenador);
 
-			distancia = calcularDistancia(entrenador->posicion, posicionEntrenador);
+			//RECORDAR que el entrenador que se está moviendo ahora, debería de dejar de estar en la cola de blocked
+			//y estar en exit.
+			posicionEntrenadorAMoverse = buscarEntrenadorAMoverse(entrenador);
+
+			distancia = calcularDistancia(entrenador->posicion, posicionEntrenadorAMoverse);
 
 			for(int i=0; i<distancia; i++){
 
-			moverEntrenador(entrenador, posicionEntrenador);
+			moverEntrenador(entrenador, posicionEntrenadorAMoverse);
 
 			}
 
@@ -95,7 +98,7 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 t_pokemon_entrenador* buscarPokemonMasCercano(t_posicion_entrenador* posicion_Entrenador){
 
 	t_pokemon_entrenador* pokemonMasCercano;
-	int distanciaMasCercana = 0;
+	int distanciaMasCercana = 100000;
 	int distanciaAux = 0;
 
 
@@ -189,11 +192,13 @@ t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador){
 }
 
 void moverPokemonAReservados(t_list* listaQueContieneElPokemon,
-		t_list* listaReceptoraDelPokemon, t_pokemon_entrenador* pokemonAMover, int idReservador){
+		t_list* listaReceptoraDelPokemon, t_pokemon_entrenador* pokemonAMover,
+		int idReservador) {
 
 	t_pokemon_entrenador* pokemonAux;
 
-	t_pokemon_entrenador_reservado* pokemonAAgregar = malloc(sizeof(t_pokemon_entrenador_reservado));
+	t_pokemon_entrenador_reservado* pokemonAAgregar = malloc(
+			sizeof(t_pokemon_entrenador_reservado));
 	pokemonAAgregar->cantidad = 1;
 	pokemonAAgregar->pokemon = pokemonAMover->pokemon;
 	pokemonAAgregar->posicion = malloc(sizeof(t_posicion_entrenador));
@@ -203,28 +208,27 @@ void moverPokemonAReservados(t_list* listaQueContieneElPokemon,
 
 	list_add(listaReceptoraDelPokemon, pokemonAAgregar);
 
-	int indice;
+	int indice = 0;
 
-	for(int i=0; i < list_size(listaQueContieneElPokemon); i++){
+	for (int i = 0; i < list_size(listaQueContieneElPokemon); i++) {
 
-		pokemonAux = ((t_pokemon_entrenador*) list_get(listaQueContieneElPokemon, i));
+		pokemonAux = ((t_pokemon_entrenador*) list_get(
+				listaQueContieneElPokemon, i));
 
-		if(pokemonAux == pokemonAMover){
-			indice=i;
+		if (pokemonAux == pokemonAMover) {
+			indice = i;
 		}
 	}
 
-	if(pokemonAMover->cantidad == 1){
+	if (pokemonAMover->cantidad == 1) {
 		pokemonAux = list_remove(listaQueContieneElPokemon, indice);
 		free(pokemonAux->posicion);
 		free(pokemonAux);
 
-	}else{
+	} else {
 
 		pokemonAMover->cantidad--;
 	}
-
-
 
 }
 
@@ -400,7 +404,7 @@ void quitarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon) {
 
 	if (hayQueEliminarPokemon == 1) {
 		t_pokemon_entrenador* pokemonAEliminar=list_remove(entrenador->pokemonesObtenidos, indicePokemon);
-		//free(pokemonAEliminar->pokemon);
+		//free(pokemonAEliminar->pokemon); Se deja comentado porque por ahora no malloqueamos los char*
 		free(pokemonAEliminar);
 	}
 }

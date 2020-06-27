@@ -9,112 +9,115 @@
 
 int main(void) {
 
-	leer_config_team(RUTA_CONFIG_TEAM);
+	//Semaforo y colas inicializadas
+	sem_init(&(sem_pokemonesGlobalesAtrapados), 0, 1);
 
-	sem_init(&mutex_ciclosCPU, 0, 1);
+	sem_init(&(sem_pokemonesLibresEnElMapa), 0, 1);
 
+	sem_init(&(sem_pokemonesObjetivoGlobal), 0, 1);
+
+	sem_init(&(sem_pokemonesReservados), 0, 1);
+
+	pokemonesAtrapadosGlobal = list_create();
+
+	objetivoGlobalEntrenadores = list_create();
+
+	pokemonesReservadosEnElMapa = list_create();
+
+	pokemonesLibresEnElMapa = list_create();
+
+	//Ahora creo los pokemones que tendrán los entrenadores de la prueba
 
 	t_pokemon_entrenador* pokemonObjetivo1 = malloc(
-				sizeof(t_pokemon_entrenador));
-		pokemonObjetivo1->cantidad = 2;
-		pokemonObjetivo1->pokemon = "Pikachu";
+			sizeof(t_pokemon_entrenador));
+	pokemonObjetivo1->cantidad = 2;
+	pokemonObjetivo1->pokemon = "Pikachu";
 
-		t_pokemon_entrenador* pokemonObtenido1 = malloc(
-				sizeof(t_pokemon_entrenador));
-		pokemonObtenido1->cantidad = 2;
-		pokemonObtenido1->pokemon = "Pepito";
+	t_pokemon_entrenador* pokemonObtenido1 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObtenido1->cantidad = 2;
+	pokemonObtenido1->pokemon = "Pepito";
 
-		t_pokemon_entrenador* pokemonObjetivo2 = malloc(
-				sizeof(t_pokemon_entrenador));
-		pokemonObjetivo2->cantidad = 1;
-		pokemonObjetivo2->pokemon = "Pepito";
+	t_pokemon_entrenador* pokemonObjetivo2 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObjetivo2->cantidad = 1;
+	pokemonObjetivo2->pokemon = "Pepito";
 
-		t_pokemon_entrenador* pokemonObtenido2 = malloc(
-				sizeof(t_pokemon_entrenador));
-		pokemonObtenido2->cantidad = 3;
-		pokemonObtenido2->pokemon = "Pikachu";
+	t_pokemon_entrenador* pokemonObtenido2 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObtenido2->cantidad = 3;
+	pokemonObtenido2->pokemon = "Pikachu";
 
-		t_pokemon_entrenador* pokemonObjetivo3 = malloc(
-				sizeof(t_pokemon_entrenador));
-		pokemonObjetivo3->cantidad = 2;
-		pokemonObjetivo3->pokemon = "Bulbasaur";
+	t_pokemon_entrenador* pokemonObjetivo3 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObjetivo3->cantidad = 2;
+	pokemonObjetivo3->pokemon = "Bulbasaur";
 
-		t_pokemon_entrenador* pokemonObtenido3 = malloc(
-				sizeof(t_pokemon_entrenador));
-		pokemonObtenido3->cantidad = 1;
-		pokemonObtenido3->pokemon = "Bulbasaur";
+	t_pokemon_entrenador* pokemonRandom1 = malloc(sizeof(t_pokemon_entrenador));
+	pokemonRandom1->cantidad = 2;
+	pokemonRandom1->pokemon = "Riquelme";
 
-		t_entrenador* unEntrenador = malloc(sizeof(t_entrenador));
-		unEntrenador->pokemonesObtenidos = list_create();
-		list_add(unEntrenador->pokemonesObtenidos, pokemonObtenido3);
-		list_add(unEntrenador->pokemonesObtenidos, pokemonObtenido1);
-		unEntrenador->objetivoEntrenador = list_create();
-		list_add(unEntrenador->objetivoEntrenador, pokemonObjetivo1);
+	t_pokemon_entrenador* pokemonRandom2 = malloc(sizeof(t_pokemon_entrenador));
+	pokemonRandom2->cantidad = 1;
+	pokemonRandom2->pokemon = "Messi";
 
-		t_entrenador* unEntrenador2 = malloc(sizeof(t_entrenador));
-		unEntrenador2->pokemonesObtenidos = list_create();
-		list_add(unEntrenador2->pokemonesObtenidos, pokemonObtenido2);
-		list_add(unEntrenador2->pokemonesObtenidos, pokemonObtenido3);
-		unEntrenador2->objetivoEntrenador = list_create();
-		list_add(unEntrenador2->objetivoEntrenador, pokemonObjetivo2);
+	t_pokemon_entrenador* pokemonObtenido3 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObtenido3->cantidad = 1;
+	pokemonObtenido3->pokemon = "Bulbasaur";
 
+	t_pokemon_entrenador_reservado* pokemonReservado1 = malloc(
+			sizeof(t_pokemon_entrenador_reservado));
+	pokemonReservado1->cantidad = 1;
+	pokemonReservado1->pokemon = "Palermo";
 
-		printf("Los pokemones obtenidos iniciales del entrenador 1 son: \n");
+	t_pokemon_entrenador_reservado* pokemonReservado2 = malloc(
+			sizeof(t_pokemon_entrenador_reservado));
+	pokemonReservado1->cantidad = 1;
+	pokemonReservado1->pokemon = "ElGuille";
 
-		for (int j = 0; list_get(unEntrenador->pokemonesObtenidos, j) != NULL;
-				j++) {
-			t_pokemon_entrenador* pok = (t_pokemon_entrenador*) list_get(
-					unEntrenador->pokemonesObtenidos, j);
-			char* nombrePok = pok->pokemon;
-			printf("%s(%d)\n", nombrePok, pok->cantidad);
-		}
-		printf("----------------------------------\n");
+	list_add(pokemonesAtrapadosGlobal, pokemonObjetivo1);
+	list_add(pokemonesAtrapadosGlobal, pokemonObjetivo2);
+	list_add(pokemonesAtrapadosGlobal, pokemonObtenido2);
 
-		printf("Los pokemones obtenidos iniciales del entrenador 2 son: \n");
+	list_add(pokemonesLibresEnElMapa, pokemonObjetivo3);
+	list_add(pokemonesLibresEnElMapa, pokemonObtenido1);
+	list_add(pokemonesLibresEnElMapa, pokemonObtenido3);
 
-		for (int j = 0; list_get(unEntrenador2->pokemonesObtenidos, j) != NULL;
-				j++) {
-			t_pokemon_entrenador* pok = (t_pokemon_entrenador*) list_get(
-					unEntrenador2->pokemonesObtenidos, j);
-			char* nombrePok = pok->pokemon;
-			printf("%s(%d)\n", nombrePok, pok->cantidad);
-		}
-		printf("----------------------------------\n");
+	list_add(pokemonesReservadosEnElMapa, pokemonReservado1);
+	list_add(pokemonesReservadosEnElMapa, pokemonReservado2);
 
+	list_add(objetivoGlobalEntrenadores, pokemonRandom1);
+	list_add(objetivoGlobalEntrenadores, pokemonRandom2);
 
+	printf(
+			"Pregunto si me sirve agregar a Baiano, y me tiene que decir que no. \n");
 
+	printf("---------------------------------\n");
 
-		if (puedeIntercambiarPokemon(unEntrenador, unEntrenador2)) {
-			intercambiarPokemon(unEntrenador, unEntrenador2);
-		}
+	if (meSirvePokemon("Baiano") == 0) {
+		printf("Baiano no te sirve!");
+	}
 
+	printf("---------------------------------\n");
 
+	printf(
+				"Pregunto si me sirve agregar a Riquelme, y me tiene que decir que sí porque me faltan 2. \n");
 
+		if (meSirvePokemon("Riquelme") == 1) {
+				printf("Riquelme SI te sirve!");
+			}
 
-		printf("Los pokemones obtenidos finales del entrenador 1 son: \n");
+		printf("---------------------------------\n");
 
-		for (int j = 0; list_get(unEntrenador->pokemonesObtenidos, j) != NULL;
-				j++) {
-			t_pokemon_entrenador* pok = (t_pokemon_entrenador*) list_get(
-					unEntrenador->pokemonesObtenidos, j);
-			char* nombrePok = pok->pokemon;
-			printf("%s(%d)\n", nombrePok, pok->cantidad);
-		}
-		printf("----------------------------------\n");
+	printf(
+			"Pregunto si me sirve agregar a Messi, y me tiene que decir que sí porque me falta 1. \n");
 
-		printf("Los pokemones obtenidos finales del entrenador 2 son: \n");
+	if (meSirvePokemon("Messi") == 1) {
+		printf("Messi SI te sirve!");
+	}
 
-		for (int j = 0; list_get(unEntrenador2->pokemonesObtenidos, j) != NULL;
-				j++) {
-			t_pokemon_entrenador* pok = (t_pokemon_entrenador*) list_get(
-					unEntrenador2->pokemonesObtenidos, j);
-			char* nombrePok = pok->pokemon;
-			printf("%s(%d)\n", nombrePok, pok->cantidad);
-		}
-		printf("----------------------------------\n");
-
-
-
+	printf("---------------------------------\n");
 
 
 

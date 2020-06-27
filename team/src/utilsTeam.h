@@ -2,12 +2,18 @@
 #define SRC_UTILSTEAM_H_
 
 #include "teamInitializer.h"
+#include "decisionesDeRecepcion.h"
 
 #include <semaphore.h>
 
 
 int ciclosCPU;
 t_list* idCorrelativosCatch;
+t_list* idCorrelativosGet;
+t_list* pokemonesLlegadosDelBroker;
+
+sem_t mutex_listaPokemonesLlegadosDelBroker;
+sem_t mutex_idCorrelativosGet;
 sem_t mutex_ciclosCPU;
 sem_t mutex_idCorrelativos;
 sem_t mutex_entrenador;
@@ -16,6 +22,7 @@ typedef struct mensaje_Caugth_and_IdEntrenador{
 	t_msg_catch_broker* msg_catch_broker;
 	int id_entrenador;
 }t_mensaje_Caugth_and_IdEntrenador;
+
 
 
 
@@ -75,14 +82,6 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon);
 
 void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador);
 
-//Estas ultimas dos funciones simplemente las agregue para solucionar momentaneamente problemas de imports, son copiadas y pegadas
-//de entrenador.c
-
-void agregarPokemonDos(t_entrenador* entrenador, t_pokemon_entrenador* pokemon);
-
-t_list* pokemonesPendientesDos(t_entrenador* entrenador);
-
-
-
+void agregarPokemonesDelLocalized(t_msg_localized_team* mensajeLocalized);
 
 #endif /* SRC_UTILSTEAM_H_ */

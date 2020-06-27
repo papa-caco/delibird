@@ -5,7 +5,9 @@
 #include<delibird/mensajeria.h>
 #include<delibird/serializaciones.h>
 #include<delibird/conexiones.h>
-#include "utilsTeam.h"
+//#include "utilsTeam.h"
+
+
 
 
 #define ID_MSG_RTA 65535
@@ -124,6 +126,8 @@ sem_t sem_mutex_msjs;
 sem_t sem_listas_pokemones;
 sem_t sem_pokemonesGlobalesAtrapados;
 sem_t sem_pokemonesReservados;
+sem_t sem_pokemonesLibresEnElMapa;
+sem_t sem_pokemonesObjetivoGlobal;
 
 //---------------SEMAFOROS COLAS DE ENTRENADORES---------------------------
 

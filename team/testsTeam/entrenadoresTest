@@ -105,9 +105,9 @@
 	free(unEntrenador);
 	free(pokemonAQuitar);
 	
-	-----------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
 	
-	------------------------------------TEST POKEMONES INNECESARIOS Y PENDIENTES-------------------------------
+------------------------------------TEST POKEMONES INNECESARIOS Y PENDIENTES-------------------------------
 	
 	t_pokemon_entrenador* pokemonObjetivo1 = malloc(sizeof(t_pokemon_entrenador));
 	pokemonObjetivo1->cantidad = 2;
@@ -231,6 +231,10 @@
 	
 	--------------------------------------------TEST INTERCAMBIAR POKEMON-------------------------------------------------------
 	
+	leer_config_team(RUTA_CONFIG_TEAM);
+
+	sem_init(& mutex_ciclosCPU, 0, 1);
+
 	t_pokemon_entrenador* pokemonObjetivo1 = malloc(
 			sizeof(t_pokemon_entrenador));
 	pokemonObjetivo1->cantidad = 2;
@@ -275,7 +279,6 @@
 	unEntrenador2->objetivoEntrenador = list_create();
 	list_add(unEntrenador2->objetivoEntrenador, pokemonObjetivo2);
 
-
 	printf("Los pokemones obtenidos iniciales del entrenador 1 son: \n");
 
 	for (int j = 0; list_get(unEntrenador->pokemonesObtenidos, j) != NULL;
@@ -298,15 +301,9 @@
 	}
 	printf("----------------------------------\n");
 
-
-
-
 	if (puedeIntercambiarPokemon(unEntrenador, unEntrenador2)) {
 		intercambiarPokemon(unEntrenador, unEntrenador2);
 	}
-
-
-
 
 	printf("Los pokemones obtenidos finales del entrenador 1 son: \n");
 
@@ -331,5 +328,447 @@
 	printf("----------------------------------\n");
 
 	
+	------------------------------------------------------------------------------------------------------------------------------------------
 	
+	--------------------------------------------TEST POKEMON MAS CERCANO-------------------------------------------------------
+	
+	
+	pokemonesLibresEnElMapa = list_create();
+
+
+
+	t_pokemon_entrenador* pokemonLibre1 = malloc(sizeof(t_pokemon_entrenador));
+	pokemonLibre1->posicion = malloc(sizeof(t_posicion_entrenador));
+	pokemonLibre1->cantidad = 1;
+	pokemonLibre1->pokemon = "Pikachu";
+	pokemonLibre1->posicion->pos_x = 1;
+	pokemonLibre1->posicion->pos_y = 1;
+
+
+	t_pokemon_entrenador* pokemonLibre2 = malloc(sizeof(t_pokemon_entrenador));
+	pokemonLibre2->posicion = malloc(sizeof(t_posicion_entrenador));
+	pokemonLibre2->cantidad = 2;
+	pokemonLibre2->pokemon = "Pepito";
+	pokemonLibre2->posicion->pos_x= 4;
+	pokemonLibre2->posicion->pos_y= 0;
+
+	t_pokemon_entrenador* pokemonLibre3 = malloc(sizeof(t_pokemon_entrenador));
+	pokemonLibre3->posicion = malloc(sizeof(t_posicion_entrenador));
+		pokemonLibre3->cantidad = 3;
+		pokemonLibre3->pokemon = "Pepito";
+		pokemonLibre3->posicion->pos_x= 4;
+		pokemonLibre3->posicion->pos_y= 4;
+
+		t_entrenador* unEntrenador = malloc(sizeof(t_entrenador));
+		unEntrenador->posicion = malloc(sizeof(t_posicion_entrenador));
+		unEntrenador->posicion->pos_x = 0;
+		unEntrenador->posicion->pos_y = 0;
+
+	list_add(pokemonesLibresEnElMapa, pokemonLibre1);
+	list_add(pokemonesLibresEnElMapa, pokemonLibre2);
+	list_add(pokemonesLibresEnElMapa, pokemonLibre3);
+
+	t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(unEntrenador->posicion);
+
+	printf("La cantidad de el pokemon mas cercano es : %d \n", pokemonCercano->cantidad);
+	printf("El pokemon mas cercano es : %s \n", pokemonCercano->pokemon);
+
+
+	free(pokemonLibre1->posicion);
+	free(pokemonLibre2->posicion);
+	free(pokemonLibre3->posicion);
+	free(unEntrenador->posicion);
+	free(pokemonLibre1);
+	free(pokemonLibre2);
+	free(pokemonLibre3);
+	free(unEntrenador);
+	free(pokemonesLibresEnElMapa);
+	
+	
+-----------------------------------------------------------------------------------------------------------------
+
+-----------------------------------TEST MOVERPOKEMONARESERVADOS-----------------------------------------------
+Lo que hace es dadasdos listas (poklibres y reservados), un pokemon libre y el id de un entrenador que quiere reservar
+ese pokemon libre, mueve al pokemon libre de lalista de pokemones libres, a la lista de reservados.
+
+pokemonesLibresEnElMapa = list_create();
+
+	pokemonesReservadosEnElMapa = list_create();
+
+
+	t_pokemon_entrenador* pokemonObjetivo1 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObjetivo1->cantidad = 1;
+	pokemonObjetivo1->pokemon="Pikachu";
+	pokemonObjetivo1->posicion = malloc(
+			sizeof(t_posicion_entrenador));
+	pokemonObjetivo1->posicion->pos_x = 0;
+	pokemonObjetivo1->posicion->pos_y = 0;
+
+	t_pokemon_entrenador* pokemonObtenido1 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObtenido1->cantidad = 1;
+	pokemonObtenido1->pokemon = "Pepito";
+	pokemonObtenido1->posicion = malloc(
+				sizeof(t_posicion_entrenador));
+		pokemonObtenido1->posicion->pos_x = 0;
+		pokemonObtenido1->posicion->pos_y = 0;
+
+	t_pokemon_entrenador* pokemonObjetivo2 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObjetivo2->cantidad = 1;
+	pokemonObjetivo2->pokemon = "Charizard";
+	pokemonObjetivo2->posicion = malloc(
+				sizeof(t_posicion_entrenador));
+		pokemonObjetivo2->posicion->pos_x = 0;
+		pokemonObjetivo2->posicion->pos_y = 0;
+
+	t_pokemon_entrenador* pokemonObtenido2 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObtenido2->cantidad = 1;
+	pokemonObtenido2->pokemon = "Charmander";
+	pokemonObtenido2->posicion = malloc(
+					sizeof(t_posicion_entrenador));
+			pokemonObtenido2->posicion->pos_x = 0;
+			pokemonObtenido2->posicion->pos_y = 0;
+
+	t_pokemon_entrenador* pokemonObjetivo3 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObjetivo3->cantidad = 1;
+	pokemonObjetivo3->pokemon = "Bulbasaur";
+	pokemonObjetivo3->posicion = malloc(
+				sizeof(t_posicion_entrenador));
+		pokemonObjetivo3->posicion->pos_x = 0;
+		pokemonObjetivo3->posicion->pos_y = 0;
+
+	t_pokemon_entrenador* pokemonObtenido3 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObtenido3->cantidad = 1;
+	pokemonObtenido3->pokemon = "Pikachu";
+	pokemonObtenido3->posicion = malloc(
+					sizeof(t_posicion_entrenador));
+			pokemonObtenido3->posicion->pos_x = 0;
+			pokemonObtenido3->posicion->pos_y = 0;
+
+	list_add(pokemonesLibresEnElMapa, pokemonObjetivo1);
+	list_add(pokemonesLibresEnElMapa, pokemonObjetivo2);
+	list_add(pokemonesLibresEnElMapa, pokemonObjetivo3);
+	list_add(pokemonesLibresEnElMapa, pokemonObtenido1);
+	list_add(pokemonesLibresEnElMapa, pokemonObtenido2);
+	list_add(pokemonesLibresEnElMapa, pokemonObtenido3);
+
+	printf("Inicialmente, los pokemones libres en el mapa son:\n");
+
+	for (int j = 0; list_get(pokemonesLibresEnElMapa, j) != NULL; j++) {
+		t_pokemon_entrenador* pok = (t_pokemon_entrenador*) list_get(
+				pokemonesLibresEnElMapa, j);
+		char* nombrePok = pok->pokemon;
+		printf("%s(%d) en (%d, %d)\n", nombrePok, pok->cantidad,
+				pok->posicion->pos_x, pok->posicion->pos_y);
+	}
+	printf("----------------------------------\n");
+
+	printf("Ahora estoy pasando tres de los libres a reservados\n");
+
+	printf("----------------------------------\n");
+
+	moverPokemonAReservados(pokemonesLibresEnElMapa,
+			pokemonesReservadosEnElMapa, pokemonObjetivo1, 1);
+	moverPokemonAReservados(pokemonesLibresEnElMapa,
+			pokemonesReservadosEnElMapa, pokemonObtenido1, 2);
+	moverPokemonAReservados(pokemonesLibresEnElMapa,
+			pokemonesReservadosEnElMapa, pokemonObjetivo3, 3);
+
+	printf("Finalmente, los pokemones libres en el mapa son:\n");
+
+	for (int j = 0; list_get(pokemonesLibresEnElMapa, j) != NULL; j++) {
+		t_pokemon_entrenador* pok = (t_pokemon_entrenador*) list_get(
+				pokemonesLibresEnElMapa, j);
+		char* nombrePok = pok->pokemon;
+		printf("%s(%d) en (%d, %d)\n", nombrePok, pok->cantidad,
+				pok->posicion->pos_x, pok->posicion->pos_y);
+	}
+	printf("----------------------------------\n");
+
+	printf("Los pokemones reservados son:\n");
+
+	for (int j = 0; list_get(pokemonesReservadosEnElMapa, j) != NULL; j++) {
+		t_pokemon_entrenador_reservado* pok =
+				(t_pokemon_entrenador_reservado*) list_get(
+						pokemonesReservadosEnElMapa, j);
+		char* nombrePok = pok->pokemon;
+		printf("%s(%d) en (%d, %d) del entrenador %d \n", nombrePok, pok->cantidad,
+				pok->posicion->pos_x, pok->posicion->pos_y, pok->id_entrenadorReserva);
+	}
+	
+-----------------------------------------------------------------------------------------------------------
+	
+------------------------------------TEST BUSCAR ENTRENADOR A MOVERSE-------------------------------
+Lo que hace esta función es, dadoun entrenador que está en deadlock, buscar un candidato de intercambio
+para poder moverse hacia él, y retornar la posición de este último.
+
+//Semaforo y colas inicializadas
+	sem_init(&(sem_cola_blocked), 0, 1);
+
+	colaBlockedEntrenadores = queue_create();
+
+	//Ahora creo los pokemones que tendrán los entrenadores de la prueba
+
+	t_pokemon_entrenador* pokemonObjetivo1 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObjetivo1->cantidad = 2;
+	pokemonObjetivo1->pokemon = "Pikachu";
+
+	t_pokemon_entrenador* pokemonObtenido1 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObtenido1->cantidad = 2;
+	pokemonObtenido1->pokemon = "Pepito";
+
+	t_pokemon_entrenador* pokemonObjetivo2 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObjetivo2->cantidad = 1;
+	pokemonObjetivo2->pokemon = "Pepito";
+
+	t_pokemon_entrenador* pokemonObtenido2 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObtenido2->cantidad = 3;
+	pokemonObtenido2->pokemon = "Pikachu";
+
+	t_pokemon_entrenador* pokemonObjetivo3 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObjetivo3->cantidad = 2;
+	pokemonObjetivo3->pokemon = "Bulbasaur";
+
+	t_pokemon_entrenador* pokemonRandom1 = malloc(sizeof(t_pokemon_entrenador));
+	pokemonRandom1->cantidad = 2;
+	pokemonRandom1->pokemon = "Riquelme";
+
+	t_pokemon_entrenador* pokemonRandom2 = malloc(sizeof(t_pokemon_entrenador));
+	pokemonRandom2->cantidad = 2;
+	pokemonRandom2->pokemon = "Messi";
+
+	t_pokemon_entrenador* pokemonObtenido3 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObtenido3->cantidad = 1;
+	pokemonObtenido3->pokemon = "Bulbasaur";
+
+	//Ahora creo los entrenadores con los datos necesarios para probar la función
+
+	t_entrenador* unEntrenador = malloc(sizeof(t_entrenador));
+	unEntrenador->id=1;
+	unEntrenador->estado_entrenador=DEADLOCK;
+	unEntrenador->posicion = malloc(sizeof(t_posicion_entrenador));
+	unEntrenador->posicion->pos_x=0;
+	unEntrenador->posicion->pos_y=0;
+	unEntrenador->pokemonesObtenidos = list_create();
+	list_add(unEntrenador->pokemonesObtenidos, pokemonObtenido3);
+	list_add(unEntrenador->pokemonesObtenidos, pokemonObtenido1);
+	unEntrenador->objetivoEntrenador = list_create();
+	list_add(unEntrenador->objetivoEntrenador, pokemonObjetivo1);
+
+	t_entrenador* unEntrenador2 = malloc(sizeof(t_entrenador));
+	unEntrenador2->id = 2;
+	unEntrenador2->estado_entrenador = DEADLOCK;
+	unEntrenador2->posicion = malloc(sizeof(t_posicion_entrenador));
+	unEntrenador2->posicion->pos_x = 5;
+	unEntrenador2->posicion->pos_y = 10;
+	unEntrenador2->pokemonesObtenidos = list_create();
+	list_add(unEntrenador2->pokemonesObtenidos, pokemonObtenido2);
+	list_add(unEntrenador2->pokemonesObtenidos, pokemonObtenido3);
+	unEntrenador2->objetivoEntrenador = list_create();
+	list_add(unEntrenador2->objetivoEntrenador, pokemonObjetivo2);
+
+	t_entrenador* unEntrenador3 = malloc(sizeof(t_entrenador));
+	unEntrenador3->pokemonesObtenidos = list_create();
+	unEntrenador3->id = 3;
+	unEntrenador3->estado_entrenador = DEADLOCK;
+	unEntrenador3->posicion = malloc(sizeof(t_posicion_entrenador));
+	unEntrenador3->posicion->pos_x = 0;
+	unEntrenador3->posicion->pos_y = 2;
+	list_add(unEntrenador3->pokemonesObtenidos, pokemonRandom1);
+	unEntrenador3->objetivoEntrenador = list_create();
+	list_add(unEntrenador3->objetivoEntrenador, pokemonRandom2);
+
+	t_entrenador* unEntrenador4 = malloc(sizeof(t_entrenador));
+	unEntrenador4->pokemonesObtenidos = list_create();
+	unEntrenador4->id = 4;
+	unEntrenador4->estado_entrenador = MOVERSE_A_POKEMON;
+	unEntrenador4->posicion = malloc(sizeof(t_posicion_entrenador));
+	unEntrenador4->posicion->pos_x = 20;
+	unEntrenador4->posicion->pos_y = 4;
+	list_add(unEntrenador4->pokemonesObtenidos, pokemonRandom1);
+	unEntrenador4->objetivoEntrenador = list_create();
+	list_add(unEntrenador4->objetivoEntrenador, pokemonRandom2);
+
+	//queue_push(colaBlockedEntrenadores, unEntrenador);
+	queue_push(colaBlockedEntrenadores, unEntrenador4);
+	queue_push(colaBlockedEntrenadores, unEntrenador3);
+	queue_push(colaBlockedEntrenadores, unEntrenador2);
+
+	printf("Los entrenadores iniciales en blocked, son: \n");
+
+	for (int j = 0; j < queue_size(colaBlockedEntrenadores); j++) {
+		t_entrenador* aux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
+		int idEntrenador = aux->id;
+		printf("El entrenador de id %d\n", idEntrenador);
+		queue_push(colaBlockedEntrenadores, aux);
+	}
+	printf("----------------------------------\n");
+
+	printf("Ejecuto la función para buscar al entrenador con el que puedo intercambiar. Debería ser (5, 10)\n");
+
+	printf("----------------------------------\n");
+
+	t_posicion_entrenador* posicionDelEntrenadorBuscado = buscarEntrenadorAMoverse(unEntrenador);
+
+	printf("La posición hallada es: (%d, %d)\n", posicionDelEntrenadorBuscado->pos_x, posicionDelEntrenadorBuscado->pos_y);
+
+	printf("----------------------------------\n");
+
+	printf("Los entrenadores finales en blocked, son: \n");
+
+	for (int j = 0; j < queue_size(colaBlockedEntrenadores); j++) {
+		t_entrenador* aux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
+		int idEntrenador = aux->id;
+		printf("El entrenador de id %d\n", idEntrenador);
+		queue_push(colaBlockedEntrenadores, aux);
+	}
+	printf("----------------------------------\n");
+
+
+-----------------------------------------------------------------------------------------------------------
+	
+------------------------------------TEST BUSCAR ENTRENADOR DEL INTERCAMBIO-------------------------------
+Esta función lo que hace es, luego de que un entrenador se movió a la posición de otro para intercambiar,
+buscar en la lista de blocked la referencia a ese mismo entrenador al cual se acercó para pode efecuar el cambio.
+
+//Semaforo y colas inicializadas
+	sem_init(&(sem_cola_blocked), 0, 1);
+
+	colaBlockedEntrenadores = queue_create();
+
+	//Ahora creo los pokemones que tendrán los entrenadores de la prueba
+
+	t_pokemon_entrenador* pokemonObjetivo1 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObjetivo1->cantidad = 2;
+	pokemonObjetivo1->pokemon = "Pikachu";
+
+	t_pokemon_entrenador* pokemonObtenido1 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObtenido1->cantidad = 2;
+	pokemonObtenido1->pokemon = "Pepito";
+
+	t_pokemon_entrenador* pokemonObjetivo2 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObjetivo2->cantidad = 1;
+	pokemonObjetivo2->pokemon = "Pepito";
+
+	t_pokemon_entrenador* pokemonObtenido2 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObtenido2->cantidad = 3;
+	pokemonObtenido2->pokemon = "Pikachu";
+
+	t_pokemon_entrenador* pokemonObjetivo3 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObjetivo3->cantidad = 2;
+	pokemonObjetivo3->pokemon = "Bulbasaur";
+
+	t_pokemon_entrenador* pokemonRandom1 = malloc(sizeof(t_pokemon_entrenador));
+	pokemonRandom1->cantidad = 2;
+	pokemonRandom1->pokemon = "Riquelme";
+
+	t_pokemon_entrenador* pokemonRandom2 = malloc(sizeof(t_pokemon_entrenador));
+	pokemonRandom2->cantidad = 2;
+	pokemonRandom2->pokemon = "Messi";
+
+	t_pokemon_entrenador* pokemonObtenido3 = malloc(
+			sizeof(t_pokemon_entrenador));
+	pokemonObtenido3->cantidad = 1;
+	pokemonObtenido3->pokemon = "Bulbasaur";
+
+	//Ahora creo los entrenadores con los datos necesarios para probar la función
+
+	t_entrenador* unEntrenador = malloc(sizeof(t_entrenador));
+	unEntrenador->id=1;
+	unEntrenador->estado_entrenador=DEADLOCK;
+	unEntrenador->posicion = malloc(sizeof(t_posicion_entrenador));
+	unEntrenador->posicion->pos_x=5;
+	unEntrenador->posicion->pos_y=10;
+	unEntrenador->pokemonesObtenidos = list_create();
+	list_add(unEntrenador->pokemonesObtenidos, pokemonObtenido3);
+	list_add(unEntrenador->pokemonesObtenidos, pokemonObtenido1);
+	unEntrenador->objetivoEntrenador = list_create();
+	list_add(unEntrenador->objetivoEntrenador, pokemonObjetivo1);
+
+	t_entrenador* unEntrenador2 = malloc(sizeof(t_entrenador));
+	unEntrenador2->id = 2;
+	unEntrenador2->estado_entrenador = DEADLOCK;
+	unEntrenador2->posicion = malloc(sizeof(t_posicion_entrenador));
+	unEntrenador2->posicion->pos_x = 5;
+	unEntrenador2->posicion->pos_y = 10;
+	unEntrenador2->pokemonesObtenidos = list_create();
+	list_add(unEntrenador2->pokemonesObtenidos, pokemonObtenido2);
+	list_add(unEntrenador2->pokemonesObtenidos, pokemonObtenido3);
+	unEntrenador2->objetivoEntrenador = list_create();
+	list_add(unEntrenador2->objetivoEntrenador, pokemonObjetivo2);
+
+	t_entrenador* unEntrenador3 = malloc(sizeof(t_entrenador));
+	unEntrenador3->pokemonesObtenidos = list_create();
+	unEntrenador3->id = 3;
+	unEntrenador3->estado_entrenador = DEADLOCK;
+	unEntrenador3->posicion = malloc(sizeof(t_posicion_entrenador));
+	unEntrenador3->posicion->pos_x = 0;
+	unEntrenador3->posicion->pos_y = 2;
+	list_add(unEntrenador3->pokemonesObtenidos, pokemonRandom1);
+	unEntrenador3->objetivoEntrenador = list_create();
+	list_add(unEntrenador3->objetivoEntrenador, pokemonRandom2);
+
+	t_entrenador* unEntrenador4 = malloc(sizeof(t_entrenador));
+	unEntrenador4->pokemonesObtenidos = list_create();
+	unEntrenador4->id = 4;
+	unEntrenador4->estado_entrenador = MOVERSE_A_POKEMON;
+	unEntrenador4->posicion = malloc(sizeof(t_posicion_entrenador));
+	unEntrenador4->posicion->pos_x = 20;
+	unEntrenador4->posicion->pos_y = 4;
+	list_add(unEntrenador4->pokemonesObtenidos, pokemonRandom1);
+	unEntrenador4->objetivoEntrenador = list_create();
+	list_add(unEntrenador4->objetivoEntrenador, pokemonRandom2);
+
+	//queue_push(colaBlockedEntrenadores, unEntrenador);
+	//Lo comento porque en realidad ese entrenador no está en blocked si no que está en exec
+	queue_push(colaBlockedEntrenadores, unEntrenador4);
+	queue_push(colaBlockedEntrenadores, unEntrenador3);
+	queue_push(colaBlockedEntrenadores, unEntrenador2);
+
+	printf("Los entrenadores iniciales en blocked, son: \n");
+
+	for (int j = 0; j < queue_size(colaBlockedEntrenadores); j++) {
+		t_entrenador* aux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
+		int idEntrenador = aux->id;
+		printf("El entrenador de id %d\n", idEntrenador);
+		queue_push(colaBlockedEntrenadores, aux);
+	}
+	printf("----------------------------------\n");
+
+	printf("Ejecuto la función para buscar al entrenador con el que debo intercambiar. Debería ser el de id 2\n");
+
+	printf("----------------------------------\n");
+
+	t_entrenador* entrenadorDelIntercambio = buscarEntrenadorDelIntercambio(unEntrenador);
+
+	printf("El entrenador hallado es el de id: %d\n", entrenadorDelIntercambio->id);
+
+	printf("----------------------------------\n");
+
+	printf("Los entrenadores finales en blocked, son: \n");
+
+	for (int j = 0; j < queue_size(colaBlockedEntrenadores); j++) {
+		t_entrenador* aux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
+		int idEntrenador = aux->id;
+		printf("El entrenador de id %d\n", idEntrenador);
+		queue_push(colaBlockedEntrenadores, aux);
+	}
+	printf("----------------------------------\n");
+
 	
