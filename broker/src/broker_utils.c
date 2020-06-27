@@ -41,67 +41,67 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 	switch (cod_op) {
 	case GET_BROKER:;
 		t_msg_get_broker *msg_get = rcv_msj_get_broker(cliente_fd, g_logger);
-		if(cache_espacio_suficiente(espacio_cache_msg_get(msg_get)) == true) {
-			sem_wait(&g_mutex_msjs);
+		if(cache_swap_espacio_suficiente(espacio_cache_msg_get(msg_get))) {
+			pthread_mutex_lock(&g_mutex_msjs);
 				enqueue_msg_get(msg_get, g_logger, cliente_fd);
-			sem_post(&g_mutex_msjs);
+			pthread_mutex_unlock(&g_mutex_msjs);
 		} else {
-			enviar_mensaje_error(cliente_fd, g_logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
+			enviar_mensaje_cache_sin_espacio(cliente_fd, g_logger);
 			eliminar_msg_get_broker(msg_get);
 		}
 		break;
 	case NEW_BROKER:;
 		t_msg_new_broker *msg_new = rcv_msj_new_broker(cliente_fd, g_logger);
 		int size_msg = espacio_cache_msg_new(msg_new);
-		if(cache_espacio_suficiente(espacio_cache_msg_new(msg_new)) == true) {
-			sem_wait(&g_mutex_msjs);
+		if(cache_swap_espacio_suficiente(espacio_cache_msg_new(msg_new))) {
+			pthread_mutex_lock(&g_mutex_msjs);
 				enqueue_msg_new(msg_new, g_logger, cliente_fd);
-			sem_post(&g_mutex_msjs);
+			pthread_mutex_unlock(&g_mutex_msjs);
 		} else {
-			enviar_mensaje_error(cliente_fd, g_logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
+			enviar_mensaje_cache_sin_espacio(cliente_fd, g_logger);
 			eliminar_msg_new_broker(msg_new);
 		}
 		break;
 	case CATCH_BROKER:;
 		t_msg_catch_broker *msg_catch = rcv_msj_catch_broker(cliente_fd, g_logger);
-		if(cache_espacio_suficiente(espacio_cache_msg_catch(msg_catch)) == true) {
-			sem_wait(&g_mutex_msjs);
+		if(cache_swap_espacio_suficiente(espacio_cache_msg_catch(msg_catch))) {
+			pthread_mutex_lock(&g_mutex_msjs);
 				enqueue_msg_catch(msg_catch, g_logger, cliente_fd);
-			sem_post(&g_mutex_msjs);
+			pthread_mutex_unlock(&g_mutex_msjs);
 		} else {
-			enviar_mensaje_error(cliente_fd, g_logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
+			enviar_mensaje_cache_sin_espacio(cliente_fd, g_logger);
 			eliminar_msg_catch_broker(msg_catch);
 		}
 		break;
 	case APPEARED_BROKER:;
 		t_msg_appeared_broker *msg_appeared = rcv_msj_appeared_broker(cliente_fd, g_logger);
-		if(cache_espacio_suficiente(espacio_cache_msg_appeared(msg_appeared)) == true) {
-			sem_wait(&g_mutex_msjs);
+		if(cache_swap_espacio_suficiente(espacio_cache_msg_appeared(msg_appeared))) {
+			pthread_mutex_lock(&g_mutex_msjs);
 				enqueue_msg_appeared(msg_appeared, g_logger, cliente_fd);
-			sem_post(&g_mutex_msjs);
+			pthread_mutex_unlock(&g_mutex_msjs);
 		} else {
-			enviar_mensaje_error(cliente_fd, g_logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
+			enviar_mensaje_cache_sin_espacio(cliente_fd, g_logger);
 			eliminar_msg_appeared_broker(msg_appeared);
 		}break;
 	case CAUGHT_BROKER:;
 		t_msg_caught_broker *msg_caught = rcv_msj_caught_broker(cliente_fd, g_logger);
-		if(cache_espacio_suficiente(espacio_cache_msg_caught(msg_caught)) == true) {
-			sem_wait(&g_mutex_msjs);
+		if(cache_swap_espacio_suficiente(espacio_cache_msg_caught(msg_caught))) {
+			pthread_mutex_lock(&g_mutex_msjs);
 				enqueue_msg_caught(msg_caught, g_logger, cliente_fd);
-			sem_post(&g_mutex_msjs);
+			pthread_mutex_unlock(&g_mutex_msjs);
 		} else {
-			enviar_mensaje_error(cliente_fd, g_logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
+			enviar_mensaje_cache_sin_espacio(cliente_fd, g_logger);
 			free(msg_caught);
 		}
 		break;
 	case LOCALIZED_BROKER:;
 		t_msg_localized_broker *msg_localized = rcv_msj_localized_broker(cliente_fd, g_logdebug);
-		if(cache_espacio_suficiente(espacio_cache_msg_localized(msg_localized)) == true) {
-			sem_wait(&g_mutex_msjs);
+		if(cache_swap_espacio_suficiente(espacio_cache_msg_localized(msg_localized))) {
+			pthread_mutex_lock(&g_mutex_msjs);
 				enqueue_msg_localized(msg_localized, g_logger, cliente_fd);
-			sem_post(&g_mutex_msjs);
+			pthread_mutex_unlock(&g_mutex_msjs);
 		} else {
-			enviar_mensaje_error(cliente_fd, g_logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
+			enviar_mensaje_cache_sin_espacio(cliente_fd, g_logger);
 			eliminar_msg_localized_broker(msg_localized);
 		}
 		break;
@@ -110,9 +110,9 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 		log_info(g_logger,"(RECEIVING: END_SUSCRIPTION|%s|ID_SUSCRIPTOR = %d|Socket# = %d)"
 				,nombre_cola(handshake->cola_id),handshake->id_suscriptor, cliente_fd);
 		deshabilitar_suscriptor_cola(handshake);
-		sem_wait(&g_mutex_msjs);
+		pthread_mutex_lock(&g_mutex_msjs);
 			enviar_msg_confirmed(cliente_fd, g_logger);
-		sem_post(&g_mutex_msjs);
+		pthread_mutex_unlock(&g_mutex_msjs);
 		free(handshake);
 
 	}
@@ -171,35 +171,69 @@ void iniciar_estructuras_broker(void)
 	t_algoritmo_memoria algoritmo = g_config_broker->algoritmo_memoria;
 	log_debug(g_logdebug,"(Tamaño_Cache:%d Bytes)", g_config_broker->tamano_memoria);
 	log_debug(g_logdebug,"(Tamaño_Mínimo_Particiones:%d Bytes)", g_config_broker->tamano_minimo_particion);
+	log_debug(g_logdebug,"(Tamaño_Archivo_Swap:%d Bytes)", g_config_broker->tamano_swap);
 	log_debug(g_logdebug,"(Algoritmo_Memoria:%s)", config_get_string_value(g_config, "ALGORITMO_MEMORIA"));
 	log_debug(g_logdebug,"(Algoritmo_Particion_Libre:%s)",config_get_string_value(g_config,"ALGORITMO_PARTICION_LIBRE"));
 	log_debug(g_logdebug,"(Algoritmo_Reemplazo:%s)",config_get_string_value(g_config,"ALGORITMO_REEMPLAZO"));
 	log_debug(g_logdebug,"(Frecuencia_Compactacion:%d)", g_config_broker->frecuencia_compactacion);
 	g_msg_counter = 1;
-	sem_init(&g_mutex_msjs, 0, 1);
-	sem_init(&g_mutex_queue_new, 0, 1);
-	sem_init(&g_mutex_queue_get, 0, 1);
-	sem_init(&g_mutex_queue_localized, 0, 1);
-	sem_init(&g_mutex_queue_catch, 0, 1);
-	sem_init(&g_mutex_queue_caught, 0, 1);
-	sem_init(&g_mutex_queue_appeared, 0, 1);
+	g_msg_deleted = 1;
+	g_mantenim_cola = 0;
+	pthread_mutex_init(&g_mutex_msjs, NULL);
+	pthread_mutex_init(&g_mutex_cache_part, NULL);
+	pthread_mutex_init(&g_mutex_queue_new, NULL);
+	pthread_mutex_init(&g_mutex_queue_get, NULL);
+	pthread_mutex_init(&g_mutex_queue_localized, NULL);
+	pthread_mutex_init(&g_mutex_queue_catch, NULL);
+	pthread_mutex_init(&g_mutex_queue_caught, NULL);
+	pthread_mutex_init(&g_mutex_queue_appeared, NULL);
 	inicializar_colas_broker();
 	g_team_suscriptos = list_create();
 	g_gamecards_suscriptos = list_create();
+	inicializar_memoria_swap();
 	switch(algoritmo) {
 	case PARTICIONES:;
-		int tamano_cache = g_config_broker->tamano_memoria;
-		g_cache_part = malloc(sizeof(t_cache_part_din));
-		g_cache_part->id_partition = 1;
-		g_cache_part->dir_base_part = 0;
-		g_cache_part->min_size_part = g_config_broker->tamano_minimo_particion;
-		g_cache_part->used_space = 0;
-		g_cache_part->total_space = g_config_broker->tamano_memoria;
-		g_cache_part->partition_table = list_create();
-		g_cache_part->partition_repo = malloc(tamano_cache);
-		memset(g_cache_part->partition_repo, 0, tamano_cache);
-	break;
+		inicializar_cache_particiones_dinamicas();
+		break;
+	case BS:;
+		//inicializar_cache_buddy_system();
+		break;
 	}
+	lanzar_borrador_mensajes(g_logger);
+}
+
+void inicializar_cache_particiones_dinamicas(void)
+{
+	int tamano_cache = g_config_broker->tamano_memoria;
+	g_cache_part = malloc(sizeof(t_cache_particiones));
+	g_cache_part->tipo_cache = PARTICIONES;
+	g_cache_part->cnt_id_partition = 1;
+	g_cache_part->cnt_order_fifo = 1;
+	g_cache_part->dir_base_part = 0;
+	g_cache_part->min_size_part = g_config_broker->tamano_minimo_particion;
+	g_cache_part->used_space = 0;
+	g_cache_part->total_space = g_config_broker->tamano_memoria;
+	g_cache_part->partition_table = list_create();
+	g_cache_part->partition_repo = malloc(tamano_cache);
+	memset(g_cache_part->partition_repo, 0, tamano_cache);
+	generar_particion_dinamica_libre(0, tamano_cache);
+}
+
+void inicializar_memoria_swap(void)
+{
+	g_cache_swap = malloc(sizeof(t_cache_particiones));
+	g_cache_swap->tipo_cache = SWAP;
+	g_cache_swap->cnt_id_partition = 1;
+	g_cache_swap->cnt_order_fifo = 1;
+	g_cache_swap->dir_base_part = 0;
+	g_cache_swap->min_size_part = g_config_broker->tamano_minimo_particion;
+	g_cache_swap->used_space = 0;
+	g_cache_swap->total_space = g_config_broker->tamano_swap;
+	g_cache_swap->partition_table = list_create();
+	char *path_arhivo = g_config_broker->ruta_swap;
+	int tamano_swap = g_config_broker->tamano_swap;
+	g_cache_swap->partition_repo = crear_archivo_swap(path_arhivo , tamano_swap, g_logger);
+	memset(g_cache_swap->partition_repo, 0, tamano_swap);
 }
 
 void inicializar_colas_broker(void)
@@ -252,14 +286,12 @@ void alta_suscriptor_cola(t_broker_queue *cola_broker, t_handsake_suscript *hand
 
 void agregar_id_suscriptor_lista_suscriptores(t_tipo_mensaje id_cola, int id_suscriptor)
 {
-	int* id_sus = malloc(sizeof(int));
 	t_list *lista_suscriptores = select_lista_suscriptores(id_cola);
-	memcpy(id_sus, &(id_suscriptor), sizeof(int));
-	if (! id_suscriptor_ya_ingresado(lista_suscriptores, id_sus)) {
-		void *id = (int*) id_sus;
+	if (id_suscriptor_no_ingresado(lista_suscriptores, &id_suscriptor)) {
+		void *id = malloc(sizeof(int));
+		memcpy(id,&id_suscriptor,sizeof(int));
 		list_add(lista_suscriptores,id);
 	}
-	free(id_sus);
 }
 
 t_list *select_lista_suscriptores(t_tipo_mensaje id_cola)
@@ -292,8 +324,8 @@ void deshabilitar_suscriptor_cola(t_handsake_suscript *handshake)
 {
 	int id_suscriptor = handshake->id_suscriptor;
 	t_broker_queue *cola_broker = cola_broker_suscripcion(handshake->cola_id);
-	sem_t sem_cola = semaforo_cola(handshake->cola_id);
-	sem_wait(&sem_cola);
+	pthread_mutex_t *sem_cola = semaforo_cola(handshake->cola_id);
+	pthread_mutex_lock(sem_cola);
 		t_suscriptor_broker *suscriptor = obtengo_suscriptor_cola(cola_broker , id_suscriptor);
 		suscriptor->enabled = false;
 		int valor_sem;
@@ -301,30 +333,31 @@ void deshabilitar_suscriptor_cola(t_handsake_suscript *handshake)
 		if (valor_sem == 0) {
 			sem_post(&suscriptor->sem_cont_msjs);
 		}
-	sem_post(&sem_cola);
+	pthread_mutex_unlock(sem_cola);
 }
 
-bool es_suscriptor_habilitado(t_broker_queue *cola_broker, sem_t semaforo_cola, int id_suscriptor)
+bool es_suscriptor_habilitado(t_broker_queue *cola_broker, pthread_mutex_t semaforo_cola, int id_suscriptor)
 {
-	sem_wait(&semaforo_cola);
+	pthread_mutex_lock(&semaforo_cola);
 	t_suscriptor_broker *suscriptor = obtengo_suscriptor_cola(cola_broker, id_suscriptor);
-	sem_post(&semaforo_cola);
+	pthread_mutex_unlock(&semaforo_cola);
 	return suscriptor->enabled;
 }
 
 bool msj_enviado_a_todo_suscriptor(t_queue_msg *mensaje_cola)
 {
 	bool resultado;
+	int cant_receptores = mensaje_cola->sended_suscriptors->elements_count;
 	t_list *suscriptores = select_lista_suscriptores(mensaje_cola->tipo_mensaje);
-	if (suscriptores->elements_count == mensaje_cola->sended_suscriptors->elements_count) {
+	if (cant_receptores > 0 && suscriptores->elements_count == cant_receptores) {
 		int coincidencias = 0;
 		for (int i = 0; i < suscriptores->elements_count; i ++) {
 			int *elem = list_get(mensaje_cola->sended_suscriptors,i);
-			if (id_suscriptor_ya_ingresado(suscriptores,elem)){
+			if (! id_suscriptor_no_ingresado(suscriptores,elem)){
 				coincidencias ++;
 			}
 		}
-		resultado = coincidencias == mensaje_cola->sended_suscriptors->elements_count;
+		resultado = cant_receptores == coincidencias;
 	}
 	else {
 		resultado = false;
@@ -332,7 +365,7 @@ bool msj_enviado_a_todo_suscriptor(t_queue_msg *mensaje_cola)
 	return resultado;
 }
 
-bool id_suscriptor_ya_ingresado(t_list *lista_suscriptores, int *id_suscriptor)
+bool id_suscriptor_no_ingresado(t_list *lista_suscriptores, int *id_suscriptor)
 {
 	bool mismo_id(void *id)
 		{
@@ -340,7 +373,8 @@ bool id_suscriptor_ya_ingresado(t_list *lista_suscriptores, int *id_suscriptor)
 			bool condition = *id_suscriptor == *suscript_id;
 			return condition;
 		}
-	return list_any_satisfy(lista_suscriptores,(void*) mismo_id);
+	bool es_id_ingresado = list_any_satisfy(lista_suscriptores, mismo_id);
+	return !es_id_ingresado;
 }
 
 t_suscriptor_broker *obtengo_suscriptor_cola(t_broker_queue *cola_broker, int id_suscriptor)
@@ -365,11 +399,9 @@ void eliminar_suscriptor_por_id(t_broker_queue *cola_broker, int id_suscriptor)
 {
 	t_suscriptor_broker *suscriptor = obtengo_suscriptor_cola(cola_broker, id_suscriptor);
 	quitar_suscriptor_cola(cola_broker , suscriptor);
-	sem_destroy(&suscriptor->sem_cont_msjs);
-	free(suscriptor);
 }
 
-void quitar_suscriptor_cola(t_broker_queue *cola_broker, void *suscriptor)
+void quitar_suscriptor_cola(t_broker_queue *cola_broker, t_suscriptor_broker *suscriptor)
 {
 	t_suscriptor_broker *suscrip_t = (t_suscriptor_broker*) suscriptor;
 	bool compare_suscript(void *otro_suscriptor){
@@ -377,24 +409,31 @@ void quitar_suscriptor_cola(t_broker_queue *cola_broker, void *suscriptor)
 		bool condition = otro_suscrip_t->id_suscriptor == suscrip_t->id_suscriptor;
 		return condition;
 	}
-	list_remove_by_condition(cola_broker->suscriptores, compare_suscript);
+	t_suscriptor_broker *suscript = list_remove_by_condition(cola_broker->suscriptores, compare_suscript);
+	sem_destroy(&suscriptor->sem_cont_msjs);
+	free(suscriptor);
 }
 
-void eliminar_mensajes_cola(t_tipo_mensaje id_cola, int cant_mensajes, t_log *logger)
+int eliminar_mensajes_cola(t_tipo_mensaje id_cola, int cant_mensajes, t_log *logger)
 {
 	t_broker_queue *cola_broker = cola_broker_suscripcion(id_cola);
+	int cant_a_borrar = 0;
 	if (cola_broker->mensajes_cola->elements_count > 0) {
-		int cant_a_borrar = cant_mensajes;
-		t_list *msjs_enviados_a_todos = list_filter(cola_broker->mensajes_cola,(void*) msj_enviado_a_todo_suscriptor);
+		t_list *msjs_enviados_a_todos = list_filter(cola_broker->mensajes_cola, (void*) msj_enviado_a_todo_suscriptor);
 		if (msjs_enviados_a_todos->elements_count < cant_mensajes) {
 			cant_a_borrar = msjs_enviados_a_todos->elements_count;
+		} else {
+			cant_a_borrar = cant_mensajes;
 		}
 		for (int i = 0; i < cant_a_borrar; i ++) {
 			t_queue_msg* mensaje = list_get(msjs_enviados_a_todos, i);
+			log_info(logger,"(REMOVING_MSG_FROM:%s|ID_MSG:%d)", nombre_cola(id_cola), mensaje->id_mensaje);
 			eliminar_mensaje_por_id(cola_broker, mensaje->id_mensaje, logger);
+
 		}
 		list_destroy(msjs_enviados_a_todos);
 	}
+	return cant_a_borrar;
 }
 
 void eliminar_mensaje_por_id(t_broker_queue *cola_broker, int id_mensaje, t_log *logger)
@@ -416,6 +455,72 @@ void destruir_mensaje_cola(t_queue_msg *queue_msg)
 	free(queue_msg);
 }
 
+void lanzar_borrador_mensajes(t_log *logger)
+{
+	sem_init(&g_mutex_borrador, 0, 0);
+    int thread_status = pthread_create(&tid_borrador, NULL, (void*) borrar_mensajes_habilitados, NULL );
+    if ( thread_status != 0 ) {
+        log_error(logger, "Error al crear el thread para reconexión con BROKER");
+        pthread_exit(NULL);
+    }
+    else {
+    	pthread_detach(tid_borrador);
+    }
+}
+
+void borrar_mensajes_habilitados(void)
+{
+	int msjs_para_borrar = 0;
+	int msjs_borrados, total_borrados;
+	t_tipo_mensaje id_queues[6] = {NEW_POKEMON,GET_POKEMON,CATCH_POKEMON,CAUGHT_POKEMON,LOCALIZED_POKEMON,APPEARED_POKEMON};
+	while(1) {
+		msjs_borrados = 0;
+		total_borrados = 0;
+		sem_wait(&g_mutex_borrador);
+		if (g_mantenim_cola == 0) {
+			msjs_para_borrar = (g_msg_counter - g_msg_deleted) / 4;
+			log_trace(g_logdebug,"(QUEUES_MANTEINANCE|TOTAL_MSGS_FOR_DELETE:%d)\n", msjs_para_borrar);
+			for (int i = 0; i < 6; i ++) {
+				pthread_mutex_t *mutex_cola = semaforo_cola(id_queues[i]);
+				pthread_mutex_lock(&g_mutex_msjs);
+				pthread_mutex_lock(mutex_cola);
+					msjs_borrados = eliminar_mensajes_cola(id_queues[i], msjs_para_borrar, g_logdebug);
+					log_trace(g_logdebug,"(%s|DELETED:%d MSG)", nombre_cola(id_queues[i]), msjs_borrados);
+					total_borrados += msjs_borrados;
+				pthread_mutex_unlock(mutex_cola);
+				pthread_mutex_unlock(&g_mutex_msjs);
+			}
+		} else {
+			t_broker_queue *cola_manten = cola_broker_suscripcion(g_mantenim_cola);
+			msjs_para_borrar = cola_manten->mensajes_cola->elements_count;
+			log_trace(g_logdebug,"(Borrando_Mensajes|%s|Total:%d Mensajes posibles de borrar)",
+					nombre_cola(g_mantenim_cola), msjs_para_borrar);
+			pthread_mutex_t *mutex_cola = semaforo_cola(g_mantenim_cola);
+			pthread_mutex_lock(&g_mutex_msjs);
+			pthread_mutex_lock(mutex_cola);
+			msjs_borrados = eliminar_mensajes_cola(g_mantenim_cola, msjs_para_borrar, g_logdebug);
+			total_borrados += msjs_borrados;
+			pthread_mutex_unlock(mutex_cola);
+			pthread_mutex_unlock(&g_mutex_msjs);
+			g_mantenim_cola = 0;
+		}
+		puts("");
+		g_msg_deleted += total_borrados;
+		log_trace(g_logdebug,"(Total_Borrados:%d Mensajes)", total_borrados);
+		if (total_borrados > 0) {
+			g_cache_swap->dir_base_part = compactar_particiones(g_cache_swap,g_logdebug);
+		}
+	}
+}
+
+void disparo_borrador_msjs(void)
+{
+	int cantidad = g_config_broker->trigger_mensajes_borrar;
+	if (g_msg_counter % cantidad == 0) {
+		sem_post(&g_mutex_borrador);
+	}
+}
+
 bool es_cola_suscripcion_team(t_tipo_mensaje cola_suscripcion)
 {
 	return (cola_suscripcion == APPEARED_POKEMON || cola_suscripcion == CAUGHT_POKEMON || cola_suscripcion == LOCALIZED_POKEMON);
@@ -433,49 +538,62 @@ bool codigo_operacion_valido_broker(op_code cod_oper)
 			|| cod_oper == SUSCRIBER_ACK  || cod_oper == FIN_SUSCRIPCION );
 }
 
-int compactar_particiones_dinamicas(t_log *logger)
+int compactar_particiones(t_cache_particiones *cache_part, t_log *logger)
 {
-	reorganizar_particiones_dinamicas_libres(logger);
-	int cant_part = g_cache_part->partition_table->elements_count;
-	int size1 = ultimo_bloque_part_din();
-	void *auxiliar;
-	t_particion_dinamica* part0 = list_get(g_cache_part->partition_table,0);
-	int desplazamiento = part0->dir_base;
-	if (desplazamiento != 0) {   // Si La 1° particion ocupada no está al comienzo del cache
-		int size_part_id1 = tamano_particion_dinamica(part0);
-		auxiliar = malloc(size_part_id1);
-		memcpy(auxiliar, g_cache_part->partition_repo + desplazamiento, size_part_id1);
-		memset(g_cache_part->partition_repo, 0, desplazamiento);
-		memcpy(g_cache_part->partition_repo, auxiliar, size_part_id1);
-		part0->dir_base = 0;
-		part0->dir_heap = part0->dir_base + size_part_id1 - 1;
-		free(auxiliar);
-	}
-	for (int i = 0; i < (cant_part - 1); i ++) {  //Solo entra si hay más de 2 particiones ocupadas
-		int dir_heap1 = ((t_particion_dinamica*)list_get(g_cache_part->partition_table, i))->dir_heap;
-		int dir_base2_new = dir_heap1 + 1;
-		int dir_base2 = ((t_particion_dinamica*)list_get(g_cache_part->partition_table, i + 1))->dir_base;
-		int dir_heap2 = ((t_particion_dinamica*)list_get(g_cache_part->partition_table,i + 1))->dir_heap;
-		int id_part2 = ((t_particion_dinamica*)list_get(g_cache_part->partition_table,i + 1))->id_particion;
-		int gap = dir_base2 - dir_base2_new;
-		if (gap > 0 )  {
-			log_trace(logger,"(Comprimiendo_Partición:%d|%dBytes)", id_part2, gap);
-			int size_part2 = dir_heap2 - dir_base2 + 1;
-			auxiliar = malloc(size_part2);
-			int clean_bytes = gap + size_part2;
-			memcpy(auxiliar, (g_cache_part->partition_repo + dir_base2), size_part2);
-			memset((g_cache_part->partition_repo + dir_base2_new),0,clean_bytes);
-			memcpy(g_cache_part->partition_repo + dir_base2_new, auxiliar, size_part2);
-			t_particion_dinamica* particion = list_get(g_cache_part->partition_table,i + 1);
-			particion->dir_base = dir_base2_new;
-			particion->dir_heap = particion->dir_base + size_part2 - 1;
+	reorganizar_tabla_particiones(cache_part, logger);
+	int cant_part = cache_part->partition_table->elements_count;
+	int bytes_recup = 0;
+	if (cant_part > 0) {
+		int size1 = ultimo_bloque_cache(cache_part);
+		void *auxiliar;
+		t_particion_dinamica* part0 = list_get(cache_part->partition_table,0);
+		int desplazamiento = part0->dir_base;
+		if (desplazamiento != 0) {   // Si La 1° particion ocupada no está al comienzo del cache
+			int size_part_id1 = tamano_particion_dinamica(part0);
+			auxiliar = malloc(size_part_id1);
+			memcpy(auxiliar, cache_part->partition_repo + desplazamiento, size_part_id1);
+			memset(cache_part->partition_repo, 0, desplazamiento);
+			memcpy(cache_part->partition_repo, auxiliar, size_part_id1);
+			part0->dir_base = 0;
+			part0->dir_heap = part0->dir_base + size_part_id1 - 1;
+			// log_trace(logger, "(%s|Comprimiendo_Partición:%d|%d Bytes)", nombre_cache(cache_part->tipo_cache), part0->id_particion, desplazamiento);
 			free(auxiliar);
 		}
+		for (int i = 0; i < (cant_part - 1); i ++) {  //Solo entra si hay más de 2 particiones ocupadas
+			int dir_heap1 = ((t_particion_dinamica*)list_get(cache_part->partition_table, i))->dir_heap;
+			int dir_base2_new = dir_heap1 + 1;
+			int dir_base2 = ((t_particion_dinamica*)list_get(cache_part->partition_table, i + 1))->dir_base;
+			int dir_heap2 = ((t_particion_dinamica*)list_get(cache_part->partition_table,i + 1))->dir_heap;
+			int id_part2 = ((t_particion_dinamica*)list_get(cache_part->partition_table,i + 1))->id_particion;
+			int gap = dir_base2 - dir_base2_new;
+			if (gap > 0 )  {
+				// log_trace(logger, "(%s|Comprimiendo_Partición:%d|%d Bytes)", nombre_cache(cache_part->tipo_cache), id_part2, gap);
+				t_particion_dinamica* particion = list_get(cache_part->partition_table,i + 1);
+				int tamano_particion = tamano_particion_dinamica(particion);
+				uint32_t data_size = particion->data_size;
+				auxiliar = malloc(data_size);
+				int clean_bytes = gap + tamano_particion;
+				memcpy(auxiliar, (cache_part->partition_repo + dir_base2), data_size);
+				memset((cache_part->partition_repo + dir_base2_new),0,clean_bytes);
+				memcpy((cache_part->partition_repo + dir_base2_new), auxiliar, data_size);
+				particion->dir_base = dir_base2_new;
+				particion->dir_heap = (particion->dir_base + tamano_particion) - 1;
+				free(auxiliar);
+			}
+		}
+		int size2 = ultimo_bloque_cache(cache_part);
+		bytes_recup = size2 - size1;
+		cache_part->dir_base_part = dir_base_ultimo_bloque_part_din(cache_part);
+		cache_part->used_space = cache_part->total_space - size2;
+		log_trace(logger,"(COMPACTANDO %s:Cantidad_Particiones_Ocupadas:%d|%d Bytes_Recuperados|Espacio_Disponible:%d bytes)",
+				nombre_cache(cache_part->tipo_cache), cache_part->partition_table->elements_count, bytes_recup, ultimo_bloque_cache(cache_part));
+	} else {
+		cache_part->dir_base_part = 0;
+		cache_part->used_space = 0;
+		bytes_recup = ultimo_bloque_cache(cache_part);
+		log_trace(logger,"(%s VACIO:%d Bytes_Recuperados)", nombre_cache(cache_part->tipo_cache), bytes_recup);
 	}
-	int size2 = ultimo_bloque_part_din();
-	int bytes_recup = size2 - size1;
-	log_trace(logger,"(COMPACTADO_CACHE_PARTICIONES_DINAMICAS:%d Bytes Recuperados)", bytes_recup);
-	return  dir_base_ultimo_bloque_part_din();
+	return  dir_base_ultimo_bloque_part_din(cache_part);
 }
 
 t_list *ordenar_particiones_libres_first_fit(void)
@@ -493,36 +611,49 @@ t_list *ordenar_particiones_libres_best_fit(void)
 }
 
 t_list *obtengo_particiones_dinamicas_libres(void) {
-	t_list *particiones_libres = list_filter(g_cache_part->partition_table, (void*) es_particion_libre);
+	t_list *particiones_libres = list_filter(g_cache_part->partition_table, es_particion_libre);
+	list_sort(particiones_libres, ordenar_por_direccion_base);
 	return particiones_libres;
 }
 
-void reorganizar_particiones_dinamicas_libres(t_log *logger)
+t_list *obtengo_particiones_swap_libres(void) {
+	t_list *particiones_libres = list_filter(g_cache_swap->partition_table, es_particion_libre);
+	list_sort(particiones_libres, ordenar_por_tamano);
+	return particiones_libres;
+}
+
+void reorganizar_tabla_particiones(t_cache_particiones *cache_part, t_log *logger)
 {
-	t_list *particiones_ocupadas = list_filter(g_cache_part->partition_table, (void*) es_particion_ocupada);
-	int cant_total = g_cache_part->partition_table->elements_count;
-	t_list *particiones_libres = obtengo_particiones_dinamicas_libres();
-	int a_borrar = particiones_libres->elements_count;
-	list_destroy(particiones_libres);
-	t_list *auxiliar = list_duplicate(particiones_ocupadas);
-	list_destroy(particiones_ocupadas);
-	list_destroy_and_destroy_elements(g_cache_part->partition_table,free);
-	g_cache_part->partition_table = list_duplicate(auxiliar);
-	list_destroy(auxiliar);
-	int cant_elem = g_cache_part->partition_table->elements_count;
-	for (int i = 0; i < cant_elem; i ++ ) {
-		t_particion_dinamica* part = list_get(g_cache_part->partition_table,i);
-		part->id_particion = i + 1;
+	int cant_total = cache_part->partition_table->elements_count;
+	if (cant_total > 0) {
+		t_list *particiones_ocupadas = list_filter(cache_part->partition_table, es_particion_ocupada);
+		int a_borrar = cant_total - particiones_ocupadas->elements_count;
+		log_trace(logger, "(Reorganizando_Tabla_Particiones %s|Total:%d|Libres:%d|Ocupadas:%d)",
+			nombre_cache(cache_part->tipo_cache), cant_total, a_borrar, particiones_ocupadas->elements_count);
+		t_list *auxiliar = list_create();
+		int cant_elem = particiones_ocupadas->elements_count;
+		cache_part->cnt_id_partition = cant_elem + 1;
+		for (int i = 0; i < cant_elem; i ++ ) {
+			t_particion_dinamica *part = (t_particion_dinamica*) list_get(particiones_ocupadas,i);
+			t_particion_dinamica *new_part = duplico_particion_dinamica(part);
+			new_part->id_particion = i + 1;
+			list_add(auxiliar,new_part);
+		}
+		list_destroy(particiones_ocupadas);
+		list_clean_and_destroy_elements(cache_part->partition_table,free);
+		list_add_all(cache_part->partition_table, auxiliar);
+		list_destroy(auxiliar);
 	}
-	g_cache_part->id_partition = cant_elem + 1;
-	log_trace(logger, "(Reorganizando_Tabla_Particiones_Dinamicas|Total:%d|Libres:%d|Ocupadas:%d)", cant_total, a_borrar, cant_elem);
 }
 
 bool ordenar_por_direccion_base(void *part1, void *part2)
 {
-		t_particion_dinamica *particion1 = (t_particion_dinamica*) part1;
-		t_particion_dinamica *particion2 = (t_particion_dinamica*) part2;
-		return particion1->dir_base < particion2->dir_base;
+		return ((t_particion_dinamica*) part1)->dir_base < ((t_particion_dinamica*) part2)->dir_base;
+}
+
+bool ordenador_fifo(void *part1, void *part2)
+{
+		return ((t_particion_dinamica*) part1)->orden_fifo < ((t_particion_dinamica*) part2)->orden_fifo;
 }
 
 bool ordenar_por_tamano(void *part1, void *part2)
@@ -534,12 +665,25 @@ bool ordenar_por_tamano(void *part1, void *part2)
 
 bool es_particion_libre(void *part) {
 	t_particion_dinamica *particion = (t_particion_dinamica*) part;
-	return particion->id_mensaje == 0 && particion->presencia == false;
+	return particion->presencia == false;
 }
 
 bool es_particion_ocupada(void *part) {
 	t_particion_dinamica *particion = (t_particion_dinamica*) part;
-	return particion->id_mensaje != 0 && particion->presencia == true;
+	return particion->presencia == true;
+}
+
+bool espacio_suficiente_particion_cache(t_cache_particiones *cache, int data_size)
+{
+	bool resultado;
+	bool tamano_suficiente(void *part) {
+		t_particion_dinamica *particion = (t_particion_dinamica*) part;
+		return tamano_particion_dinamica(particion) >= data_size;
+	}
+	t_list *particiones_libres = list_filter(cache->partition_table, es_particion_libre);
+	resultado = list_any_satisfy(particiones_libres, tamano_suficiente);
+	list_destroy(particiones_libres);
+	return resultado;
 }
 
 int dir_heap_part_dinamica(t_queue_msg *msg_queue)
@@ -559,14 +703,60 @@ int tamano_particion_dinamica(t_particion_dinamica *particion)
 	return particion->dir_heap - particion->dir_base + 1;
 }
 
-int dir_base_ultimo_bloque_part_din(void)
+t_particion_dinamica *duplico_particion_dinamica(t_particion_dinamica *part)
+{
+	t_particion_dinamica *new_part = malloc(sizeof(t_particion_dinamica));
+	new_part->id_particion = 0;
+	new_part->orden_fifo = part->orden_fifo;
+	new_part->dir_base = part->dir_base;
+	new_part->dir_heap = part->dir_heap;
+	new_part->data_size = part->data_size;
+	new_part->id_cola = part->id_cola;
+	new_part->id_mensaje = part->id_mensaje;
+	new_part->presencia = part->presencia;
+	return new_part;
+}
+
+void generar_particion_dinamica_libre(int dir_base, int size)
+{
+	t_particion_dinamica *bloque_libre = malloc(sizeof(t_particion_dinamica));
+	bloque_libre->dir_base = dir_base;
+	bloque_libre->dir_heap = bloque_libre->dir_base + size - 1;
+	bloque_libre->data_size = 0;
+	bloque_libre->id_cola = 0;
+	bloque_libre->id_mensaje = 0;
+	bloque_libre->presencia = false;
+	bloque_libre->id_particion = 1;
+	bloque_libre->orden_fifo = 9999;
+	void *free_block = (t_particion_dinamica*) bloque_libre;
+	list_add(g_cache_part->partition_table, free_block);
+	if (g_cache_part->partition_table->elements_count > 1) {
+		list_sort(g_cache_part->partition_table, ordenar_por_direccion_base);
+	}
+	if (bloque_libre->dir_base != 0 && (bloque_libre->dir_heap + 1) > g_cache_part->dir_base_part) {
+		g_cache_part->dir_base_part = bloque_libre->dir_heap + 1;
+	}
+	int cant_part = g_cache_part->partition_table->elements_count;
+	for (int i = 0; i < cant_part; i ++) {
+		t_particion_dinamica *part = list_get(g_cache_part->partition_table, i);
+		if (part->id_particion != i + 1) {
+			part->id_particion = i + 1;
+		}
+	/* TODO	printf("particion:id:%d|base:%d|heap:%d|tamano:%d|ord_fifo:%d|id_msg:%d|stat:%d\n",
+				part->id_particion,part->dir_base,part->dir_heap,
+				tamano_particion_dinamica(part),part->orden_fifo,part->id_mensaje,part->presencia); */
+	}
+	/* TODO	printf("nuevo_bloque_libre:%d|%d|%d\n",
+			bloque_libre->dir_base,bloque_libre->dir_heap, tamano_particion_dinamica(bloque_libre));
+		printf("ultima_dir_base:%d\n",g_cache_part->dir_base_part);*/
+}
+
+int dir_base_ultimo_bloque_part_din(t_cache_particiones *cache_part)
 {
 	int ultima_dir_base;
-	t_list *tabla_particiones = g_cache_part->partition_table;
-	list_sort(tabla_particiones, ordenar_por_direccion_base);
-	if (tabla_particiones->elements_count > 0) {
-		int index = tabla_particiones->elements_count - 1;
-		int dir_heap_ult_part = ((t_particion_dinamica*) list_get(tabla_particiones,index))->dir_heap;
+	if (cache_part->partition_table->elements_count > 0) {
+		int last_index = cache_part->partition_table->elements_count - 1;
+		int dir_heap_ult_part = ((t_particion_dinamica*) list_get(cache_part->partition_table, last_index))->dir_heap;
 		ultima_dir_base = dir_heap_ult_part + 1;
 	} else {
 		ultima_dir_base = 0;
@@ -574,31 +764,86 @@ int dir_base_ultimo_bloque_part_din(void)
 	return ultima_dir_base;
 }
 
-int ultimo_bloque_part_din(void)
+int ultimo_bloque_cache(t_cache_particiones *cache_part)
 {
-	return g_cache_part->total_space - dir_base_ultimo_bloque_part_din();
+	return cache_part->total_space - dir_base_ultimo_bloque_part_din(cache_part);
+	//TODO printf("%s: total:%d | es_uso: %d|ultima_dir_base:%d\n",
+	//nombre_cache(cache_part->tipo_cache), cache_part->total_space, cache_part->used_space, dir_base_ultimo_bloque_part_din(cache_part) );
 }
 
-bool sin_espacio_ult_bloque_cache_part_din(t_queue_msg *msg_queue)
+bool sin_espacio_ult_bloque_cache(uint32_t data_size, t_cache_particiones *cache)
 {
 	bool resultado;
-	if (msg_queue->msg_data->size > g_cache_part->min_size_part) {
-		resultado = msg_queue->msg_data->size > ultimo_bloque_part_din();
+	if (data_size > cache->min_size_part) {
+		resultado = data_size > ultimo_bloque_cache(cache);
 	} else {
-		resultado = g_cache_part->min_size_part > ultimo_bloque_part_din();
+		resultado = cache->min_size_part > ultimo_bloque_cache(cache);
 	}
+	/* TODO printf("%s: total:%d|en_uso: %d|ult_bloque:%d\n",
+			nombre_cache(cache->tipo_cache), cache->total_space, cache->used_space, ultimo_bloque_cache(cache));*/
 	return resultado;
 }
 
-bool cache_espacio_suficiente(int data_size)
+bool cache_swap_espacio_suficiente(int data_size)
 {
 	bool resultado;
+	int tamano = 0;
 	if ( data_size > g_cache_part->min_size_part) {
-		resultado = espacio_disponible_en_cache() >= data_size;
+		tamano = data_size;
 	} else {
-		resultado = espacio_disponible_en_cache() >= g_cache_part->min_size_part;
+		tamano = g_cache_part->min_size_part;
+	} // No usar más data_size!
+	t_algoritmo_reemplazo algoritmo = g_config_broker->algoritmo_reemplazo;
+	t_list *particiones;
+	int idx_reemplazo = 0;
+	if (g_cache_part->partition_table->elements_count > 1) {
+		switch (algoritmo) {
+		case FIFO:;
+			particiones = list_sorted(g_cache_part->partition_table, ordenador_fifo);
+			idx_reemplazo = ((t_particion_dinamica*)list_get(particiones,0))->id_particion - 1;
+			break;
+		case LRU:;
+			break;
+		}
+		list_destroy(particiones);
+	}
+	int espacio_ganado = 0, excedente = 0, espacio_consolidado= 0;
+	espacio_consolidado = tamano_particiones_libres(idx_reemplazo);
+	excedente = tamano - espacio_consolidado;
+	if (excedente > 0) {
+		espacio_ganado = tamano_particiones_proximo_reemplazo(excedente);
+	}
+	/* TODO printf("esp_part_lib:%d|esp_dp_reemp:%d|tamano_datos:%d|excedente:%d|bool:%d\n",
+		espacio_consolidado, espacio_ganado, tamano, excedente,cache_espacio_suficiente(espacio_ganado, g_cache_swap));*/
+	if (espacio_suficiente_particion_cache(g_cache_part, tamano)) {
+		resultado = true;
+	}
+	else if (espacio_consolidado >= tamano) {
+		resultado = true;
+	} // -->> tengo que reemplazar particiones <<--
+	else if(tamano <= (espacio_consolidado + espacio_ganado) && cache_espacio_suficiente(espacio_ganado, g_cache_swap)) {
+		resultado = true;
+	} else {
+		resultado = false;
 	}
 	return resultado;
+}
+
+bool cache_espacio_suficiente(uint32_t data_size, t_cache_particiones *cache_part)
+{
+	bool resultado;
+	if ( data_size > cache_part->min_size_part) {
+		resultado = espacio_disponible_en_cache(cache_part) >= data_size;
+	} else {
+		resultado = espacio_disponible_en_cache(cache_part) >= cache_part->min_size_part;
+	}
+	return resultado;
+}
+
+void enviar_mensaje_cache_sin_espacio(int cliente_fd, t_log *logger)
+{
+	enviar_mensaje_error(cliente_fd, logger, "BROKER_CACHE IS FULL - FORWARD MSG LATER");
+	sem_post(&g_mutex_borrador); // -->> Intento borrar mensajes viejos <<--
 }
 
 int espacio_cache_msg_get(t_msg_get_broker *msg_get)
@@ -631,18 +876,38 @@ int espacio_cache_msg_localized(t_msg_localized_broker *msg_localized)
 	return (2 + (2 * msg_localized->posiciones->cant_posic)) * sizeof(uint32_t) + msg_localized->size_pokemon - 1;
 }
 
+void* crear_archivo_swap(char *path, int size, t_log *logger)
+{	// Abro el archivo
+	int fd = open(path, O_CREAT | O_RDWR);
+	if (fd == -1) {
+		log_error(logger,"(%s -- Swap_File_Not_Found:%s)",strerror(errno), path);
+		return NULL;
+	}// Le doy el tamanio de la config
+	int truncate_result = ftruncate(fd, size);
+	if( truncate_result != 0 ) {
+		log_error(logger,"(%s -- Swap_File_Not_Truncated:%d)",strerror(errno), truncate_result);
+	}							// Habilito Lectura/Escritura -- Comparto Cambios //
+	void * dataArchivo = mmap( NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	memset(dataArchivo, 0, size);	// Sincroniza Memoria de forma Sincrónica //
+	msync(dataArchivo, size, MS_SYNC);
+	return dataArchivo;
+}
+
 void leer_config_broker(char *path) {
 	g_config = config_create(path);
 	g_config_broker = malloc(sizeof(t_config_broker));
 	g_config_broker->ip_broker = config_get_string_value(g_config,"IP_BROKER");
 	g_config_broker->puerto_broker = config_get_string_value(g_config,"PUERTO_BROKER");
 	g_config_broker->tamano_memoria = config_get_int_value(g_config,"TAMANO_MEMORIA");
+	g_config_broker->tamano_swap = config_get_int_value(g_config,"TAMANO_SWAP");
 	g_config_broker->tamano_minimo_particion = config_get_int_value(g_config,"TAMANO_MINIMO_PARTICION");
 	g_config_broker->algoritmo_memoria = algoritmo_memoria(config_get_string_value(g_config,"ALGORITMO_MEMORIA"));
 	g_config_broker->algoritmo_particion_libre = algoritmo_part_libre(config_get_string_value(g_config,"ALGORITMO_PARTICION_LIBRE"));
 	g_config_broker->algoritmo_reemplazo = algoritmo_reemplazo(config_get_string_value(g_config,"ALGORITMO_REEMPLAZO"));
 	g_config_broker->frecuencia_compactacion = config_get_int_value(g_config,"FRECUENCIA_COMPACTACION");
+	g_config_broker->trigger_mensajes_borrar = config_get_int_value(g_config,"TRIGGER_MENSAJES_BORRAR");
 	g_config_broker->ruta_log = config_get_string_value(g_config, "LOG_FILE");
+	g_config_broker->ruta_swap = config_get_string_value(g_config, "RUTA_SWAP");
 }
 
 t_algoritmo_memoria algoritmo_memoria(char *valor)
@@ -658,6 +923,23 @@ t_algoritmo_memoria algoritmo_memoria(char *valor)
 		algoritmo = 0;
 	}
 	return algoritmo;
+}
+
+char *nombre_cache(t_algoritmo_memoria algoritmo)
+{
+	char *nombre;
+	switch(algoritmo) {
+	case PARTICIONES:;
+		nombre = "CACHE_PARTICIONES";
+		break;
+	case BS:;
+		nombre = "BS";
+		break;
+	case SWAP:;
+		nombre = "SWAP";
+		break;
+	}
+	return nombre;
 }
 
 t_algoritmo_part_libre algoritmo_part_libre(char *valor)
@@ -692,5 +974,5 @@ t_algoritmo_reemplazo algoritmo_reemplazo(char *valor)
 
 void iniciar_log_broker(void) {
 	g_logger = log_create(g_config_broker->ruta_log, "BROKER", 1, LOG_LEVEL_TRACE);
-	g_logdebug = log_create(RUTA_LOG_DEBUG, "BROKER_DBG", 1, LOG_LEVEL_DEBUG);
+	g_logdebug = log_create(RUTA_LOG_DEBUG, "BROKER_DBG", 1, LOG_LEVEL_TRACE);
 }
