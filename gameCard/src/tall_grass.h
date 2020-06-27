@@ -51,8 +51,9 @@ void prueba_file_system(void);
 void prueba_leer_bloques_pokemon();
 
 t_list * leer_bloques( char *pokemon);
-char *get_contenido_bloques(t_list *bloques);
-char *get_contenido_bloque(char *block);
+t_list *obtener_posiciones(char *string_posiciones);
+char *get_contenido_bloques(t_pokemon_medatada *pokemon_metadata);
+char *get_contenido_bloque(int block_size,char *block);
 t_posicion_pokemon *string_to_posicion(char* str_posicion);
 t_pokemon_medatada * leer_metadata_pokemon(char *pokemon);
 
