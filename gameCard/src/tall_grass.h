@@ -52,8 +52,8 @@ void prueba_leer_bloques_pokemon();
 
 t_list * leer_bloques( char *pokemon);
 char *get_contenido_bloques(t_list *bloques);
-char *get_contenido_bloque(void *block);
+char *get_contenido_bloque(char *block);
 t_posicion_pokemon *string_to_posicion(char* str_posicion);
-void leer_metadata_pokemon(t_pokemon_medatada *pokemon_metadata,char *pokemon);
+t_pokemon_medatada * leer_metadata_pokemon(char *pokemon);
 
 #endif /* SRC_TALL_GRASS_H_ */

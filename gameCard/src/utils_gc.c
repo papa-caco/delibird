@@ -39,13 +39,11 @@ void leer_config(void) {
 	g_config_gc = malloc(sizeof(t_config_gamecard));
 
 	g_config_gc->ip_gamecard = config_get_string_value(g_config, "IP_GAMECARD");
-	g_config_gc->puerto_gamecard = config_get_string_value(g_config,
-			"PUERTO_GAMECARD");
+	g_config_gc->puerto_gamecard = config_get_string_value(g_config, "PUERTO_GAMECARD");
 	g_config_gc->ip_broker = config_get_string_value(g_config, "IP_BROKER");
-	g_config_gc->puerto_broker = config_get_string_value(g_config,
-			"PUERTO_BROKER");
-	g_config_gc->path_pokemon = config_get_string_value(g_config,
-			"PUNTO_MONTAJE_TALLGRASS");
+	g_config_gc->puerto_broker = config_get_string_value(g_config, 	"PUERTO_BROKER");
+//	g_config_gc->path_tall_grass = config_get_string_value(g_config,
+//			"PUNTO_MONTAJE_TALLGRASS");
 
 	g_config_gc->id_suscriptor = config_get_int_value(g_config,
 			"ID_SUSCRIPTOR");
@@ -188,9 +186,9 @@ void rcv_new_pokemon(t_msg_new_gamecard *msg) {
 	posicion->cantidad = msg->cantidad;
 
 	///Guarda la informacion en el FS
-	char* pathPokemon = malloc(strlen(g_config_gc->path_pokemon) + 8); //9= /pokemon/; 3 = .txt
+	char* pathPokemon = malloc(strlen(g_config_gc->path_tall_grass) + 8); //9= /pokemon/; 3 = .txt
 
-	strcpy(pathPokemon, g_config_gc->path_pokemon);
+	strcpy(pathPokemon, g_config_gc->path_tall_grass);
 	strcat(pathPokemon, "/Pokemon");
 
 	struct stat st = { 0 };
