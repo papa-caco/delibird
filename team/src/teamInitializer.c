@@ -186,11 +186,11 @@ t_pokemon_entrenador* list_buscar(t_list* lista, char* elementoAbuscar){
 
 	for(int i = 0; list_get(lista, i) != NULL; i++){
 
-		printf("El valor de la lista procesados es %s \n", ((t_pokemon_entrenador*)list_get(lista, i))->pokemon);
-		printf("El elemento a comparar es %s \n", elementoAbuscar);
+		//printf("El valor de la lista procesados es %s \n", ((t_pokemon_entrenador*)list_get(lista, i))->pokemon);
+		//printf("El elemento a comparar es %s \n", elementoAbuscar);
 		if(strcmp(((t_pokemon_entrenador*)list_get(lista, i))->pokemon, elementoAbuscar) == 0){
 
-			printf("Entro al if \n");
+			//printf("Entro al if \n");
 			return (t_pokemon_entrenador*)list_get(lista, i);
 
 		}
