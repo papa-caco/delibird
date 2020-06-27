@@ -17,7 +17,8 @@ void iniciar_gamecard(void) {
 
 	//prueba_semaforo();
 
-	prueba_file_system();
+	//prueba_file_system();
+	prueba_leer_bloques_pokemon();
 
 	//iniciar_suscripcion();
 	//inicio_server_game_card();
@@ -54,13 +55,13 @@ void leer_config(void) {
 	char *dirname_files  =  config_get_string_value(g_config,"DIRNAME_FILES");
 	char *file_metadata  =  config_get_string_value(g_config,"FILE_METADATA");
 
-	g_config_gc->path_blocks = malloc(strlen(dirname_tall_grass) + strlen(dirname_blocks) );
-	strcpy(g_config_gc->path_blocks, dirname_tall_grass);
-	strcat(g_config_gc->path_blocks,dirname_blocks);
+	g_config_gc->dirname_blocks = malloc(strlen(dirname_tall_grass) + strlen(dirname_blocks) );
+	strcpy(g_config_gc->dirname_blocks, dirname_tall_grass);
+	strcat(g_config_gc->dirname_blocks,dirname_blocks);
 
-	g_config_gc->path_files = malloc(strlen(dirname_tall_grass) + strlen(dirname_files) );
-	strcpy(g_config_gc->path_files, dirname_tall_grass);
-	strcat(g_config_gc->path_files,dirname_files);
+	g_config_gc->dirname_files = malloc(strlen(dirname_tall_grass) + strlen(dirname_files) );
+	strcpy(g_config_gc->dirname_files, dirname_tall_grass);
+	strcat(g_config_gc->dirname_files,dirname_files);
 
 	g_config_gc->file_metadata = malloc(strlen(dirname_tall_grass) + strlen(file_metadata) );
 	strcpy(g_config_gc->file_metadata, dirname_tall_grass);

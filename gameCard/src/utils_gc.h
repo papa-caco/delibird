@@ -46,8 +46,8 @@ typedef struct Configuracion_GameCard
 	char *ip_gamecard;
 	char *puerto_gamecard;
 	char *path_pokemon; //PUNTO_MONTAJE_TALLGRASS
-	char *path_blocks;
-	char *path_files;
+	char *dirname_blocks;
+	char *dirname_files;
 	char *file_metadata;
 	int id_suscriptor;
 	int tiempo_reconexion;
