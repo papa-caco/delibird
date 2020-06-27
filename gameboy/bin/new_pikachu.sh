@@ -1,1 +1,1 @@
-./gameboy GAMECARD NEW_POKEMON Pikachu 2 5 10 1 #Se appendeó ID_MENSAJE
+./gameboy GAMECARD NEW_POKEMON Pikachu 2 5 10 9

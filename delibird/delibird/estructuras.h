@@ -14,6 +14,8 @@
 #include <pthread.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <commons/log.h>
 #include <commons/string.h>
 #include <commons/config.h>
@@ -21,6 +23,7 @@
 #include <commons/collections/queue.h>
 #include <semaphore.h>
 #include <sys/time.h>
+#include <sys/mman.h>
 #include <unistd.h>
 
 #define RESPUESTA_OK 1001
