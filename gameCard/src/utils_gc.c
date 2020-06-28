@@ -15,9 +15,9 @@ void iniciar_gamecard(void) {
 	iniciar_log_gamecard();
 	iniciar_estructuras_gamecard();
 
-	prueba_semaforo();
+	//prueba_semaforo();
 
-	//prueba_file_system();
+	prueba_file_system();
 	//prueba_leer_bloques_pokemon();
 
 	//iniciar_suscripcion();
@@ -46,7 +46,18 @@ void leer_config(void) {
 
 	g_config_gc->id_suscriptor = config_get_int_value(g_config,
 			"ID_SUSCRIPTOR");
+	g_config_gc->dirname_blocks = string_new();
+	string_append(&g_config_gc->dirname_blocks,config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS"));
+	string_append(&g_config_gc->dirname_blocks,config_get_string_value(g_config, "DIRNAME_BLOCKS"));
 
+	g_config_gc->dirname_files = string_new();
+	string_append(&g_config_gc->dirname_files,config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS"));
+	string_append(&g_config_gc->dirname_files,config_get_string_value(g_config, "DIRNAME_FILES"));
+
+	g_config_gc->file_metadata = string_new();
+	string_append(&g_config_gc->file_metadata,config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS"));
+	string_append(&g_config_gc->file_metadata,config_get_string_value(g_config, "FILE_METADATA"));
+/*
 	char *dirname_tall_grass = config_get_string_value(g_config,
 			"PUNTO_MONTAJE_TALLGRASS");
 	char *dirname_blocks = config_get_string_value(g_config, "DIRNAME_BLOCKS");
@@ -55,6 +66,8 @@ void leer_config(void) {
 
 	g_config_gc->dirname_blocks = malloc(
 			strlen(dirname_tall_grass) + strlen(dirname_blocks));
+	string_append(g_config_gc->dirname_blocks, dirname_tall_grass);
+	string_append(g_config_gc->dirname_blocks, dirname_blocks);
 	strcpy(g_config_gc->dirname_blocks, dirname_tall_grass);
 	strcat(g_config_gc->dirname_blocks, dirname_blocks);
 
@@ -67,7 +80,7 @@ void leer_config(void) {
 			strlen(dirname_tall_grass) + strlen(file_metadata));
 	strcpy(g_config_gc->file_metadata, dirname_tall_grass);
 	strcat(g_config_gc->file_metadata, file_metadata);
-
+*/
 }
 
 void finalizar_log(void) {

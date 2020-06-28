@@ -38,16 +38,18 @@ t_config_tall_grass *g_config_tg;
 
 //Funciones
 
-
+void prueba_file_system(void);
 void file_system_pokemon( t_list *lista_posiciones, char *pokemon);
+void armar_bloque(char *string_bloque ,int *nro_bloque, t_list *blocks);
+
 void grabar_bloque(int block_nro, char *block_buffer);
-void grabar_metadata_pokemon(t_list *blocks, char *pokemon);
+void grabar_metadata_pokemon(t_list *blocks, char *pokemon, int size_pokemon, char *open);
 void crear_dirname_pokemon(char *pokemon);
 void leer_metadata_tall_grass();
 int  get_bloque_libre();
-char* int_to_string(int x);
+//char* int_to_string(int x);
 
-void prueba_file_system(void);
+
 void prueba_leer_bloques_pokemon();
 
 t_list * leer_bloques( char *pokemon);
