@@ -13,6 +13,8 @@ void iniciar_server_broker(char *ip, char *puerto, t_log* logger)
 {
 
 	int socket_servidor, status;
+	pthread_mutex_t mutex_clientes;
+	pthread_mutex_init(&mutex_clientes, NULL);
 	struct sockaddr_storage dir_cliente;
 	socklen_t tam_direccion;
 	struct addrinfo hints, *servinfo; 	//hints no es puntero
@@ -41,6 +43,7 @@ void iniciar_server_broker(char *ip, char *puerto, t_log* logger)
 
 	while (1){
 		tam_direccion = sizeof(dir_cliente);
+		pthread_mutex_lock(&mutex_clientes);
 		int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
 		pthread_t pid;
 		log_info(logger,"(NEW CLIENT CONNECTED | SOCKET#:%d)", socket_cliente);
@@ -49,6 +52,7 @@ void iniciar_server_broker(char *ip, char *puerto, t_log* logger)
 		// inicializa contador de mensajes enviados al cliente que se conectó.
 		socket->cant_msg_enviados = 0;
 		int thread_status = pthread_create(&pid, NULL, (void*) atender_cliente_broker,(void*) socket);
+		pthread_mutex_unlock(&mutex_clientes);
 		if( thread_status != 0 ){
 			log_error(logger, "Thread create returno %d", thread_status );
 			log_error(logger, "Thread create returno %s", strerror( thread_status ) );

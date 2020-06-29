@@ -62,11 +62,9 @@ bool es_msj_sin_enviar(t_queue_msg *queue_msg, int id_suscriptor);
 
 int poner_datos_msj_en_particion_cache(t_queue_msg *msg_queue, t_log *logger);
 
-t_particion_dinamica *generar_particion_dinamica(t_queue_msg *msg_queue);
-
 t_particion_dinamica *buscar_particion_dinamica_libre(t_queue_msg *msg_queue);
 
-t_particion_dinamica *particion_proxima_victima(void);
+t_particion_dinamica *particion_proxima_victima(int index);
 
 t_particion_dinamica *reemplazar_particion_dinamica(t_queue_msg *msg, t_log *logger);
 
@@ -97,8 +95,6 @@ int espacio_disponible_en_cache(t_cache_particiones *cache);
 int espacio_disponible_en_swap(void);
 
 int tamano_particiones_libres(int index);
-
-int tamano_particiones_proximo_reemplazo(int data_size);
 
 void incremento_cnt_id_mensajes(void);
 

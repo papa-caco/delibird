@@ -11,5 +11,5 @@
 ./gameboy BROKER CAUGHT_POKEMON 1076 OK
 ./gameboy BROKER CAUGHT_POKEMON 1076 OK
 ./gameboy BROKER GET_POKEMON PetetePetete
-./gameboy SUSCRIPTOR CATCH_POKEMON 1
+./gameboy SUSCRIPTOR CATCH_POKEMON 1  # En mi caso SWAP queda con 32 Libres y     
 ./gameboy BROKER CATCH_POKEMON P100 34 16

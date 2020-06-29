@@ -14,6 +14,7 @@
 #ifndef SRC_BROKER_ESTRUCTURAS_H_
 #define SRC_BROKER_ESTRUCTURAS_H_
 #include <signal.h>
+#include <time.h>
 #include <delibird/estructuras.h>
 #include <delibird/conexiones.h>
 #include <delibird/mensajeria.h>
@@ -58,6 +59,7 @@ typedef struct Cache_Part_Din{
 	t_algoritmo_memoria tipo_cache;
 	int cnt_id_partition;
 	int cnt_order_fifo;
+	int cnt_order_lru;
 	int min_size_part;
 	int dir_base_part;
 	int used_space;
@@ -69,6 +71,7 @@ typedef struct Cache_Part_Din{
 typedef struct Particion_Dinamica{
 	int id_particion;
 	int orden_fifo;
+	int last_used;
 	int dir_base;
 	int dir_heap;
 	uint32_t data_size;
@@ -82,7 +85,6 @@ typedef struct Configuracion_Broker
 	char *ip_broker;
 	char *puerto_broker;
 	size_t tamano_memoria;
-	size_t tamano_swap;
 	int tamano_minimo_particion;
 	int frecuencia_compactacion;
 	t_algoritmo_memoria algoritmo_memoria;
@@ -90,7 +92,7 @@ typedef struct Configuracion_Broker
 	t_algoritmo_part_libre algoritmo_particion_libre;
 	int trigger_mensajes_borrar;
 	char *ruta_log;
-	char *ruta_swap;
+	bool delete_msg_empty_queue;
 } t_config_broker;
 
 
