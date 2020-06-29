@@ -110,4 +110,30 @@ int cantidadDeEspecieEnPokemonesLibres(char* nombreBuscado) {
 	return cantidad_Encontrada;
 }
 
+char necesitoPokemon(char* nombrePokemon){
+	char cantidadObjetivo = 0;
+	char cantidadAtrapados = 0;
+	t_pokemon_entrenador* pokAux;
+
+	sem_wait(&sem_pokemonesObjetivoGlobal);
+	pokAux = list_buscar(objetivoGlobalEntrenadores, nombrePokemon);
+	sem_post(&sem_pokemonesObjetivoGlobal);
+
+	if(pokAux == NULL){
+		return 0;
+	}
+	cantidadObjetivo=pokAux->cantidad;
+
+	sem_wait(&sem_pokemonesGlobalesAtrapados);
+	t_pokemon_entrenador* pokAtrapado = list_buscar(objetivoGlobalEntrenadores, nombrePokemon);
+	if(pokAtrapado != NULL){
+		cantidadAtrapados=pokAtrapado->cantidad;
+
+	}
+	sem_post(&sem_pokemonesGlobalesAtrapados);
+
+
+
+	return cantidadAtrapados < cantidadObjetivo;
+}
 

@@ -214,7 +214,13 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 		id_recibido = msg_appeared->id_mensaje;
 
 		//meSirvePokemon ya tiene semaforos dentro
-		if (meSirvePokemon(msg_appeared->pokemon)) {
+		//if (meSirvePokemon(msg_appeared->pokemon)) {
+		//Las dos líneas anteriores las comento por las dudas de que en realidad al final sí haya que realizar ese tipo de
+		//validación
+
+
+		//necesitoPokemon ya tiene los semáforos adentro
+		if (necesitoPokemon(msg_appeared->pokemon) != 0) {
 
 			sem_wait(&mutex_listaPokemonesLlegadosDelBroker);
 			list_add(pokemonesLlegadosDelBroker, msg_appeared->pokemon);
@@ -340,9 +346,7 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 
 			} else {
 				//Si entra acá quiere decir que la respuesta fue FAIL y no pudo atrapar, entonces sigue pudiendo atrapar poke
-				//PERO OJO! Falta eliminar al pokemon de los reservados porque por algo falló. EN realidad deberíamos pre-
-				//guntar bien a los chicos del broker por qué es que eso sucede, pero por lo pronto dejo la lógica de borrado
-
+				//PERO OJO! Falta eliminar al pokemon de los reservados porque por algo falló.
 				//Borro de la lista al pokemon reservado
 				sem_wait(&(sem_pokemonesReservados));
 				int indice;

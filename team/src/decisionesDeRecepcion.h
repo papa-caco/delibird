@@ -17,5 +17,7 @@ int cantidadDeEspecieEnReservados(char* nombreBuscado);
 
 int cantidadDeEspecieEnPokemonesLibres(char* nombreBuscado);
 
+char necesitoPokemon(char* nombrePokemon);
+
 
 #endif /* SRC_DECISIONESDERECEPCION_H_ */
