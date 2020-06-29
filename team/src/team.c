@@ -13,9 +13,6 @@ int main(void) {
 
 
 
-
-
-
 	/*iniciar_team();
 
 
