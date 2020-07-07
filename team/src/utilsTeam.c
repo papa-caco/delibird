@@ -670,18 +670,40 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon) {
 void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
 	t_list* pokemonesPendiente = pokemonesPendientes(unEntrenador);
 	int cantidadPokemonesPendientes = list_size(pokemonesPendiente);
+	int cantidadPokemonesObjetivo = list_size(unEntrenador->objetivoEntrenador);
+	int cantidadPokemonesObtenidos = list_size(unEntrenador->pokemonesObtenidos);
 
+	//OJO NO SE SI ESTA BIEN EL ULTIMO ELSE!!!
 	if (cantidadPokemonesPendientes == 0) {
 		unEntrenador->estado_entrenador = EXIT;
-	} else if (list_size(unEntrenador->pokemonesObtenidos)
-			== list_size(unEntrenador->objetivoEntrenador)) {
-		///ALGORITMO DEADLOCK
+	} else if ((cantidadPokemonesObjetivo == cantidadPokemonesObtenidos) && (tieneDeadlockEntrenador(unEntrenador))) {
 		unEntrenador->estado_entrenador = DEADLOCK;
 	} else {
 		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
 	}
 
 
+}
+
+//Es un for adentro de un for, donde se busca que la lista de obtenidos sea igual a la del objetivo. Entonces hay que evaluar
+//lo que se puede dar: si hay un pokemon distinto chau, hay deadlock. Ahora si son todos iguales pero la cantidad es distinta,
+//también. Ahora si tanto la cantidad como el nombre son iguales, entonces todo ok, no tiene dedalock.
+//Si tiene deadlock devuelve true 1 y si no tiene, false 0.
+char tieneDeadlockEntrenador(t_entrenador* unEntrenador){
+	t_list* poksObjetivo = unEntrenador->objetivoEntrenador;
+	t_list* poksObtenidos = unEntrenador->pokemonesObtenidos;
+
+	for (int i=0; i < list_size(poksObjetivo); i++){
+		t_pokemon_entrenador* unObjetivo = (t_pokemon_entrenador*) list_get(poksObjetivo, i);
+		t_pokemon_entrenador unObtenido = (t_pokemon_entrenador*) list_buscar(poksObtenidos, unObjetivo->pokemon);
+		if(unObtenido == NULL){
+			return 1;
+		}
+		else if(unObtenido.cantidad != unObjetivo->cantidad){
+			return 1;
+		}
+	}
+	return 0;
 }
 
 void agregarPokemonesDelLocalized(t_msg_localized_team* mensajeLocalized){
