@@ -136,6 +136,8 @@ sem_t sem_cola_blocked;
 
 sem_t sem_planificador_cplazo;
 
+sem_t sem_planificador_mplazo;
+
 int g_cnt_msjs_caught;
 
 int g_cnt_msjs_appeared;
