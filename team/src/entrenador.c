@@ -38,7 +38,7 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 					entrenador->estado_entrenador = ATRAPAR;
 
-					sem_post(&(sem_planificador_cplazo));
+					sem_post(&(sem_planificador_cplazoEntrenador));
 
 					//// SIGNAL A PLANIFICADOR?????????
 
@@ -59,7 +59,7 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 			entrenador->estado_entrenador = INTERCAMBIAR;
 
-			sem_post(&(sem_planificador_cplazo));
+			sem_post(&(sem_planificador_cplazoEntrenador));
 
 
 							break;
@@ -69,7 +69,7 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 				entrenador->estado_entrenador = ESPERAR_CAUGHT;
 
-				sem_post(&(sem_planificador_cplazo));
+				sem_post(&(sem_planificador_cplazoEntrenador));
 
 				break;
 
@@ -83,9 +83,14 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 				entrenador2->estado_entrenador = ACABO_INTERCAMBIO;
 
-				sem_post(&(sem_planificador_cplazo));
+				sem_post(&(sem_planificador_cplazoEntrenador));
 
 				break;
+
+			//case EXIT:
+				//pthread_exit(NULL);
+				//VERIFICAR SI SE TERMINA EL HILO DE ESTA FORMA.
+
 				case -1:
 					pthread_exit(NULL);
 				}

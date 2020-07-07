@@ -134,7 +134,11 @@ sem_t sem_cola_blocked;
 
 //--------------SEMAFOROS PLANIFICADORES-----------------------------------
 
-sem_t sem_planificador_cplazo;
+
+
+sem_t sem_planificador_cplazoReady;
+
+sem_t sem_planificador_cplazoEntrenador;
 
 sem_t sem_planificador_mplazo;
 

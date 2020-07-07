@@ -682,7 +682,7 @@ void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
 		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
 	}
 
-
+	liberar_lista_de_pokemones(pokemonesPendiente);
 }
 
 //Es un for adentro de un for, donde se busca que la lista de obtenidos sea igual a la del objetivo. Entonces hay que evaluar
@@ -695,11 +695,11 @@ char tieneDeadlockEntrenador(t_entrenador* unEntrenador){
 
 	for (int i=0; i < list_size(poksObjetivo); i++){
 		t_pokemon_entrenador* unObjetivo = (t_pokemon_entrenador*) list_get(poksObjetivo, i);
-		t_pokemon_entrenador unObtenido = (t_pokemon_entrenador*) list_buscar(poksObtenidos, unObjetivo->pokemon);
+		t_pokemon_entrenador* unObtenido = (t_pokemon_entrenador*) list_buscar(poksObtenidos, unObjetivo->pokemon);
 		if(unObtenido == NULL){
 			return 1;
 		}
-		else if(unObtenido.cantidad != unObjetivo->cantidad){
+		else if(unObtenido->cantidad!= unObjetivo->cantidad){
 			return 1;
 		}
 	}
