@@ -49,6 +49,7 @@ typedef enum Estado_Entrenador{
 	ATRAPAR,
 	INTERCAMBIAR,
 	ACABO_INTERCAMBIO,
+	RECIBIO_RESPUESTA_OK,
 	ESPERAR_CAUGHT,
 	DEADLOCK,
 	EXIT,
@@ -86,6 +87,7 @@ typedef struct Pokemon_Entrenador_Reservado{
 
 //-----------------Variables Globales----------------------------
 
+int cantidadDeEntrenadores;
 
 t_queue* colaNewEntrenadores;
 
@@ -131,6 +133,10 @@ sem_t sem_pokemonesObjetivoGlobal;
 //---------------SEMAFOROS COLAS DE ENTRENADORES---------------------------
 
 sem_t sem_cola_blocked;
+sem_t sem_cola_new;
+sem_t sem_cola_ready;
+sem_t sem_cola_exit;
+
 
 //--------------SEMAFOROS PLANIFICADORES-----------------------------------
 
@@ -141,6 +147,8 @@ sem_t sem_planificador_cplazoReady;
 sem_t sem_planificador_cplazoEntrenador;
 
 sem_t sem_planificador_mplazo;
+
+sem_t sem_hay_pokemones_mapa;
 
 int g_cnt_msjs_caught;
 

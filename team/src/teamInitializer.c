@@ -136,6 +136,7 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 	}
 	//Al finalizar el programa vamos a tener que destruir la lista de entrenadores, lo cual implicará destruir
 	//también cada una de las listas que creamos acá para llenar a cada uno
+	cantidadDeEntrenadores = queue_size(colaNewEntrenadores);
 
 }
 

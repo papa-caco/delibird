@@ -337,10 +337,13 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 				agregarPokemonAGlobalesAtrapados(pokemonAAgregarConvertido);
 				sem_post(&(sem_pokemonesGlobalesAtrapados));
 
-				//VERIFICAR SI EL ENTRENADOR PUEDE PASAR A EXIT O SI TIENE DEADLOCK, O SI DEBE BUSCAR MAS POKEMONES (CAMBIAR ESTADO)
+
+				//CAMBIAR ESTADO A RECIBIO OK.
+
 				sem_wait(&(entrenadorReservador->mutex_entrenador));
-				verificarYCambiarEstadoEntrenador(entrenadorReservador);
+				entrenadorReservador->estado_entrenador = RECIBIO_RESPUESTA_OK;
 				sem_post(&(entrenadorReservador->mutex_entrenador));
+
 
 				//SEMAFORO MUTEX AL ENTRENADOR
 
