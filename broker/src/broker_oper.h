@@ -98,9 +98,7 @@ int obtengo_tamano_buddy(int data_size);
 
 int obtengo_posicion_buddy_libre(int tamano_buddy);
 
-void liberar_posicion_buddy(int posicion_buddy, int tamano_buddy);
-
-void ocupo_posicion_buddy_libre(int tamano_buddy, int posicion_buddy);
+void liberar_posicion_buddy_ocupada(int posicion_buddy, int tamano_buddy);
 
 t_queue_msg *generar_nuevo_mensaje_cola(void);
 

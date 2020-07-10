@@ -205,6 +205,8 @@ bool ordenador_fifo_buddy(void *part1, void *part2);
 
 bool ordenador_lru_buddy(void *part1, void *part2);
 
+bool ordenador_buddy_posiciones(void *part1, void *part2);
+
 t_algoritmo_memoria algoritmo_memoria(char *valor);
 
 char *nombre_cache(t_algoritmo_memoria algoritmo);
@@ -225,6 +227,26 @@ void print_bitmaps_buddy_system_status(void);
 
 bool es_nro_par(int numero);
 
+void manejo_senial_externa(void);
+
+void funcion_captura_senial(int senial);
+
+char *senial_recibida(int senial);
+
 uint64_t timestamp(void);
+
+char *fecha_hora_actual(void);
+
+void dump_print_cache_particiones(int senial);
+
+void dump_print_particiones_buddy(int senial, FILE *dump_file);
+
+void file_dump_particion_dinamica(t_particion_dinamica *particion, FILE *dump_file);
+
+void file_dump_particion_buddy(t_particion_buddy *particion, int orden, FILE *dump_file);
+
+void imprimir_particion_dinamica(t_particion_dinamica *particion);
+
+void imprimir_particion_buddy(t_particion_buddy *particion, int orden);
 
 #endif /* SRC_BROKER_UTILS_H_ */

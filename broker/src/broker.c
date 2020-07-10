@@ -21,6 +21,8 @@ int main(void) {
 
 	iniciar_estructuras_broker();
 
+	manejo_senial_externa();
+
 	inicio_server_broker();
 
 	return EXIT_SUCCESS;

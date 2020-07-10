@@ -162,7 +162,9 @@ int poner_datos_msj_en_particion_cache(t_queue_msg *msg, t_log *logger)
 		name_cola = nombre_cola(buddy->id_cola);
 		log_debug(g_logger,"\n(%s|DATA_STORED|BUDDY_Position:%d|Buddy_Size:%d|DATA_SIZE:%d Bytes|QUEUE:%s|ID_MSG:%d|CACHE_SPACE:%d Bytes)\n",
 			nombre_cache(g_cache_buddy->tipo_cache), buddy->posicion, buddy->tamano, buddy->data_size,name_cola, buddy->id_mensaje, espacio);
-		print_bitmaps_buddy_system_status();//TODO
+		if (g_config_broker->show_bitmaps_bs) {
+			print_bitmaps_buddy_system_status();
+		}
 		break;
 	}
 	return dir_base_particion;
@@ -229,7 +231,6 @@ t_particion_dinamica *buscar_particion_dinamica_libre(t_queue_msg *msg_queue)
 		g_cache_part->used_space += tamano_particion_dinamica(particion);
 	}
 	int cant_part = g_cache_part->partition_table->elements_count;
-	//TODO printf("tabla_part -- cantidad_particiones:%d\n",cant_part);
 	return particion;
 }
 
@@ -263,7 +264,6 @@ t_particion_dinamica *reemplazar_particion_dinamica(t_queue_msg *msg, t_log *log
 	}
 	t_particion_dinamica *particion = particion_proxima_victima(0);
 	do {
-		//sleep(1);
 		tamano1 = tamano_particion_dinamica(particion);
 		reemplazo = false;
 		if (particion->presencia) {
@@ -277,13 +277,11 @@ t_particion_dinamica *reemplazar_particion_dinamica(t_queue_msg *msg, t_log *log
 		compactada = false;
 		if (frecuencia != -1 && (frecuencia == 0 || frecuencia == contador_reemplazos)) {
 			compactar_particiones(g_cache_part, logger);
-			//puts("");// TODO
 			new_part = ultima_particion_libre();
 			contador_reemplazos = 0;
 			compactada = true;
 		}
 		cant_part = g_cache_part->partition_table->elements_count;
-		//TODO printf("reemp:%d|consolid:%d| cant_part%d\n",contador_reemplazos, cont_consolidar, cant_part);
 		tamano2 = tamano_particion_dinamica(new_part);
 		if (cont_consolidar > 500) {
 			pthread_exit(NULL);
@@ -291,7 +289,6 @@ t_particion_dinamica *reemplazar_particion_dinamica(t_queue_msg *msg, t_log *log
 		if (tamano2 < data_size) {
 		if (reemplazo && !compactada) {
 			pthread_mutex_lock(&g_mutex_cache_part);
-			//puts("1");
 			particion =  particion_proxima_victima(1);
 			pthread_mutex_unlock(&g_mutex_cache_part);
 			cont_consolidar = 0;
@@ -303,16 +300,14 @@ t_particion_dinamica *reemplazar_particion_dinamica(t_queue_msg *msg, t_log *log
 				idx = cant_part - 1;
 			}
 			pthread_mutex_lock(&g_mutex_cache_part);
-			//TODO printf("2 - idx:%d\n",idx);
 			particion =  particion_proxima_victima(idx);
 			pthread_mutex_unlock(&g_mutex_cache_part);
 		} else { // Si Compacté y no me alcanza el tamaño de la partición libre,
 			pthread_mutex_lock(&g_mutex_cache_part);  //busco reemplazando la próxima víctima.
-			// TODO puts("3");
 			particion = particion_proxima_victima(0);
 			pthread_mutex_unlock(&g_mutex_cache_part);
 		}	}
-	}while (tamano2 < data_size);
+	} while (tamano2 < data_size);
 	if (new_part != NULL) {
 		int tamano_original = tamano_particion_dinamica(new_part);
 		int tamano_minimo = 0;
@@ -347,7 +342,6 @@ t_particion_dinamica *consolidar_particion_dinamica(t_particion_dinamica *partic
 	t_particion_dinamica *result_part = NULL;
 	if (cant_part > 1) {
 		int index_part = particion->id_particion - 1;
-
 		int index_prev = index_part - 1;
 		int index_post = index_part + 1;
 		int idx_consolida = 0;
@@ -366,8 +360,6 @@ t_particion_dinamica *consolidar_particion_dinamica(t_particion_dinamica *partic
 			result_part->id_mensaje = consolidada->id_mensaje;
 			result_part->orden_fifo = consolidada->orden_fifo;
 			result_part->last_used = consolidada->last_used;
-			/*TODO printf("consolido:id%d|base:%d|heap:%d\n",
-				result_part->id_particion,result_part->dir_base,result_part->dir_heap);*/
 			pthread_mutex_lock(&g_mutex_cache_part);// Abajo elimino la partición que traje como argumento, me quedo con la anterior
 			list_remove_and_destroy_element(g_cache_part->partition_table, idx_consolida, free);
 			for (int i = 0; i < g_cache_part->partition_table->elements_count; i++) {
@@ -377,7 +369,6 @@ t_particion_dinamica *consolidar_particion_dinamica(t_particion_dinamica *partic
 			pthread_mutex_unlock(&g_mutex_cache_part);
 		} else {
 			result_part = particion;
-			//TODO printf("No Cosolido - vecina ocupada|%d|%d\n",result_part->id_particion, particion->id_particion);
 		}
 	} else {
 		result_part = particion;
@@ -516,7 +507,6 @@ t_particion_buddy *obtengo_particion_buddy_libre(t_queue_msg *msg_queue)
 		buddy->tamano = tamano_buddy;
 		buddy->posicion = posicion;
 		insertar_en_buddy_table(buddy, msg_queue);
-		//print_bitmaps_buddy_system_status();//TODO
 		return buddy;
 	} else {
 		return NULL;
@@ -541,13 +531,10 @@ t_particion_buddy *reemplazar_particion_buddy(t_queue_msg *msg_queue, t_log *log
 		buddy = NULL;
 		contador_reemplazos ++;
 		new_buddy = obtengo_particion_buddy_libre(msg_queue);
-		// TODO puts("3");
 		if (new_buddy == NULL) {
 			buddy =	buddy_proxima_victima(0);
 		}
 	}while (new_buddy == NULL);
-	//ocupo_posicion_buddy_libre(new_buddy->tamano, new_buddy->posicion);
-	//insertar_en_buddy_table(new_buddy, msg_queue);
 	return new_buddy;
 }
 
@@ -577,9 +564,11 @@ void eliminar_de_buddy_table(t_particion_buddy* buddy)
 		return condition;
 	}
 	pthread_mutex_lock(&g_mutex_cache_buddy);
-	liberar_posicion_buddy(buddy->posicion, buddy->tamano);
+	liberar_posicion_buddy_ocupada(buddy->posicion, buddy->tamano);
 	list_remove_and_destroy_by_condition(g_cache_buddy->buddy_table, mismo_id_msj,(void*) free);
-	print_bitmaps_buddy_system_status(); // TODO
+	if (g_config_broker->show_bitmaps_bs) {
+		print_bitmaps_buddy_system_status();
+	}
 	pthread_mutex_unlock(&g_mutex_cache_buddy);
 }
 
@@ -602,8 +591,6 @@ int obtengo_tamano_buddy(int data_size)
 		return posicion->buddy_size >= data_size;
 	}
 	int tamano_buddy = ((t_posicion_buddy*) list_find(g_cache_buddy->posiciones_buddy, mejor_tamano))->buddy_size;
-	/* TODO printf("es_tamano_orden_ultimo:%d|es_tamano_orden_primero:%d\n",
-			es_tamano_buddy_ultimo_orden(tamano_buddy), es_tamano_buddy_primer_orden(tamano_buddy));*/
 	return tamano_buddy;
 }
 
@@ -617,13 +604,11 @@ int obtengo_posicion_buddy_libre(int tamano_buddy)
 	t_posicion_buddy *posicion = (t_posicion_buddy*) list_find(g_cache_buddy->posiciones_buddy, mismo_tamano);
 	if (posicion->free_buddys > 0) {
 		cant_buddys = posicion->cant_buddys;
-		// TODO printf("orden_buddies:%d|buddies_libres:%d\n",posicion->orden,posicion->free_buddys);
 		for (int i = 0; i < cant_buddys; i ++) {
 			if(!(bitarray_test_bit(posicion->bitmap_buddy, i))) {
 				bitarray_set_bit(posicion->bitmap_buddy, i);
 				posicion->free_buddys --;
 				bit_index = i;
-				// TODO printf("bit_index:%d\n",i);
 				i = cant_buddys;
 	}	}
 	posicion_buddy = bit_index * tamano_buddy;
@@ -632,7 +617,7 @@ int obtengo_posicion_buddy_libre(int tamano_buddy)
 	return posicion_buddy;
 }
 
-void liberar_posicion_buddy(int posicion_buddy, int tamano_buddy)
+void liberar_posicion_buddy_ocupada(int posicion_buddy, int tamano_buddy)
 {
 	bool mismo_tamano(void *posic) {
 		t_posicion_buddy *posicion = (t_posicion_buddy*) posic;
@@ -645,22 +630,6 @@ void liberar_posicion_buddy(int posicion_buddy, int tamano_buddy)
 		posicion->free_buddys ++;
 	}
 	clean_bits_bitmaps_buddy_system(tamano_buddy, bit_index);
-}
-
-void ocupo_posicion_buddy_libre(int tamano_buddy, int posicion_buddy)
-{
-	bool mismo_tamano(void *posic) {
-		t_posicion_buddy *posicion = (t_posicion_buddy*) posic;
-		return posicion->buddy_size == tamano_buddy;
-	}
-	int bit_index = (int) posicion_buddy / tamano_buddy, cant_buddys = 0, free_buddies = 0;
-	t_posicion_buddy *posicion = (t_posicion_buddy*) list_find(g_cache_buddy->posiciones_buddy, mismo_tamano);
-	if(!(bitarray_test_bit(posicion->bitmap_buddy, bit_index))) {
-		bitarray_set_bit(posicion->bitmap_buddy, bit_index);
-		posicion->free_buddys --;
-	}
-	set_bits_bitmaps_buddy_system(tamano_buddy, bit_index);
-	//print_bitmaps_buddy_system_status();//TODO
 }
 
 void poner_msj_en_cola(t_queue_msg *mensaje_cola, t_broker_queue *cola_boker)
@@ -707,8 +676,7 @@ ssize_t despachar_mensaje_a_suscriptor(t_socket_cliente_broker *socket, t_tipo_m
 ssize_t despachar_msjs_get(t_socket_cliente_broker *socket, int ult_id_recibido,t_suscriptor_broker *suscriptor,t_log *logger)
 {
 	t_queue_msg *msg_queue_get;
-	ssize_t sent_bytes = 0;
-	// Queda en espera si recibió todos los msjs hasta el próximo mensaje en cola o fin de suscripción
+	ssize_t sent_bytes = 0; // Queda en espera si recibió todos los msjs hasta el próximo mensaje en cola o fin de suscripción
 	set_msg_enviado_a_suscriptor(g_queue_get_pokemon, suscriptor->id_suscriptor, ult_id_recibido);
 	sem_wait(&suscriptor->sem_cont_msjs);
 	pthread_mutex_lock(&g_mutex_msjs);

@@ -16,6 +16,7 @@
 #include <signal.h>
 #include <time.h>
 #include <math.h>
+#include <commons/process.h>
 #include <commons/bitarray.h>
 #include <delibird/estructuras.h>
 #include <delibird/conexiones.h>
@@ -94,9 +95,10 @@ typedef struct Configuracion_Broker
 	t_algoritmo_reemplazo algoritmo_reemplazo;
 	t_algoritmo_part_libre algoritmo_particion_libre;
 	int bit_arrays_bs;
-	int trigger_mensajes_borrar;
 	char *ruta_log;
-	bool delete_msg_empty_queue;
+	bool show_bitmaps_bs;
+	bool show_logs_on_screen;
+	char *dump_file;
 } t_config_broker;
 
 typedef struct Posiciones_Buddy

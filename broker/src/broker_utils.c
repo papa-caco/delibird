@@ -205,7 +205,7 @@ void inicializar_cache_particiones_dinamicas(void)
 	g_cache_part->tipo_cache = PARTICIONES;
 	g_cache_part->cnt_id_partition = 1;
 	g_cache_part->cnt_order_fifo = 1;
-	g_cache_part->cnt_order_lru = 1;
+	g_cache_part->cnt_order_lru = (int) timestamp();
 	g_cache_part->dir_base_part = 0;
 	g_cache_part->min_size_part = g_config_broker->tamano_minimo_particion;
 	g_cache_part->used_space = 0;
@@ -225,7 +225,7 @@ void inicializar_cache_buddy_system(void)
 	g_cache_buddy->total_space = tamano_cache;
 	g_cache_buddy->used_space = 0;
 	g_cache_buddy->cnt_order_fifo = 1;
-	g_cache_buddy->cnt_order_lru = 1;
+	g_cache_buddy->cnt_order_lru = (int) timestamp();
 	g_cache_buddy->buddy_table = list_create();
 	g_cache_buddy->posiciones_buddy = list_create();
 	g_cache_buddy->buddy_repo = malloc(tamano_cache);
@@ -708,15 +708,7 @@ void generar_particion_dinamica_libre(int dir_base, int size)
 		if (part->id_particion != i + 1) {
 			part->id_particion = i + 1;
 		}
-		/*printf("particion:id:%d|base:%d|heap:%d|tamano:%d|ord_fifo:%d|last_used:%llu|id_msg:%d|stat:%d\n",
-					part->id_particion,part->dir_base,part->dir_heap,
-					tamano_particion_dinamica(part),part->orden_fifo,(uintmax_t)part->last_used,
-					part->id_mensaje,part->presencia);*/
-	}
-	/* TODO TODO	printf("nuevo_bloque_libre:%d|%d|%d\n",
-			bloque_libre->dir_base,bloque_libre->dir_heap, tamano_particion_dinamica(bloque_libre));
-		printf("ultima_dir_base:%d\n",g_cache_part->dir_base_part);*/
-}
+}	}
 
 t_particion_dinamica *ultima_particion_libre(void)
 {
@@ -745,8 +737,6 @@ int dir_base_ultimo_bloque_part_din(t_cache_particiones *cache_part)
 int ultimo_bloque_cache(t_cache_particiones *cache_part)
 {
 	return cache_part->total_space - dir_base_ultimo_bloque_part_din(cache_part);
-	//TODO printf("%s: total:%d | es_uso: %d|ultima_dir_base:%d\n",
-	//nombre_cache(cache_part->tipo_cache), cache_part->total_space, cache_part->used_space, dir_base_ultimo_bloque_part_din(cache_part) );
 }
 
 bool sin_espacio_ult_bloque_cache(uint32_t data_size, t_cache_particiones *cache)
@@ -757,8 +747,6 @@ bool sin_espacio_ult_bloque_cache(uint32_t data_size, t_cache_particiones *cache
 	} else {
 		resultado = cache->min_size_part > ultimo_bloque_cache(cache);
 	}
-	/* TODO printf("%s: total:%d|en_uso: %d|ult_bloque:%d\n",
-			nombre_cache(cache->tipo_cache), cache->total_space, cache->used_space, ultimo_bloque_cache(cache));*/
 	return resultado;
 }
 
@@ -883,8 +871,6 @@ void clean_bits_bitmaps_buddy_system(int tamano_buddy, int bit_index)
 		}
 		clean_bits_bitmaps_inferiores(orden_buddy, bit_index);
 	}
-	// TODO puts("1");
-	//print_bitmaps_buddy_system_status();//TODO
 }
 
 void clean_bits_bitmaps_superiores(int orden_buddy, int bit_index)
@@ -894,7 +880,6 @@ void clean_bits_bitmaps_superiores(int orden_buddy, int bit_index)
 	for (int i = orden_inicial; i < g_cache_buddy->cant_bitarrays; i ++) {
 		posicion = list_get(g_cache_buddy->posiciones_buddy, i);
 		index_bitmap = (int) index_bitmap / 2;
-		//TODO printf("orden:%d|bit_index:%d|\n",i,index_bitmap);
 		if (bitarray_test_bit(posicion->bitmap_buddy, index_bitmap)) {
 			bitarray_clean_bit(posicion->bitmap_buddy, index_bitmap);
 			posicion->free_buddys ++;
@@ -982,6 +967,11 @@ bool ordenador_lru_buddy(void *part1, void *part2)
 	return ((t_particion_buddy*) part1)->last_used < ((t_particion_buddy*) part2)->last_used;
 }
 
+bool ordenador_buddy_posiciones(void *part1, void *part2)
+{
+	return ((t_particion_buddy*) part1)->posicion < ((t_particion_buddy*) part2)->posicion;
+}
+
 void leer_config_broker(char *path) {
 	g_config = config_create(path);
 	g_config_broker = malloc(sizeof(t_config_broker));
@@ -993,10 +983,11 @@ void leer_config_broker(char *path) {
 	g_config_broker->algoritmo_particion_libre = algoritmo_part_libre(config_get_string_value(g_config,"ALGORITMO_PARTICION_LIBRE"));
 	g_config_broker->algoritmo_reemplazo = algoritmo_reemplazo(config_get_string_value(g_config,"ALGORITMO_REEMPLAZO"));
 	g_config_broker->frecuencia_compactacion = config_get_int_value(g_config,"FRECUENCIA_COMPACTACION");
-	g_config_broker->trigger_mensajes_borrar = config_get_int_value(g_config,"TRIGGER_MENSAJES_BORRAR");
+	g_config_broker->show_logs_on_screen = verdadero_falso(config_get_string_value(g_config,"SHOW_LOGS_ON_SCREEN"));
 	g_config_broker->ruta_log = config_get_string_value(g_config, "LOG_FILE");
-	g_config_broker->delete_msg_empty_queue = verdadero_falso(config_get_string_value(g_config,"BORRAR_MSJS_AL_VACIAR_COLA"));
+	g_config_broker->show_bitmaps_bs = verdadero_falso(config_get_string_value(g_config,"SHOW_BITMAPS_BS"));
 	g_config_broker->bit_arrays_bs = config_get_int_value(g_config,"MAX_BITARRAYS_BS");
+	g_config_broker->dump_file = config_get_string_value(g_config,"DUMP_FILE");
 }
 
 t_algoritmo_memoria algoritmo_memoria(char *valor)
@@ -1135,6 +1126,57 @@ bool es_nro_par(int numero)
 	return resto == 0;
 }
 
+void manejo_senial_externa(void)
+{
+	int broker_pid = process_get_thread_id();
+	log_info(g_logger,"Enviar Señales SIGUSR1/2 al proceso (PID):%d", broker_pid);
+	signal(SIGUSR1, funcion_captura_senial);
+	signal(SIGUSR2, funcion_captura_senial);
+	signal(SIGILL, funcion_captura_senial);
+	signal(SIGHUP, funcion_captura_senial);
+	signal(SIGTRAP, funcion_captura_senial);
+}
+
+void funcion_captura_senial(int senial)
+{
+	int broker_pid = process_get_thread_id();
+	log_warning(g_logger,"Señal recibida: %s -->>(kill -%d  %d).",senial_recibida(senial), senial, broker_pid);
+	switch(senial) {
+	case SIGUSR1:;
+		dump_print_cache_particiones(senial);
+		break;
+	case SIGUSR2:;
+		dump_print_cache_particiones(senial);
+		break;
+	default:
+		puts("-->>No es posible manejar señal enviada.<<--");
+		break;
+	}
+}
+
+char *senial_recibida(int senial)
+{
+	char *recvd_signal;
+	switch(senial) {
+	case SIGUSR1:;
+		recvd_signal = "SIGUSR1";
+		break;
+	case SIGUSR2:;
+		recvd_signal = "SIGUSR2";
+		break;
+	case SIGILL:;
+		recvd_signal = "SIGILL";
+		break;
+	case SIGHUP:;
+		recvd_signal = "SIGHUP";
+		break;
+	case SIGTRAP:;
+		recvd_signal = "SIGTRAP";
+		break;
+	}
+	return recvd_signal;
+}
+
 uint64_t timestamp(void)
 {
     struct timeval valor;
@@ -1144,7 +1186,151 @@ uint64_t timestamp(void)
     return tiempo;
 }
 
+char *fecha_hora_actual(void)
+{
+	char *fecha_hora = malloc(20);
+	time_t ahora = time(NULL);
+	strftime(fecha_hora, 20, "%d/%m/%Y %H:%M:%S", localtime(&ahora));
+	return fecha_hora;
+}
+
+void dump_print_cache_particiones(int senial)
+{
+	FILE* dump_file = fopen(g_config_broker->dump_file, "a");
+	t_algoritmo_memoria algoritmo = g_config_broker->algoritmo_memoria;
+	char *fecha_hora = fecha_hora_actual();
+	int cant_particiones = 0;
+	if (senial == SIGUSR1) {
+		fprintf(dump_file, "<<----------------------------------------------------------------------------------------------------------------------------------------------------------------------->>\n");
+		fprintf(dump_file, "Dump:%s -- Algoritmo Memoria: %s\n", fecha_hora, nombre_cache(algoritmo));
+	} else {
+		printf("Dump:%s -- Algoritmo Memoria: %s\n", fecha_hora, nombre_cache(algoritmo));
+	}
+	free(fecha_hora);
+	switch(algoritmo) {
+	case PARTICIONES:;
+		pthread_mutex_lock(&g_mutex_cache_part);
+		cant_particiones = g_cache_part->partition_table->elements_count;
+		for (int i = 0; i < cant_particiones; i ++) {
+			t_particion_dinamica *particion = (t_particion_dinamica*) list_get(g_cache_part->partition_table, i);
+			if (senial == SIGUSR1) {
+				file_dump_particion_dinamica(particion, dump_file);
+			} else {
+				imprimir_particion_dinamica(particion);
+			}
+		}
+		pthread_mutex_unlock(&g_mutex_cache_part);
+		break;
+	case BS:;
+		pthread_mutex_lock(&g_mutex_cache_buddy);
+		dump_print_particiones_buddy(senial, dump_file);
+		pthread_mutex_unlock(&g_mutex_cache_buddy);
+		break;
+	}
+	fclose(dump_file);
+}
+
+void dump_print_particiones_buddy(int senial, FILE *dump_file)
+{
+	t_particion_buddy *particion = NULL, *particion2 = NULL;
+	int cant_particiones = 0, i = 0, orden_buddys = 1, proxima_posicion = 0, limite = 0, tamano =0;
+	cant_particiones = g_cache_buddy->buddy_table->elements_count;
+	if (cant_particiones > 0) {
+		t_list *buddys = list_sorted(g_cache_buddy->buddy_table,ordenador_buddy_posiciones);
+		do {
+			particion = (t_particion_buddy*) list_get(buddys, i);
+			if (senial == SIGUSR1) {
+				file_dump_particion_buddy(particion, orden_buddys, dump_file);
+			} else {
+				imprimir_particion_buddy(particion, orden_buddys);
+			}
+			proxima_posicion = particion->posicion + particion->tamano;
+			if (i < cant_particiones - 1) {
+				particion2 = (t_particion_buddy*) list_get(buddys, i + 1);
+				if (proxima_posicion != particion2->posicion) {
+					orden_buddys ++;
+					limite = particion2->posicion - 1;
+					tamano = limite - proxima_posicion + 1;
+					if (senial == SIGUSR1) {
+						fprintf(dump_file, "Partición	%d:	%p	-	%p.	[L]	Size:	%db\n",orden_buddys, g_cache_buddy->buddy_repo + proxima_posicion,
+							g_cache_buddy->buddy_repo + limite, tamano);
+					} else {
+						printf("Partición	%d:	%p	-	%p.	[L]	Size:	%db\n",orden_buddys, g_cache_buddy->buddy_repo + proxima_posicion,
+							g_cache_buddy->buddy_repo + limite, tamano);
+				}	}
+			} else {
+				if (proxima_posicion < g_cache_buddy->total_space) {
+					limite = g_cache_buddy->total_space - 1;
+					tamano = g_cache_buddy->total_space - proxima_posicion;
+					if (senial == SIGUSR1) {
+						fprintf(dump_file, "Partición	%d:	%p	-	%p.	[L]	Size:	%db\n",orden_buddys + 1, g_cache_buddy->buddy_repo + proxima_posicion,
+							g_cache_buddy->buddy_repo + limite, tamano);
+					} else {
+						printf("Partición	%d:	%p	-	%p.	[L]	Size:	%db\n",orden_buddys + 1, g_cache_buddy->buddy_repo + proxima_posicion,
+							g_cache_buddy->buddy_repo + limite, tamano);
+			}	}	}
+			i ++;
+			orden_buddys ++;
+
+		} while (i < cant_particiones);
+			list_destroy(buddys);
+	} else {
+		limite = g_cache_buddy->total_space - 1;
+		tamano = g_cache_buddy->total_space;
+		if (senial == SIGUSR1) {
+			fprintf(dump_file, "Partición	%d:	%p	-	%p.	[L]	Size:	%db\n",orden_buddys, g_cache_buddy->buddy_repo + proxima_posicion,
+				g_cache_buddy->buddy_repo + limite, tamano);
+		} else {
+			printf("Partición	%d:	%p	-	%p.	[L]	Size:	%db\n",orden_buddys, g_cache_buddy->buddy_repo + proxima_posicion,
+				g_cache_buddy->buddy_repo + limite, tamano);
+	}	}
+}
+
+void file_dump_particion_dinamica(t_particion_dinamica *particion, FILE *dump_file)
+{
+	if (particion->presencia) {
+		fprintf(dump_file,"Partición	%d:	%p	-	%p.	[X]	Size:	%db	LRU:<%d>	Cola:<%s>	ID:<%d>\n",
+		particion->id_particion, g_cache_part->partition_repo + (particion->dir_base), g_cache_part->partition_repo + (particion->dir_heap),
+		 tamano_particion_dinamica(particion), particion->last_used, nombre_cola(particion->id_cola), particion->id_mensaje);
+	} else {
+		fprintf(dump_file, "Partición	%d:	%p	-	%p.	[L]	Size:	%db\n",
+		particion->id_particion, g_cache_part->partition_repo + (particion->dir_base), g_cache_part->partition_repo + (particion->dir_heap),
+		tamano_particion_dinamica(particion));
+	}
+}
+
+void file_dump_particion_buddy(t_particion_buddy *particion, int orden, FILE *dump_file)
+{
+	fprintf(dump_file, "Partición	%d:	%p	-	%p.	[X]	Size:	%db	LRU:<%d>	Cola:<%s>	ID:<%d>\n",
+		orden, g_cache_buddy->buddy_repo + (particion->posicion), g_cache_buddy->buddy_repo + (particion->posicion + (particion->tamano - 1)),
+		 particion->tamano, particion->last_used, nombre_cola(particion->id_cola), particion->id_mensaje);
+}
+
+void imprimir_particion_dinamica(t_particion_dinamica *particion)
+{
+	if (particion->presencia) {
+		printf("Partición	%d:	%p	-	%p.	[X]	Size:	%db	LRU:<%d>	Cola:<%s>	ID:<%d>\n",
+		particion->id_particion, g_cache_part->partition_repo + (particion->dir_base), g_cache_part->partition_repo + (particion->dir_heap),
+		 tamano_particion_dinamica(particion), particion->last_used, nombre_cola(particion->id_cola), particion->id_mensaje);
+	} else {
+		printf("Partición	%d:	%p	-	%p.	[L]	Size:	%db\n",
+		particion->id_particion, g_cache_part->partition_repo + (particion->dir_base), g_cache_part->partition_repo + (particion->dir_heap),
+		tamano_particion_dinamica(particion));
+	}
+}
+
+void imprimir_particion_buddy(t_particion_buddy *particion, int orden)
+{
+	printf("Partición	%d:	%p	-	%p.	[X]	Size:	%db  LRU:<%d>	Cola:<%s>	ID:<%d>\n",
+		orden, g_cache_buddy->buddy_repo + (particion->posicion), g_cache_buddy->buddy_repo + (particion->posicion + (particion->tamano - 1)),
+		 particion->tamano, particion->last_used, nombre_cola(particion->id_cola), particion->id_mensaje);
+}
+
 void iniciar_log_broker(void) {
-	g_logger = log_create(g_config_broker->ruta_log, "BROKER", 1, LOG_LEVEL_TRACE);
-	g_logdebug = log_create(RUTA_LOG_DEBUG, "BROKER_DBG", 1, LOG_LEVEL_TRACE);
+	bool log_habilitado = false;
+	if (g_config_broker->show_logs_on_screen) {
+		log_habilitado = true;
+	}
+	g_logger = log_create(g_config_broker->ruta_log, "BROKER", log_habilitado, LOG_LEVEL_TRACE);
+	g_logdebug = log_create(RUTA_LOG_DEBUG, "BROKER_DBG", log_habilitado, LOG_LEVEL_TRACE);
 }
