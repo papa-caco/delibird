@@ -125,7 +125,7 @@ char necesitoPokemon(char* nombrePokemon){
 	cantidadObjetivo=pokAux->cantidad;
 
 	sem_wait(&sem_pokemonesGlobalesAtrapados);
-	t_pokemon_entrenador* pokAtrapado = list_buscar(objetivoGlobalEntrenadores, nombrePokemon);
+	t_pokemon_entrenador* pokAtrapado = list_buscar(pokemonesAtrapadosGlobal, nombrePokemon);
 	if(pokAtrapado != NULL){
 		cantidadAtrapados=pokAtrapado->cantidad;
 

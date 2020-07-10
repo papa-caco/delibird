@@ -25,9 +25,9 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 		switch (entrenador->estado_entrenador) {
 			case MOVERSE_A_POKEMON:
 				pokemon = buscarPokemonMasCercano(entrenador->posicion);
-				sem_wait(&(sem_listas_pokemones));
-				moverPokemonAReservados(pokemonesLibresEnElMapa,pokemonesReservadosEnElMapa, pokemon, entrenador->id);
-				sem_post(&(sem_listas_pokemones));
+				//Ya hay semaforos adentro
+				moverPokemonAReservados(pokemon, entrenador->id);
+
 				distancia = calcularDistancia(entrenador->posicion, pokemon->posicion);
 
 					for(int i=0; i<distancia; i++){
@@ -38,7 +38,7 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 					entrenador->estado_entrenador = ATRAPAR;
 
-					sem_post(&(sem_planificador_cplazo));
+					sem_post(&(sem_planificador_cplazoEntrenador));
 
 					//// SIGNAL A PLANIFICADOR?????????
 
@@ -59,7 +59,7 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 			entrenador->estado_entrenador = INTERCAMBIAR;
 
-			sem_post(&(sem_planificador_cplazo));
+			sem_post(&(sem_planificador_cplazoEntrenador));
 
 
 							break;
@@ -69,7 +69,7 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 				entrenador->estado_entrenador = ESPERAR_CAUGHT;
 
-				sem_post(&(sem_planificador_cplazo));
+				sem_post(&(sem_planificador_cplazoEntrenador));
 
 				break;
 
@@ -83,9 +83,14 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 				entrenador2->estado_entrenador = ACABO_INTERCAMBIO;
 
-				sem_post(&(sem_planificador_cplazo));
+				sem_post(&(sem_planificador_cplazoEntrenador));
 
 				break;
+
+			//case EXIT:
+				//pthread_exit(NULL);
+				//VERIFICAR SI SE TERMINA EL HILO DE ESTA FORMA.
+
 				case -1:
 					pthread_exit(NULL);
 				}
@@ -191,8 +196,7 @@ t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador){
 
 }
 
-void moverPokemonAReservados(t_list* listaQueContieneElPokemon,
-		t_list* listaReceptoraDelPokemon, t_pokemon_entrenador* pokemonAMover,
+void moverPokemonAReservados(t_pokemon_entrenador* pokemonAMover,
 		int idReservador) {
 
 	t_pokemon_entrenador* pokemonAux;
@@ -206,14 +210,17 @@ void moverPokemonAReservados(t_list* listaQueContieneElPokemon,
 	pokemonAAgregar->posicion->pos_y = pokemonAMover->posicion->pos_y;
 	pokemonAAgregar->id_entrenadorReserva = idReservador;
 
-	list_add(listaReceptoraDelPokemon, pokemonAAgregar);
+	sem_wait(&sem_pokemonesReservados);
+	list_add(pokemonesReservadosEnElMapa, pokemonAAgregar);
+	sem_post(&sem_pokemonesReservados);
 
 	int indice = 0;
 
-	for (int i = 0; i < list_size(listaQueContieneElPokemon); i++) {
+	sem_wait(&sem_pokemonesLibresEnElMapa);
+	for (int i = 0; i < list_size(pokemonesLibresEnElMapa); i++) {
 
 		pokemonAux = ((t_pokemon_entrenador*) list_get(
-				listaQueContieneElPokemon, i));
+				pokemonesLibresEnElMapa, i));
 
 		if (pokemonAux == pokemonAMover) {
 			indice = i;
@@ -221,7 +228,7 @@ void moverPokemonAReservados(t_list* listaQueContieneElPokemon,
 	}
 
 	if (pokemonAMover->cantidad == 1) {
-		pokemonAux = list_remove(listaQueContieneElPokemon, indice);
+		pokemonAux = list_remove(pokemonesLibresEnElMapa, indice);
 		free(pokemonAux->posicion);
 		free(pokemonAux);
 
@@ -229,6 +236,7 @@ void moverPokemonAReservados(t_list* listaQueContieneElPokemon,
 
 		pokemonAMover->cantidad--;
 	}
+	sem_post(&sem_pokemonesLibresEnElMapa);
 
 }
 

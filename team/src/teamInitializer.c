@@ -77,7 +77,9 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 
 		for(int j=0; pokemonesObjetivo[j] != NULL; j++){
 			t_pokemon_entrenador *objetivo = malloc(sizeof(t_pokemon_entrenador));
-
+			objetivo->posicion = malloc(sizeof(t_pokemon_entrenador));
+			objetivo->posicion->pos_x = 0;
+			objetivo->posicion->pos_y = 0;
 
 			t_pokemon_entrenador* pokemonEncontrado = list_buscar(objetivosUnEntrenador, pokemonesObjetivo[j]);
 
@@ -134,6 +136,7 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 	}
 	//Al finalizar el programa vamos a tener que destruir la lista de entrenadores, lo cual implicará destruir
 	//también cada una de las listas que creamos acá para llenar a cada uno
+	cantidadDeEntrenadores = queue_size(colaNewEntrenadores);
 
 }
 
