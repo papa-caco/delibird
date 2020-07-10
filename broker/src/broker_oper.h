@@ -84,6 +84,24 @@ t_particion_dinamica *get_particion_cache_por_id_mensaje(t_cache_particiones *ca
 
 t_particion_dinamica *get_particion_cache_por_id_particion(t_cache_particiones *cache, int id_partcion);
 
+t_particion_buddy *obtengo_particion_buddy_libre(t_queue_msg *msg_queue);
+
+t_particion_buddy *reemplazar_particion_buddy(t_queue_msg *msg_queue, t_log *logger);
+
+void insertar_en_buddy_table(t_particion_buddy *buddy, t_queue_msg *msg_queue);
+
+void eliminar_de_buddy_table(t_particion_buddy* buddy);
+
+t_particion_buddy *get_buddy_from_cache_by_id_mensaje(int id_mensaje);
+
+int obtengo_tamano_buddy(int data_size);
+
+int obtengo_posicion_buddy_libre(int tamano_buddy);
+
+void liberar_posicion_buddy(int posicion_buddy, int tamano_buddy);
+
+void ocupo_posicion_buddy_libre(int tamano_buddy, int posicion_buddy);
+
 t_queue_msg *generar_nuevo_mensaje_cola(void);
 
 t_broker_queue *cola_broker_suscripcion(t_tipo_mensaje tipo_mensaje);

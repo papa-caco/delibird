@@ -35,6 +35,8 @@ int g_page_fault_counter;
 
 t_cache_particiones *g_cache_part;
 
+t_cache_buddy *g_cache_buddy;
+
 t_broker_queue *g_queue_get_pokemon;
 
 t_broker_queue *g_queue_new_pokemon;
@@ -50,6 +52,8 @@ t_broker_queue *g_queue_caught_pokemon;
 pthread_mutex_t g_mutex_msjs;
 
 pthread_mutex_t g_mutex_cache_part;
+
+pthread_mutex_t g_mutex_cache_buddy;
 
 pthread_mutex_t g_mutex_queue_get;
 
@@ -78,6 +82,8 @@ void iniciar_estructuras_broker(void);
 void inicio_server_broker(void);
 
 void inicializar_cache_particiones_dinamicas(void);
+
+void inicializar_cache_buddy_system(void);
 
 void alta_suscriptor_cola(t_broker_queue *cola_broker, t_handsake_suscript *handshake);
 
@@ -177,6 +183,28 @@ int espacio_cache_msg_caught(t_msg_caught_broker *msg_caught);
 
 int espacio_cache_msg_localized(t_msg_localized_broker *msg_localized);
 
+void set_bits_bitmaps_buddy_system(int tamano_buddy, int bit_index);
+
+void set_bits_bitmaps_superiores(int orden_buddy, int bit_index);
+
+void set_bits_bitmaps_inferiores(int orden_buddy, int bit_index);
+
+void clean_bits_bitmaps_buddy_system(int tamano_buddy, int bit_index);
+
+void clean_bits_bitmaps_superiores(int orden_buddy, int bit_index);
+
+void clean_bits_bitmaps_inferiores(int orden_buddy, int bit_index);
+
+bool tiene_su_propio_buddy_ocupado(int index_bitmap, int tamano_buddy);
+
+bool all_bits_bitmap_clean(t_posicion_buddy *posicion);
+
+t_particion_buddy *buddy_proxima_victima(int index);
+
+bool ordenador_fifo_buddy(void *part1, void *part2);
+
+bool ordenador_lru_buddy(void *part1, void *part2);
+
 t_algoritmo_memoria algoritmo_memoria(char *valor);
 
 char *nombre_cache(t_algoritmo_memoria algoritmo);
@@ -186,6 +214,16 @@ t_algoritmo_part_libre algoritmo_part_libre(char *valor);
 t_algoritmo_reemplazo algoritmo_reemplazo(char *valor);
 
 bool verdadero_falso(char *valor);
+
+bool es_tamano_buddy_ultimo_orden(int tamano_buddy);
+
+bool es_tamano_buddy_primer_orden(int tamano_buddy);
+
+int obtengo_orden_buddy(int tamano_buddy);
+
+void print_bitmaps_buddy_system_status(void);
+
+bool es_nro_par(int numero);
 
 uint64_t timestamp(void);
 

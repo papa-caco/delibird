@@ -95,7 +95,7 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 		}
 		break;
 	case LOCALIZED_BROKER:;
-		t_msg_localized_broker *msg_localized = rcv_msj_localized_broker(cliente_fd, g_logdebug);
+		t_msg_localized_broker *msg_localized = rcv_msj_localized_broker(cliente_fd, g_logger);
 		if(cache_espacio_suficiente(espacio_cache_msg_localized(msg_localized))) {
 			pthread_mutex_lock(&g_mutex_msjs);
 				enqueue_msg_localized(msg_localized, g_logger, cliente_fd);
@@ -178,6 +178,7 @@ void iniciar_estructuras_broker(void)
 	g_msg_counter = 1;
 	pthread_mutex_init(&g_mutex_msjs, NULL);
 	pthread_mutex_init(&g_mutex_cache_part, NULL);
+	pthread_mutex_init(&g_mutex_cache_buddy, NULL);
 	pthread_mutex_init(&g_mutex_queue_new, NULL);
 	pthread_mutex_init(&g_mutex_queue_get, NULL);
 	pthread_mutex_init(&g_mutex_queue_localized, NULL);
@@ -192,7 +193,7 @@ void iniciar_estructuras_broker(void)
 		inicializar_cache_particiones_dinamicas();
 		break;
 	case BS:;
-		//inicializar_cache_buddy_system();
+		inicializar_cache_buddy_system();
 		break;
 	}
 }
@@ -213,6 +214,51 @@ void inicializar_cache_particiones_dinamicas(void)
 	g_cache_part->partition_repo = malloc(tamano_cache);
 	memset(g_cache_part->partition_repo, 0, tamano_cache);
 	generar_particion_dinamica_libre(0, tamano_cache);
+}
+
+void inicializar_cache_buddy_system(void)
+{
+	int tamano_cache = g_config_broker->tamano_memoria;
+	g_cache_buddy = malloc(sizeof(t_cache_buddy));
+	g_cache_buddy->tipo_cache = BS;
+	g_cache_buddy->min_size_part = g_config_broker->tamano_minimo_particion;
+	g_cache_buddy->total_space = tamano_cache;
+	g_cache_buddy->used_space = 0;
+	g_cache_buddy->cnt_order_fifo = 1;
+	g_cache_buddy->cnt_order_lru = 1;
+	g_cache_buddy->buddy_table = list_create();
+	g_cache_buddy->posiciones_buddy = list_create();
+	g_cache_buddy->buddy_repo = malloc(tamano_cache);
+	memset(g_cache_buddy->buddy_repo, 0, tamano_cache);
+	int cant_bitarrays = g_config_broker->bit_arrays_bs;
+	for (int i = 0; i < cant_bitarrays; i ++ ) {
+		double tam_minimo = (double) g_cache_buddy->min_size_part;
+		int indice = (int) log2(tam_minimo) + i;
+		int tamano_buddy = (int) (pow (2,indice));
+		int cant_buddies = (int) (tamano_cache / tamano_buddy);
+		if (cant_buddies > 0) {
+			char *data;
+			t_posicion_buddy *posicion = malloc(sizeof(t_posicion_buddy));
+			posicion->orden = i;
+			posicion->buddy_size = tamano_buddy;
+			posicion->cant_buddys = cant_buddies;
+			posicion->free_buddys = cant_buddies;
+			if (((int)cant_buddies/8) < 1) {  // -->> No puedo crear un bit_array con menos de 8 bits <<--
+				data = malloc(8);
+				memset(data,0,8);
+				posicion->bitmap_buddy = bitarray_create_with_mode(data, 1, MSB_FIRST);
+			} else {
+				data = malloc(cant_buddies);
+				memset(data,0,cant_buddies);
+				posicion->bitmap_buddy = bitarray_create_with_mode(data, ((int)cant_buddies/8), MSB_FIRST);
+			}
+			void *position = (t_posicion_buddy*) posicion;
+			list_add(g_cache_buddy->posiciones_buddy, position);
+			log_debug(g_logdebug,"(Orden:%d|Tamaño_Particiones:%d Bytes|Cantidad_Máxima:%d)",posicion->orden, tamano_buddy,cant_buddies);
+	}	}
+	g_cache_buddy->cant_bitarrays = g_cache_buddy->posiciones_buddy->elements_count;
+	g_cache_buddy->max_size_msg = ((t_posicion_buddy*)list_get(g_cache_buddy->posiciones_buddy, (g_cache_buddy->cant_bitarrays - 1)))->buddy_size;
+	log_debug(g_logdebug,"(Tamaño_Máximo_Mensajes:%d Bytes)", g_cache_buddy->max_size_msg);
 }
 
 void inicializar_colas_broker(void)
@@ -727,6 +773,8 @@ bool cache_espacio_suficiente(uint32_t data_size)
 		tamano_minimo = g_cache_part->min_size_part;
 		break;
 	case BS:;
+		espacio_cache = g_cache_buddy->max_size_msg;
+		tamano_minimo = g_cache_buddy->min_size_part;
 		break;
 	}
 	if ( data_size > tamano_minimo) {
@@ -773,6 +821,167 @@ int espacio_cache_msg_localized(t_msg_localized_broker *msg_localized)
 	return (2 + (2 * msg_localized->posiciones->cant_posic)) * sizeof(uint32_t) + msg_localized->size_pokemon - 1;
 }
 
+void set_bits_bitmaps_buddy_system(int tamano_buddy, int bit_index)
+{
+	int orden_buddy = 0;
+	if (es_tamano_buddy_primer_orden(tamano_buddy)) {
+		set_bits_bitmaps_superiores(orden_buddy, bit_index);
+	} else if (es_tamano_buddy_ultimo_orden(tamano_buddy)) {
+		orden_buddy = g_cache_buddy->cant_bitarrays - 1;
+		set_bits_bitmaps_inferiores(orden_buddy , bit_index);
+	} else {
+		orden_buddy = obtengo_orden_buddy(tamano_buddy);
+		set_bits_bitmaps_superiores(orden_buddy, bit_index);
+		set_bits_bitmaps_inferiores(orden_buddy, bit_index);
+	}
+}
+
+void set_bits_bitmaps_superiores(int orden_buddy, int bit_index)
+{
+	int orden_inicial = orden_buddy + 1, index_bitmap = bit_index;
+	t_posicion_buddy *posicion = NULL;
+	for (int i = orden_inicial; i < g_cache_buddy->cant_bitarrays; i ++) {
+		posicion = list_get(g_cache_buddy->posiciones_buddy, i);
+		index_bitmap = (int) index_bitmap / 2;
+		if (! bitarray_test_bit(posicion->bitmap_buddy, index_bitmap)) {
+			bitarray_set_bit(posicion->bitmap_buddy, index_bitmap);
+			posicion->free_buddys --;
+		}
+		if ((index_bitmap != 0) && ((int)index_bitmap / 2) == 0) {
+			i = g_cache_buddy->cant_bitarrays;
+		}
+}	}
+
+void set_bits_bitmaps_inferiores(int orden_buddy, int bit_index)
+{
+	int orden_inicial = orden_buddy - 1, index_inicial = (int) bit_index * 2, iterador = 2, index_final = 0;
+	for (int i = orden_inicial; i > -1; i --) {
+		index_final =  index_inicial + iterador;
+		t_posicion_buddy *posicion = list_get(g_cache_buddy->posiciones_buddy, i);
+		for (int j = index_inicial; j < index_final; j ++) {
+			if (! bitarray_test_bit(posicion->bitmap_buddy, j)) {
+				bitarray_set_bit(posicion->bitmap_buddy, j);
+				posicion->free_buddys --;
+			}
+		}
+		index_inicial *= 2;
+		iterador *= 2;
+}	}
+
+void clean_bits_bitmaps_buddy_system(int tamano_buddy, int bit_index)
+{
+	int orden_buddy = 0;
+	if (es_tamano_buddy_primer_orden(tamano_buddy) && !(tiene_su_propio_buddy_ocupado(bit_index, tamano_buddy))) {
+		clean_bits_bitmaps_superiores(orden_buddy, bit_index);
+	} else if (es_tamano_buddy_ultimo_orden(tamano_buddy)) {
+		orden_buddy = g_cache_buddy->cant_bitarrays - 1;
+		clean_bits_bitmaps_inferiores(orden_buddy , bit_index);
+	} else {
+		orden_buddy = obtengo_orden_buddy(tamano_buddy);
+		if (!(tiene_su_propio_buddy_ocupado(bit_index, tamano_buddy))) {
+			clean_bits_bitmaps_superiores(orden_buddy, bit_index);
+		}
+		clean_bits_bitmaps_inferiores(orden_buddy, bit_index);
+	}
+	// TODO puts("1");
+	//print_bitmaps_buddy_system_status();//TODO
+}
+
+void clean_bits_bitmaps_superiores(int orden_buddy, int bit_index)
+{
+	int orden_inicial = orden_buddy + 1, index_bitmap = bit_index;
+	t_posicion_buddy *posicion = NULL;
+	for (int i = orden_inicial; i < g_cache_buddy->cant_bitarrays; i ++) {
+		posicion = list_get(g_cache_buddy->posiciones_buddy, i);
+		index_bitmap = (int) index_bitmap / 2;
+		//TODO printf("orden:%d|bit_index:%d|\n",i,index_bitmap);
+		if (bitarray_test_bit(posicion->bitmap_buddy, index_bitmap)) {
+			bitarray_clean_bit(posicion->bitmap_buddy, index_bitmap);
+			posicion->free_buddys ++;
+		}
+		if (es_nro_par(index_bitmap) && bitarray_test_bit(posicion->bitmap_buddy, (index_bitmap + 1))) {
+			i = g_cache_buddy->cant_bitarrays;
+		} else if(!(es_nro_par(index_bitmap)) && bitarray_test_bit(posicion->bitmap_buddy, (index_bitmap - 1))) {
+			i = g_cache_buddy->cant_bitarrays;
+		}
+	}
+}
+
+void clean_bits_bitmaps_inferiores(int orden_buddy, int bit_index)
+{
+	int orden_inicial = orden_buddy - 1, index_inicial = (int) bit_index * 2, iterador = 2, index_final = 0;
+	for (int i = orden_inicial; i > -1; i --) {
+		index_final =  index_inicial + iterador;
+		t_posicion_buddy *posicion = list_get(g_cache_buddy->posiciones_buddy, i);
+		for (int j = index_inicial; j < index_final; j ++) {
+			if (bitarray_test_bit(posicion->bitmap_buddy, j)) {
+				bitarray_clean_bit(posicion->bitmap_buddy, j);
+				posicion->free_buddys ++;
+			}
+		}
+		index_inicial *= 2;
+		iterador *= 2;
+}	}
+
+bool tiene_su_propio_buddy_ocupado(int index_bitmap, int tamano_buddy)
+{
+	bool mismo_tamano(void *posic) {
+			t_posicion_buddy *posicion = (t_posicion_buddy*) posic;
+			return posicion->buddy_size == tamano_buddy;
+	}
+	t_posicion_buddy *posicion = (t_posicion_buddy*) list_find(g_cache_buddy->posiciones_buddy, mismo_tamano);
+	bool resultado = 0;
+	if (posicion->cant_buddys == 1) {
+		resultado = false;
+	} else if (index_bitmap == 0) {
+		resultado = bitarray_test_bit(posicion->bitmap_buddy, 1);
+	} else if(index_bitmap == (posicion->cant_buddys - 1)) {
+		resultado = bitarray_test_bit(posicion->bitmap_buddy, (posicion->cant_buddys - 2));
+	} else if(es_nro_par(index_bitmap)) {
+		resultado = bitarray_test_bit(posicion->bitmap_buddy, index_bitmap + 1);
+	} else {
+		resultado = bitarray_test_bit(posicion->bitmap_buddy, index_bitmap - 1);
+	}
+	return resultado;
+}
+
+bool all_bits_bitmap_clean(t_posicion_buddy *posicion)
+{
+	bool resultado = false;
+	for (int i = 0; i < posicion->cant_buddys; i ++) {
+		resultado = resultado || bitarray_test_bit(posicion->bitmap_buddy, i);
+	}
+	return !(resultado);
+}
+
+t_particion_buddy *buddy_proxima_victima(int index)
+{
+	t_particion_buddy *buddy = NULL;
+	t_list *sorted_table;
+	t_algoritmo_reemplazo algoritmo = g_config_broker->algoritmo_reemplazo;
+	switch(algoritmo) {
+	case FIFO:;
+		sorted_table = list_sorted(g_cache_buddy->buddy_table, ordenador_fifo_buddy);
+		break;
+	case LRU:;
+		sorted_table = list_sorted(g_cache_buddy->buddy_table, ordenador_lru_buddy);
+		break;
+	}
+	buddy = (t_particion_buddy*) list_get(sorted_table, index);
+	list_destroy(sorted_table);
+	return buddy;
+}
+
+bool ordenador_fifo_buddy(void *part1, void *part2)
+{
+	return ((t_particion_buddy*) part1)->orden_fifo < ((t_particion_buddy*) part2)->orden_fifo;
+}
+
+bool ordenador_lru_buddy(void *part1, void *part2)
+{
+	return ((t_particion_buddy*) part1)->last_used < ((t_particion_buddy*) part2)->last_used;
+}
+
 void leer_config_broker(char *path) {
 	g_config = config_create(path);
 	g_config_broker = malloc(sizeof(t_config_broker));
@@ -787,6 +996,7 @@ void leer_config_broker(char *path) {
 	g_config_broker->trigger_mensajes_borrar = config_get_int_value(g_config,"TRIGGER_MENSAJES_BORRAR");
 	g_config_broker->ruta_log = config_get_string_value(g_config, "LOG_FILE");
 	g_config_broker->delete_msg_empty_queue = verdadero_falso(config_get_string_value(g_config,"BORRAR_MSJS_AL_VACIAR_COLA"));
+	g_config_broker->bit_arrays_bs = config_get_int_value(g_config,"MAX_BITARRAYS_BS");
 }
 
 t_algoritmo_memoria algoritmo_memoria(char *valor)
@@ -812,7 +1022,7 @@ char *nombre_cache(t_algoritmo_memoria algoritmo)
 		nombre = "PARTICIONES";
 		break;
 	case BS:;
-		nombre = "BS";
+		nombre = "BUDDY_SYSTEM";
 		break;
 	case SWAP:;
 		nombre = "SWAP";
@@ -861,6 +1071,68 @@ bool verdadero_falso(char *valor)
 		resultado = false;
 	}
 	return resultado;
+}
+
+bool es_tamano_buddy_ultimo_orden(int tamano_buddy)
+{
+	bool mismo_tamano(void *posic) {
+		t_posicion_buddy *posicion = (t_posicion_buddy*) posic;
+		return posicion->buddy_size == tamano_buddy;
+	}
+	int ultimo_orden = g_cache_buddy->posiciones_buddy->elements_count - 1;
+	int orden_pedido = ((t_posicion_buddy*) list_find(g_cache_buddy->posiciones_buddy,mismo_tamano))->orden;
+	return orden_pedido == ultimo_orden;
+}
+
+bool es_tamano_buddy_primer_orden(int tamano_buddy)
+{
+	bool mismo_tamano(void *posic) {
+		t_posicion_buddy *posicion = (t_posicion_buddy*) posic;
+		return posicion->buddy_size == tamano_buddy;
+	}
+	int orden_pedido = ((t_posicion_buddy*) list_find(g_cache_buddy->posiciones_buddy,mismo_tamano))->orden;
+	return orden_pedido == 0;
+}
+
+int obtengo_orden_buddy(int tamano_buddy)
+{
+	bool mismo_tamano(void *posic) {
+		t_posicion_buddy *posicion = (t_posicion_buddy*) posic;
+		return posicion->buddy_size == tamano_buddy;
+	}
+	int orden = ((t_posicion_buddy*) list_find(g_cache_buddy->posiciones_buddy,mismo_tamano))->orden;
+	return orden;
+}
+
+void print_bitmaps_buddy_system_status(void)
+{
+	int cant_bitmaps = g_cache_buddy->cant_bitarrays - 1;
+	for(int i = cant_bitmaps; i > -1; i --) {
+		t_posicion_buddy *posicion = (t_posicion_buddy*) list_get(g_cache_buddy->posiciones_buddy, i);
+		char *bitword = malloc(1 + (posicion->cant_buddys * 2));
+		strcpy(bitword, "(");
+		for(int j = 0; j < posicion->cant_buddys; j ++) {
+			int bit = bitarray_test_bit(posicion->bitmap_buddy, j);
+			char *cero_uno = string_itoa(bit);
+			char auxiliar[1];
+			strcpy(auxiliar,cero_uno);
+			strcat(bitword,auxiliar);
+			if (j == (posicion->cant_buddys - 1)) {
+				strcat(bitword,")");
+			}
+			else {
+				strcat(bitword,"|");
+			}
+			free(cero_uno);
+		}
+		puts(bitword);
+		free(bitword);
+}	}
+
+bool es_nro_par(int numero)
+{
+	int resto =(int) (numero % 2);
+	return resto == 0;
 }
 
 uint64_t timestamp(void)

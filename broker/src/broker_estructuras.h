@@ -15,6 +15,8 @@
 #define SRC_BROKER_ESTRUCTURAS_H_
 #include <signal.h>
 #include <time.h>
+#include <math.h>
+#include <commons/bitarray.h>
 #include <delibird/estructuras.h>
 #include <delibird/conexiones.h>
 #include <delibird/mensajeria.h>
@@ -68,7 +70,8 @@ typedef struct Cache_Part_Din{
 	void *partition_repo;
 } t_cache_particiones;
 
-typedef struct Particion_Dinamica{
+typedef struct Particion_Dinamica
+{
 	int id_particion;
 	int orden_fifo;
 	int last_used;
@@ -90,11 +93,45 @@ typedef struct Configuracion_Broker
 	t_algoritmo_memoria algoritmo_memoria;
 	t_algoritmo_reemplazo algoritmo_reemplazo;
 	t_algoritmo_part_libre algoritmo_particion_libre;
+	int bit_arrays_bs;
 	int trigger_mensajes_borrar;
 	char *ruta_log;
 	bool delete_msg_empty_queue;
 } t_config_broker;
 
+typedef struct Posiciones_Buddy
+{
+	int orden;
+	int buddy_size;
+	int cant_buddys;
+	int free_buddys;
+	t_bitarray *bitmap_buddy;
+} t_posicion_buddy;
+
+typedef struct Particion_Buddy
+{
+	int posicion;
+	int tamano;
+	int orden_fifo;
+	int last_used;
+	uint32_t data_size;
+	int id_mensaje;
+	t_tipo_mensaje id_cola;
+} t_particion_buddy;
+
+typedef struct Cache_Buddy_System{
+	t_algoritmo_memoria tipo_cache;
+	int cnt_order_fifo;
+	int cnt_order_lru;
+	int min_size_part;
+	int used_space;
+	int total_space;
+	int cant_bitarrays;
+	int max_size_msg;
+	t_list *posiciones_buddy;
+	t_list *buddy_table;
+	void *buddy_repo;
+} t_cache_buddy;
 
 
 #endif /* SRC_BROKER_ESTRUCTURAS_H_ */
