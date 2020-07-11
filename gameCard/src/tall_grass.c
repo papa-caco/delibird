@@ -12,7 +12,7 @@ void prueba_file_system(void){
 	t_list* lista_posiciones = list_create();
 	t_posicion_pokemon *posicion2 = malloc(sizeof(t_posicion_pokemon));
 	t_posicion_pokemon *posicion1 = malloc(sizeof(t_posicion_pokemon));
-	posicion2->pos_x = 23;
+	posicion2->pos_x = 25;
 	posicion2->pos_y = 10;
 	posicion2->cantidad = 5;
 	list_add(lista_posiciones, posicion2);
@@ -85,6 +85,7 @@ void file_system_pokemon( t_list *lista_posiciones, char *pokemon){
 		armar_bloque(string_posiciones,nro_bloque ,blocks);
 	}
 
+
 	grabar_metadata_pokemon(blocks, pokemon,size_pokemon,"N");
 	free(string_posiciones);
 	list_destroy(blocks);
@@ -100,8 +101,8 @@ void armar_bloque(char *string_bloque ,int *nro_bloque, t_list *blocks){
 		char *grabar = string_substring(string_bloque,0,g_config_tg->block_size);
 
 		grabar_bloque(*nro_bloque,grabar );
-		int i = (*nro_bloque);
-		list_add(blocks,&i);//TODO PEDIR BLOQUE VALIDO
+
+		list_add(blocks,nro_bloque);//TODO PEDIR BLOQUE VALIDO
 		(*nro_bloque)++;
 
 		char *substring = string_new();//(char*)calloc( (string_length(string_bloque) - g_config_tg->block_size),sizeof(char) );
@@ -139,8 +140,10 @@ void grabar_bloque(int block_nro, char *block_buffer){
  * Graba la metadata del pokemon(metadata.bin)
  */
 void grabar_metadata_pokemon(t_list *blocks, char *pokemon, int size_pokemon, char *open){
-	log_info(g_logger,"iniciando metadata_pokemon");
+//	log_info(g_logger,"iniciando metadata_pokemon");
 	crear_dirname_pokemon(pokemon);
+
+	div_t cantidad_bloques = div(size_pokemon,g_config_tg->block_size);
 
 	char* dirname_metatada_pokemon = string_new();
 	string_append(&dirname_metatada_pokemon,g_config_gc->dirname_files);
@@ -152,12 +155,12 @@ void grabar_metadata_pokemon(t_list *blocks, char *pokemon, int size_pokemon, ch
 	fprintf(fd, "SIZE=%d\n", size_pokemon);
 	fprintf(fd, "BLOCKS=[");
 
-	for(int i=0 ; i < list_size(blocks);  i++ ){
+	for(int i=1 ; i <= cantidad_bloques.quot ;  i++ ){
 
 		int *bloque_actual = list_get(blocks,i);
-		//log_info(g_logger,"valor bloque %d",*bloque_actual);
-		fprintf(fd, "%d", *bloque_actual);
-		if( i < (list_size(blocks) -1) )
+		//log_info(g_logger,"valor bloque %d",bloque_actual);
+		fprintf(fd, "%d", i);
+		if( i < (cantidad_bloques.quot) )
 			fprintf(fd,",");
 	}
 
@@ -230,7 +233,7 @@ t_list * leer_bloques( char *pokemon){
 
 	log_info(g_logger,"POSITIONS POKEMON ");
 	for( int i=0; i< list_size(lista_posiciones); i++){
-		t_posicion_pokemon *posicion;
+		t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
 		posicion = list_get(lista_posiciones,i);
 		log_info(g_logger," pox_x %d | pos_y %d | cantidad %d ",posicion->pos_x, posicion->pos_y, posicion->cantidad);
 	}
@@ -248,7 +251,7 @@ t_list *obtener_posiciones(char *string_posiciones){
 	//Pasar todo el string de posiciones una lista con la estructura de posiciones
 	char **lineas = string_split(string_posiciones, "\n");
 	int cant_lines = sizeof(lineas) / sizeof(lineas[0]);
-	for(int i=0 ; i< cant_lines; i++ ){
+	for(int i=0 ; i<= cant_lines; i++ ){
 		if(lineas[i] != NULL ){
 			t_posicion_pokemon *posicion = string_to_posicion( lineas[i]);
 			list_add(lista_posiciones,posicion);
@@ -364,5 +367,54 @@ t_pokemon_medatada * leer_metadata_pokemon(char *pokemon){
 			config_get_string_value(g_config, "BLOCKS") );
 
 	return pokemon_metadata;
+}
+
+void bit_mat(){
+	int size_in_bytes = 8;
+	char* bytes = calloc(size_in_bytes, sizeof(char));
+	t_bitarray* bitarray = bitarray_create_with_mode(bytes, size_in_bytes, LSB_FIRST);
+
+}
+
+void save_bitmap(char* archivo, size_t size){
+
+	int fd = open(archivo, O_CREAT | O_RDWR, 0664);
+
+	if (fd == -1) {
+		perror("open file");
+		exit(1);
+	}
+
+	ftruncate(fd, size);
+
+	void* bmap = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+	if (bmap == MAP_FAILED) {
+		perror("mmap");
+		close(fd);
+		exit(1);
+	}
+
+	t_bitarray* bitmap = bitarray_create_with_mode((char*) bmap, size, LSB_FIRST);
+
+	size_t tope = bitarray_get_max_bit(bitmap);
+
+	for(int i = 0; i < tope; i++){
+
+		 bitarray_clean_bit(bitmap, i);
+	}
+
+	close(fd);
+	munmap(bmap, size);
+	//return bitmap;
+	/**
+	 * Buenas!
+Revisando la función veo que lo que te falto es el msync() para forzar que se actualice el archivo :)
+
+La idea de munmap() es la de terminar el mapeo del archivo en memoria, con lo cual, efectivamente no deberías ejecutarlo hasta el final del gamecard 😉
+
+Cualquier cosa que no se entienda, avisa.
+Saludos.-
+	 */
 }
 

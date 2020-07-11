@@ -6,7 +6,10 @@
 
 #ifndef SRC_TALL_GRASS_H_
 #define SRC_TALL_GRASS_H_
+#include<commons/bitarray.h>
+
 #include "utils_gc.h"
+
 
 
 //Estructura del metadata
@@ -59,4 +62,5 @@ char *get_contenido_bloque(int block_size,char *block);
 t_posicion_pokemon *string_to_posicion(char* str_posicion);
 t_pokemon_medatada * leer_metadata_pokemon(char *pokemon);
 
+void bit_mat();
 #endif /* SRC_TALL_GRASS_H_ */

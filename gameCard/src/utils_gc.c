@@ -18,7 +18,7 @@ void iniciar_gamecard(void) {
 	//prueba_semaforo();
 
 	prueba_file_system();
-	//prueba_leer_bloques_pokemon();
+	prueba_leer_bloques_pokemon();
 
 	//iniciar_suscripcion();
 	//inicio_server_game_card();
