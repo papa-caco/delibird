@@ -14,18 +14,21 @@ void iniciar_gamecard(void) {
 	leer_config();
 	iniciar_log_gamecard();
 	iniciar_estructuras_gamecard();
-
 	//prueba_semaforo();
-
-	prueba_file_system();
-	//prueba_leer_bloques_pokemon();
+	prueba_file_system("Chichipio", 4);
+	prueba_leer_bloques_pokemon("Chichipio");
 
 	//iniciar_suscripcion();
 	//inicio_server_game_card();
 }
 
 void iniciar_log_gamecard(void) {
-	g_logger = log_create(PATH_LOG, "GAME_CARD", 1, LOG_LEVEL_INFO);
+	bool log_habilitado = false;
+	if (g_config_gc->show_logs_on_screen) {
+		log_habilitado = true;
+	}
+	g_logger = log_create(g_config_gc->ruta_log, "GAME_CARD", log_habilitado, LOG_LEVEL_DEBUG);
+	g_logdebug = log_create(PATH_LOG, "GAMECARD_DBG", log_habilitado, LOG_LEVEL_DEBUG);
 	log_info(g_logger, "INICIO_LOG_SUCESS");
 }
 
@@ -36,16 +39,11 @@ void leer_config(void) {
 	g_config_gc = malloc(sizeof(t_config_gamecard));
 
 	g_config_gc->ip_gamecard = config_get_string_value(g_config, "IP_GAMECARD");
-	g_config_gc->puerto_gamecard = config_get_string_value(g_config,
-			"PUERTO_GAMECARD");
+	g_config_gc->puerto_gamecard = config_get_string_value(g_config, "PUERTO_GAMECARD");
 	g_config_gc->ip_broker = config_get_string_value(g_config, "IP_BROKER");
-	g_config_gc->puerto_broker = config_get_string_value(g_config,
-			"PUERTO_BROKER");
-//	g_config_gc->path_tall_grass = config_get_string_value(g_config,
-//			"PUNTO_MONTAJE_TALLGRASS");
+	g_config_gc->puerto_broker = config_get_string_value(g_config, "PUERTO_BROKER");
+	g_config_gc->id_suscriptor = config_get_int_value(g_config,	"ID_SUSCRIPTOR");
 
-	g_config_gc->id_suscriptor = config_get_int_value(g_config,
-			"ID_SUSCRIPTOR");
 	g_config_gc->dirname_blocks = string_new();
 	string_append(&g_config_gc->dirname_blocks,config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS"));
 	string_append(&g_config_gc->dirname_blocks,config_get_string_value(g_config, "DIRNAME_BLOCKS"));
@@ -57,30 +55,13 @@ void leer_config(void) {
 	g_config_gc->file_metadata = string_new();
 	string_append(&g_config_gc->file_metadata,config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS"));
 	string_append(&g_config_gc->file_metadata,config_get_string_value(g_config, "FILE_METADATA"));
-/*
-	char *dirname_tall_grass = config_get_string_value(g_config,
-			"PUNTO_MONTAJE_TALLGRASS");
-	char *dirname_blocks = config_get_string_value(g_config, "DIRNAME_BLOCKS");
-	char *dirname_files = config_get_string_value(g_config, "DIRNAME_FILES");
-	char *file_metadata = config_get_string_value(g_config, "FILE_METADATA");
 
-	g_config_gc->dirname_blocks = malloc(
-			strlen(dirname_tall_grass) + strlen(dirname_blocks));
-	string_append(g_config_gc->dirname_blocks, dirname_tall_grass);
-	string_append(g_config_gc->dirname_blocks, dirname_blocks);
-	strcpy(g_config_gc->dirname_blocks, dirname_tall_grass);
-	strcat(g_config_gc->dirname_blocks, dirname_blocks);
+	g_config_gc->ruta_log = config_get_string_value(g_config, "RUTA_LOG");
+	g_config_gc->show_logs_on_screen = verdadero_falso(config_get_string_value(g_config,"SHOW_LOGS_ON_SCREEN"));
 
-	g_config_gc->dirname_files = malloc(
-			strlen(dirname_tall_grass) + strlen(dirname_files));
-	strcpy(g_config_gc->dirname_files, dirname_tall_grass);
-	strcat(g_config_gc->dirname_files, dirname_files);
-
-	g_config_gc->file_metadata = malloc(
-			strlen(dirname_tall_grass) + strlen(file_metadata));
-	strcpy(g_config_gc->file_metadata, dirname_tall_grass);
-	strcat(g_config_gc->file_metadata, file_metadata);
-*/
+	g_config_gc->ruta_bitmap = string_new();
+	string_append(&g_config_gc->ruta_bitmap,config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS"));
+	string_append(&g_config_gc->ruta_bitmap, config_get_string_value(g_config, "RUTA_BITMAP"));
 }
 
 void finalizar_log(void) {
@@ -96,10 +77,14 @@ void inicio_server_gamecard(void) {
 	iniciar_servidor(ip, puerto, g_logger);
 }
 
-void iniciar_estructuras_gamecard() {
+void iniciar_estructuras_gamecard()
+{
 	sem_init(&sem_mutex_suscripcion, 0, 1);
 	sem_init(&sem_mutex_semaforos, 0, 1);
+	pthread_mutex_init(&g_mutex_cnt_blocks, 0);
 	semaforos_pokemon = list_create();
+	leer_metadata_tall_grass(g_logdebug);
+	inicializar_bitmap_tallgrass(g_logdebug);
 }
 
 /**
@@ -158,7 +143,6 @@ void process_request(op_code cod_op, int cliente_fd) {
 		 log_info(g_logger, "POKEMON: %s", nombrePokemon);
 		 devolver_recepcion_ok(cliente_fd);
 		 devolver_posiciones(cliente_fd, nombrePokemon, &existePokemon);
-
 		 log_info(g_logger, "VALOR ENCONTRO POKEMON: %d", existePokemon);
 		 */
 
@@ -295,7 +279,6 @@ void rcv_catch_pokemon(op_code codigo_operacion, int socket_cliente) {
 	 recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
 	 msg = malloc(*size);
 	 recv(socket_cliente, msg, *size, MSG_WAITALL);
-
 	 int offset = 0;
 	 int *idUnico = msg + offset;
 	 offset += sizeof(int);
@@ -305,24 +288,21 @@ void rcv_catch_pokemon(op_code codigo_operacion, int socket_cliente) {
 	 offset += sizeof(int);
 	 char *pokemon = msg + offset;
 	 int tamano = tamano_recibido(*size);
-
 	 log_info(g_logger, "(MSG-BODY= %d | POKEMON: %s | POS_X: %d | POS_Y: %d -- SIZE = %d Bytes)",
 	 *idUnico, pokemon, *pos_x, *pos_y, tamano);
-
 	 return msg;*/
 }
 
-void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente) {
+void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente)
+{
+	uint32_t id_mensaje = msg->id_mensaje;
 
 	t_pokemon_semaforo* sem_pok = obtener_semaforo_pokemon(msg->pokemon);
 
-
 	//SI NO EXISTE, SE DEBE RETORNAR UN MENSAJE DE ERROR
 	if(sem_pok == NULL){
-
-
+		//enviar_msj_caught_broker(cliente_fd, logger, msg_caught_broker);
 	} else {
-
 		sem_wait(&sem_pok->semaforo);
 		// ABRIR ARCHIVO
 		// CONSULTAR POSICIONES
@@ -330,8 +310,6 @@ void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente) {
 		// SI EXISTEN, SE DECREMENTA EN 1 CADA POSICION SOLICITADA
 		// SI CANTIDAD = 1 => ELIMINAR LINEA
 		sem_post(&sem_pok->semaforo);
-
-
 	}
 
 	t_paquete* paquete = malloc(sizeof(t_paquete));
@@ -353,7 +331,6 @@ void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente) {
 	enviar_mensaje_a_broker(paquete, bytes);
 	/*	void* a_enviar = serializar_paquete(paquete, bytes);
 	 send(socket_cliente, a_enviar, bytes, 0);
-
 	 free(a_enviar);
 	 eliminar_paquete(paquete);*/
 }
@@ -849,6 +826,4 @@ void prueba_semaforo() {
 
 	log_info(g_logger, "ELIMINO A TODOS LOS POKEMONES Y QUEDAN %d EN LA LISTA",
 			list_size(semaforos_pokemon));
-
 }
-

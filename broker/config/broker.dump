@@ -450,3 +450,12 @@ Partición	34:	0x4298a20	-	0x4298a3f.	[X]	Size:	32b	LRU:<981432704>	Cola:<CATCH_
 Partición	35:	0x4298a40	-	0x4298a5f.	[X]	Size:	32b	LRU:<981432705>	Cola:<CATCH_POKEMON>	ID:<1444>
 Partición	36:	0x4298a60	-	0x4298a7f.	[X]	Size:	32b	LRU:<981432706>	Cola:<CATCH_POKEMON>	ID:<1445>
 Partición	37:	0x4298a80	-	0x4298a9f.	[X]	Size:	32b	LRU:<981432707>	Cola:<CATCH_POKEMON>	ID:<1446>
+<<----------------------------------------------------------------------------------------------------------------------------------------------------------------------->>
+Dump:11/07/2020 13:55:50 -- Algoritmo Memoria: BUDDY_SYSTEM
+Partición	1:	0x8b3ea98	-	0x8b3ea9b.	[X]	Size:	4b	LRU:<1053815303>	Cola:<CAUGHT_POKEMON>	ID:<1>
+Partición	2:	0x8b3ea9c	-	0x8b3ea9f.	[X]	Size:	4b	LRU:<1053815304>	Cola:<CAUGHT_POKEMON>	ID:<2>
+Partición	3:	0x8b3eaa0	-	0x8b3eaa7.	[L]	Size:	8b
+Partición	4:	0x8b3eaa8	-	0x8b3eab7.	[X]	Size:	16b	LRU:<1053815306>	Cola:<CATCH_POKEMON>	ID:<4>
+Partición	5:	0x8b3eab8	-	0x8b3ead7.	[X]	Size:	32b	LRU:<1053815307>	Cola:<NEW_POKEMON>	ID:<3>
+Partición	6:	0x8b3ead8	-	0x8b3eaf7.	[X]	Size:	32b	LRU:<1053815308>	Cola:<CATCH_POKEMON>	ID:<5>
+Partición	7:	0x8b3eaf8	-	0x8b3ee97.	[L]	Size:	928b

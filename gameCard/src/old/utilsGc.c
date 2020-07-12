@@ -16,10 +16,9 @@ void iniciar_log_game_card(void) {
 	//------------ Ver de tener un modo de inicio que indique que imprima por pantalla o no! -------//
 	g_logger = log_create(PATH_LOG, "GAME_CARD", 1, LOG_LEVEL_INFO);
 	log_info(g_logger,"INICIO_LOG_SUCESS");
-
-
 }
-t_config* leer_config(void){
+
+/*t_config* leer_config(void){
 	t_config* g_config;
 	g_config = config_create(PATH_CONFIG);
 	g_config = malloc(sizeof(t_config_game_card));
@@ -28,7 +27,7 @@ t_config* leer_config(void){
 	g_config->ip_broker = config_get_string_value(g_config, "IP_BROKER");
 	g_config->puerto_broker = config_get_string_value(g_config, "PUERTO_BROKER");
 
-}
+}*/
 
 void finalizar_log(void){
 	log_destroy(g_logger);
@@ -37,14 +36,14 @@ void destruir_config(void){
 	//config_destroy(config);
 }
 
-void inicio_server_game_card(void)
+/*void inicio_server_game_card(void)
 {
 	char *ip = g_config->ip_game_card;
 	char *puerto = g_config->puerto_game_card;
 	iniciar_servidor(ip, puerto, g_logger);
-}
+}*
 
-void iniciar_servidor()
+/*void iniciar_servidor()
 {
 	int socket_servidor;
     struct addrinfo hints, *servinfo, *p;
@@ -88,7 +87,7 @@ void iniciar_servidor()
     while(1)
     	esperar_cliente(socket_servidor);
     config_destroy(g_config);
-}
+}*/
 /*
 void esperar_cliente(int socket_servidor) {
 	struct sockaddr_in dir_cliente;
@@ -359,7 +358,7 @@ void *rcv_get_pokemon(int socket_cliente, int *size) {
 }
 
 
-void devolver_recepcion_ok(int socket_cliente) {
+/*void devolver_recepcion_ok(int socket_cliente) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
 	char *respuesta = RESPUESTA_OK;
 	log_info(g_logger, "(SENDING: %s)", respuesta);
@@ -376,7 +375,7 @@ void devolver_recepcion_ok(int socket_cliente) {
 
 	free(a_enviar);
 	eliminar_paquete(paquete);
-}
+}*/
 
 void devolver_recepcion_fail(int socket_cliente, char* mensajeError) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
@@ -737,4 +736,45 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 	//config_destroy(config);
 
 }
+
+/*
+ *
+/**
+ * recibe un string, evalua la longitud y guardar el bloque
+ * retorna el remanente del string que no entra el bloque
+ void armar_bloque(char *string_bloque ,int *nro_bloque, t_list *blocks)
+{
+	int tamano_bloque = g_config_tg->block_size, comienzo = 0,
+		tamano_string = string_length(string_bloque), excedente = 0;
+	if (tamano_string >= tamano_bloque) {
+		char *grabar = string_substring(string_bloque, comienzo, tamano_bloque);
+		grabar_bloque(*nro_bloque,grabar);
+
+		list_add(blocks,nro_bloque);//TODO PEDIR BLOQUE VALIDO
+		(*nro_bloque)++;
+
+		char *substring = string_new();//(char*)calloc( (string_length(string_bloque) - g_config_tg->block_size),sizeof(char) );
+		comienzo = tamano_bloque;
+		excedente =  tamano_string - tamano_bloque;
+		substring = string_substring(string_bloque, comienzo, excedente);
+		string_bloque =(char*)realloc(string_bloque, excedente);
+		memset(string_bloque, 0, excedente);
+		string_append(&string_bloque,substring);
+		free(substring);
+		//free(string_bloque);
+		//puts("b");
+		//string_bloque =(char*)realloc(tamano_bloque, sizeof(char));
+		//
+	}
+
+void bit_mat(){
+	int size_in_bytes = 8;
+	char* bytes = calloc(size_in_bytes, sizeof(char));
+	t_bitarray* bitarray = bitarray_create_with_mode(bytes, size_in_bytes, LSB_FIRST);
+
+}
+
+
+}*/
+
 

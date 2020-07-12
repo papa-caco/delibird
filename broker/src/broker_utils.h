@@ -215,8 +215,6 @@ t_algoritmo_part_libre algoritmo_part_libre(char *valor);
 
 t_algoritmo_reemplazo algoritmo_reemplazo(char *valor);
 
-bool verdadero_falso(char *valor);
-
 bool es_tamano_buddy_ultimo_orden(int tamano_buddy);
 
 bool es_tamano_buddy_primer_orden(int tamano_buddy);

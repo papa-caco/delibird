@@ -137,6 +137,8 @@ void eliminar_lista(t_list *lista);
 
 char *obtengo_cola_suscripcion(op_code codigo_operacion);
 
+bool verdadero_falso(char *valor);
+
 char *nombre_cola(t_tipo_mensaje cola);
 
 #endif /* DELIBIRD_MENSAJERIA_H_ */

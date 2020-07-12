@@ -30,12 +30,12 @@
 
 #include<commons/txt.h>
 #include <sys/stat.h>
+#include "tall_grass.h"
+#include "suscripcion.h"
 
 
-
-
-#define PATH_CONFIG "/home/utnso/config/gameCard.config"
-#define PATH_LOG "/home/utnso/log/gameCard.log"
+#define PATH_CONFIG "config/gameCard.config"
+#define PATH_LOG "log/gameCard_dbg.log"
 
 
 /*** ESTRUCTURAS **/
@@ -51,6 +51,9 @@ typedef struct Configuracion_GameCard
 	char *file_metadata;
 	int id_suscriptor;
 	int tiempo_reconexion;
+	char *ruta_log;
+	bool show_logs_on_screen;
+	char *ruta_bitmap;
 } t_config_gamecard;
 
 
@@ -65,22 +68,30 @@ typedef struct pokemon_semaforo{
 	sem_t semaforo;
 } t_pokemon_semaforo; //Para verificar si un archivo de pokemon está siendo utilizado
 
-
-
 /* --- VARIABLES GLOBALES ---*/
 // pthread_t thread;
 
+int g_cnt_blocks;
+
 t_config_gamecard  *g_config_gc;
+
 t_log *g_logger;
+
+t_log *g_logdebug;
+
 t_config* g_config;
+
 sem_t sem_mutex_suscripcion;
+
 sem_t sem_mutex_semaforos;
-//pthread_mutex_t sem_mutex_suscripcion;
+
+pthread_mutex_t g_mutex_cnt_blocks;
+
 bool status_conn_broker;
+
 pthread_t tid;
 
 t_list *semaforos_pokemon; // Lista global de semaforos
-
 
 /*** DEFINICION INTERFACES **/
 
@@ -89,7 +100,6 @@ void inicio_server_gamecard();
 void iniciar_log_gamecard();
 void iniciar_estructuras_gamecard();
 void leer_config(void);
-
 void process_request(op_code cod_op, int cliente_fd);
 void rcv_new_pokemon(t_msg_new_gamecard *msg);
 
@@ -97,7 +107,6 @@ void devolver_appeared_pokemon(void *msg, int size, int socket_cliente);
 void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon);
 
 void rcv_catch_pokemon(op_code codigo_operacion, int socket_cliente);
-
 void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente);
 void *rcv_get_pokemon(int socket_cliente, int *size);
 void devolver_recepcion_ok(int socket_cliente);
@@ -117,7 +126,5 @@ void eliminar_semaforo_pokemon(char* pokemon);
 void crear_semaforo_pokemon(char* pokemon);
 
 void prueba_semaforo(void);
-
-
 
 #endif

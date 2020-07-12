@@ -39,35 +39,35 @@ void iniciar_suscripcion(void)
 	}
 }
 
-
-
-void suscripcion(t_tipo_mensaje *cola)
+int conexion_broker(t_tipo_mensaje cola, t_log *logger)
 {
+	int cliente_fd = -1;
+	cliente_fd = crear_conexion(g_config_gc->ip_broker, g_config_gc->puerto_broker, logger, "BROKER", nombre_cola(cola));
+	return cliente_fd;
+}
 
-	char *proceso = "BROKER";
-	char *name_cola = nombre_cola(*cola);
-	int cliente_fd = crear_conexion(g_config_gc->ip_broker, g_config_gc->puerto_broker, g_logger, proceso, name_cola);
 
+void suscripcion(t_tipo_mensaje cola, t_log *logger)
+{
+	int cliente_fd = conexion_broker(cola, logger);
 	if (cliente_fd >= 0) {
 		status_conn_broker = true;
 		t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
 		handshake->id_suscriptor = g_config_gc->id_suscriptor;
 		handshake->id_recibido = 0;
-		handshake->cola_id = *cola;
+		handshake->cola_id = cola;
 		handshake->msjs_recibidos = 0;
 		enviar_msj_handshake_suscriptor(cliente_fd, g_logger, handshake);
 		op_code cod_oper_mensaje = 0;
 		uint32_t contador_msjs = 0;
-
 		sem_post(&sem_mutex_suscripcion);
-
 		int flag_salida =1;
 	//	pthread_mutex_lock (&sem_mutex_suscripcion);
 		//En este bucle se queda recibiendo los mensajes que va enviando el BROKER al suscriptor
 		while( flag_salida ) {
 			uint32_t id_recibido;
 			cod_oper_mensaje = rcv_codigo_operacion(cliente_fd);
-			log_info(g_logger,"RECIBI MENSAJE DE SUSCRIPCION COLA %s | COD_OPER %d", name_cola,cod_oper_mensaje);
+			log_info(logger, "RECIBI MENSAJE DE SUSCRIPCION COLA %s | COD_OPER %d", nombre_cola(cola),cod_oper_mensaje);
 			//TODO
 			//Procesar los mensajes recibidos
 			//No se por que la ultima suscripcion se queda esperando!!!

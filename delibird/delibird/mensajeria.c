@@ -684,6 +684,18 @@ void eliminar_lista(t_list *lista)
 	list_destroy(lista);
 }
 
+bool verdadero_falso(char *valor)
+{
+	bool resultado;
+	if(strcmp(valor,"TRUE") == 0) {
+		resultado = true;
+	}
+	else if (strcmp(valor,"FALSE") == 0) {
+		resultado = false;
+	}
+	return resultado;
+}
+
 char *nombre_cola(t_tipo_mensaje cola)
 {
 	char *nombre_cola;

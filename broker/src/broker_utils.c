@@ -1052,18 +1052,6 @@ t_algoritmo_reemplazo algoritmo_reemplazo(char *valor)
 	return algoritmo;
 }
 
-bool verdadero_falso(char *valor)
-{
-	bool resultado;
-	if(strcmp(valor,"TRUE") == 0) {
-		resultado = true;
-	}
-	else if (strcmp(valor,"FALSE") == 0) {
-		resultado = false;
-	}
-	return resultado;
-}
-
 bool es_tamano_buddy_ultimo_orden(int tamano_buddy)
 {
 	bool mismo_tamano(void *posic) {

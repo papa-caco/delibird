@@ -11,7 +11,11 @@
 
 
 void iniciar_suscripcion(void);
-void suscripcion(t_tipo_mensaje *cola);
+
+int conexion_broker(t_tipo_mensaje cola, t_log *logger);
+
+void suscripcion(t_tipo_mensaje cola, t_log *logger);
+
 void *threadfunction(void *parametro);
 
 #endif /* SRC_SUSCRIPCION_H_ */
