@@ -15,9 +15,8 @@ void iniciar_gamecard(void) {
 	iniciar_log_gamecard();
 	iniciar_estructuras_gamecard();
 	//prueba_semaforo();
-	prueba_file_system("Chichipio", 4);
+	prueba_file_system("Chichipio", 20);
 	prueba_leer_bloques_pokemon("Chichipio");
-
 	//iniciar_suscripcion();
 	//inicio_server_game_card();
 }

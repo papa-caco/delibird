@@ -10,6 +10,7 @@
 void prueba_file_system(char* pokemon, int cant_posiciones)
 {
 	file_system_pokemon(pokemon, cant_posiciones);
+	log_info(g_logger,"FIN PRUEBA");
 }
 
 void prueba_leer_bloques_pokemon(char* pokemon)
@@ -204,7 +205,6 @@ t_list *obtener_posiciones(char *string_posiciones)
 			long_string -= long_linea ;
 			//TODO printf("(%s), long:%d,long_str:%d\n",lineas[nro_linea], long_linea, long_string);
 			t_posicion_pokemon *posicion = string_to_posicion(lineas[nro_linea]);
-			list_add(lista_posiciones,posicion);
 			nro_linea ++;
 		}
 	} while (long_string > 0);
@@ -379,3 +379,13 @@ void incremento_contador_bloques(void)
 	}
 	pthread_mutex_unlock(&g_mutex_cnt_blocks);
 }
+
+	/* *
+	 * Buenas!
+Revisando la función veo que lo que te falto es el msync() para forzar que se actualice el archivo :)
+
+La idea de munmap() es la de terminar el mapeo del archivo en memoria, con lo cual, efectivamente no deberías ejecutarlo hasta el final del gamecard 😉
+
+Cualquier cosa que no se entienda, avisa.
+Saludos.-
+	 */

@@ -7,8 +7,10 @@
 #ifndef SRC_TALL_GRASS_H_
 #define SRC_TALL_GRASS_H_
 #include<commons/bitarray.h>
+
 #include "utils_gc.h"
 #define TALL_GRASS 555
+
 
 
 //Estructura del metadata
@@ -45,6 +47,7 @@ typedef struct bitmap_tall_grass{
 }t_bitmap_fs;
 
 //Variables globales
+
 t_config_tall_grass *g_config_tg;
 
 t_bitmap_fs *g_bitmap_bloques;
@@ -52,13 +55,15 @@ t_bitmap_fs *g_bitmap_bloques;
 //Funciones
 
 void prueba_file_system(char* pokemon, int cant_posiciones);
+
 void file_system_pokemon(char *pokemon, int cant_posiciones);
-void armar_bloque(char *string_bloque ,int *nro_bloque, t_list *blocks);
 
 t_list * armar_guardar_data_bloques_file_pokemon(char *string_posiciones);
 
 void grabar_bloque(int block_nro, char *block_buffer);
+
 void grabar_metadata_pokemon(t_list *blocks, char *pokemon, int size_pokemon, char *open);
+
 void crear_dirname_pokemon(char *pokemon);
 
 void leer_metadata_tall_grass(t_log *logger);
