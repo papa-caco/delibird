@@ -15,8 +15,8 @@ void iniciar_gamecard(void) {
 	iniciar_log_gamecard();
 	iniciar_estructuras_gamecard();
 	//prueba_semaforo();
-	prueba_file_system("Chichipio", 20);
-	prueba_leer_bloques_pokemon("Chichipio");
+	prueba_file_system("Charizard",40);
+	prueba_leer_bloques_pokemon("Charizard");
 	//iniciar_suscripcion();
 	//inicio_server_game_card();
 }
@@ -31,36 +31,24 @@ void iniciar_log_gamecard(void) {
 	log_info(g_logger, "INICIO_LOG_SUCESS");
 }
 
-void leer_config(void) {
-
-	t_config* g_config;
-	g_config = config_create(PATH_CONFIG);
+void leer_config(void)
+{
+	gc_config = config_create(PATH_CONFIG);
 	g_config_gc = malloc(sizeof(t_config_gamecard));
-
-	g_config_gc->ip_gamecard = config_get_string_value(g_config, "IP_GAMECARD");
-	g_config_gc->puerto_gamecard = config_get_string_value(g_config, "PUERTO_GAMECARD");
-	g_config_gc->ip_broker = config_get_string_value(g_config, "IP_BROKER");
-	g_config_gc->puerto_broker = config_get_string_value(g_config, "PUERTO_BROKER");
-	g_config_gc->id_suscriptor = config_get_int_value(g_config,	"ID_SUSCRIPTOR");
-
-	g_config_gc->dirname_blocks = string_new();
-	string_append(&g_config_gc->dirname_blocks,config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS"));
-	string_append(&g_config_gc->dirname_blocks,config_get_string_value(g_config, "DIRNAME_BLOCKS"));
-
-	g_config_gc->dirname_files = string_new();
-	string_append(&g_config_gc->dirname_files,config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS"));
-	string_append(&g_config_gc->dirname_files,config_get_string_value(g_config, "DIRNAME_FILES"));
-
-	g_config_gc->file_metadata = string_new();
-	string_append(&g_config_gc->file_metadata,config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS"));
-	string_append(&g_config_gc->file_metadata,config_get_string_value(g_config, "FILE_METADATA"));
-
-	g_config_gc->ruta_log = config_get_string_value(g_config, "RUTA_LOG");
-	g_config_gc->show_logs_on_screen = verdadero_falso(config_get_string_value(g_config,"SHOW_LOGS_ON_SCREEN"));
-
-	g_config_gc->ruta_bitmap = string_new();
-	string_append(&g_config_gc->ruta_bitmap,config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS"));
-	string_append(&g_config_gc->ruta_bitmap, config_get_string_value(g_config, "RUTA_BITMAP"));
+	g_config_gc->ip_gamecard = config_get_string_value(gc_config, "IP_GAMECARD");
+	g_config_gc->puerto_gamecard = config_get_string_value(gc_config, "PUERTO_GAMECARD");
+	g_config_gc->ip_broker = config_get_string_value(gc_config, "IP_BROKER");
+	g_config_gc->puerto_broker = config_get_string_value(gc_config, "PUERTO_BROKER");
+	g_config_gc->path_tall_grass = config_get_string_value(gc_config, "PUNTO_MONTAJE_TALLGRASS");
+	g_config_gc->id_suscriptor = config_get_int_value(gc_config, "ID_SUSCRIPTOR");
+	g_config_gc->dirname_blocks = config_get_string_value(gc_config, "DIRNAME_BLOCKS");
+	g_config_gc->dirname_files = config_get_string_value(gc_config, "DIRNAME_FILES");
+	g_config_gc->file_metadata = config_get_string_value(gc_config, "FILE_METADATA");
+	g_config_gc->tiempo_reconexion = config_get_int_value(gc_config, "TIEMPO_DE_REINTENTO_CONEXION");
+	g_config_gc->tmp_reintento_oper = config_get_int_value(gc_config, "TIEMPO_DE_REINTENTO_OPERACION");
+	g_config_gc->ruta_log = config_get_string_value(gc_config, "RUTA_LOG");
+	g_config_gc->show_logs_on_screen = verdadero_falso(config_get_string_value(gc_config,"SHOW_LOGS_ON_SCREEN"));
+	g_config_gc->ruta_bitmap = config_get_string_value(gc_config, "RUTA_BITMAP");
 }
 
 void finalizar_log(void) {

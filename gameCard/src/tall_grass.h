@@ -72,11 +72,16 @@ int valor_magic_number(char *string_fijo);
 
 void inicializar_bitmap_tallgrass(t_log *logger);
 
-t_list * leer_bloques( char *pokemon);
-t_list *obtener_posiciones(char *string_posiciones);
+void leer_bloques( char *pokemon);
+
+t_list *obtener_posiciones(char *string_posiciones, int long_string);
+
 char *get_contenido_bloques(t_pokemon_medatada *pokemon_metadata);
+
 char *get_contenido_bloque(int block_size,char *block);
+
 t_posicion_pokemon *string_to_posicion(char* str_posicion);
+
 t_pokemon_medatada * leer_metadata_pokemon(char *pokemon);
 
 void prueba_leer_bloques_pokemon(char* pokemon);
@@ -86,5 +91,7 @@ void *abrir_archivo_bitmap(char *path, int size, t_log *logger);
 void leer_contador_bloques(void);
 
 void incremento_contador_bloques(void);
+
+void eliminar_metadata_pokemon(t_pokemon_medatada *metadata);
 
 #endif /* SRC_TALL_GRASS_H_ */

@@ -51,6 +51,7 @@ typedef struct Configuracion_GameCard
 	char *file_metadata;
 	int id_suscriptor;
 	int tiempo_reconexion;
+	int tmp_reintento_oper;
 	char *ruta_log;
 	bool show_logs_on_screen;
 	char *ruta_bitmap;
@@ -79,7 +80,7 @@ t_log *g_logger;
 
 t_log *g_logdebug;
 
-t_config* g_config;
+t_config* gc_config;
 
 sem_t sem_mutex_suscripcion;
 
