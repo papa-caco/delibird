@@ -139,16 +139,67 @@ void planificadorMedianoPlazo() {
 			sem_post(&sem_cola_new);
 
 			sem_wait(&sem_cola_new);
+			int cantidadEnNew = queue_size(colaNewEntrenadores);
+			sem_post(&sem_cola_new);
+
 			if (encontreUnoAPasar == 0
-					&& (queue_size(colaNewEntrenadores) == 0)) {
+					&& (cantidadEnNew == 0)) {
 
 				////TRATAR DEADLOCK
+				sem_wait(&sem_cola_blocked);
+				//Buscamos alguno que esté en deadlock. Asumimos el riesgo de que no haya ninguno en deadlock y que
+				//capaz encuentre a todos en esperarCaught.
+				t_entrenador* entrenadorAux = buscarPrimerEntrenadorEnDeadlock();
+				sem_post(&sem_cola_blocked);
+
+				sem_wait(&(entrenadorAux->mutex_entrenador));
+
+				//Si está en deadlock entonces lo que tenemos que hacer es cambiarle el estado para que pueda
+				//moverse a un entrenador
+				entrenadorAux->estado_entrenador = MOVERSE_A_ENTRENADOR;
+
+				//pasarlo a la cola de ready
+				sem_wait(&sem_cola_ready);
+				queue_push(colaReadyEntrenadores, entrenadorAux);
+				sem_post(&sem_cola_ready);
+
+				//y por último avisarle al planificador a corto plazo
+				sem_post(&sem_planificador_cplazoReady);
+
+				sem_post(&(entrenadorAux->mutex_entrenador));
+
+
+
 			}
-			sem_post(&sem_cola_new);
+
 
 		}
 
 
 
 	}
+
+}
+
+
+//Los semaforos los tiene afuera
+t_entrenador* buscarPrimerEntrenadorEnDeadlock(){
+
+	t_entrenador* entrenadorRetorno = NULL;
+	t_entrenador* entrenadorAux = NULL;
+
+	for(int i=0; i<queue_size(colaBlockedEntrenadores); i++){
+
+		entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
+
+		sem_wait(&(entrenadorAux->mutex_entrenador));
+		if((entrenadorAux->estado_entrenador == DEADLOCK) && (entrenadorRetorno!= NULL)){
+
+			sem_post(&(entrenadorAux->mutex_entrenador));
+			entrenadorRetorno = entrenadorAux;
+
+		}
+		queue_push(colaBlockedEntrenadores, entrenadorAux);
+	}
+	return entrenadorRetorno;
 }

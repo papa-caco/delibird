@@ -10,6 +10,7 @@
 
 #include "utilsTeam.h"
 
-
+t_entrenador* buscarPrimerEntrenadorEnDeadlock();
+void planificadorMedianoPlazo();
 
 #endif /* SRC_PLANIFICADORAMEDIANOPLAZO_H_ */

@@ -132,6 +132,9 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		unEntrenador->objetivoEntrenador = (t_list*)list_get(objetivosEntrenadores, i);
 		unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
 		unEntrenador->id = i;
+		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
+		sem_init(&(unEntrenador->mutex_entrenador), 0, 1);
+		sem_init(&(unEntrenador->sem_entrenador), 0, 0);
 		queue_push(colaNewEntrenadores, unEntrenador);
 	}
 	//Al finalizar el programa vamos a tener que destruir la lista de entrenadores, lo cual implicará destruir
