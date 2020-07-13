@@ -89,6 +89,8 @@ typedef struct Pokemon_Entrenador_Reservado{
 
 int cantidadDeEntrenadores;
 
+char finalizarProceso;
+
 t_queue* colaNewEntrenadores;
 
 t_queue* colaReadyEntrenadores;
