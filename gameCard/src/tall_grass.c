@@ -23,7 +23,7 @@ void prueba_leer_bloques_pokemon(char* pokemon)
  * 1 Armar un string, del tamanio del bloque con todas las lista de posiciones que entren
  * 2 Conforme se llena string se guarda en el bloque
  */
-void file_system_pokemon(char *pokemon, int cant_posiciones)  // -->>Esta vuela las posiciones las tiene que cargar/actualizar de a una <<--
+void file_system_pokemon(char *pokemon, int cant_posiciones)  // -->>Esta vuela: las posiciones las tiene que cargar/actualizar de a una <<--
 {
 	log_info(g_logger,"CREATE FILESYSTEM %s",pokemon);
 	t_list* lista_posiciones = list_create();
