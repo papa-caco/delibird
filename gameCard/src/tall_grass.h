@@ -22,12 +22,13 @@ typedef struct tall_grass {
 } t_config_tall_grass;
 
 //Estructura de la metadata del pokemon
-typedef struct pokemon_metadada{
-	char *directory;
+typedef struct pokemon_metadada
+{
+	char *archivo_pokemon;
+	bool directory;
+	bool open;
 	int size;
 	t_list* blocks;
-	char *open;
-	char *file_metatada_pokemon;
 } t_pokemon_medatada;
 
 
@@ -68,6 +69,10 @@ void crear_dirname_pokemon(char *pokemon);
 
 void leer_metadata_tall_grass(t_log *logger);
 
+t_config *obtengo_info_metadata(char *pokemon);
+
+t_list *obtengo_lista_bloques(char *string_bloques);
+
 int valor_magic_number(char *string_fijo);
 
 void inicializar_bitmap_tallgrass(t_log *logger);
@@ -92,6 +97,8 @@ void leer_contador_bloques(void);
 
 void incremento_contador_bloques(void);
 
-void eliminar_metadata_pokemon(t_pokemon_medatada *metadata);
+bool si_no(char *valor);
+
+char *print_si_no(bool valor);
 
 #endif /* SRC_TALL_GRASS_H_ */
