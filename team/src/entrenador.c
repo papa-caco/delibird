@@ -18,7 +18,9 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 	t_posicion_entrenador* posicionEntrenadorAMoverse;
 	t_entrenador* entrenador2;
 
-	while(true){
+	//La condición para cortar el hilo será que el entrenador esté en EXIT, y para que la función/hilo termine
+	//va a tener que salir del while y finalizar la ejecución la función.
+	while(entrenador->estado_entrenador != EXIT){
 
 		sem_wait(&(entrenador->sem_entrenador));
 

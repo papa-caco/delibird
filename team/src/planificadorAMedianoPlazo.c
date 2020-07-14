@@ -7,7 +7,7 @@
 #include "planificadorAMedianoPlazo.h"
 
 void planificadorMedianoPlazo() {
-	while (1) {
+	while (finalizarProceso != 1) {
 
 		//AGREGAR UN SIGNLA POR CADA POKEOMON LIBRE QUE LLEGA EN LA RECEPCION DE MENSAJES DE POKEMONES, MAS
 		//UN SIGNAL EN EL CASO DE FAIL. SIEMPRE Y CUANDO TENGAMOS POKEMONES LIBRES DE ESA ESPECIE.
@@ -21,7 +21,7 @@ void planificadorMedianoPlazo() {
 		//POR CONFIGURACION QUE ESTE ACTIVADO SIEMPRE
 		sem_wait(&sem_planificador_mplazo);
 
-		char encontreUnoAPasar = 0;
+
 
 		sem_wait(&sem_cola_blocked);
 		int cantidadElementosCola = queue_size(colaBlockedEntrenadores);
@@ -41,7 +41,8 @@ void planificadorMedianoPlazo() {
 
 			//RECORRER TODA LA COLA DE BLOCKED, VERIFICANDO LOS QUE ESTEN EN ESTADO ACABO_INTERCAMBIAR,
 			//QUE NOS QUEDARON COLGADOS DEL INTERCAMBIO, Y FIJARSE SI DEBEN PASAR A ESTADO EXIT Y A LA COLA EXIT.
-			if (entrenadorAux->estado_entrenador == ACABO_INTERCAMBIO || entrenadorAux->estado_entrenador == RECIBIO_RESPUESTA_OK) {
+			if (entrenadorAux->estado_entrenador == ACABO_INTERCAMBIO ||
+					entrenadorAux->estado_entrenador == RECIBIO_RESPUESTA_OK) {
 
 				sem_wait(&(entrenadorAux->mutex_entrenador));
 				verificarYCambiarEstadoEntrenador(entrenadorAux);
@@ -75,67 +76,130 @@ void planificadorMedianoPlazo() {
 		sem_wait(&sem_cola_exit);
 		if(cantidadDeEntrenadores == queue_size(colaExitEntrenadores)){
 
+			finalizarProceso = 1;
 			sem_post(&sem_planificador_cplazoReady);
 
-			//MATAR A SI MISMO
 		}
 		sem_post(&sem_cola_exit);
 
-		//NO OLVIDARSE DE CORTAR LAS SUSCRIPCIONES A LAS COLAS DEL BROKER.
-		//VERIFICAR CUANDO LLEGA EL CAUGTH SI YA ESTOY EN CONDICIONES DE CORTAR LA SUSCRIPCION
-		//ESO QUIERE DECIR (LOS OBTENIDOS SEAN LOS MISMO QUE LOS GLOBALES), IDEM LOCALIZED Y APPEARED.
+		//MATAR A SI MISMO, verifico que finalizarProceso no sea 0. Si es, salteo la lógica para que salga
+		//del while.
 
+		if (finalizarProceso != 1) {
 
-		//IR SACANDO DE UN ENTRENADOR DE LA COLA BLOCKED
-		sem_wait(&sem_cola_blocked);
-		cantidadElementosCola = queue_size(colaBlockedEntrenadores);
+			//NO OLVIDARSE DE CORTAR LAS SUSCRIPCIONES A LAS COLAS DEL BROKER.
+			//VERIFICAR CUANDO LLEGA EL CAUGTH SI YA ESTOY EN CONDICIONES DE CORTAR LA SUSCRIPCION
+			//ESO QUIERE DECIR (LOS OBTENIDOS SEAN LOS MISMO QUE LOS GLOBALES), IDEM LOCALIZED Y APPEARED.
 
-		for (int i = 0; i < cantidadElementosCola; i++) {
+			//IR SACANDO DE UN ENTRENADOR DE LA COLA BLOCKED
+			sem_wait(&sem_cola_blocked);
+			cantidadElementosCola = queue_size(colaBlockedEntrenadores);
 
-		t_entrenador* entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
+			char encontreUnoAPasar = 0;
 
-		if(encontreUnoAPasar == 1){
-			queue_push(colaBlockedEntrenadores, entrenadorAux);
-		}else{
+			for (int i = 0; i < cantidadElementosCola; i++) {
 
-			//1.VERIFICAR SI ESTA EN DEADLOCK: SI OCURRE ESTO, SE DESCARTA Y SE COLACA NUEVAMENTE EN LA COLA
-			//2. VERIFICAR SI ESTA EN ESPERANDO_RESPUESTA:  SI OCURRE ESTO, SE DESCARTA Y SE COLACA NUEVAMENTE EN LA COLA
-			if(entrenadorAux->estado_entrenador == DEADLOCK || entrenadorAux->estado_entrenador == ESPERAR_CAUGHT){
+				t_entrenador* entrenadorAux = (t_entrenador*) queue_pop(
+						colaBlockedEntrenadores);
+
+				if (encontreUnoAPasar == 1) {
+					queue_push(colaBlockedEntrenadores, entrenadorAux);
+				} else {
+
+					//1.VERIFICAR SI ESTA EN DEADLOCK: SI OCURRE ESTO, SE DESCARTA Y SE COLACA NUEVAMENTE EN LA COLA
+					//2. VERIFICAR SI ESTA EN ESPERANDO_RESPUESTA:  SI OCURRE ESTO, SE DESCARTA Y SE COLACA NUEVAMENTE EN LA COLA
+					if (entrenadorAux->estado_entrenador == DEADLOCK
+							|| entrenadorAux->estado_entrenador
+									== ESPERAR_CAUGHT) {
 						queue_push(colaBlockedEntrenadores, entrenadorAux);
-					}else {
+					} else {
 						encontreUnoAPasar = 1;
 						//3.CUALQUIER OTRO CASO, LO PONGO EN LA COLA DE READY.
 						sem_wait(&sem_cola_ready);
 						queue_push(colaReadyEntrenadores, entrenadorAux);
 						sem_post(&sem_cola_ready);
 					}
+				}
+
+			}
+			sem_post(&sem_cola_blocked);
+
+			//variable local que me indique si ENCONTRE UNO LISTA PARA PASAR A READY
+			//Si es FALSE, ahi recien recorre la lista de NEW.
+
+			sem_wait(&sem_cola_new);
+			if (encontreUnoAPasar == 0
+					&& (queue_size(colaNewEntrenadores) != 0)) {
+
+				t_entrenador* entrenadorAux = (t_entrenador*) queue_pop(
+						colaNewEntrenadores);
+
+				queue_push(colaReadyEntrenadores, entrenadorAux);
+			}
+			sem_post(&sem_cola_new);
+
+			sem_wait(&sem_cola_new);
+			int cantidadEnNew = queue_size(colaNewEntrenadores);
+			sem_post(&sem_cola_new);
+
+			if (encontreUnoAPasar == 0
+					&& (cantidadEnNew == 0)) {
+
+				////TRATAR DEADLOCK
+				sem_wait(&sem_cola_blocked);
+				//Buscamos alguno que esté en deadlock. Asumimos el riesgo de que no haya ninguno en deadlock y que
+				//capaz encuentre a todos en esperarCaught.
+				t_entrenador* entrenadorAux = buscarPrimerEntrenadorEnDeadlock();
+				sem_post(&sem_cola_blocked);
+
+				sem_wait(&(entrenadorAux->mutex_entrenador));
+
+				//Si está en deadlock entonces lo que tenemos que hacer es cambiarle el estado para que pueda
+				//moverse a un entrenador
+				entrenadorAux->estado_entrenador = MOVERSE_A_ENTRENADOR;
+
+				//pasarlo a la cola de ready
+				sem_wait(&sem_cola_ready);
+				queue_push(colaReadyEntrenadores, entrenadorAux);
+				sem_post(&sem_cola_ready);
+
+				//y por último avisarle al planificador a corto plazo
+				sem_post(&sem_planificador_cplazoReady);
+
+				sem_post(&(entrenadorAux->mutex_entrenador));
+
+
+
+			}
+
+
 		}
 
 
-
-		}
-		sem_post(&sem_cola_blocked);
-
-
-		//variable local que me indique si ENCONTRE UNO LISTA PARA PASAR A READY
-		//Si es FALSE, ahi recien recorre la lista de NEW.
-
-		sem_wait(&sem_cola_new);
-		if(encontreUnoAPasar == 0 && (queue_size(colaNewEntrenadores)!= 0)){
-
-			t_entrenador* entrenadorAux = (t_entrenador*) queue_pop(colaNewEntrenadores);
-
-			queue_push(colaReadyEntrenadores, entrenadorAux);
-		}
-		sem_post(&sem_cola_new);
-
-
-		sem_wait(&sem_cola_new);
-		if(encontreUnoAPasar == 0 && (queue_size(colaNewEntrenadores)== 0)){
-
-					////TRATAR DEADLOCK
-		}
-		sem_post(&sem_cola_new);
 
 	}
+
+}
+
+
+//Los semaforos los tiene afuera
+t_entrenador* buscarPrimerEntrenadorEnDeadlock(){
+
+	t_entrenador* entrenadorRetorno = NULL;
+	t_entrenador* entrenadorAux = NULL;
+
+	for(int i=0; i<queue_size(colaBlockedEntrenadores); i++){
+
+		entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
+
+		sem_wait(&(entrenadorAux->mutex_entrenador));
+		if((entrenadorAux->estado_entrenador == DEADLOCK) && (entrenadorRetorno!= NULL)){
+
+			sem_post(&(entrenadorAux->mutex_entrenador));
+			entrenadorRetorno = entrenadorAux;
+
+		}
+		queue_push(colaBlockedEntrenadores, entrenadorAux);
+	}
+	return entrenadorRetorno;
 }
