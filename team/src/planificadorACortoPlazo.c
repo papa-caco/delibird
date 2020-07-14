@@ -11,13 +11,13 @@
 
 void planificarFifo(){
 
-	while (finalizarProceso != 0) {
+	while (finalizarProceso == 0) {
 
 		//SEMAFORO QUE RECIBE DEL PLANIFICADOR DE MEDIANO PLAZO
 		sem_wait(&sem_planificador_cplazoReady);
 
 		//VERIFICAR SI DEBE MATARSE A SI MISMO (saltear o no su lógica)
-		if (finalizarProceso != 0) {
+		if (finalizarProceso == 0) {
 			sem_wait(&sem_cola_ready);
 			t_entrenador* entrenadorAEjecutar = (t_entrenador*) queue_pop(
 					colaReadyEntrenadores);
@@ -38,7 +38,7 @@ void planificarFifo(){
 
 				//SI ESTA EN EXIT, LO MANDO A LA COLA CORRESPONDIENTE
 				//Este semáforo ya no hace falta, el entreandor finaliza solo cuando cambia su estado a EXIT.
-				//sem_post(&(entrenadorAEjecutar->sem_entrenador));
+				sem_post(&(entrenadorAEjecutar->sem_entrenador));
 				sem_wait(&sem_cola_exit);
 				queue_push(colaExitEntrenadores, entrenadorAEjecutar);
 				sem_post(&sem_cola_exit);

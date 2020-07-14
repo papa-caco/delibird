@@ -7,7 +7,7 @@
 #include "planificadorAMedianoPlazo.h"
 
 void planificadorMedianoPlazo() {
-	while (finalizarProceso != 1) {
+	while (finalizarProceso == 0) {
 
 		//AGREGAR UN SIGNLA POR CADA POKEOMON LIBRE QUE LLEGA EN LA RECEPCION DE MENSAJES DE POKEMONES, MAS
 		//UN SIGNAL EN EL CASO DE FAIL. SIEMPRE Y CUANDO TENGAMOS POKEMONES LIBRES DE ESA ESPECIE.
@@ -85,7 +85,7 @@ void planificadorMedianoPlazo() {
 		//MATAR A SI MISMO, verifico que finalizarProceso no sea 0. Si es, salteo la lógica para que salga
 		//del while.
 
-		if (finalizarProceso != 1) {
+		if (finalizarProceso == 0) {
 
 			//NO OLVIDARSE DE CORTAR LAS SUSCRIPCIONES A LAS COLAS DEL BROKER.
 			//VERIFICAR CUANDO LLEGA EL CAUGTH SI YA ESTOY EN CONDICIONES DE CORTAR LA SUSCRIPCION
@@ -167,6 +167,8 @@ void planificadorMedianoPlazo() {
 				sem_post(&sem_planificador_cplazoReady);
 
 				sem_post(&(entrenadorAux->mutex_entrenador));
+
+				sem_post(&sem_hay_pokemones_mapa);
 
 
 
