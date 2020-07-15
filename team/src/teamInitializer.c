@@ -7,6 +7,7 @@
 
 //#include "teamInitializer.h"
 #include "utilsTeam.h"
+#include "entrenador.h"
 
 
 void iniciar_team(void){
@@ -135,6 +136,8 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
 		sem_init(&(unEntrenador->mutex_entrenador), 0, 1);
 		sem_init(&(unEntrenador->sem_entrenador), 0, 0);
+		pthread_create(&(unEntrenador->hilo_entrenador), NULL, (void*) comportamiento_entrenador, unEntrenador);
+		pthread_detach(unEntrenador->hilo_entrenador);
 		queue_push(colaNewEntrenadores, unEntrenador);
 	}
 	//Al finalizar el programa vamos a tener que destruir la lista de entrenadores, lo cual implicará destruir
@@ -238,7 +241,18 @@ void enviar_msjs_get_por_clase_de_pokemon(t_pokemon_entrenador *poke)
 }
 
 void liberar_lista_de_pokemones(t_list* lista){
-	liberar_lista(lista);
+
+	int contador = 0;
+	t_pokemon_entrenador* pokemon;
+	    while (list_get(lista, contador) != NULL) {
+
+	    	pokemon= (t_pokemon_entrenador*) list_get(lista,contador);
+	    	free(pokemon->posicion);
+	        free(pokemon);
+	        contador++;
+	    }
+
+	    free(lista);
 }
 
 void liberar_lista(t_list* lista) {
@@ -266,3 +280,60 @@ void liberar_cola(t_queue* cola) {
 //Con las tres funciones anteriores ya podemos crear dos funciones: Una que defina el objetivo
 //global del Team, y otra que inicialice a cada uno de los entrenadores con sus posiciones
 //y sus objetivos particulares
+
+
+void iniciar_variables_globales(){
+
+
+	finalizarProceso = 0;
+
+	queue_create(colaReadyEntrenadores);
+
+	queue_create(colaBlockedEntrenadores);
+
+	queue_create(colaExitEntrenadores);
+
+	list_create(pokemonesLibresEnElMapa);
+
+	list_create(pokemonesReservadosEnElMapa);
+
+	list_create(pokemonesAtrapadosGlobal);
+
+
+	//--------------SEMAFOROS LISTAS DE POKEMONES------------------------------
+
+	sem_init(&sem_pokemonesGlobalesAtrapados,0,1);
+
+	sem_init(&sem_pokemonesReservados,0,1);
+
+	sem_init(&sem_pokemonesLibresEnElMapa,0,1);
+
+	sem_init(&sem_pokemonesObjetivoGlobal,0,1);
+
+
+
+	//---------------SEMAFOROS COLAS DE ENTRENADORES---------------------------
+
+	sem_init(&sem_cola_blocked,0,1);
+
+	sem_init(&sem_cola_new,0,1);
+
+	sem_init(&sem_cola_ready,0,1);
+
+	sem_init(&sem_cola_exit,0,1);
+
+
+	//--------------SEMAFOROS PLANIFICADORES-----------------------------------
+
+	sem_init(&sem_planificador_cplazoReady,0,0);
+
+	sem_init(&sem_planificador_cplazoEntrenador,0,0);
+
+	sem_init(&sem_planificador_mplazo,0,1);
+
+	sem_init(&sem_hay_pokemones_mapa,0,0);
+
+	sem_init(&sem_terminar_todo,0,0);
+
+
+}

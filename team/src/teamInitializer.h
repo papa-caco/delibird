@@ -87,6 +87,10 @@ typedef struct Pokemon_Entrenador_Reservado{
 
 //-----------------Variables Globales----------------------------
 
+pthread_t threadPlanificadorCP;
+
+pthread_t threadPlanificadorMP;
+
 int cantidadDeEntrenadores;
 
 char finalizarProceso;
@@ -96,8 +100,6 @@ t_queue* colaNewEntrenadores;
 t_queue* colaReadyEntrenadores;
 
 t_queue* colaBlockedEntrenadores;
-
-t_queue* colaExecEntrenadores;
 
 t_queue* colaExitEntrenadores;
 
@@ -152,6 +154,8 @@ sem_t sem_planificador_mplazo;
 
 sem_t sem_hay_pokemones_mapa;
 
+sem_t sem_terminar_todo;
+
 int g_cnt_msjs_caught;
 
 int g_cnt_msjs_appeared;
@@ -163,6 +167,8 @@ bool status_conn_broker;
 //-----------------Firma de Funciones----------------------------
 
 void iniciar_team(void);
+
+void iniciar_variables_globales();
 
 t_list * extraer_posiciones_entrenadores();
 

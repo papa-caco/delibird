@@ -100,6 +100,13 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 	}
 
+	free(entrenador->posicion);
+	liberar_lista_de_pokemones(entrenador->objetivoEntrenador);
+	liberar_lista_de_pokemones(entrenador->pokemonesObtenidos);
+	sem_destroy(&entrenador->mutex_entrenador);
+	sem_destroy(&entrenador->sem_entrenador);
+	free(entrenador);
+
 }
 
 t_pokemon_entrenador* buscarPokemonMasCercano(t_posicion_entrenador* posicion_Entrenador){
@@ -528,12 +535,14 @@ t_list* pokemonesInnecesarios(t_entrenador* entrenador){
 			t_pokemon_entrenador* pokemonInnesario = malloc(sizeof(t_pokemon_entrenador));
 			pokemonInnesario->cantidad = ((t_pokemon_entrenador*)list_get(entrenador->pokemonesObtenidos, i))->cantidad;
 			pokemonInnesario->pokemon = ((t_pokemon_entrenador*)list_get(entrenador->pokemonesObtenidos, i))->pokemon;
+			pokemonInnesario->posicion = malloc(sizeof(t_posicion_entrenador));
 			list_add(pokemonesInnesarios, pokemonInnesario);
 
 		}else if(cantidadObjetivo>0){
 			t_pokemon_entrenador* pokemonInnesario = malloc(sizeof(t_pokemon_entrenador));
 			pokemonInnesario->cantidad = cantidadObjetivo;
 			pokemonInnesario->pokemon = ((t_pokemon_entrenador*)list_get(entrenador->pokemonesObtenidos, i))->pokemon;
+			pokemonInnesario->posicion = malloc(sizeof(t_posicion_entrenador));
 			list_add(pokemonesInnesarios, pokemonInnesario);
 		}
 
@@ -582,6 +591,7 @@ t_list* pokemonesPendientes(t_entrenador* entrenador) {
 					entrenador->objetivoEntrenador, i))->cantidad;
 			pokemonPendiente->pokemon = ((t_pokemon_entrenador*) list_get(
 					entrenador->objetivoEntrenador, i))->pokemon;
+			pokemonPendiente->posicion = malloc(sizeof(t_posicion_entrenador));
 			list_add(pokemonesPendientes, pokemonPendiente);
 
 		} else if (cantidadObjetivo > 0) {
@@ -590,6 +600,7 @@ t_list* pokemonesPendientes(t_entrenador* entrenador) {
 			pokemonPendiente->cantidad = cantidadObjetivo;
 			pokemonPendiente->pokemon = ((t_pokemon_entrenador*) list_get(
 					entrenador->objetivoEntrenador, i))->pokemon;
+			pokemonPendiente->posicion = malloc(sizeof(t_posicion_entrenador));
 			list_add(pokemonesPendientes, pokemonPendiente);
 		}
 

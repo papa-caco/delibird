@@ -181,6 +181,9 @@ void planificadorMedianoPlazo() {
 
 	}
 
+	sem_wait(&sem_terminar_todo);
+	liberar_variables_globales();
+
 }
 
 
@@ -205,3 +208,57 @@ t_entrenador* buscarPrimerEntrenadorEnDeadlock(){
 	}
 	return entrenadorRetorno;
 }
+
+void liberar_variables_globales(){
+
+	    queue_destroy(colaReadyEntrenadores);
+
+	    queue_destroy(colaBlockedEntrenadores);
+
+	    queue_destroy(colaExitEntrenadores);
+
+		liberar_lista_de_pokemones(pokemonesLibresEnElMapa);
+
+		liberar_lista(pokemonesReservadosEnElMapa);
+
+		liberar_lista_de_pokemones(pokemonesAtrapadosGlobal);
+
+
+		//--------------SEMAFOROS LISTAS DE POKEMONES------------------------------
+
+		sem_destroy(&sem_pokemonesGlobalesAtrapados);
+
+		sem_destroy(&sem_pokemonesReservados);
+
+		sem_destroy(&sem_pokemonesLibresEnElMapa);
+
+		sem_destroy(&sem_pokemonesObjetivoGlobal);
+
+
+
+		//---------------SEMAFOROS COLAS DE ENTRENADORES---------------------------
+
+		sem_destroy(&sem_cola_blocked);
+
+		sem_destroy(&sem_cola_new);
+
+		sem_destroy(&sem_cola_ready);
+
+		sem_destroy(&sem_cola_exit);
+
+
+		//--------------SEMAFOROS PLANIFICADORES-----------------------------------
+
+		sem_destroy(&sem_planificador_cplazoReady);
+
+		sem_destroy(&sem_planificador_cplazoEntrenador);
+
+		sem_destroy(&sem_planificador_mplazo);
+
+		sem_destroy(&sem_hay_pokemones_mapa);
+
+		sem_destroy(&sem_terminar_todo);
+
+
+}
+

@@ -10,6 +10,8 @@
 
 
 #include "entrenador.h"
+#include "planificadorACortoPlazo.h"
+#include "planificadorAMedianoPlazo.h"
 
 
 #endif /* SRC_TEAM_H */

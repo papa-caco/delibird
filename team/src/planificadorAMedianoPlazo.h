@@ -13,4 +13,6 @@
 t_entrenador* buscarPrimerEntrenadorEnDeadlock();
 void planificadorMedianoPlazo();
 
+void liberar_variables_globales();
+
 #endif /* SRC_PLANIFICADORAMEDIANOPLAZO_H_ */

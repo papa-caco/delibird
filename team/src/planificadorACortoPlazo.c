@@ -55,4 +55,7 @@ void planificarFifo(){
 		}
 
 	}
+
+	sem_post(&sem_terminar_todo);
+
 }
