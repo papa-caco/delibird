@@ -40,7 +40,7 @@
 #define PATH_LOG "config/gameCard.log"
 
 
-/*** ESTRUCTURAS **/
+/*** ESTRUCTURAS *
 typedef struct Configuracion_GameCard
 {
 	char *ip_broker;
@@ -53,7 +53,7 @@ typedef struct Configuracion_GameCard
 	int quantum;
 	int estimacion_inicial;
 	char *ruta_log;
-	int id_suscriptor;*/
+	int id_suscriptor;
 } t_config_game_card;
 
 
@@ -105,7 +105,7 @@ typedef enum Tipo_Mensaje{
 	//GET_POKEMON,
 	LOCALIZED_POKEMON = 15,
 } t_tipo_mensaje;
-*/
+
 
 typedef struct socket_cliente{
 	int cliente_fd;
@@ -142,13 +142,13 @@ typedef enum Resultado_Caught{
 
 
 
-/* ---  DEFINICION DE VARIABLES GLOBALES ---*/
+/* ---  DEFINICION DE VARIABLES GLOBALES ---
 pthread_t thread;
 t_log *g_logger;
 
 
 
-/* ---  DEFINICION DE LAS INTERFACES ---*/
+/* ---  DEFINICION DE LAS INTERFACES ---
 t_config* leer_config(void);
 void iniciar_log(void);
 void finalizar_log(void);
@@ -158,7 +158,7 @@ void destruir_config(void);
 //t_config* config = leer_config();
 //
 
-/*** DEFINICION DE FUNCIONES **/
+/*** DEFINICION DE FUNCIONES *
 
 
 void inicio_server_game_card();
@@ -173,7 +173,7 @@ void process_request(op_code cod_op, t_socket_cliente *socket);
 
 void* serializar_paquete(t_paquete* paquete, int bytes);
 
-void *rcv_new_pokemon(int socket_cliente, int *size);
+//void *rcv_new_pokemon(int socket_cliente, int *size);
 void devolver_appeared_pokemon(void *msg, int size, int socket_cliente);
 
 void* rcv_catch_pokemon(int socket_cliente, int *size);

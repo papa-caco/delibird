@@ -5,7 +5,7 @@
  *      Author: utnso
  */
 #include "utilsGc.h"
-
+/*
 void inicio_server_game_card(void){
 	leer_config();
 	iniciar_log_game_card();
@@ -27,7 +27,7 @@ void iniciar_log_game_card(void) {
 	g_config->ip_broker = config_get_string_value(g_config, "IP_BROKER");
 	g_config->puerto_broker = config_get_string_value(g_config, "PUERTO_BROKER");
 
-}*/
+}
 
 void finalizar_log(void){
 	log_destroy(g_logger);
@@ -121,7 +121,7 @@ void serve_client(t_socket_cliente *socket)
 	//log_info(g_logger,"SE RECIBE MENSAJE DEL SOCKET: %d",*socket);
 
 }
-*/
+
 
 // RECIBE todos los TIPOS de MENSAJE QUE MANEJA el GAMECARD y resuelve segun el CODIGO_OPERACION del MENSAJE
 void process_request(op_code cod_op, t_socket_cliente *socket) {
@@ -212,12 +212,12 @@ void* serializar_paquete(t_paquete* paquete, int bytes)
  * Para esto se deberá buscar dentro del directorio Pokemon si existe el archivo con el nombre de nuestro pokémon.
  *  En caso de no existir se deberá crear.
  *
- *  TODO:
+ *
  *  	Verificar si se puede abrir el archivo (si no hay otro proceso que lo esté abriendo).
  *  	 En caso que el archivo se encuentre abierto se deberá finalizar el hilo y reintentar
  *  	  la operación luego de un tiempo definido por configuración. *
  */
-void *rcv_new_pokemon(int socket_cliente, int *size) {
+/*void *rcv_new_pokemon(int socket_cliente, int *size) {
 	void *msg;
 	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
 	msg = malloc(*size);
@@ -245,7 +245,7 @@ void *rcv_new_pokemon(int socket_cliente, int *size) {
 			posicion->cantidad, tamano);
 	///Guarda la informacion en el FS
 
-	char* dirPokemon = config_get_string_value(g_config, "PUNTO_MONTAJE_TALLGRASS");
+	char* dirPokemon = config_get_string_value(gc_config, "PUNTO_MONTAJE_TALLGRASS");
 	char* pathPokemon = malloc(strlen(dirPokemon)+ 8); //9= /pokemon/; 3 = .txt
 
 
@@ -336,7 +336,7 @@ void devolver_caught_pokemon(void *msg, int socket_cliente) {
 	send(socket_cliente, a_enviar, bytes, 0);
 
 	free(a_enviar);
-	eliminar_paquete(paquete);*/
+	eliminar_paquete(paquete);
 }
 
 void *rcv_get_pokemon(int socket_cliente, int *size) {
@@ -375,7 +375,7 @@ void *rcv_get_pokemon(int socket_cliente, int *size) {
 
 	free(a_enviar);
 	eliminar_paquete(paquete);
-}*/
+}
 
 void devolver_recepcion_fail(int socket_cliente, char* mensajeError) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
@@ -601,7 +601,7 @@ void eliminar_paquete(t_paquete* paquete) {
 	free(paquete->buffer);
 	free(paquete);
 }
-*/
+
 int tamano_recibido(int bytes) {
 	return bytes + 2 * sizeof(int);
 }
@@ -612,7 +612,7 @@ int tamano_recibido(int bytes) {
  * En caso de no existir se debe agregar al final del archivo una nueva línea indicando
  * la cantidad de pokémon pasadas.
  * Cerrar el archivo.
- */
+
 void verificarPokemon(char* pathPokemon,t_posicion_pokemon* posicion){
 
 	int encontroPosicion = 0;
@@ -634,7 +634,7 @@ void verificarPokemon(char* pathPokemon,t_posicion_pokemon* posicion){
 
 			while (line_size >= 0) {
 				/* printf("line[%06d]: chars=%06zd, buf size=%06zu, contents: %s", line_count,
-									line_size, line_buf_size, line_buf);*/
+									line_size, line_buf_size, line_buf);
 				char** keyValue = string_split(line_buf, "=");
 				char* key = keyValue[0];
 				int cantidad = atoi(keyValue[1]);
@@ -687,8 +687,8 @@ char* obtengo_cola_mensaje(int codigo_operacion) {
 
 /**
  * @Desc inicia una conexion con el broken, de forma
- * TODO ESTO DESAPARECE CUANDO SE TENGA LA SUSCRIPCION
- */
+ * ESTO DESAPARECE CUANDO SE TENGA LA SUSCRIPCION
+
 void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 	struct addrinfo hints;
 	struct addrinfo *server_info;
@@ -702,8 +702,8 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 	hints.ai_flags = AI_PASSIVE;
 
 	//t_config* config = leer_config();
-	char* ip = config_get_string_value(g_config, "IP_BROKER");
-	char* puerto = config_get_string_value(g_config, "PUERTO_BROKER");
+	char* ip = config_get_string_value(gc_config, "IP_BROKER");
+	char* puerto = config_get_string_value(gc_config, "PUERTO_BROKER");
 
 	getaddrinfo(ip, puerto, &hints, &server_info);
 
@@ -750,7 +750,7 @@ void enviar_mensaje_a_broker(t_paquete* paquete,int bytes) {
 		char *grabar = string_substring(string_bloque, comienzo, tamano_bloque);
 		grabar_bloque(*nro_bloque,grabar);
 
-		list_add(blocks,nro_bloque);//TODO PEDIR BLOQUE VALIDO
+		list_add(blocks,nro_bloque);// PEDIR BLOQUE VALIDO
 		(*nro_bloque)++;
 
 		char *substring = string_new();//(char*)calloc( (string_length(string_bloque) - g_config_tg->block_size),sizeof(char) );
@@ -771,6 +771,77 @@ void bit_mat(){
 	int size_in_bytes = 8;
 	char* bytes = calloc(size_in_bytes, sizeof(char));
 	t_bitarray* bitarray = bitarray_create_with_mode(bytes, size_in_bytes, LSB_FIRST);
+
+}
+
+/**
+ *
+
+void process_request(op_code cod_op, int cliente_fd) {
+	int size;
+	int error = 0;
+	log_info(g_logger, "(PROCESANDO MENSAJE | SOCKET#: %d cod_op %d)",
+			cliente_fd, cod_op);
+	int existePokemon;
+	char* nombrePokemon;
+	uint32_t id_mensaje;
+	t_msg_new_gamecard *msg_new_gamecard;
+	t_msg_catch_gamecard *msg_catch_gamecard;
+
+	switch (cod_op) {
+	case ID_MENSAJE:
+		break;
+	case NEW_GAMECARD:
+		msg_new_gamecard = rcv_msj_new_gamecard(cliente_fd, g_logger);
+		id_mensaje = msg_new_gamecard->id_mensaje;
+		rcv_new_pokemon(msg_new_gamecard);
+
+		//id_recibido = msg->id_mensaje;
+		//devolver_recepcion_ok(cliente_fd);
+		//devolver_appeared_pokemon(msg, size, cliente_fd);
+		// La respuesta debe ser op_code = APPEARED_BROKER
+		break;
+	case CATCH_POKEMON:
+		log_info(g_logger, "(RECEIVING: CATCH_POKEMON | Socket#: %d)",
+				cliente_fd);
+		msg_catch_gamecard = rcv_msj_catch_gamecard(cliente_fd,g_logger);
+		devolver_caught_pokemon(msg_catch_gamecard, cliente_fd);
+
+		//devolver_recepcion_ok(cliente_fd);
+		// La respuesta debe ser op_code = CAUGHT_BROKER como respuesta
+		break;
+	case GET_POKEMON:
+		log_info(g_logger, "(RECEIVING: GAMECARD@GET_POKEMON | SOCKET#: %d)",
+				cliente_fd);
+		t_msg_new_gamecard *msg3;
+		rcv_new_pokemon(msg3);
+
+		//id_mensaje = rcv_get_pokemon(cliente_fd, &size);
+		/*nombrePokemon = msg + sizeof(int);
+		 log_info(g_logger, "POKEMON: %s", nombrePokemon);
+		 devolver_recepcion_ok(cliente_fd);
+		 devolver_posiciones(cliente_fd, nombrePokemon, &existePokemon);
+		 log_info(g_logger, "VALOR ENCONTRO POKEMON: %d", existePokemon);
+
+
+		//devolver_posiciones(cliente_fd, "Pokemon");
+		//devolver_localized_broker(cliente_fd, size, msg);
+		// El GameBoy tiene que recibir un mensaje op_code = LOCALIZED_BROKER como respuesta
+		break;
+
+	case 0:
+		pthread_exit(NULL);
+	case -1:
+		pthread_exit(NULL);
+	default:
+		log_info(g_logger, "(COD_OPERACION#: %d NOT FOUND! | SOCKET#: %d)",
+				cod_op, cliente_fd);
+		error = 1;
+		break;
+	}
+	if (!error) {
+		//	free(msg);
+	}
 
 }
 

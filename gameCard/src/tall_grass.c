@@ -15,7 +15,7 @@ void prueba_file_system(char* pokemon, int cant_posiciones)
 
 void prueba_leer_bloques_pokemon(char* pokemon)
 {
-	 leer_bloques(pokemon);
+	 leer_bloques(pokemon, g_logger);
 }
 
 /**
@@ -26,7 +26,9 @@ void prueba_leer_bloques_pokemon(char* pokemon)
 void file_system_pokemon(char *pokemon, int cant_posiciones)  // -->>Esta vuela: las posiciones las tiene que cargar/actualizar de a una <<--
 {
 	log_info(g_logger,"CREATE FILESYSTEM %s",pokemon);
-	t_list* lista_posiciones = list_create();
+	int lng_str_posiciones = 0;
+	char *string_posiciones;
+	t_list* lista_posiciones = list_create(), *blocks;
 	for (int i = 0; i < cant_posiciones; i ++) {
 		t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
 		posicion->pos_x = 15 + i * 3;
@@ -35,11 +37,20 @@ void file_system_pokemon(char *pokemon, int cant_posiciones)  // -->>Esta vuela:
 		void *posi = (t_posicion_pokemon*) posicion;
 		list_add(lista_posiciones, posicion);
 	}
-	int tamano_bloque = g_config_tg->block_size, x = 1, size_posicion =0;
-	char *string_posiciones, *string_posicion;
-	for(int i = 0; i < lista_posiciones->elements_count; i++ ){
-		t_posicion_pokemon  *posicion = list_get(lista_posiciones,i);
-		log_info(g_logger,"PROCESS POSICION %d-%d=%d",posicion->pos_x,posicion->pos_y,posicion->cantidad);
+	string_posiciones = serializar_lista_posiciones_pokemon(lista_posiciones, g_logger);
+	lng_str_posiciones = string_length(string_posiciones);
+	blocks = armar_guardar_data_bloques_file_pokemon(string_posiciones);
+	grabar_metadata_pokemon(blocks, pokemon, lng_str_posiciones,"N", g_logger);
+	list_destroy(blocks);
+	list_destroy_and_destroy_elements(lista_posiciones,(void*) free);
+}
+
+char *serializar_lista_posiciones_pokemon(t_list *lista_posiciones, t_log *logger)
+{
+	int size_posicion =0;
+	char *string_posiciones;
+	for(int i = 0; i < lista_posiciones->elements_count; i ++) {
+		t_posicion_pokemon  *posicion = list_get(lista_posiciones, i);
 		char *pos_x = string_itoa(posicion->pos_x);
 		char *pos_y = string_itoa(posicion->pos_y);
 		char *cantidad = string_itoa(posicion->cantidad);
@@ -58,22 +69,38 @@ void file_system_pokemon(char *pokemon, int cant_posiciones)  // -->>Esta vuela:
 		free(pos_x);
 		free(pos_y);
 		free(cantidad);
-	}  // -->> con las dos funciones de abajo es suficiente para generar un archivo en el FS. -- Faltaría una que le pases una posicion y te concatene el String.
-	t_list *blocks = armar_guardar_data_bloques_file_pokemon(string_posiciones);
-	grabar_metadata_pokemon(blocks, pokemon, size_posicion,"N");
-	list_destroy(blocks);
-	list_destroy_and_destroy_elements(lista_posiciones,(void*) free);
+	}
+	char *concatenada = concatenar_posiciones_pokemon(lista_posiciones);
+	log_info(logger,"(Guardando Posiciones: %s)", concatenada);
+	free(concatenada);
+	return string_posiciones;
 }
 
-char *serializar_posicion_pokemon(t_coordenada *coordenada, uint32_t cantidad)
+char *serializar_posicion_pokemon(t_coordenada *coordenada, uint32_t cant)
 {
-	return "hola"; //TODO mañana
+	char *string_posicion, *pos_x, *pos_y, *cantidad;
+	int size_posicion =0;
+	pos_x = string_itoa(coordenada->pos_x);
+	pos_y = string_itoa(coordenada->pos_y);
+	cantidad = string_itoa(cant);
+	string_append(&pos_x,"-");
+	string_append(&pos_y,"=");
+	string_append(&cantidad,"\n");
+	size_posicion += string_length(pos_x) + string_length(pos_y)+string_length(cantidad);
+	string_posicion = (char*) calloc(size_posicion, sizeof(char));
+	string_append(&string_posicion, pos_x);
+	string_append(&string_posicion, pos_y);
+	string_append(&string_posicion, cantidad);
+	free(pos_x);
+	free(pos_y);
+	free(cantidad);
+	return string_posicion;
 }
 
 t_list *armar_guardar_data_bloques_file_pokemon(char *string_posiciones)
 {
 	int tamano_bloque = g_config_tg->block_size, comienzo = 0, excedente = 0, cant_bloques = 1,
-		tamano_string = string_length(string_posiciones);
+		tamano_string = string_length(string_posiciones), tamano_grabar = 0;
 	t_list *blocks = list_create();
 	if (tamano_string >= tamano_bloque) {
 		cant_bloques = (int) tamano_string / tamano_bloque;
@@ -85,46 +112,53 @@ t_list *armar_guardar_data_bloques_file_pokemon(char *string_posiciones)
 			char *grabar;
 			if (i < cant_bloques - 1) {
 				grabar = string_substring(string_posiciones, comienzo, tamano_bloque);
+				tamano_grabar = tamano_bloque;
 			} else {
 				excedente =  tamano_string - comienzo;
 				grabar = string_substring(string_posiciones, comienzo, excedente);
+				tamano_grabar = excedente;
 			}
 			int *bloque_nro = malloc(sizeof(int));
-			(*bloque_nro) = g_bitmap_bloques->nro_bloque;
+			(*bloque_nro) = grabar_bloque(grabar, tamano_grabar, g_logdebug);
 			list_add(blocks, bloque_nro);
-			grabar_bloque(g_bitmap_bloques->nro_bloque, grabar);
 			comienzo += tamano_bloque;
 		}
 		free(string_posiciones);
 	} else {
 		int *bloque_nro = malloc(sizeof(int));
-		(*bloque_nro) = g_bitmap_bloques->nro_bloque;
+		(*bloque_nro) = grabar_bloque(string_posiciones, tamano_string, g_logdebug);
 		list_add(blocks,bloque_nro);
-		grabar_bloque(g_bitmap_bloques->nro_bloque, string_posiciones);
 	}
 	return blocks;
 }
 
-void grabar_bloque(int block_nro, char *block_buffer)
+int grabar_bloque(char *block_buffer, size_t size, t_log *logger)
 {	//Graba un bloque en el file system
+	int block_nro = obtener_ultimo_nro_bloque();
 	char *file_block = string_itoa(block_nro);
 	char *path_blocks = string_new();
 	string_append(&path_blocks, g_config_gc->dirname_blocks);
 	string_append(&path_blocks, file_block);
 	string_append(&path_blocks, ".bin");
 	FILE* fd = fopen(path_blocks,"w");
-	fwrite(block_buffer,sizeof(char),g_config_tg->block_size,fd);
+	fwrite(block_buffer,sizeof(char), size, fd);
 	fclose(fd);
-	log_info(g_logger,"SAVE BLOCK | FILE %d.bin", block_nro);
-	incremento_contador_bloques();
+	log_info(logger,"SAVE BLOCK | FILE %d.bin", block_nro);
+	pthread_mutex_lock(&g_mutex_cnt_blocks);
+	if (!incremento_contador_bloques()) {
+		log_error(logger, "-->>!!Sin Espacio en File System - Cerrar GAMECARD!! <<--");
+		pthread_mutex_lock(&g_mutex_cnt_blocks);
+	}
+	pthread_mutex_unlock(&g_mutex_cnt_blocks);
 	free(file_block);
 	free(path_blocks);
 	free(block_buffer);
+	return block_nro;
 }
 
-void grabar_metadata_pokemon(t_list *blocks, char *pokemon, int file_size, char *status)
+void grabar_metadata_pokemon(t_list *blocks, char *pokemon, int file_size, char *status,  t_log *logger)
 {	//Graba la metadata del pokemon(Metadata.bin)
-	crear_dirname_pokemon(pokemon);
+	crear_dirname_pokemon(pokemon, g_logger);
 	int cantidad_bloques = blocks->elements_count;
 	int long_dir = string_length(g_config_gc->dirname_files) + string_length(pokemon) + string_length("/Metadata.bin");
 	char* dirname_metatada_pokemon = (char*) calloc(long_dir, sizeof(char));
@@ -147,11 +181,11 @@ void grabar_metadata_pokemon(t_list *blocks, char *pokemon, int file_size, char 
 	}
 	fprintf(fd, "OPEN=%s\n", status);
 	fclose(fd);
-	log_info(g_logger,"SAVE METADATA  %s",dirname_metatada_pokemon);
+	log_info(logger,"SAVE METADATA  %s",dirname_metatada_pokemon);
 	free(dirname_metatada_pokemon);
 }
 
-void crear_dirname_pokemon(char *pokemon)
+void crear_dirname_pokemon(char *pokemon, t_log *logger)
 {
 	char* pathPokemon = string_new();
 	string_append(&pathPokemon, g_config_gc->dirname_files);
@@ -189,22 +223,29 @@ int valor_magic_number(char *string_fijo)
 	return magic_number;
 }
 
-void leer_bloques(char *pokemon)
+int leer_bloques(char *pokemon, t_log *logger)
 {	//lee los bloques que se corresponden a un archivo pokemon y lo retorna en una lista de posiciones
-	log_info(g_logger,"READ FILE %s",pokemon); // cargar todos los bloques en un string de posiciones
-	t_pokemon_medatada *pokemon_metadata = leer_metadata_pokemon(pokemon);
-	char *string_posiciones = get_contenido_bloques(pokemon_metadata);
+	log_info(logger,"READ FILE %s",pokemon); // cargar todos los bloques en un string de posiciones
+	int data_size = 0;
+	t_pokemon_medatada *pokemon_metadata = leer_metadata_pokemon(pokemon, g_logger);
+	if (pokemon_metadata != NULL) {
+	char *string_posiciones = get_contenido_bloques(pokemon_metadata, g_logger);
 	t_list *lista_posiciones = obtener_posiciones(string_posiciones, pokemon_metadata->size);
 	log_info(g_logger,"POSITIONS POKEMON ");
 	for( int i = 0; i< list_size(lista_posiciones); i ++){
 		t_posicion_pokemon *posicion = (t_posicion_pokemon*) list_get(lista_posiciones,i);
-		log_info(g_logger," pos_x %d | pos_y %d | cantidad %d ",posicion->pos_x, posicion->pos_y, posicion->cantidad);
+		log_info(logger," pos_x %d | pos_y %d | cantidad %d ",posicion->pos_x, posicion->pos_y, posicion->cantidad);
 	}
-	log_info(g_logger,"END READ FILE POKEMON %s", pokemon);
+	log_info(logger,"END READ FILE POKEMON %s", pokemon);
+	data_size = pokemon_metadata->size;
 	list_destroy_and_destroy_elements(pokemon_metadata->blocks,(void*) free);
 	free(pokemon_metadata);
 	free(string_posiciones);
 	list_destroy_and_destroy_elements(lista_posiciones,(void*) free);
+	return data_size;
+	} else {
+		return -1;
+	}
 }
 
 t_list *obtener_posiciones(char *string_posiciones, int long_string)
@@ -227,7 +268,7 @@ t_list *obtener_posiciones(char *string_posiciones, int long_string)
 	return lista_posiciones;
 }
 
-char *get_contenido_bloques(t_pokemon_medatada *pokemon_metadata)
+char *get_contenido_bloques(t_pokemon_medatada *pokemon_metadata, t_log *logger)
 {	//Retorna un string con el contenido de los bloques del pokemon
 	char *str_posiciones = string_new();//Cargar todos los bloques en un string de posiciones
 	int leer_size = 0, cant_bloques = pokemon_metadata->blocks->elements_count, iter = 0,
@@ -236,9 +277,11 @@ char *get_contenido_bloques(t_pokemon_medatada *pokemon_metadata)
 		char *block = (char*) list_get(pokemon_metadata->blocks, iter);
 		char *str_bloque;
 		if (total_bytes < tamano_bloque) {
+			printf("<<bl# %s size %d\n", block, total_bytes);
 			str_bloque =  get_contenido_bloque(total_bytes, block);
 			total_bytes = 0;
 		} else {
+			printf(">=bl# %s size %d\n", block, tamano_bloque);
 			str_bloque =  get_contenido_bloque(tamano_bloque, block);
 			total_bytes -= tamano_bloque;
 		}
@@ -246,11 +289,11 @@ char *get_contenido_bloques(t_pokemon_medatada *pokemon_metadata)
 		free(str_bloque);
 		iter ++;
 	} while (total_bytes > 0);
-	log_info(g_logger,"CONTENT FILE POKEMON:\n%s", str_posiciones);
+	log_info(logger,"CONTENT FILE POKEMON:\n%s", str_posiciones);
 	return str_posiciones;
 }
 
-char *get_contenido_bloque(int block_size,char *block)
+char *get_contenido_bloque(int block_size, char *block)
 {	//Retorna el contenido de un bloque en un string
 	char *contenido = (char*) calloc(block_size, sizeof(char)), *extension = ".bin", *cola = "\0" ;
 	int lng_block = string_length(block), lng_dir_file = string_length(g_config_gc->dirname_blocks), lng_bin = string_length(extension);
@@ -287,25 +330,31 @@ t_posicion_pokemon *string_to_posicion(char* str_posicion)
 	return posicion;
 }
 
-t_pokemon_medatada *leer_metadata_pokemon(char *pokemon)
+t_pokemon_medatada *leer_metadata_pokemon(char *pokemon,  t_log *logger)
 {	// Lee la metadata del pokemon y la carga en la estructura pokemon_metadata
 	t_pokemon_medatada *pokemon_metadata = malloc(sizeof(t_pokemon_medatada));
 	int cant_bloques = 0, tamano_bloque = g_config_tg->block_size, long_dir = 0, fragmentacion = 0, long_bloques = 0;
-	t_config* metadata_file_info = obtengo_info_metadata(pokemon);
-	char *string_bloques = config_get_string_value(metadata_file_info, "BLOCKS");
-	pokemon_metadata->archivo_pokemon = pokemon;
-	pokemon_metadata->directory = si_no(config_get_string_value(metadata_file_info, "DIRECTORY"));
-	pokemon_metadata->open = si_no(config_get_string_value(metadata_file_info, "DIRECTORY"));
-	pokemon_metadata->size = config_get_int_value(metadata_file_info, "SIZE");
-	pokemon_metadata->blocks = obtengo_lista_bloques(string_bloques);
-	log_info(g_logger,"METADATADA: %s | DIRECTORY: %s | SIZE: %d | OPEN: %s | BLOCKS_AMOUNT: %d",
+	char *path_metadata = obtengo_ruta_metadata_pokemon(pokemon);
+	if (path_metadata != NULL ) {
+		t_config* metadata_file_info = obtengo_info_metadata(path_metadata);
+		char *string_bloques = config_get_string_value(metadata_file_info, "BLOCKS");
+		pokemon_metadata->archivo_pokemon = pokemon;
+		pokemon_metadata->directory = si_no(config_get_string_value(metadata_file_info, "DIRECTORY"));
+		pokemon_metadata->open = si_no(config_get_string_value(metadata_file_info, "DIRECTORY"));
+		pokemon_metadata->size = config_get_int_value(metadata_file_info, "SIZE");
+		pokemon_metadata->blocks = obtengo_lista_bloques(string_bloques);
+		log_info(logger,"(METADATADA: %s | DIRECTORY: %s | SIZE: %d | OPEN: %s | USED_BLOCKS: %d)",
 			pokemon_metadata->archivo_pokemon, print_si_no(pokemon_metadata->directory), pokemon_metadata->size,
 			print_si_no(pokemon_metadata->open),pokemon_metadata->blocks->elements_count);
-	config_destroy(metadata_file_info);
-	return pokemon_metadata;
+		config_destroy(metadata_file_info);
+		return pokemon_metadata;
+	} else {
+		log_warning(logger, "(-->>Pokemon %s no existe en File System<<--)", pokemon);
+		return NULL;
+	}
 }
 
-t_config *obtengo_info_metadata(char *pokemon)
+char *obtengo_ruta_metadata_pokemon(char *pokemon)
 {
 	char *dir_file = g_config_gc->dirname_files, *bin_file = "/Metadata.bin", *cola = "\0";
 	int lng_pokemon = string_length(pokemon), lng_dir_file = string_length(dir_file), lng_bin_file = string_length(bin_file);
@@ -318,6 +367,16 @@ t_config *obtengo_info_metadata(char *pokemon)
 	memcpy(metadata_path + offset, bin_file, lng_bin_file);
 	offset += lng_bin_file;
 	memcpy(metadata_path + offset, cola, 1);
+	int fd = open(metadata_path, O_RDONLY);
+	if (fd == -1) {
+		free(metadata_path);
+		return NULL;
+	} else {
+		return metadata_path;
+}	}
+
+t_config *obtengo_info_metadata(char *metadata_path)
+{
 	t_config *metadata_info = config_create(metadata_path);
 	free(metadata_path);
 	return metadata_info;
@@ -428,18 +487,27 @@ void leer_contador_bloques(void)
 	pthread_mutex_unlock(&g_mutex_cnt_blocks);
 }
 
-void incremento_contador_bloques(void)
+bool incremento_contador_bloques(void)
 {
-	pthread_mutex_lock(&g_mutex_cnt_blocks);
+	bool resultado = false;
 	for (int i = 0; i < g_bitmap_bloques->total_blocks; i ++) {
 		if (!bitarray_test_bit(g_bitmap_bloques->bitmap, i)) {
 			bitarray_set_bit(g_bitmap_bloques->bitmap, i);
 			g_bitmap_bloques->nro_bloque = i + 1;
 			i = g_bitmap_bloques->total_blocks;
+			resultado = true;
+			g_bitmap_bloques->used_blocks ++;
 		}
-		g_bitmap_bloques->used_blocks ++;
 	}
+	return resultado;
+}
+
+int obtener_ultimo_nro_bloque(void)
+{
+	pthread_mutex_lock(&g_mutex_cnt_blocks);
+	int nro_bloque = g_bitmap_bloques->nro_bloque;
 	pthread_mutex_unlock(&g_mutex_cnt_blocks);
+	return nro_bloque;
 }
 
 bool si_no(char *valor)

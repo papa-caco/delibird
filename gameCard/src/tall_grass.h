@@ -59,17 +59,23 @@ void prueba_file_system(char* pokemon, int cant_posiciones);
 
 void file_system_pokemon(char *pokemon, int cant_posiciones);
 
+char *serializar_lista_posiciones_pokemon(t_list *lista_posiciones, t_log *logger);
+
+char *serializar_posicion_pokemon(t_coordenada *coordenada, uint32_t cant);
+
 t_list * armar_guardar_data_bloques_file_pokemon(char *string_posiciones);
 
-void grabar_bloque(int block_nro, char *block_buffer);
+int grabar_bloque(char *block_buffer, size_t, t_log *logger);
 
-void grabar_metadata_pokemon(t_list *blocks, char *pokemon, int size_pokemon, char *open);
+void grabar_metadata_pokemon(t_list *blocks, char *pokemon, int size_pokemon, char *open,  t_log *logger);
 
-void crear_dirname_pokemon(char *pokemon);
+void crear_dirname_pokemon(char *pokemon, t_log *logger);
 
 void leer_metadata_tall_grass(t_log *logger);
 
-t_config *obtengo_info_metadata(char *pokemon);
+char *obtengo_ruta_metadata_pokemon(char *pokemon);
+
+t_config *obtengo_info_metadata(char *path_metadata);
 
 t_list *obtengo_lista_bloques(char *string_bloques);
 
@@ -77,17 +83,17 @@ int valor_magic_number(char *string_fijo);
 
 void inicializar_bitmap_tallgrass(t_log *logger);
 
-void leer_bloques( char *pokemon);
+int leer_bloques(char *pokemon, t_log *logger);
 
 t_list *obtener_posiciones(char *string_posiciones, int long_string);
 
-char *get_contenido_bloques(t_pokemon_medatada *pokemon_metadata);
+char *get_contenido_bloques(t_pokemon_medatada *pokemon_metadata, t_log *logger);
 
 char *get_contenido_bloque(int block_size,char *block);
 
 t_posicion_pokemon *string_to_posicion(char* str_posicion);
 
-t_pokemon_medatada * leer_metadata_pokemon(char *pokemon);
+t_pokemon_medatada * leer_metadata_pokemon(char *pokemon, t_log *logger);
 
 void prueba_leer_bloques_pokemon(char* pokemon);
 
@@ -95,7 +101,9 @@ void *abrir_archivo_bitmap(char *path, int size, t_log *logger);
 
 void leer_contador_bloques(void);
 
-void incremento_contador_bloques(void);
+bool incremento_contador_bloques(void);
+
+int obtener_ultimo_nro_bloque(void);
 
 bool si_no(char *valor);
 
