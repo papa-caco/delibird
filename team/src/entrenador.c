@@ -109,11 +109,26 @@ t_pokemon_entrenador* buscarPokemonMasCercano(t_posicion_entrenador* posicion_En
 	int distanciaAux = 0;
 
 
+	sem_wait(&sem_pokemonesLibresEnElMapa);
 
-	for (int i = 0; i < list_size(pokemonesLibresEnElMapa); i++) {
+	t_list* listaFiltrada = list_create();
+
+	for(int j = 0; j< list_size(pokemonesLibresEnElMapa); j++){
+
+		t_pokemon_entrenador* pokLibreAux = ((t_pokemon_entrenador*) list_get(pokemonesLibresEnElMapa, j));
+
+		if(necesitoPokemon(pokLibreAux->pokemon)){
+
+			list_add(listaFiltrada, pokLibreAux);
+
+		}
+	}
 
 
-		t_pokemon_entrenador* pokLibreAux = ((t_pokemon_entrenador*) list_get(pokemonesLibresEnElMapa, i));
+	for (int i = 0; i < list_size(listaFiltrada); i++) {
+
+
+		t_pokemon_entrenador* pokLibreAux = ((t_pokemon_entrenador*) list_get(listaFiltrada, i));
 
 
 		distanciaAux = calcularDistancia(posicion_Entrenador, pokLibreAux->posicion );
@@ -124,6 +139,9 @@ t_pokemon_entrenador* buscarPokemonMasCercano(t_posicion_entrenador* posicion_En
 		}
 
 	}
+
+	sem_post(&sem_pokemonesLibresEnElMapa);
+
 
 	return pokemonMasCercano;
 

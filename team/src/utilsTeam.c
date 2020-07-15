@@ -237,6 +237,8 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 			list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 			sem_post(&sem_pokemonesLibresEnElMapa);
 
+			sem_post(&sem_hay_pokemones_mapa);
+
 			////ANALIZAR SI TENEMOS QUE ACTIVAR EL PLANIFICADOR MEDIANO PLAZO PARA IR A ATRAPAR A UN POKEMON
 
 		}
@@ -727,6 +729,8 @@ void agregarPokemonesDelLocalized(t_msg_localized_team* mensajeLocalized){
 		sem_wait(&sem_pokemonesLibresEnElMapa);
 		list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 		sem_post(&sem_pokemonesLibresEnElMapa);
+
+		sem_post(&sem_hay_pokemones_mapa);
 
 			}
 }
