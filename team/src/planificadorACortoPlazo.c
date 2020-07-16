@@ -23,8 +23,12 @@ void planificarFifo(){
 					colaReadyEntrenadores);
 			sem_post(&sem_cola_ready);
 
+			log_info(g_logger,"Entrenador %d se movio a la cola de Exec, porque esta primero en la cola de Ready", entrenadorAEjecutar->id);
+
 			//COMIENZA A EJECUTAR LA FUNCION CORRESPONDIENTE DEL ENTRENADOR
 			sem_post(&(entrenadorAEjecutar->sem_entrenador));
+
+			cantidadCambiosDeContexto++;
 
 			//ESPERA EL SIGNAL DEL ENTRENADOR PARA QUE COMPLETE SU FUNCION
 			sem_wait(&sem_planificador_cplazoEntrenador);

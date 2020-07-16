@@ -284,6 +284,9 @@ void liberar_cola(t_queue* cola) {
 
 void iniciar_variables_globales(){
 
+	ciclosCPU = 0;
+
+	cantidadCambiosDeContexto = 0;
 
 	finalizarProceso = 0;
 

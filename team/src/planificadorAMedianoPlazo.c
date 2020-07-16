@@ -7,6 +7,13 @@
 #include "planificadorAMedianoPlazo.h"
 
 void planificadorMedianoPlazo() {
+
+	char* estadosEntrenadorStrings[9] = {
+			"Moverse a pokemon", "Moverse a entrenador", "Atrapar",
+			"Intercambiar", "Acabar intercambio", "Recibir respuesta ok",
+			"Esperar caught","Estar en deadlock", "Estar en exit"
+	};
+
 	while (finalizarProceso == 0) {
 
 		//AGREGAR UN SIGNLA POR CADA POKEOMON LIBRE QUE LLEGA EN LA RECEPCION DE MENSAJES DE POKEMONES, MAS
@@ -117,7 +124,11 @@ void planificadorMedianoPlazo() {
 						//3.CUALQUIER OTRO CASO, LO PONGO EN LA COLA DE READY.
 						sem_wait(&sem_cola_ready);
 						queue_push(colaReadyEntrenadores, entrenadorAux);
+
+						log_info(g_logger,"Entrenador %d se movio a la cola de Ready, porque va a %s", entrenadorAux->id, estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
+
 						sem_post(&sem_cola_ready);
+
 					}
 				}
 
@@ -142,8 +153,14 @@ void planificadorMedianoPlazo() {
 			int cantidadEnNew = queue_size(colaNewEntrenadores);
 			sem_post(&sem_cola_new);
 
+			log_info(g_logger, "Se va a correr el algoritmo de deteccion de deadlock");
+
+
 			if (encontreUnoAPasar == 0
 					&& (cantidadEnNew == 0)) {
+
+			log_info(g_logger, "Se detecto deadlock");
+
 
 				////TRATAR DEADLOCK
 				sem_wait(&sem_cola_blocked);
@@ -172,6 +189,11 @@ void planificadorMedianoPlazo() {
 
 
 
+			}else{
+
+				log_info(g_logger, "No hay deadlock");
+
+
 			}
 
 
@@ -182,6 +204,9 @@ void planificadorMedianoPlazo() {
 	}
 
 	sem_wait(&sem_terminar_todo);
+
+	logearResultadoTeam();
+
 	liberar_variables_globales();
 
 }
@@ -210,6 +235,22 @@ t_entrenador* buscarPrimerEntrenadorEnDeadlock(){
 }
 
 void liberar_variables_globales(){
+
+		int cantidadEntrenadoresExit = queue_size(colaExitEntrenadores);
+
+		for(int i=0; i< cantidadEntrenadoresExit; i++){
+
+			t_entrenador* entrenador = (t_entrenador*) queue_pop(colaExitEntrenadores);
+
+			free(entrenador->posicion);
+			liberar_lista_de_pokemones(entrenador->objetivoEntrenador);
+			liberar_lista_de_pokemones(entrenador->pokemonesObtenidos);
+			sem_destroy(&entrenador->mutex_entrenador);
+			sem_destroy(&entrenador->sem_entrenador);
+			free(entrenador);
+		}
+
+
 
 	    queue_destroy(colaReadyEntrenadores);
 
@@ -258,6 +299,26 @@ void liberar_variables_globales(){
 		sem_destroy(&sem_hay_pokemones_mapa);
 
 		sem_destroy(&sem_terminar_todo);
+
+
+}
+
+void logearResultadoTeam(){
+
+	log_info(g_logger, "CANTIDAD CICLOS CPU TOTALES %d", ciclosCPU);
+
+	log_info(g_logger, "CANTIDAD CAMBIOS DE CONTEXTO %d", cantidadCambiosDeContexto);
+
+	int cantidadEntrenadoresExit = queue_size(colaExitEntrenadores);
+
+			for(int i=0; i< cantidadEntrenadoresExit; i++){
+
+				t_entrenador* entrenador = (t_entrenador*) queue_pop(colaExitEntrenadores);
+
+				log_info(g_logger, "CANTIDAD CICLOS CPU ENTRENADOR %d : %d", entrenador->id, entrenador->ciclosCPU);
+
+				queue_push(colaExitEntrenadores, entrenador);
+			}
 
 
 }

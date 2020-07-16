@@ -216,7 +216,7 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 		//meSirvePokemon ya tiene semaforos dentro
 		//if (meSirvePokemon(msg_appeared->pokemon)) {
 		//Las dos líneas anteriores las comento por las dudas de que en realidad al final sí haya que realizar ese tipo de
-		//validación
+		//validació
 
 
 		//necesitoPokemon ya tiene los semáforos adentro
@@ -389,6 +389,7 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 		g_cnt_msjs_localized++;
 		id_recibido = msg_localized->id_mensaje;
 
+
 		char meSirveGet = 0;
 		int idAuxGet = 0;
 		char* nombreAux;
@@ -470,6 +471,29 @@ void process_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger) {
 		msg_appeared = rcv_msj_appeared_team(cliente_fd, logger);
 		g_cnt_msjs_appeared++;
 		//TODO Hacer lo que corresponda con el msg_appeared
+
+		if (necesitoPokemon(msg_appeared->pokemon) != 0) {
+
+					sem_wait(&mutex_listaPokemonesLlegadosDelBroker);
+					list_add(pokemonesLlegadosDelBroker, msg_appeared->pokemon);
+					sem_post(&mutex_listaPokemonesLlegadosDelBroker);
+
+					t_pokemon_entrenador* pokemonAAgregarAlMapa = malloc(sizeof(t_pokemon_entrenador));
+					pokemonAAgregarAlMapa->cantidad = 1;
+					pokemonAAgregarAlMapa->pokemon = msg_appeared->pokemon;
+					pokemonAAgregarAlMapa->posicion = malloc(sizeof(t_posicion_entrenador));
+					pokemonAAgregarAlMapa->posicion->pos_x =msg_appeared->coord->pos_x;
+					pokemonAAgregarAlMapa->posicion->pos_y =msg_appeared->coord->pos_y;
+
+					sem_wait(&sem_pokemonesLibresEnElMapa);
+					list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
+					sem_post(&sem_pokemonesLibresEnElMapa);
+
+					sem_post(&sem_hay_pokemones_mapa);
+
+				}
+
+
 		enviar_msg_confirmed(cliente_fd, logger);
 		eliminar_msg_appeared_team(msg_appeared);
 		break;

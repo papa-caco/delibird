@@ -15,4 +15,6 @@ void planificadorMedianoPlazo();
 
 void liberar_variables_globales();
 
+void logearResultadoTeam();
+
 #endif /* SRC_PLANIFICADORAMEDIANOPLAZO_H_ */

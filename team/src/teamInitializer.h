@@ -64,6 +64,7 @@ typedef struct Entrenador{
 	sem_t mutex_entrenador;
 	pthread_t hilo_entrenador;
 	int id;
+	int ciclosCPU;
 
 	//FIJARSE SI HAY QUE AGREGAR UN SEMAFORO MUTEX PARA EL ENTRENADOR CUANDO SE MODIFIQUE O SE LEA.
 } t_entrenador;
@@ -86,6 +87,8 @@ typedef struct Pokemon_Entrenador_Reservado{
 
 
 //-----------------Variables Globales----------------------------
+
+int cantidadCambiosDeContexto;
 
 pthread_t threadPlanificadorCP;
 

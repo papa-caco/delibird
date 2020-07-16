@@ -14,6 +14,7 @@ int main(void) {
 
 	iniciar_variables_globales();
 
+
 	sem_wait(&sem_mutex_msjs);
 	iniciar_entrenadores_and_objetivoGlobal();
 
@@ -42,7 +43,7 @@ int main(void) {
 
 	inicio_server_team();
 
-	log_destroy(g_logger);
+	//log_destroy(g_logger);
 	//LAS VARIABLES "objetivoGlobal" y "new" TIENEN QUE SER VARIABLES GLOBALES, es decir que vamos a tener que sacar
 	//su hardcodeo de las funciones "iniciar_entrenadores_and_objetivoGLobal" y "cargar_objetivoGLobal"
 

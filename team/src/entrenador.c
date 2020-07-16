@@ -69,7 +69,16 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 				pokemon = buscarPokemonMasCercano(entrenador->posicion);
 				intentarAtraparPokemon(entrenador, pokemon);
 
+				sleep(g_config_team->retardo_ciclo_cpu);
+
+				ciclosCPU++;
+
+				entrenador->ciclosCPU++;
+
 				entrenador->estado_entrenador = ESPERAR_CAUGHT;
+
+				log_info(g_logger,"Entrenador %d intenta atrapar al pokemon %s, en la posicion (%d,%d)", entrenador->id, pokemon->pokemon, entrenador->posicion->pos_x, entrenador->posicion->pos_y);
+
 
 				sem_post(&(sem_planificador_cplazoEntrenador));
 
@@ -84,6 +93,8 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 				entrenador->estado_entrenador = ACABO_INTERCAMBIO;
 
 				entrenador2->estado_entrenador = ACABO_INTERCAMBIO;
+
+				log_info(g_logger, "Los entrenadores %d y %d hicieron un intercambio", entrenador->id, entrenador2->id);
 
 				sem_post(&(sem_planificador_cplazoEntrenador));
 
@@ -100,12 +111,6 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 	}
 
-	free(entrenador->posicion);
-	liberar_lista_de_pokemones(entrenador->objetivoEntrenador);
-	liberar_lista_de_pokemones(entrenador->pokemonesObtenidos);
-	sem_destroy(&entrenador->mutex_entrenador);
-	sem_destroy(&entrenador->sem_entrenador);
-	free(entrenador);
 
 }
 
@@ -294,6 +299,11 @@ void moverEntrenador(t_entrenador* entrenador, t_posicion_entrenador* posicionAM
 	ciclosCPU++;
 	sem_post(&mutex_ciclosCPU);
 
+	entrenador->ciclosCPU++;
+
+
+	log_info(g_logger,"Entrenador %d se movio a la posicion (%d,%d)", entrenador->id, entrenador->posicion->pos_x, entrenador->posicion->pos_y);
+
 
 }
 
@@ -386,6 +396,9 @@ void intercambiarPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2) {
 		sem_wait(&mutex_ciclosCPU);
 		ciclosCPU+=5;
 		sem_post(&mutex_ciclosCPU);
+
+		entrenador1->ciclosCPU+=5;
+		entrenador2->ciclosCPU+=5;
 
 	liberar_lista_de_pokemones(pokemonesInnecesariosDT1);
 	liberar_lista_de_pokemones(pokemonesInnecesariosDT2);
