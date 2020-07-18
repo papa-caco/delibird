@@ -222,9 +222,9 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 		//necesitoPokemon ya tiene los semáforos adentro
 		if (necesitoPokemon(msg_appeared->pokemon) != 0) {
 
-			sem_wait(&mutex_listaPokemonesLlegadosDelBroker);
+			pthread_mutex_lock(&mutex_listaPokemonesLlegadosDelBroker);
 			list_add(pokemonesLlegadosDelBroker, msg_appeared->pokemon);
-			sem_post(&mutex_listaPokemonesLlegadosDelBroker);
+			pthread_mutex_unlock(&mutex_listaPokemonesLlegadosDelBroker);
 
 			t_pokemon_entrenador* pokemonAAgregarAlMapa = malloc(sizeof(t_pokemon_entrenador));
 			pokemonAAgregarAlMapa->cantidad = 1;
@@ -474,9 +474,15 @@ void process_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger) {
 
 		if (necesitoPokemon(msg_appeared->pokemon) != 0) {
 
-					sem_wait(&mutex_listaPokemonesLlegadosDelBroker);
+			printf("ENTRO AL IF DEL NECESITO POKEMON \n");
+
+			pthread_mutex_lock(&mutex_listaPokemonesLlegadosDelBroker);
+
+			printf("PASO EL WAIT DE LLEGADOS DEL BROKER \n");
 					list_add(pokemonesLlegadosDelBroker, msg_appeared->pokemon);
-					sem_post(&mutex_listaPokemonesLlegadosDelBroker);
+					pthread_mutex_unlock(&mutex_listaPokemonesLlegadosDelBroker);
+
+			printf("AGREGO EL POKEMON A LLEGADOS DEL BROKER \n");
 
 					t_pokemon_entrenador* pokemonAAgregarAlMapa = malloc(sizeof(t_pokemon_entrenador));
 					pokemonAAgregarAlMapa->cantidad = 1;
@@ -485,11 +491,18 @@ void process_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger) {
 					pokemonAAgregarAlMapa->posicion->pos_x =msg_appeared->coord->pos_x;
 					pokemonAAgregarAlMapa->posicion->pos_y =msg_appeared->coord->pos_y;
 
+					printf("CREO POKEMON PARA AGREGAR AL MAPA \n");
+
+
 					sem_wait(&sem_pokemonesLibresEnElMapa);
 					list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 					sem_post(&sem_pokemonesLibresEnElMapa);
 
+					printf("YA AGREGO EL POKEMON AL MAPA \n");
+
 					sem_post(&sem_hay_pokemones_mapa);
+
+					printf("PASO EL SIGNAL DE HAY POKEMONES EN EL MAPA \n");
 
 				}
 

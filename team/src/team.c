@@ -9,7 +9,6 @@
 
 int main(void) {
 
-
 	iniciar_team();
 
 	iniciar_variables_globales();

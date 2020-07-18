@@ -24,16 +24,20 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 		sem_wait(&(entrenador->sem_entrenador));
 
+		printf("PASO EL SEMAFORO DEL ENTRENADOR \n");
+
 		switch (entrenador->estado_entrenador) {
 			case MOVERSE_A_POKEMON:
 				pokemon = buscarPokemonMasCercano(entrenador->posicion);
 				//Ya hay semaforos adentro
-				moverPokemonAReservados(pokemon, entrenador->id);
+				t_pokemon_entrenador_reservado* pokemonReservado = moverPokemonAReservados(pokemon, entrenador->id);
 
-				distancia = calcularDistancia(entrenador->posicion, pokemon->posicion);
+				distancia = calcularDistancia(entrenador->posicion, pokemonReservado->posicion);
+
+				printf("DISTANCIA %d \n", distancia);
 
 					for(int i=0; i<distancia; i++){
-						moverEntrenador(entrenador, pokemon->posicion);
+						moverEntrenador(entrenador, pokemonReservado->posicion);
 
 					}
 
@@ -127,9 +131,15 @@ t_pokemon_entrenador* buscarPokemonMasCercano(t_posicion_entrenador* posicion_En
 
 	for(int j = 0; j< list_size(pokemonesLibresEnElMapa); j++){
 
-		t_pokemon_entrenador* pokLibreAux = ((t_pokemon_entrenador*) list_get(pokemonesLibresEnElMapa, j));
+		t_pokemon_entrenador* pokLibreAux = list_get(pokemonesLibresEnElMapa, j);
+
+		printf("POSICION X: %d  \n", pokLibreAux->posicion->pos_x);
+
+		printf("POSICION Y: %d  \n", pokLibreAux->posicion->pos_y);
 
 		if(necesitoPokemon(pokLibreAux->pokemon)){
+
+			printf("ENTRO AL IF DE LA LISTA FILTRADA  \n");
 
 			list_add(listaFiltrada, pokLibreAux);
 
@@ -140,7 +150,7 @@ t_pokemon_entrenador* buscarPokemonMasCercano(t_posicion_entrenador* posicion_En
 	for (int i = 0; i < list_size(listaFiltrada); i++) {
 
 
-		t_pokemon_entrenador* pokLibreAux = ((t_pokemon_entrenador*) list_get(listaFiltrada, i));
+		t_pokemon_entrenador* pokLibreAux =  list_get(listaFiltrada, i);
 
 
 		distanciaAux = calcularDistancia(posicion_Entrenador, pokLibreAux->posicion );
@@ -154,6 +164,7 @@ t_pokemon_entrenador* buscarPokemonMasCercano(t_posicion_entrenador* posicion_En
 
 	sem_post(&sem_pokemonesLibresEnElMapa);
 
+	printf("EL POKEMON MAS CERCANO ES %s POSICION %d %d \n", pokemonMasCercano->pokemon, pokemonMasCercano->posicion->pos_x, pokemonMasCercano->posicion->pos_y);
 
 	return pokemonMasCercano;
 
@@ -228,7 +239,7 @@ t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador){
 
 }
 
-void moverPokemonAReservados(t_pokemon_entrenador* pokemonAMover,
+t_pokemon_entrenador_reservado* moverPokemonAReservados(t_pokemon_entrenador* pokemonAMover,
 		int idReservador) {
 
 	t_pokemon_entrenador* pokemonAux;
@@ -270,6 +281,7 @@ void moverPokemonAReservados(t_pokemon_entrenador* pokemonAMover,
 	}
 	sem_post(&sem_pokemonesLibresEnElMapa);
 
+	return pokemonAAgregar;
 }
 
 
@@ -279,17 +291,21 @@ void moverEntrenador(t_entrenador* entrenador, t_posicion_entrenador* posicionAM
 
 	//AGREGAR SEMAFORO MUTEX DEL ENTRENADOR EN PARTICULAR  (ADENTRO O AFUERA?????)
 
+	printf("POSICION ENTRENADOR DENTRO DE MOVER %d %d  \n", entrenador->posicion->pos_x, entrenador->posicion->pos_y);
+
+	printf("POSICION A MOVERSE %d %d \n", posicionAMoverse->pos_x, posicionAMoverse->pos_y);
+
 	if(entrenador->posicion->pos_x != posicionAMoverse->pos_x){
 		if(entrenador -> posicion -> pos_x > posicionAMoverse->pos_x ){
-				entrenador->posicion->pos_x --;
+				entrenador->posicion->pos_x -= 1;
 			}else if(entrenador->posicion->pos_x < posicionAMoverse->pos_x){
-				entrenador->posicion->pos_x ++;
+				entrenador->posicion->pos_x += 1;
 			}
 	}else {
 		if(entrenador -> posicion -> pos_y > posicionAMoverse->pos_y ){
-				entrenador->posicion->pos_y --;
+				entrenador->posicion->pos_y -= 1;
 			}else if(entrenador->posicion->pos_y < posicionAMoverse->pos_y){
-				entrenador->posicion->pos_y ++;
+				entrenador->posicion->pos_y += 1;
 			}
 	}
 
@@ -302,7 +318,7 @@ void moverEntrenador(t_entrenador* entrenador, t_posicion_entrenador* posicionAM
 	entrenador->ciclosCPU++;
 
 
-	log_info(g_logger,"Entrenador %d se movio a la posicion (%d,%d)", entrenador->id, entrenador->posicion->pos_x, entrenador->posicion->pos_y);
+	log_info(g_logger,"Entrenador %d se movio a la posicion (%d,%d) \n", entrenador->id, entrenador->posicion->pos_x, entrenador->posicion->pos_y);
 
 
 }

@@ -197,10 +197,12 @@ t_pokemon_entrenador* list_buscar(t_list* lista, char* elementoAbuscar){
 
 		//printf("El valor de la lista procesados es %s \n", ((t_pokemon_entrenador*)list_get(lista, i))->pokemon);
 		//printf("El elemento a comparar es %s \n", elementoAbuscar);
-		if(strcmp(((t_pokemon_entrenador*)list_get(lista, i))->pokemon, elementoAbuscar) == 0){
+		t_pokemon_entrenador *pokAux = list_get(lista, i);
+
+		if(strcmp(pokAux->pokemon, elementoAbuscar) == 0){
 
 			//printf("Entro al if \n");
-			return (t_pokemon_entrenador*)list_get(lista, i);
+			return list_get(lista, i);
 
 		}
 	}
@@ -290,17 +292,24 @@ void iniciar_variables_globales(){
 
 	finalizarProceso = 0;
 
-	queue_create(colaReadyEntrenadores);
+	colaReadyEntrenadores = queue_create();
 
-	queue_create(colaBlockedEntrenadores);
+	colaBlockedEntrenadores = queue_create();
 
-	queue_create(colaExitEntrenadores);
+	colaExitEntrenadores =queue_create();
 
-	list_create(pokemonesLibresEnElMapa);
+	pokemonesLibresEnElMapa = list_create();
 
-	list_create(pokemonesReservadosEnElMapa);
+	pokemonesReservadosEnElMapa = list_create();
 
-	list_create(pokemonesAtrapadosGlobal);
+	pokemonesAtrapadosGlobal = list_create();
+
+	idCorrelativosCatch = list_create();
+
+	idCorrelativosGet = list_create();
+
+	pokemonesLlegadosDelBroker = list_create();
+
 
 
 	//--------------SEMAFOROS LISTAS DE POKEMONES------------------------------
@@ -334,9 +343,27 @@ void iniciar_variables_globales(){
 
 	sem_init(&sem_planificador_mplazo,0,1);
 
-	sem_init(&sem_hay_pokemones_mapa,0,0);
+	sem_init(&sem_hay_pokemones_mapa,1,0);
 
 	sem_init(&sem_terminar_todo,0,0);
+
+	///---MUTEX UTILS--------
+
+
+	//sem_init(&mutex_listaPokemonesLlegadosDelBroker,0,1);
+
+	pthread_mutex_init(&mutex_listaPokemonesLlegadosDelBroker, NULL);
+
+	printf("INICIALIZO SEMAFORO");
+
+	sem_init(&mutex_idCorrelativosGet,0,1);
+
+	sem_init(&mutex_ciclosCPU,0,1);
+
+	sem_init(&mutex_idCorrelativos,0,1);
+
+	sem_init(&mutex_entrenador,0,1);
+
 
 
 }

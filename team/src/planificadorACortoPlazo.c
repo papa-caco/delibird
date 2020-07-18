@@ -16,6 +16,8 @@ void planificarFifo(){
 		//SEMAFORO QUE RECIBE DEL PLANIFICADOR DE MEDIANO PLAZO
 		sem_wait(&sem_planificador_cplazoReady);
 
+		printf("SE ACTIVO EL PLANIFICADOR A CORTO PLAZO \n");
+
 		//VERIFICAR SI DEBE MATARSE A SI MISMO (saltear o no su lógica)
 		if (finalizarProceso == 0) {
 			sem_wait(&sem_cola_ready);

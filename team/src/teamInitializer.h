@@ -84,6 +84,19 @@ typedef struct Pokemon_Entrenador_Reservado{
 
 
 
+//VARIABLE GLOBALES DEL UTILS
+
+int ciclosCPU;
+t_list* idCorrelativosCatch;
+t_list* idCorrelativosGet;
+t_list* pokemonesLlegadosDelBroker;
+
+pthread_mutex_t mutex_listaPokemonesLlegadosDelBroker;
+sem_t mutex_idCorrelativosGet;
+sem_t mutex_ciclosCPU;
+sem_t mutex_idCorrelativos;
+sem_t mutex_entrenador;
+
 
 
 //-----------------Variables Globales----------------------------
