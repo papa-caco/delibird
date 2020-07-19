@@ -92,7 +92,11 @@ void procesar_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger);
 
 void rcv_new_pokemon(t_msg_new_gamecard *msg);
 
+void devolver_appeared_pokemon(t_msg_new_gamecard *msg, int socket_cliente);
+
 void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon);
+
+//void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon);
 
 void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente);
 
@@ -102,17 +106,19 @@ void liberar_lista_posiciones(t_list* lista);
 
 void liberar_listas(char** lista);
 
-void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon);
+
 
 int tamano_recibido(int bytes);
 
-void verificarPokemon(char* pathPokemon,t_posicion_pokemon* posicion);
+//void verificarPokemon(char* pathPokemon,t_posicion_pokemon* posicion);
 
 // Funciones para la lista de semaforos global
 
 t_pokemon_semaforo *obtener_semaforo_pokemon(char* pokemon);
 
 void eliminar_semaforo_pokemon(char* pokemon);
+
+void crear_semaforos_pokemon();
 
 void crear_semaforo_pokemon(char* pokemon);
 
@@ -121,6 +127,8 @@ void prueba_semaforo(void);
 char *concatenar_posiciones_pokemon(t_list *posiciones);
 
 bool es_cod_oper_mensaje_gamecard(op_code codigo_operacion);
+
+t_list* obtener_posiciones_pokemon(char* pokemon, t_posicion_pokemon *posicion, int incrementar_posicion);
 
 #endif
 // export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/utnso/tp-2020-1c-Los-Que-Aprueban/delibird/build
