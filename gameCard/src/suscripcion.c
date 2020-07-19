@@ -37,7 +37,7 @@ void suscripcion_gc(t_tipo_mensaje *cola)
 	char *proceso = "BROKER";
 	char *name_cola = nombre_cola(*cola);
 	int cliente_fd = crear_conexion(ip, puerto, g_logger, proceso, name_cola);
-	//sem_post(&mutex_msjs_gc);
+	sem_post(&mutex_msjs_gc);
 	if (cliente_fd >= 0) {
 		status_conexion_broker = true;
 		t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
@@ -46,7 +46,6 @@ void suscripcion_gc(t_tipo_mensaje *cola)
 		handshake->cola_id = *cola;
 		handshake->msjs_recibidos = 0;
 		enviar_msj_handshake_suscriptor(cliente_fd, g_logger, handshake);
-		sem_post(&mutex_msjs_gc);
 		op_code cod_oper_mensaje = 0;
 		uint32_t contador_msjs = 0;
 		int flag_salida = 1;

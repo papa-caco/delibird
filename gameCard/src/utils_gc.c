@@ -660,8 +660,8 @@ void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente)
 	*/
 }
 
-void devolver_appeared_pokemon(t_msg_new_gamecard *msg, int socket_cliente) {
-
+void devolver_appeared_pokemon(t_msg_new_gamecard *msg, int socket_cliente)
+{
 	log_info(g_logger,"INICIO RETORNO APPARED POKEMON");
 	t_msg_appeared_broker *msg_appeared = malloc(sizeof(t_msg_appeared_broker));
 	msg_appeared->coordenada = malloc(sizeof(t_coordenada));
@@ -745,7 +745,6 @@ t_list* obtener_posiciones_pokemon(char* pokemon, t_posicion_pokemon *posicion, 
 
 		return lista_posiciones_bloques;
 	}
-
 }
 
 
@@ -789,7 +788,6 @@ void rcv_get_pokemon(t_msg_get_gamecard *msg, int socket_cliente)
 		lista_posiciones_bloques = leer_bloques(msg->pokemon);
 		msg_localized_broker->posiciones->coordenadas = lista_posiciones_bloques;
 		msg_localized_broker->posiciones->cant_posic = list_size(lista_posiciones_bloques);
-
 	}
 	enviar_msj_localized_broker(socket_cliente, g_logger, msg_localized_broker);
 	eliminar_msg_localized_broker(msg_localized_broker);
