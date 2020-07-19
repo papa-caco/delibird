@@ -14,8 +14,8 @@ void iniciar_gamecard(void)
 	iniciar_log_gamecard();
 	iniciar_estructuras_gamecard();
 
-	crear_semaforos_pokemon();
-	//prueba_semaforo();
+
+//	prueba_semaforo();
 	//prueba_file_system("Chorizo",50);
 	//prueba_leer_bloques_pokemon("Choripa");
 	iniciar_suscripciones_broker_gc(g_logger);
@@ -80,6 +80,7 @@ void iniciar_estructuras_gamecard(void)
 	sem_init(&sem_mutex_semaforos, 0, 1);
 	pthread_mutex_init(&g_mutex_cnt_blocks, 0);
 	semaforos_pokemon = list_create();
+	crear_semaforos_pokemon();
 	leer_metadata_tall_grass(g_logdebug);
 	inicializar_bitmap_tallgrass(g_logdebug);
 	iniciar_cnt_msjs_gc();
@@ -106,6 +107,7 @@ void procesar_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger)
 		t_msg_get_gamecard *msg_get = rcv_msj_get_gamecard(cliente_fd, logger);
 		//TODO Hacer lo que corresponda con el msg_get (funcion que dispare un nuevo hilo)
 		enviar_msg_confirmed(cliente_fd, logger);
+
 		eliminar_msg_get_gamecard(msg_get);
 		break;
 	case CATCH_GAMECARD:;
@@ -118,6 +120,8 @@ void procesar_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger)
 		t_msg_new_gamecard *msg_new = rcv_msj_new_gamecard(cliente_fd, logger);
 		//TODO Hacer lo que corresponda con el msg_new (funcion que dispare un nuevo hilo)
 		enviar_msg_confirmed(cliente_fd, logger);
+		rcv_new_pokemon(msg_new);
+		devolver_appeared_pokemon(msg_new, cliente_fd);
 		eliminar_msg_new_gamecard(msg_new);
 		break;
 	}
@@ -427,13 +431,15 @@ void verificarPokemon(char* pathPokemon, t_posicion_pokemon* posicion) {
 
 }
 */
-t_pokemon_semaforo *obtener_semaforo_pokemon(char* pokemon) {
-
+t_pokemon_semaforo *obtener_semaforo_pokemon(char* pokemon)
+{
 	sem_wait(&sem_mutex_semaforos);
 	for (int i = 0; i < list_size(semaforos_pokemon); i++) {
 		t_pokemon_semaforo *actual = list_get(semaforos_pokemon, i);
+
 		char* nombrePokemon = actual->pokemon;
 		if (strcmp(nombrePokemon, pokemon) == 0) {
+			log_info(g_logger,"SEMAFORO ENCONTRADO %s",pokemon);
 			sem_post(&sem_mutex_semaforos);
 			return actual;
 		}
@@ -464,14 +470,15 @@ void eliminar_semaforo_pokemon(char* pokemon) {
  */
 void crear_semaforos_pokemon(){
 	t_list* lista_pokemon =  get_files_pokemon();
+
 	for( int i=0; i< list_size(lista_pokemon); i++ ){
 		crear_semaforo_pokemon(list_get(lista_pokemon,i));
 	}
 }
 
 
-void crear_semaforo_pokemon(char* pokemon) {
-
+void crear_semaforo_pokemon(char* pokemon)
+{
 	t_pokemon_semaforo *pok = malloc(sizeof(t_pokemon_semaforo));
 	pok->pokemon = pokemon;
 	sem_t semaforo;
@@ -575,7 +582,12 @@ void rcv_new_pokemon(t_msg_new_gamecard *msg)
 	posicion->cantidad = msg->cantidad;
 	int incrementar_posicion = 1;
 	lista_posiciones =obtener_posiciones_pokemon(msg->pokemon, posicion,  incrementar_posicion);
+	log_info(g_logger,"POSICIONES ENCONTRADAS");
 
+	for (int i = 0; i < list_size(lista_posiciones); i ++) {
+		t_posicion_pokemon  *posicion = list_get(lista_posiciones, i);
+		log_info(g_logger,"%d %d %d",posicion->pos_x,posicion->pos_y, posicion->cantidad);
+	}
 //  TODO: SI LA LISTA ESTA VACIA no retorna apparead pokemon
 
 	file_system_pokemon(msg->pokemon, lista_posiciones);
@@ -716,24 +728,22 @@ t_list* obtener_posiciones_pokemon(char* pokemon, t_posicion_pokemon *posicion, 
 		//No se encuentra => Agregar
 		//Retornar posiciones
 
-		t_list* lista_posiciones_bloques = list_create();
-		lista_posiciones_bloques = leer_bloques(pokemon);
+		//t_list* lista_posiciones_bloques = list_create();
+		t_list* lista_posiciones_bloques = leer_bloques(pokemon);
+
 		int encontrado = 0;
-		for( int i = 0; i< list_size(lista_posiciones_bloques); i ++){
-			t_posicion_pokemon *posicion_bloque = (t_posicion_pokemon*) list_get(lista_posiciones,i);
-			if( posicion_bloque->pos_x == posicion->pos_x &&
-				posicion_bloque->pos_y == posicion->pos_y ){
+		for( int i = 0; i< list_size(lista_posiciones_bloques); i++){
+			t_posicion_pokemon *posicion_bloque = (t_posicion_pokemon*) list_get(lista_posiciones_bloques,i);
+
+			if( posicion_bloque->pos_x == posicion->pos_x && posicion_bloque->pos_y == posicion->pos_y ){
 					//Se encontro el pokemon
 					encontrado = 1;
-
 					if( incrementar_posicion ){
 						posicion_bloque->cantidad += posicion->cantidad ;
 						//msg->cantidad += posicion_bloque->cantidad;
-						list_add(lista_posiciones_bloques, posicion_bloque);
 					}
 					else if( posicion_bloque->cantidad > 1){
 						posicion_bloque->cantidad -= 1 ;
-						list_add(lista_posiciones_bloques, posicion_bloque);
 					}
 			}
 		}

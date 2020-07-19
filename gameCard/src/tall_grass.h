@@ -64,9 +64,9 @@ char *serializar_lista_posiciones_pokemon(t_list *lista_posiciones, t_log *logge
 
 char *serializar_posicion_pokemon(t_coordenada *coordenada, uint32_t cant);
 
-t_list * armar_guardar_data_bloques_file_pokemon(char *string_posiciones);
+t_list *armar_guardar_data_bloques_file_pokemon(char *pokemon, char *string_posiciones);
 
-int grabar_bloque(char *block_buffer, size_t, t_log *logger);
+int grabar_bloque(int block_nro,char *block_buffer, size_t size, t_log *logger);
 
 void grabar_metadata_pokemon(t_list *blocks, char *pokemon, int size_pokemon, char *open,  t_log *logger);
 
