@@ -127,29 +127,7 @@ void procesar_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger)
 
 
 
-void rcv_get_pokemon(t_msg_get_gamecard *msg_get)
-{	// TODO
-	/*Al recibir este mensaje se deberán realizar las siguientes operaciones:
-	1. 	Verificar si el Pokémon existe dentro de nuestro Filesystem. Para esto se deberá buscar
-		dentro del directorio Pokemon, si existe el archivo con el nombre de nuestro pokémon. En
-		caso de no existir se deberá informar el mensaje sin posiciones ni cantidades.
-	2. 	Verificar si se puede abrir el archivo (si no hay otro proceso que lo esté abriendo). En caso
-		que el archivo se encuentre abierto se deberá reintentar la operación luego de un tiempo
-		definido por configuración.
-	3. 	Obtener todas las posiciones y cantidades de Pokemon requerido.
-	4. 	Esperar la cantidad de segundos definidos por archivo de configuración
-	5. 	Cerrar el archivo.
-	6. 	Conectarse al Broker y enviar el mensaje con todas las posiciones y su cantidad.
-		En caso que se encuentre por lo menos una posición para el Pokémon solicitado se deberá enviar un
-		mensaje al Broker a la Cola de Mensajes LOCALIZED_POKEMON indicando:
-	3. 	ID del mensaje recibido originalmente.
-	4. 	El Pokémon solicitado.
-	5. 	La lista de posiciones y la cantidad de posiciones X e Y de cada una de ellas en el mapa.
-		En caso que no se pueda realizar la conexión con el Broker se debe informar por logs y continuar la
-		ejecución.
-	 *
-	 */
-}
+
 
 void devolver_recepcion_fail(int socket_cliente, char* mensajeError) {
 	t_paquete* paquete = malloc(sizeof(t_paquete));
@@ -770,6 +748,52 @@ t_list* obtener_posiciones_pokemon(char* pokemon, t_posicion_pokemon *posicion, 
 
 }
 
+
+void rcv_get_pokemon(t_msg_get_gamecard *msg, int socket_cliente)
+{	// TODO
+	/*Al recibir este mensaje se deberán realizar las siguientes operaciones:
+	1. 	Verificar si el Pokémon existe dentro de nuestro Filesystem. Para esto se deberá buscar
+		dentro del directorio Pokemon, si existe el archivo con el nombre de nuestro pokémon. En
+		caso de no existir se deberá informar el mensaje sin posiciones ni cantidades.
+	2. 	Verificar si se puede abrir el archivo (si no hay otro proceso que lo esté abriendo). En caso
+		que el archivo se encuentre abierto se deberá reintentar la operación luego de un tiempo
+		definido por configuración.
+	3. 	Obtener todas las posiciones y cantidades de Pokemon requerido.
+	4. 	Esperar la cantidad de segundos definidos por archivo de configuración
+	5. 	Cerrar el archivo.
+	6. 	Conectarse al Broker y enviar el mensaje con todas las posiciones y su cantidad.
+		En caso que se encuentre por lo menos una posición para el Pokémon solicitado se deberá enviar un
+		mensaje al Broker a la Cola de Mensajes LOCALIZED_POKEMON indicando:
+	3. 	ID del mensaje recibido originalmente.
+	4. 	El Pokémon solicitado.
+	5. 	La lista de posiciones y la cantidad de posiciones X e Y de cada una de ellas en el mapa.
+		En caso que no se pueda realizar la conexión con el Broker se debe informar por logs y continuar la
+		ejecución.
+	 *
+	 */
+
+	t_list* lista_posiciones = list_create();
+
+	t_pokemon_semaforo *semaforo_pokemon = obtener_semaforo_pokemon(msg->pokemon);
+	t_msg_localized_broker *msg_localized_broker = malloc(sizeof(t_msg_localized_broker));
+	msg_localized_broker->id_correlativo = msg->id_mensaje;
+
+	if( semaforo_pokemon != NULL ){
+		//SE obtienen todas las posiciones
+		sem_wait(&semaforo_pokemon->semaforo);
+//TODO
+		// SE OBTIENE EL ARCHIVO
+		// SE PREGUNTA POR EL "OPEN" Y SE LIBERA EL SEMAFORO
+		sem_post(&semaforo_pokemon->semaforo);
+		t_list* lista_posiciones_bloques = list_create();
+		lista_posiciones_bloques = leer_bloques(msg->pokemon);
+		msg_localized_broker->posiciones->coordenadas = lista_posiciones_bloques;
+		msg_localized_broker->posiciones->cant_posic = list_size(lista_posiciones_bloques);
+
+	}
+	enviar_msj_localized_broker(socket_cliente, g_logger, msg_localized_broker);
+	eliminar_msg_localized_broker(msg_localized_broker);
+}
 
 
 /**

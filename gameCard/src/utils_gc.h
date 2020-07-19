@@ -100,7 +100,7 @@ void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon
 
 void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente);
 
-void rcv_get_pokemon(t_msg_get_gamecard *msg_get);
+void rcv_get_pokemon(t_msg_get_gamecard *msg, int socket_cliente);
 
 void liberar_lista_posiciones(t_list* lista);
 

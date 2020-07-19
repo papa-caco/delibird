@@ -114,7 +114,7 @@ uint32_t rcv_msjs_broker_gc(op_code codigo_operacion, int socket_cliente, t_log 
 		g_cnt_msjs_get ++;
 		id_recibido = msg_get->id_mensaje;
 
-		rcv_get_pokemon(msg_get);
+		rcv_get_pokemon(msg_get, socket_cliente);
 		eliminar_msg_get_gamecard(msg_get);
 		break;
 	case 0:
