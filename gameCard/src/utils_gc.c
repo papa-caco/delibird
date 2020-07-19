@@ -107,18 +107,19 @@ void procesar_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger)
 		t_msg_get_gamecard *msg_get = rcv_msj_get_gamecard(cliente_fd, logger);
 		//TODO Hacer lo que corresponda con el msg_get (funcion que dispare un nuevo hilo)
 		enviar_msg_confirmed(cliente_fd, logger);
-
+		rcv_get_pokemon(msg_get,cliente_fd);
 		eliminar_msg_get_gamecard(msg_get);
 		break;
 	case CATCH_GAMECARD:;
 		t_msg_catch_gamecard *msg_catch = rcv_msj_catch_gamecard(cliente_fd, logger);
-		//TODO Hacer lo que corresponda con el msg_catch (funcion que dispare un nuevo hilo)
+		//TODO (funcion que dispare un nuevo hilo)
 		enviar_msg_confirmed(cliente_fd, logger);
+		devolver_caught_pokemon(msg_catch, cliente_fd);
 		eliminar_msg_catch_gamecard(msg_catch);
 		break;
 	case NEW_GAMECARD:;
 		t_msg_new_gamecard *msg_new = rcv_msj_new_gamecard(cliente_fd, logger);
-		//TODO Hacer lo que corresponda con el msg_new (funcion que dispare un nuevo hilo)
+		//TODO  (funcion que dispare un nuevo hilo)
 		enviar_msg_confirmed(cliente_fd, logger);
 		rcv_new_pokemon(msg_new);
 		devolver_appeared_pokemon(msg_new, cliente_fd);
@@ -580,14 +581,28 @@ void rcv_new_pokemon(t_msg_new_gamecard *msg)
 	posicion->pos_x = msg->coord->pos_x;
 	posicion->pos_y = msg->coord->pos_y;
 	posicion->cantidad = msg->cantidad;
-	int incrementar_posicion = 1;
-	lista_posiciones =obtener_posiciones_pokemon(msg->pokemon, posicion,  incrementar_posicion);
+
+	t_pokemon_semaforo *semaforo_pokemon = obtener_semaforo_pokemon(msg->pokemon);
+	if(semaforo_pokemon == NULL){
+		//No existe  el pokemon
+		//	=> Se crea el semaforo
+		//     se retorna la unica posicion recibida
+		crear_semaforo_pokemon(msg->pokemon);
+		list_add(lista_posiciones, posicion);
+	//	return lista_posiciones;
+	}
+	else{
+		int incrementar_posicion = 1;
+		lista_posiciones = obtener_posiciones_pokemon(msg->pokemon, posicion,  incrementar_posicion);
+	}
+/*	lista_posiciones =obtener_posiciones_pokemon(msg->pokemon, posicion,  incrementar_posicion);
 	log_info(g_logger,"POSICIONES ENCONTRADAS");
 
 	for (int i = 0; i < list_size(lista_posiciones); i ++) {
 		t_posicion_pokemon  *posicion = list_get(lista_posiciones, i);
 		log_info(g_logger,"%d %d %d",posicion->pos_x,posicion->pos_y, posicion->cantidad);
 	}
+	*/
 //  TODO: SI LA LISTA ESTA VACIA no retorna apparead pokemon
 
 	file_system_pokemon(msg->pokemon, lista_posiciones);
@@ -632,25 +647,34 @@ void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente)
 {
 
 	t_list* lista_posiciones = list_create();
-	int incrementar_posicion = 0;
-	char *arg_resul_caught = (char*) calloc(2, sizeof(char));
-
+log_info(g_logger,"CAUGH");
 	t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
 	posicion->pos_x = msg->coord->pos_x;
 	posicion->pos_y = msg->coord->pos_y;
 	posicion->cantidad = 0;
 
-	lista_posiciones = obtener_posiciones_pokemon(msg->pokemon, posicion,incrementar_posicion);
+	t_pokemon_semaforo *semaforo_pokemon = obtener_semaforo_pokemon(msg->pokemon);
+	if(semaforo_pokemon != NULL){
+		log_info(g_logger,"CAUGH EXISTE POKEMON");
+		//Existe el pokemon
+		int incrementar_posicion = 0;
+		lista_posiciones = obtener_posiciones_pokemon(msg->pokemon, posicion,incrementar_posicion);
 
+	}else{
+		log_info(g_logger,"POKEMON %s NOT FOUND",msg->pokemon);
+	}
+
+	char *arg_resul_caught = (char*) calloc(2, sizeof(char));
 	if( list_size(lista_posiciones)>0 ){
 		arg_resul_caught ="OK";
+		file_system_pokemon(msg->pokemon, lista_posiciones);
 	}
 
 	t_msg_caught_broker *msg_caught = malloc(sizeof(t_msg_caught_broker));
 	msg_caught->id_correlativo = msg->id_mensaje;
 	msg_caught->resultado = codificar_resultado_caught(arg_resul_caught);
 	enviar_msj_caught_broker(socket_cliente, g_logger, msg_caught);
-	file_system_pokemon(msg->pokemon, lista_posiciones);
+
 	free(msg_caught);
 
 
@@ -698,22 +722,20 @@ void devolver_appeared_pokemon(t_msg_new_gamecard *msg, int socket_cliente)
  */
 t_list* obtener_posiciones_pokemon(char* pokemon, t_posicion_pokemon *posicion, int incrementar_posicion)
 {
-
-
 //TODO SI es incrementar_posicion y la cantidad == 0 => retornar lista vacia
 
 	t_list* lista_posiciones = list_create();
 
 	t_pokemon_semaforo *semaforo_pokemon = obtener_semaforo_pokemon(pokemon);
-	if(semaforo_pokemon == NULL){
+/*	if(semaforo_pokemon == NULL){
 		//No existe  el pokemon
 		//	=> Se crea el semaforo
 		//     se retorna la unica posicion recibida
 		crear_semaforo_pokemon(pokemon);
 		list_add(lista_posiciones, posicion);
 		return lista_posiciones;
-	}
-	else {
+	}*/
+//	else {
 
 		sem_wait(&semaforo_pokemon->semaforo);
 //TODO
@@ -745,6 +767,9 @@ t_list* obtener_posiciones_pokemon(char* pokemon, t_posicion_pokemon *posicion, 
 					else if( posicion_bloque->cantidad > 1){
 						posicion_bloque->cantidad -= 1 ;
 					}
+					if( posicion_bloque->cantidad == 1 ){
+						list_remove(lista_posiciones_bloques,i);
+					}
 			}
 		}
 		if( encontrado == 0 ){
@@ -754,7 +779,7 @@ t_list* obtener_posiciones_pokemon(char* pokemon, t_posicion_pokemon *posicion, 
 		}
 
 		return lista_posiciones_bloques;
-	}
+//	}
 }
 
 
@@ -797,8 +822,11 @@ void rcv_get_pokemon(t_msg_get_gamecard *msg, int socket_cliente)
 		t_list* lista_posiciones_bloques = list_create();
 		lista_posiciones_bloques = leer_bloques(msg->pokemon);
 		msg_localized_broker->posiciones->coordenadas = lista_posiciones_bloques;
+		//log_info(g_logger,"PARA ENVIAR MENSAJE");
 		msg_localized_broker->posiciones->cant_posic = list_size(lista_posiciones_bloques);
+
 	}
+	log_info(g_logger,"PARA ENVIAR MENSAJE");
 	enviar_msj_localized_broker(socket_cliente, g_logger, msg_localized_broker);
 	eliminar_msg_localized_broker(msg_localized_broker);
 }
