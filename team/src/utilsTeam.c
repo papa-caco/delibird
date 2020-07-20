@@ -237,7 +237,12 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 			list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 			sem_post(&sem_pokemonesLibresEnElMapa);
 
-			sem_post(&sem_hay_pokemones_mapa);
+			//sem_post(&sem_hay_pokemones_mapa);
+
+			if(cantidadDeEntrenadores == queue_size(colaNewEntrenadores)){
+
+				sem_post(&sem_activacionPlanificadorMPlazo);
+			}
 
 			////ANALIZAR SI TENEMOS QUE ACTIVAR EL PLANIFICADOR MEDIANO PLAZO PARA IR A ATRAPAR A UN POKEMON
 
@@ -474,35 +479,33 @@ void process_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger) {
 
 		if (necesitoPokemon(msg_appeared->pokemon) != 0) {
 
-			printf("ENTRO AL IF DEL NECESITO POKEMON \n");
 
 			pthread_mutex_lock(&mutex_listaPokemonesLlegadosDelBroker);
 
-			printf("PASO EL WAIT DE LLEGADOS DEL BROKER \n");
 					list_add(pokemonesLlegadosDelBroker, msg_appeared->pokemon);
 					pthread_mutex_unlock(&mutex_listaPokemonesLlegadosDelBroker);
 
-			printf("AGREGO EL POKEMON A LLEGADOS DEL BROKER \n");
 
 					t_pokemon_entrenador* pokemonAAgregarAlMapa = malloc(sizeof(t_pokemon_entrenador));
 					pokemonAAgregarAlMapa->cantidad = 1;
-					pokemonAAgregarAlMapa->pokemon = msg_appeared->pokemon;
+					pokemonAAgregarAlMapa->pokemon = malloc(strlen(msg_appeared->pokemon)+1);
+					memcpy(pokemonAAgregarAlMapa->pokemon, msg_appeared->pokemon, strlen(msg_appeared->pokemon)+1);
 					pokemonAAgregarAlMapa->posicion = malloc(sizeof(t_posicion_entrenador));
 					pokemonAAgregarAlMapa->posicion->pos_x =msg_appeared->coord->pos_x;
 					pokemonAAgregarAlMapa->posicion->pos_y =msg_appeared->coord->pos_y;
 
-					printf("CREO POKEMON PARA AGREGAR AL MAPA \n");
 
 
 					sem_wait(&sem_pokemonesLibresEnElMapa);
 					list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 					sem_post(&sem_pokemonesLibresEnElMapa);
 
-					printf("YA AGREGO EL POKEMON AL MAPA \n");
 
-					sem_post(&sem_hay_pokemones_mapa);
+					if(cantidadDeEntrenadores == queue_size(colaNewEntrenadores)){
 
-					printf("PASO EL SIGNAL DE HAY POKEMONES EN EL MAPA \n");
+									sem_post(&sem_activacionPlanificadorMPlazo);
+								}
+
 
 				}
 
@@ -650,13 +653,21 @@ int contador_msjs_cola(t_tipo_mensaje cola_suscripcion) {
 ///Ya leagregué semaforos en los lugares en las que se la llama
 t_pokemon_entrenador_reservado* buscarPokemonReservado(int id_Entrenador) {
 
-	for (int i = 0; list_get(pokemonesReservadosEnElMapa, i) != NULL; i++) {
-		int idAux = ((t_pokemon_entrenador_reservado*) list_get(
-				pokemonesReservadosEnElMapa, i))->id_entrenadorReserva;
+	t_pokemon_entrenador_reservado* pokemonReservado;
+
+
+	for (int i = 0; i< list_size(pokemonesReservadosEnElMapa); i++) {
+
+		pokemonReservado = list_get(pokemonesReservadosEnElMapa, i);
+
+		printf("POKEMON RESERVADO ES %s \n ", pokemonReservado->pokemon);
+
+		int idAux = pokemonReservado->id_entrenadorReserva;
+
 		if (idAux == id_Entrenador) {
 
-			return (t_pokemon_entrenador_reservado*) list_get(
-					pokemonesReservadosEnElMapa, i);
+			printf("ENTRO AL IF Y SU POKEMON RESERVADO ES %s \n ", pokemonReservado->pokemon);
+			return pokemonReservado;
 
 		}
 	}
@@ -710,21 +721,32 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon) {
 }
 
 void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
-	t_list* pokemonesPendiente = pokemonesPendientes(unEntrenador);
-	int cantidadPokemonesPendientes = list_size(pokemonesPendiente);
-	int cantidadPokemonesObjetivo = list_size(unEntrenador->objetivoEntrenador);
-	int cantidadPokemonesObtenidos = list_size(unEntrenador->pokemonesObtenidos);
 
-	//OJO NO SE SI ESTA BIEN EL ULTIMO ELSE!!!
-	if (cantidadPokemonesPendientes == 0) {
-		unEntrenador->estado_entrenador = EXIT;
-	} else if ((cantidadPokemonesObjetivo == cantidadPokemonesObtenidos) && (tieneDeadlockEntrenador(unEntrenador))) {
-		unEntrenador->estado_entrenador = DEADLOCK;
-	} else {
-		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
+	t_estado_entrenador estado = unEntrenador->estado_entrenador;
+
+	if( estado != MOVERSE_A_ENTRENADOR && estado!= ATRAPAR && estado!= INTERCAMBIAR && estado!= ESPERAR_CAUGHT){
+
+		t_list* pokemonesPendiente = pokemonesPendientes(unEntrenador);
+			int cantidadPokemonesPendientes = list_size(pokemonesPendiente);
+			int cantidadPokemonesObjetivo = list_size(unEntrenador->objetivoEntrenador);
+			int cantidadPokemonesObtenidos = list_size(unEntrenador->pokemonesObtenidos);
+
+			//OJO NO SE SI ESTA BIEN EL ULTIMO ELSE!!!
+			if (cantidadPokemonesPendientes == 0) {
+				printf("ENTRENADOR %d, VA A EXIT \n", unEntrenador->id);
+				unEntrenador->estado_entrenador = EXIT;
+			} else if ((cantidadPokemonesObjetivo == cantidadPokemonesObtenidos) && (tieneDeadlockEntrenador(unEntrenador))) {
+				unEntrenador->estado_entrenador = DEADLOCK;
+			} else {
+				unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
+			}
+
+
+			liberar_lista_de_pokemones(pokemonesPendiente);
 	}
 
-	liberar_lista_de_pokemones(pokemonesPendiente);
+
+
 }
 
 //Es un for adentro de un for, donde se busca que la lista de obtenidos sea igual a la del objetivo. Entonces hay que evaluar
@@ -767,8 +789,13 @@ void agregarPokemonesDelLocalized(t_msg_localized_team* mensajeLocalized){
 		list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 		sem_post(&sem_pokemonesLibresEnElMapa);
 
-		sem_post(&sem_hay_pokemones_mapa);
+
 
 			}
+
+		if(cantidadDeEntrenadores == queue_size(colaNewEntrenadores)){
+
+							sem_post(&sem_activacionPlanificadorMPlazo);
+						}
 }
 

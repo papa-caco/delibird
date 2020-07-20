@@ -16,6 +16,8 @@ void planificadorMedianoPlazo() {
 			"Esperar caught","Estar en deadlock", "Estar en exit"
 	};
 
+	sem_wait(&sem_activacionPlanificadorMPlazo);
+
 	while (finalizarProceso == 0) {
 
 		//AGREGAR UN SIGNLA POR CADA POKEOMON LIBRE QUE LLEGA EN LA RECEPCION DE MENSAJES DE POKEMONES, MAS
@@ -23,23 +25,19 @@ void planificadorMedianoPlazo() {
 		//AGREGAR EL SIGNAL AL RECIBIR EL POKEMON A UBICAR EN EL MAPA
 		//VERIFICAR EL MAPA DE POKEMONES LIBRES, SI HAY COMIENZA A EJECUTAR
 
-		printf("ENTRO AL WHILE DEL PLANIFICADOR MEDIANO PLAZO \n");
+
 		//SEMAFORO QUE DEBEMOS MANDAR CADA VEZ QUE APARECE UN POKEMON EN EL MAPA, LA CANTIDAD DE POKEMONES
 		//A AGREGAR SERAN LA CANTIDAD DE SIGNALS.
-		sem_wait(&sem_hay_pokemones_mapa);
 
-		printf("LLEGO POKEMON NUEVO AL PLANIFICADOR MEDIANO PLAZO \n");
 
 		//POR CONFIGURACION QUE ESTE ACTIVADO SIEMPRE
 		sem_wait(&sem_planificador_mplazo);
 
-		printf("PASO SEMAFO PLANIFICADOR MPLAZO \n");
 
 		sem_wait(&sem_cola_blocked);
 		int cantidadElementosCola = queue_size(colaBlockedEntrenadores);
 		sem_post(&sem_cola_blocked);
 
-		printf("PASO SEMAFO COLA BLOCKED \n");
 
 		for (int i = 0; i < cantidadElementosCola; i++) {
 
@@ -156,9 +154,9 @@ void planificadorMedianoPlazo() {
 
 				queue_push(colaReadyEntrenadores, entrenadorAux);
 
-				printf("ENCONTRE UNO EN LA COLA DE NEW \n");
-
 				sem_post(&sem_planificador_cplazoReady);
+
+				encontreUnoAPasar =1;
 			}
 			sem_post(&sem_cola_new);
 
@@ -198,7 +196,7 @@ void planificadorMedianoPlazo() {
 
 				sem_post(&(entrenadorAux->mutex_entrenador));
 
-				sem_post(&sem_hay_pokemones_mapa);
+				//sem_post(&sem_hay_pokemones_mapa);
 
 
 
@@ -318,6 +316,8 @@ void liberar_variables_globales(){
 		sem_destroy(&sem_planificador_mplazo);
 
 		sem_destroy(&sem_hay_pokemones_mapa);
+
+		sem_destroy(&sem_activacionPlanificadorMPlazo);
 
 		sem_destroy(&sem_terminar_todo);
 

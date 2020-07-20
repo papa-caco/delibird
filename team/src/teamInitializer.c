@@ -345,6 +345,8 @@ void iniciar_variables_globales(){
 
 	sem_init(&sem_hay_pokemones_mapa,1,0);
 
+	sem_init(&sem_activacionPlanificadorMPlazo,0,0);
+
 	sem_init(&sem_terminar_todo,0,0);
 
 	///---MUTEX UTILS--------

@@ -28,7 +28,7 @@ void moverEntrenador(t_entrenador* entrenador, t_posicion_entrenador* posicionAM
 
 t_pokemon_entrenador_reservado* moverPokemonAReservados(t_pokemon_entrenador* pokemonAMover, int idReservador);
 
-void intentarAtraparPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon);
+void intentarAtraparPokemon(t_entrenador* entrenador, t_pokemon_entrenador_reservado* pokemon);
 
 char puedeIntercambiarPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2);
 
