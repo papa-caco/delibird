@@ -23,6 +23,17 @@ void planificarFifo(){
 			sem_wait(&sem_cola_ready);
 			t_entrenador* entrenadorAEjecutar = (t_entrenador*) queue_pop(
 					colaReadyEntrenadores);
+
+			while(entrenadorAEjecutar->estado_entrenador == MOVERSE_A_POKEMON && (list_size(pokemonesLibresEnElMapa) == 0)){
+
+				queue_push(colaReadyEntrenadores, entrenadorAEjecutar);
+
+				entrenadorAEjecutar = (t_entrenador*) queue_pop(
+									colaReadyEntrenadores);
+
+
+			}
+
 			sem_post(&sem_cola_ready);
 
 			log_info(g_logger,"Entrenador %d se movio a la cola de Exec, porque esta primero en la cola de Ready", entrenadorAEjecutar->id);

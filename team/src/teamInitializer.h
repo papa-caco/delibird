@@ -97,6 +97,8 @@ sem_t mutex_ciclosCPU;
 sem_t mutex_idCorrelativos;
 sem_t mutex_entrenador;
 
+sem_t sem_activacionPlanificadorMPlazo;
+
 
 
 //-----------------Variables Globales----------------------------

@@ -15,6 +15,7 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 	int distancia;
 	t_pokemon_entrenador* pokemon;
+	t_pokemon_entrenador_reservado* pokemonReservado;
 	t_posicion_entrenador* posicionEntrenadorAMoverse;
 	t_entrenador* entrenador2;
 
@@ -24,7 +25,6 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 		sem_wait(&(entrenador->sem_entrenador));
 
-		printf("PASO EL SEMAFORO DEL ENTRENADOR \n");
 
 		switch (entrenador->estado_entrenador) {
 			case MOVERSE_A_POKEMON:
@@ -34,17 +34,23 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 				distancia = calcularDistancia(entrenador->posicion, pokemonReservado->posicion);
 
-				printf("DISTANCIA %d \n", distancia);
+				printf("LA DISTANCIA ES %d \n", distancia);
+
+				printf("POSICION DEL ENTRENADOR %d %d \n", entrenador->posicion->pos_x, entrenador->posicion->pos_y);
+
+				printf("POSICION DEL POKEMON %d %d \n", pokemonReservado->posicion->pos_x, pokemonReservado->posicion->pos_y);
 
 					for(int i=0; i<distancia; i++){
 						moverEntrenador(entrenador, pokemonReservado->posicion);
 
 					}
 
-
 					entrenador->estado_entrenador = ATRAPAR;
 
+
+
 					sem_post(&(sem_planificador_cplazoEntrenador));
+
 
 					//// SIGNAL A PLANIFICADOR?????????
 
@@ -70,8 +76,12 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 							break;
 			case ATRAPAR:
-				pokemon = buscarPokemonMasCercano(entrenador->posicion);
-				intentarAtraparPokemon(entrenador, pokemon);
+
+				printf("ENTRO AL CASE DE ATRAPAR \n");
+				pokemonReservado = buscarPokemonReservado(entrenador->id);
+
+
+				//intentarAtraparPokemon(entrenador, pokemonReservado);
 
 				sleep(g_config_team->retardo_ciclo_cpu);
 
@@ -79,7 +89,8 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 				entrenador->ciclosCPU++;
 
-				entrenador->estado_entrenador = ESPERAR_CAUGHT;
+				//entrenador->estado_entrenador = ESPERAR_CAUGHT;
+				entrenador->estado_entrenador = RECIBIO_RESPUESTA_OK;
 
 				log_info(g_logger,"Entrenador %d intenta atrapar al pokemon %s, en la posicion (%d,%d)", entrenador->id, pokemon->pokemon, entrenador->posicion->pos_x, entrenador->posicion->pos_y);
 
@@ -127,44 +138,27 @@ t_pokemon_entrenador* buscarPokemonMasCercano(t_posicion_entrenador* posicion_En
 
 	sem_wait(&sem_pokemonesLibresEnElMapa);
 
-	t_list* listaFiltrada = list_create();
 
 	for(int j = 0; j< list_size(pokemonesLibresEnElMapa); j++){
 
 		t_pokemon_entrenador* pokLibreAux = list_get(pokemonesLibresEnElMapa, j);
 
-		printf("POSICION X: %d  \n", pokLibreAux->posicion->pos_x);
-
-		printf("POSICION Y: %d  \n", pokLibreAux->posicion->pos_y);
+		printf("POKEMON EN LIBRE ES %s y su POSICION ES %d %d \n", pokLibreAux->pokemon, pokLibreAux->posicion->pos_x, pokLibreAux->posicion->pos_y);
 
 		if(necesitoPokemon(pokLibreAux->pokemon)){
 
-			printf("ENTRO AL IF DE LA LISTA FILTRADA  \n");
+			distanciaAux = calcularDistancia(posicion_Entrenador, pokLibreAux->posicion );
 
-			list_add(listaFiltrada, pokLibreAux);
-
-		}
-	}
-
-
-	for (int i = 0; i < list_size(listaFiltrada); i++) {
-
-
-		t_pokemon_entrenador* pokLibreAux =  list_get(listaFiltrada, i);
-
-
-		distanciaAux = calcularDistancia(posicion_Entrenador, pokLibreAux->posicion );
-
-		if(distanciaAux < distanciaMasCercana){
+			if(distanciaAux < distanciaMasCercana){
 			distanciaMasCercana = distanciaAux;
 			pokemonMasCercano = pokLibreAux;
-		}
+				}
 
+		}
 	}
 
 	sem_post(&sem_pokemonesLibresEnElMapa);
 
-	printf("EL POKEMON MAS CERCANO ES %s POSICION %d %d \n", pokemonMasCercano->pokemon, pokemonMasCercano->posicion->pos_x, pokemonMasCercano->posicion->pos_y);
 
 	return pokemonMasCercano;
 
@@ -244,18 +238,26 @@ t_pokemon_entrenador_reservado* moverPokemonAReservados(t_pokemon_entrenador* po
 
 	t_pokemon_entrenador* pokemonAux;
 
+	printf("POSICION DEL POKEMON A MOVER A RESERVADOS ---%d %d ---\n ", pokemonAMover->posicion->pos_x, pokemonAMover->posicion->pos_y);
+
 	t_pokemon_entrenador_reservado* pokemonAAgregar = malloc(
 			sizeof(t_pokemon_entrenador_reservado));
 	pokemonAAgregar->cantidad = 1;
-	pokemonAAgregar->pokemon = pokemonAMover->pokemon;
+	pokemonAAgregar->pokemon = malloc(strlen(pokemonAMover->pokemon)+1);
+	memcpy(pokemonAAgregar->pokemon, pokemonAMover->pokemon, strlen(pokemonAMover->pokemon)+1);
 	pokemonAAgregar->posicion = malloc(sizeof(t_posicion_entrenador));
 	pokemonAAgregar->posicion->pos_x = pokemonAMover->posicion->pos_x;
 	pokemonAAgregar->posicion->pos_y = pokemonAMover->posicion->pos_y;
 	pokemonAAgregar->id_entrenadorReserva = idReservador;
 
+
+
 	sem_wait(&sem_pokemonesReservados);
 	list_add(pokemonesReservadosEnElMapa, pokemonAAgregar);
 	sem_post(&sem_pokemonesReservados);
+
+	printf("POSICION DEL POKEMON A AGREGADO A RESERVADOS ---%d %d ---\n ", pokemonAAgregar->posicion->pos_x, pokemonAAgregar->posicion->pos_y);
+
 
 	int indice = 0;
 
@@ -281,6 +283,9 @@ t_pokemon_entrenador_reservado* moverPokemonAReservados(t_pokemon_entrenador* po
 	}
 	sem_post(&sem_pokemonesLibresEnElMapa);
 
+	printf("POSICION DEL POKEMON A AGREGADO A RESERVADOS DESPUES DEL FREE---%d %d ---\n ", pokemonAAgregar->posicion->pos_x, pokemonAAgregar->posicion->pos_y);
+
+
 	return pokemonAAgregar;
 }
 
@@ -290,10 +295,6 @@ t_pokemon_entrenador_reservado* moverPokemonAReservados(t_pokemon_entrenador* po
 void moverEntrenador(t_entrenador* entrenador, t_posicion_entrenador* posicionAMoverse){
 
 	//AGREGAR SEMAFORO MUTEX DEL ENTRENADOR EN PARTICULAR  (ADENTRO O AFUERA?????)
-
-	printf("POSICION ENTRENADOR DENTRO DE MOVER %d %d  \n", entrenador->posicion->pos_x, entrenador->posicion->pos_y);
-
-	printf("POSICION A MOVERSE %d %d \n", posicionAMoverse->pos_x, posicionAMoverse->pos_y);
 
 	if(entrenador->posicion->pos_x != posicionAMoverse->pos_x){
 		if(entrenador -> posicion -> pos_x > posicionAMoverse->pos_x ){
@@ -343,7 +344,7 @@ int calcularDistancia(t_posicion_entrenador* posicionActual, t_posicion_entrenad
 
 //////ATRAPAR UN POKEMON//////////////////
 
-void intentarAtraparPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon){
+void intentarAtraparPokemon(t_entrenador* entrenador, t_pokemon_entrenador_reservado* pokemon){
 
 	enviar_catch_pokemon_broker(entrenador->posicion->pos_x, entrenador->posicion->pos_y, pokemon->pokemon, g_logger, entrenador->id);
 
