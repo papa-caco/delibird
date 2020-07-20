@@ -75,6 +75,8 @@ void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador);
 
 void agregarPokemonesDelLocalized(t_msg_localized_team* mensajeLocalized);
 
-char tieneDeadlockEntrenador(t_entrenador* unEntrenador);
+int tieneDeadlockEntrenador(t_entrenador* unEntrenador);
+
+int cantidadDePokemonesEnLista(t_list* lista);
 
 #endif /* SRC_UTILSTEAM_H_ */

@@ -81,13 +81,23 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 				pokemonReservado = buscarPokemonReservado(entrenador->id);
 
 
-				//intentarAtraparPokemon(entrenador, pokemonReservado);
+				//int resultadoEnvioMensaje = intentarAtraparPokemon(entrenador, pokemonReservado);
 
 				sleep(g_config_team->retardo_ciclo_cpu);
 
 				ciclosCPU++;
 
 				entrenador->ciclosCPU++;
+
+			/*if (resultadoEnvioMensaje == -1) {
+				sem_wait(entrenador->mutex_entrenador);
+				entrenador->estado_entrenador = RECIBIO_RESPUESTA_OK;
+				sem_post(entrenador->mutex_entrenador);
+			} else {
+				sem_wait(entrenador->mutex_entrenador);
+				entrenador->estado_entrenador = ESPERAR_CAUGHT;
+				sem_post(entrenador->mutex_entrenador);
+			}*/
 
 				//entrenador->estado_entrenador = ESPERAR_CAUGHT;
 				entrenador->estado_entrenador = RECIBIO_RESPUESTA_OK;
@@ -387,9 +397,11 @@ int calcularDistancia(t_posicion_entrenador* posicionActual, t_posicion_entrenad
 
 //////ATRAPAR UN POKEMON//////////////////
 
-void intentarAtraparPokemon(t_entrenador* entrenador, t_pokemon_entrenador_reservado* pokemon){
+int intentarAtraparPokemon(t_entrenador* entrenador, t_pokemon_entrenador_reservado* pokemon){
 
-	enviar_catch_pokemon_broker(entrenador->posicion->pos_x, entrenador->posicion->pos_y, pokemon->pokemon, g_logger, entrenador->id);
+	int prueba = enviar_catch_pokemon_broker(entrenador->posicion->pos_x, entrenador->posicion->pos_y, pokemon->pokemon, g_logger, entrenador->id);
+	printf("PROBANDO LO DEL CATCH, EL ULTIMO PASO ES: %d \n", prueba);
+	return prueba;
 
 }
 

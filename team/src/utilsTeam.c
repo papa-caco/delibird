@@ -97,6 +97,7 @@ int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon,
 	args->id_entrenador = id_entrenador;
 	int thread_status = pthread_create(&tid_send_catch, NULL,
 			(void*) connect_broker_y_enviar_mensaje_catch, (void*) args);
+	printf("PROBANDO LO DEL CATCH, EL THREAD STATUS ES: %d \n", thread_status);
 	if (thread_status != 0) {
 		log_error(logger, "Thread create returned %d | %s", thread_status,
 				strerror(thread_status));
@@ -137,6 +138,45 @@ int connect_broker_y_enviar_mensaje_catch(
 
 	return id_mensaje;
 }
+
+/*int connect_broker_y_enviar_mensaje_catch(
+		t_mensaje_Caugth_and_IdEntrenador* args) {
+	int id_mensaje = -1, cliente_fd = -1;
+	char *ip = g_config_team->ip_broker;
+	char *puerto = g_config_team->puerto_broker;
+	char *proceso = "BROKER";
+	char *name_cola = nombre_cola(CATCH_POKEMON);
+	sem_wait(&sem_mutex_msjs);
+	cliente_fd = crear_conexion(ip, puerto, g_logger, proceso, name_cola);
+	if (cliente_fd > 0) {
+		enviar_msj_catch_broker(cliente_fd, g_logger, args->msg_catch_broker);
+		op_code code_op = rcv_codigo_operacion(cliente_fd);
+		if (code_op == ID_MENSAJE) {
+			id_mensaje = rcv_id_mensaje(cliente_fd, g_logger);
+		} else if (code_op == MSG_ERROR) {
+			void *a_recibir = recibir_buffer(*cliente_fd, &id_mensaje);
+			log_warning(g_logger, "(RECEIVING: |%s)", a_recibir);
+			free(a_recibir);
+		}
+	}
+	sem_post(&sem_mutex_msjs);
+	close(cliente_fd);
+	eliminar_msg_catch_broker(args->msg_catch_broker);
+	pthread_exit(&tid_send_catch);
+
+	t_id_Correlativo_and_Entrenador* ids = malloc(
+			sizeof(t_id_Correlativo_and_Entrenador));
+	ids->id_Correlativo = id_mensaje;
+	ids->id_Entrenador = args->id_entrenador;
+
+	sem_wait(&mutex_idCorrelativos);
+	list_add(idCorrelativosCatch, &ids);
+	sem_post(&mutex_idCorrelativos);
+
+	printf("PROBANDO LO DEL CATCH, EL ID MENSAJE ES: %d \n", id_mensaje);
+
+	return id_mensaje;
+}*/
 
 void inicio_suscripcion(t_tipo_mensaje *cola) {
 	char *ip = g_config_team->ip_broker;
@@ -729,8 +769,8 @@ void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
 
 		t_list* pokemonesPendiente = pokemonesPendientes(unEntrenador);
 			int cantidadPokemonesPendientes = list_size(pokemonesPendiente);
-			int cantidadPokemonesObjetivo = list_size(unEntrenador->objetivoEntrenador);
-			int cantidadPokemonesObtenidos = list_size(unEntrenador->pokemonesObtenidos);
+			int cantidadPokemonesObjetivo = cantidadDePokemonesEnLista(unEntrenador->objetivoEntrenador);
+			int cantidadPokemonesObtenidos = cantidadDePokemonesEnLista(unEntrenador->pokemonesObtenidos);
 
 			//OJO NO SE SI ESTA BIEN EL ULTIMO ELSE!!!
 			if (cantidadPokemonesPendientes == 0) {
@@ -739,8 +779,12 @@ void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
 				printf("----------------------------------------------------------------------------\n");
 				unEntrenador->estado_entrenador = EXIT;
 			} else if ((cantidadPokemonesObjetivo == cantidadPokemonesObtenidos) && (tieneDeadlockEntrenador(unEntrenador))) {
+				printf("----------------------------------------------------------------------------\n");
+				printf("ENTRENADOR %d, TIENE DEADLOCK \n", unEntrenador->id);
+				printf("----------------------------------------------------------------------------\n");
 				unEntrenador->estado_entrenador = DEADLOCK;
 			} else {
+				int probita = tieneDeadlockEntrenador(unEntrenador);
 				unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
 			}
 
@@ -756,7 +800,7 @@ void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
 //lo que se puede dar: si hay un pokemon distinto chau, hay deadlock. Ahora si son todos iguales pero la cantidad es distinta,
 //también. Ahora si tanto la cantidad como el nombre son iguales, entonces todo ok, no tiene dedalock.
 //Si tiene deadlock devuelve true 1 y si no tiene, false 0.
-char tieneDeadlockEntrenador(t_entrenador* unEntrenador){
+int tieneDeadlockEntrenador(t_entrenador* unEntrenador){
 	t_list* poksObjetivo = unEntrenador->objetivoEntrenador;
 	t_list* poksObtenidos = unEntrenador->pokemonesObtenidos;
 
@@ -766,7 +810,7 @@ char tieneDeadlockEntrenador(t_entrenador* unEntrenador){
 		if(unObtenido == NULL){
 			return 1;
 		}
-		else if(unObtenido->cantidad!= unObjetivo->cantidad){
+		else if(unObtenido->cantidad != unObjetivo->cantidad){
 			return 1;
 		}
 	}
@@ -793,13 +837,28 @@ void agregarPokemonesDelLocalized(t_msg_localized_team* mensajeLocalized){
 		list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 		sem_post(&sem_pokemonesLibresEnElMapa);
 
+	}
+
+	if (cantidadDeEntrenadores == queue_size(colaNewEntrenadores)) {
+
+		sem_post(&sem_activacionPlanificadorMPlazo);
+	}
+}
+
+int cantidadDePokemonesEnLista(t_list* lista){
+
+	int valorDeRetorno = 0;
+
+	if(list_size(lista) == 0){
+		return valorDeRetorno;
+	}
+
+	for(int i = 0; i < list_size(lista); i++){
+		t_pokemon_entrenador* pokemonAux = list_get(lista, i);
+		valorDeRetorno += pokemonAux->cantidad;
+	}
 
 
-			}
-
-		if(cantidadDeEntrenadores == queue_size(colaNewEntrenadores)){
-
-							sem_post(&sem_activacionPlanificadorMPlazo);
-						}
+	return valorDeRetorno;
 }
 
