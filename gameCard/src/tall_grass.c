@@ -115,10 +115,10 @@ t_list *armar_guardar_data_bloques_file_pokemon(char *pokemon, char *string_posi
 {
 
 	t_pokemon_medatada *pokemon_metadata = leer_metadata_pokemon(pokemon, g_logger);
-	int bloques_usados = 0;
+	int index_bloques = 0;
 	int bloques_existentes = 0;
 
-	int *bloque_nro = malloc(sizeof(int));
+
 	if (pokemon_metadata != NULL) {
 		bloques_existentes = list_size(pokemon_metadata->blocks);
 	}
@@ -136,34 +136,43 @@ t_list *armar_guardar_data_bloques_file_pokemon(char *pokemon, char *string_posi
 	if (tamano_string >= tamano_bloque) {
 		//Uso los bloques existentes
 		for( int i = 0 ; i<= cant_bloques ;i++ ){
+			tamano_grabar = 0;
 			char *grabar;
 			if (i < cant_bloques - 1) {
 				grabar = string_substring(string_posiciones, comienzo, tamano_bloque);
 				tamano_grabar = tamano_bloque;
-			} else {
+			} else if( tamano_string > comienzo) {
 				excedente =  tamano_string - comienzo;
+
 				grabar = string_substring(string_posiciones, comienzo, excedente);
 				tamano_grabar = excedente;
 			}
 
-			if( cant_bloques <= bloques_existentes ){ //Uso un bloque que ya tengo
-				*bloque_nro = atoi(list_get(pokemon_metadata->blocks,i));
-				bloques_usados ++;
-			}
-			else{ 	//Pido un nuevo bloque
-				*bloque_nro = obtener_ultimo_nro_bloque();
+			if( tamano_grabar > 0 ){
+				int *bloque_nro = malloc(sizeof(int));
+				if( index_bloques < bloques_existentes ){  //USO UN BLOQUE QUE YA TENGO
+
+					*bloque_nro = atoi(list_get(pokemon_metadata->blocks,i));
+					index_bloques ++;
+				}
+				else{ //Pido un nuevo bloque
+
+					*bloque_nro = obtener_ultimo_nro_bloque();
+				}
+				grabar_bloque(*bloque_nro,grabar, tamano_grabar, g_logdebug);
+
+				list_add(blocks, bloque_nro);
 			}
 
-			grabar_bloque(*bloque_nro,grabar, tamano_grabar, g_logdebug);
 			comienzo += tamano_bloque;
 
-			list_add(blocks, bloque_nro);
 		}
 	}
 	else{
+		int *bloque_nro = malloc(sizeof(int));
 		if(  bloques_existentes > 0 ){ //Uso un bloque que ya tengo
 			*bloque_nro = atoi(list_get(pokemon_metadata->blocks,0));
-			bloques_usados ++;
+			index_bloques++;
 		}
 		else{ //Pido un nuevo bloque
 			*bloque_nro = obtener_ultimo_nro_bloque();
@@ -175,12 +184,15 @@ t_list *armar_guardar_data_bloques_file_pokemon(char *pokemon, char *string_posi
 	}
 
 //TODO ELIMINAR LOS BLOQUES QUE NO SE USAN
+	// SE DEBE ELIMINTAR DEL BITMAP Y DEL FILESYSTEM
+	// AQUELLOS VALORES DEL BLOQUE CUYO INDICE ES MAYOR A LA VARIABLE "index_bloques"
 	return blocks;
 }
 
 int grabar_bloque(int block_nro,char *block_buffer, size_t size, t_log *logger)
 {	//Graba un bloque en el file system
 //	int block_nro = obtener_ultimo_nro_bloque();
+
 	char *file_block = string_itoa(block_nro);
 	char *path_blocks = string_new();
 	string_append(&path_blocks, g_config_gc->dirname_blocks);
@@ -288,10 +300,11 @@ void grabar_metadata_pokemon(t_list *blocks, char *pokemon, int file_size, char 
 		if(i < cantidad_bloques - 1) {
 			fprintf(fd,",");
 		} else {
-			fprintf(fd, "]\n");
+		//	fprintf(fd, "]\n");
 		}
 		//free(bloque_actual);
 	}
+	fprintf(fd, "]\n");
 	fprintf(fd, "OPEN=%s\n", status);
 	fclose(fd);
 	log_info(logger,"SAVE METADATA  %s",dirname_metatada_pokemon);
