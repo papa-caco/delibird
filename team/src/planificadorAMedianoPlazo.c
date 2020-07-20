@@ -261,7 +261,7 @@ void liberar_variables_globales(){
 			free(entrenador);
 		}
 
-
+		printf("Libero a los entrenadores \n");
 
 	    queue_destroy(colaReadyEntrenadores);
 
@@ -269,19 +269,25 @@ void liberar_variables_globales(){
 
 	    queue_destroy(colaExitEntrenadores);
 
-		liberar_lista_de_pokemones(pokemonesLibresEnElMapa);
+	    printf("Libero las colas de entrenadores \n");
 
-		liberar_lista(pokemonesReservadosEnElMapa);
+		if(pokemonesLibresEnElMapa->elements_count == 0){
+			list_destroy(pokemonesLibresEnElMapa);
+		}
+
+		list_destroy(pokemonesReservadosEnElMapa);
 
 		liberar_lista_de_pokemones(pokemonesAtrapadosGlobal);
 
-		liberar_lista(pokemonesReservadosEnElMapa);
+		printf("Libero las listas de pokemones \n");
 
 		liberar_lista(idCorrelativosCatch);
 
 		list_destroy(idCorrelativosGet);
 
 		liberar_lista(pokemonesLlegadosDelBroker);
+
+		printf("Libero las listas de pokemones \n");
 
 
 		//--------------SEMAFOROS LISTAS DE POKEMONES------------------------------

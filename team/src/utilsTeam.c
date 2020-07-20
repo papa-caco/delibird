@@ -228,7 +228,8 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 
 			t_pokemon_entrenador* pokemonAAgregarAlMapa = malloc(sizeof(t_pokemon_entrenador));
 			pokemonAAgregarAlMapa->cantidad = 1;
-			pokemonAAgregarAlMapa->pokemon = msg_appeared->pokemon;
+			pokemonAAgregarAlMapa->pokemon = malloc(strlen(msg_appeared->pokemon)+1);
+			memcpy(pokemonAAgregarAlMapa->pokemon, msg_appeared->pokemon, strlen(msg_appeared->pokemon)+1);
 			pokemonAAgregarAlMapa->posicion = malloc(sizeof(t_posicion_entrenador));
 			pokemonAAgregarAlMapa->posicion->pos_x =msg_appeared->coord->pos_x;
 			pokemonAAgregarAlMapa->posicion->pos_y =msg_appeared->coord->pos_y;
@@ -300,18 +301,13 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 				//AGREGAR POKEMON A LA LISTA DE ENTRENADORES DEL POKEMON
 
 				//Transformo el pokemonReservado al tipo pokemon_entrenador
-				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(
-						sizeof(t_pokemon_entrenador));
-				pokemonAAgregarConvertido->cantidad =
-						pokemonReservadoAAgregar->cantidad;
-				pokemonAAgregarConvertido->pokemon =
-						pokemonReservadoAAgregar->pokemon;
-				pokemonAAgregarConvertido->posicion = malloc(
-						sizeof(t_posicion_entrenador));
-				pokemonAAgregarConvertido->posicion->pos_x =
-						pokemonReservadoAAgregar->posicion->pos_x;
-				pokemonAAgregarConvertido->posicion->pos_y =
-						pokemonReservadoAAgregar->posicion->pos_y;
+				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(sizeof(t_pokemon_entrenador));
+				pokemonAAgregarConvertido->cantidad = pokemonReservadoAAgregar->cantidad;
+				pokemonAAgregarConvertido->pokemon = malloc(strlen(pokemonReservadoAAgregar->pokemon)+1);
+				memcpy(pokemonAAgregarConvertido->pokemon, pokemonReservadoAAgregar->pokemon, strlen(pokemonReservadoAAgregar->pokemon)+1);
+				pokemonAAgregarConvertido->posicion = malloc(sizeof(t_posicion_entrenador));
+				pokemonAAgregarConvertido->posicion->pos_x = pokemonReservadoAAgregar->posicion->pos_x;
+				pokemonAAgregarConvertido->posicion->pos_y = pokemonReservadoAAgregar->posicion->pos_y;
 
 				//Borro de la lista al pokemon reservado
 				sem_wait(&(sem_pokemonesReservados));
@@ -332,9 +328,10 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 				sem_post(&(sem_pokemonesReservados));
 
 				free(pokemonReservadoAAgregar->posicion);
+				//free(pokemonReservadoAAgregar->pokemon);
 				free(pokemonReservadoAAgregar);
 
-				//Agrego el Poke usano una funcion de nombre rancio que hace LO MISMO que la de entrenador.c
+				//Agrego el Poke
 				sem_wait(&(entrenadorReservador->mutex_entrenador));
 				agregarPokemon(entrenadorReservador, pokemonAAgregarConvertido);
 				sem_post(&(entrenadorReservador->mutex_entrenador));
@@ -376,6 +373,9 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 				sem_post(&(sem_pokemonesReservados));
 
 				free(pokemonReservadoAAgregar->posicion);
+
+				//free(pokemonReservadoAAgregar->pokemon);
+
 				free(pokemonReservadoAAgregar);
 
 				sem_wait(&(entrenadorReservador->mutex_entrenador));
@@ -708,6 +708,7 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon) {
 			pokemonABuscar->cantidad++;
 			loEncontro = 1;
 			free(pokemon->posicion);
+			//free(pokemon->pokemon);
 			free(pokemon);
 		}
 	}
@@ -733,7 +734,9 @@ void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
 
 			//OJO NO SE SI ESTA BIEN EL ULTIMO ELSE!!!
 			if (cantidadPokemonesPendientes == 0) {
-				printf("ENTRENADOR %d, VA A EXIT \n", unEntrenador->id);
+				printf("----------------------------------------------------------------------------\n");
+				printf("ENTRENADOR %d, VA A EXIT CON %d CICLOS DE CPU \n", unEntrenador->id, unEntrenador->ciclosCPU);
+				printf("----------------------------------------------------------------------------\n");
 				unEntrenador->estado_entrenador = EXIT;
 			} else if ((cantidadPokemonesObjetivo == cantidadPokemonesObtenidos) && (tieneDeadlockEntrenador(unEntrenador))) {
 				unEntrenador->estado_entrenador = DEADLOCK;
@@ -780,7 +783,8 @@ void agregarPokemonesDelLocalized(t_msg_localized_team* mensajeLocalized){
 
 		t_pokemon_entrenador* pokemonAAgregarAlMapa = malloc(sizeof(t_pokemon_entrenador));
 		pokemonAAgregarAlMapa->cantidad = 1;
-		pokemonAAgregarAlMapa->pokemon = mensajeLocalized->pokemon;
+		pokemonAAgregarAlMapa->pokemon = malloc(strlen(mensajeLocalized->pokemon)+1);
+		memcpy(pokemonAAgregarAlMapa->pokemon, mensajeLocalized->pokemon, strlen(mensajeLocalized->pokemon)+1);
 		pokemonAAgregarAlMapa->posicion = malloc(sizeof(t_posicion_entrenador));
 		pokemonAAgregarAlMapa->posicion->pos_x =coordenada->pos_x;
 		pokemonAAgregarAlMapa->posicion->pos_y =coordenada->pos_y;

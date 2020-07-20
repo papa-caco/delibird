@@ -91,9 +91,9 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 			}
 			else{
 				printf("Hay un nuevo pokemon que es %s \n", pokemonesObjetivo[j]);
-				objetivo->pokemon = pokemonesObjetivo[j];
+				objetivo->pokemon = malloc(strlen(pokemonesObjetivo[j]) +1);
+				memcpy(objetivo->pokemon, pokemonesObjetivo[j], strlen(pokemonesObjetivo[j]) + 1);
 				objetivo->cantidad = 1;
-
 				list_add(objetivosUnEntrenador, objetivo);
 			}
 
@@ -133,6 +133,7 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		unEntrenador->objetivoEntrenador = (t_list*)list_get(objetivosEntrenadores, i);
 		unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
 		unEntrenador->id = i;
+		unEntrenador->ciclosCPU = 0;
 		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
 		sem_init(&(unEntrenador->mutex_entrenador), 0, 1);
 		sem_init(&(unEntrenador->sem_entrenador), 0, 0);
@@ -158,7 +159,10 @@ void cargar_objetivo_global(t_list* objetivosEntrenadores){
 				pokemonEncontrado -> cantidad+=((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->cantidad;
 			}
 			else{
-				pokemonNuevo -> pokemon = ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->pokemon;
+				t_pokemon_entrenador *pokemonNuevo = malloc(sizeof(t_pokemon_entrenador));
+				char* nombrePokemonNuevo = ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->pokemon;
+				pokemonNuevo->pokemon = malloc(strlen(nombrePokemonNuevo)+1);
+				memcpy(pokemonNuevo->pokemon, nombrePokemonNuevo, strlen(nombrePokemonNuevo)+1);
 				pokemonNuevo -> cantidad = ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->cantidad;
 				list_add(objetivoGlobalEntrenadores, pokemonNuevo);
 				}
@@ -180,7 +184,10 @@ void cargar_obtenidos_global(t_list* pokemonesObtenidos){
 					pokemonEncontrado -> cantidad+=((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->cantidad;
 				}
 				else{
-					pokemonNuevo -> pokemon = ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->pokemon;
+					t_pokemon_entrenador *pokemonNuevo = malloc(sizeof(t_pokemon_entrenador));
+					char* nombrePokemonNuevo = ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->pokemon;
+					pokemonNuevo->pokemon = malloc(strlen(nombrePokemonNuevo)+1);
+					memcpy(pokemonNuevo->pokemon, nombrePokemonNuevo, strlen(nombrePokemonNuevo)+1);
 					pokemonNuevo -> cantidad = ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->cantidad;
 					list_add(pokemonesAtrapadosGlobal, pokemonNuevo);
 					}
