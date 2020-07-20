@@ -31,6 +31,8 @@ gameCard/.autotools
 gameCard/.project
 gameCard/.settings/language.settings.xml
 delibird/.settings/language.settings.xml
+gamecard/log/
+gamecard/config/tall-grass/
 
 # Object files
 *.o

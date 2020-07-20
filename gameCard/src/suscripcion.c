@@ -58,6 +58,7 @@ void suscripcion_gc(t_tipo_mensaje *cola)
 				flag_salida = 0;
 			} else if (cod_oper_mensaje != SUSCRIP_END) {
 				id_recibido = rcv_msjs_broker_gc(cod_oper_mensaje,cliente_fd, g_logger);
+				//id_recibido = process_request(cod_oper_mensaje,cliente_fd);
 				contador_msjs += 1;
 				handshake->msjs_recibidos = contador_msjs;
 				handshake->id_recibido = id_recibido;
@@ -93,20 +94,26 @@ uint32_t rcv_msjs_broker_gc(op_code codigo_operacion, int socket_cliente, t_log 
 		t_msg_new_gamecard *msg_new = rcv_msj_new_gamecard(socket_cliente, logger);
 		g_cnt_msjs_new ++;
 		id_recibido = msg_new->id_mensaje;
-		// TODO (lanzar nuevo hilo que maneje la llegada del mensaje NEW_POKEMON)
+// TODO (lanzar nuevo hilo que maneje la llegada del mensaje NEW_POKEMON)
+		rcv_new_pokemon(msg_new);
+		devolver_appeared_pokemon(msg_new, socket_cliente);
 		eliminar_msg_new_gamecard(msg_new);
 		break;
 	case CATCH_GAMECARD:;
 		t_msg_catch_gamecard *msg_catch = rcv_msj_catch_gamecard(socket_cliente, logger);
 		g_cnt_msjs_catch ++;
 		id_recibido = msg_catch->id_mensaje;
+
 		// TODO (lanzar nuevo hilo que maneje la llegada del mensaje CATCH_POKEMON)
+		devolver_caught_pokemon(msg_catch, socket_cliente);
 		eliminar_msg_catch_gamecard(msg_catch);
 		break;
 	case GET_GAMECARD:;
 		t_msg_get_gamecard *msg_get = rcv_msj_get_gamecard(socket_cliente, logger);
 		g_cnt_msjs_get ++;
 		id_recibido = msg_get->id_mensaje;
+
+		rcv_get_pokemon(msg_get, socket_cliente);
 		eliminar_msg_get_gamecard(msg_get);
 		break;
 	case 0:
