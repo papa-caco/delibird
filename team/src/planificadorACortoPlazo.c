@@ -16,15 +16,32 @@ void planificarFifo(){
 		//SEMAFORO QUE RECIBE DEL PLANIFICADOR DE MEDIANO PLAZO
 		sem_wait(&sem_planificador_cplazoReady);
 
+		printf("SE ACTIVO EL PLANIFICADOR A CORTO PLAZO \n");
+
 		//VERIFICAR SI DEBE MATARSE A SI MISMO (saltear o no su lógica)
 		if (finalizarProceso == 0) {
 			sem_wait(&sem_cola_ready);
 			t_entrenador* entrenadorAEjecutar = (t_entrenador*) queue_pop(
 					colaReadyEntrenadores);
+
+			while(entrenadorAEjecutar->estado_entrenador == MOVERSE_A_POKEMON && (list_size(pokemonesLibresEnElMapa) == 0)){
+
+				queue_push(colaReadyEntrenadores, entrenadorAEjecutar);
+
+				entrenadorAEjecutar = (t_entrenador*) queue_pop(
+									colaReadyEntrenadores);
+
+
+			}
+
 			sem_post(&sem_cola_ready);
+
+			log_info(g_logger,"Entrenador %d se movio a la cola de Exec, porque esta primero en la cola de Ready", entrenadorAEjecutar->id);
 
 			//COMIENZA A EJECUTAR LA FUNCION CORRESPONDIENTE DEL ENTRENADOR
 			sem_post(&(entrenadorAEjecutar->sem_entrenador));
+
+			cantidadCambiosDeContexto++;
 
 			//ESPERA EL SIGNAL DEL ENTRENADOR PARA QUE COMPLETE SU FUNCION
 			sem_wait(&sem_planificador_cplazoEntrenador);
@@ -35,7 +52,6 @@ void planificarFifo(){
 			sem_post(&(entrenadorAEjecutar->mutex_entrenador));
 
 			if (entrenadorAEjecutar->estado_entrenador == EXIT) { //CASO DESPUES DEL INTERCAMBIO
-
 				//SI ESTA EN EXIT, LO MANDO A LA COLA CORRESPONDIENTE
 				//Este semáforo ya no hace falta, el entreandor finaliza solo cuando cambia su estado a EXIT.
 				sem_post(&(entrenadorAEjecutar->sem_entrenador));
@@ -55,4 +71,7 @@ void planificarFifo(){
 		}
 
 	}
+
+	sem_post(&sem_terminar_todo);
+
 }

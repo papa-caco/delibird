@@ -64,6 +64,7 @@ typedef struct Entrenador{
 	sem_t mutex_entrenador;
 	pthread_t hilo_entrenador;
 	int id;
+	int ciclosCPU;
 
 	//FIJARSE SI HAY QUE AGREGAR UN SEMAFORO MUTEX PARA EL ENTRENADOR CUANDO SE MODIFIQUE O SE LEA.
 } t_entrenador;
@@ -83,9 +84,30 @@ typedef struct Pokemon_Entrenador_Reservado{
 
 
 
+//VARIABLE GLOBALES DEL UTILS
+
+int ciclosCPU;
+t_list* idCorrelativosCatch;
+t_list* idCorrelativosGet;
+t_list* pokemonesLlegadosDelBroker;
+
+pthread_mutex_t mutex_listaPokemonesLlegadosDelBroker;
+sem_t mutex_idCorrelativosGet;
+sem_t mutex_ciclosCPU;
+sem_t mutex_idCorrelativos;
+sem_t mutex_entrenador;
+
+sem_t sem_activacionPlanificadorMPlazo;
+
 
 
 //-----------------Variables Globales----------------------------
+
+int cantidadCambiosDeContexto;
+
+pthread_t threadPlanificadorCP;
+
+pthread_t threadPlanificadorMP;
 
 int cantidadDeEntrenadores;
 
@@ -96,8 +118,6 @@ t_queue* colaNewEntrenadores;
 t_queue* colaReadyEntrenadores;
 
 t_queue* colaBlockedEntrenadores;
-
-t_queue* colaExecEntrenadores;
 
 t_queue* colaExitEntrenadores;
 
@@ -152,6 +172,8 @@ sem_t sem_planificador_mplazo;
 
 sem_t sem_hay_pokemones_mapa;
 
+sem_t sem_terminar_todo;
+
 int g_cnt_msjs_caught;
 
 int g_cnt_msjs_appeared;
@@ -163,6 +185,8 @@ bool status_conn_broker;
 //-----------------Firma de Funciones----------------------------
 
 void iniciar_team(void);
+
+void iniciar_variables_globales();
 
 t_list * extraer_posiciones_entrenadores();
 

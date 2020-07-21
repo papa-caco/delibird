@@ -7,16 +7,7 @@
 #include <semaphore.h>
 
 
-int ciclosCPU;
-t_list* idCorrelativosCatch;
-t_list* idCorrelativosGet;
-t_list* pokemonesLlegadosDelBroker;
 
-sem_t mutex_listaPokemonesLlegadosDelBroker;
-sem_t mutex_idCorrelativosGet;
-sem_t mutex_ciclosCPU;
-sem_t mutex_idCorrelativos;
-sem_t mutex_entrenador;
 
 typedef struct mensaje_Caugth_and_IdEntrenador{
 	t_msg_catch_broker* msg_catch_broker;
@@ -84,6 +75,10 @@ void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador);
 
 void agregarPokemonesDelLocalized(t_msg_localized_team* mensajeLocalized);
 
-char tieneDeadlockEntrenador(t_entrenador* unEntrenador);
+int tieneDeadlockEntrenador(t_entrenador* unEntrenador);
+
+int cantidadDePokemonesEnLista(t_list* lista);
+
+char necesitoIrAAtraparlo(char* nombrePokemonLlegado);
 
 #endif /* SRC_UTILSTEAM_H_ */

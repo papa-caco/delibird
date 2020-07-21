@@ -403,4 +403,3 @@ void iniciar_cnt_msjs_gc(void)
 	g_cnt_msjs_catch = 0;
 	g_cnt_msjs_new = 0;
 }
-

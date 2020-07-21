@@ -11,5 +11,6 @@
 #include "utilsTeam.h"
 
 
+void planificarFifo();
 
 #endif /* SRC_PLANIFICADORACORTOPLAZO_H_ */

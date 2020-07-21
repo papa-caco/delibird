@@ -7,6 +7,7 @@
 
 //#include "teamInitializer.h"
 #include "utilsTeam.h"
+#include "entrenador.h"
 
 
 void iniciar_team(void){
@@ -90,9 +91,9 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 			}
 			else{
 				printf("Hay un nuevo pokemon que es %s \n", pokemonesObjetivo[j]);
-				objetivo->pokemon = pokemonesObjetivo[j];
+				objetivo->pokemon = malloc(strlen(pokemonesObjetivo[j]) +1);
+				memcpy(objetivo->pokemon, pokemonesObjetivo[j], strlen(pokemonesObjetivo[j]) + 1);
 				objetivo->cantidad = 1;
-
 				list_add(objetivosUnEntrenador, objetivo);
 			}
 
@@ -132,9 +133,12 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		unEntrenador->objetivoEntrenador = (t_list*)list_get(objetivosEntrenadores, i);
 		unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
 		unEntrenador->id = i;
+		unEntrenador->ciclosCPU = 0;
 		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
 		sem_init(&(unEntrenador->mutex_entrenador), 0, 1);
 		sem_init(&(unEntrenador->sem_entrenador), 0, 0);
+		pthread_create(&(unEntrenador->hilo_entrenador), NULL, (void*) comportamiento_entrenador, unEntrenador);
+		pthread_detach(unEntrenador->hilo_entrenador);
 		queue_push(colaNewEntrenadores, unEntrenador);
 	}
 	//Al finalizar el programa vamos a tener que destruir la lista de entrenadores, lo cual implicará destruir
@@ -155,7 +159,10 @@ void cargar_objetivo_global(t_list* objetivosEntrenadores){
 				pokemonEncontrado -> cantidad+=((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->cantidad;
 			}
 			else{
-				pokemonNuevo -> pokemon = ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->pokemon;
+				t_pokemon_entrenador *pokemonNuevo = malloc(sizeof(t_pokemon_entrenador));
+				char* nombrePokemonNuevo = ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->pokemon;
+				pokemonNuevo->pokemon = malloc(strlen(nombrePokemonNuevo)+1);
+				memcpy(pokemonNuevo->pokemon, nombrePokemonNuevo, strlen(nombrePokemonNuevo)+1);
 				pokemonNuevo -> cantidad = ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->cantidad;
 				list_add(objetivoGlobalEntrenadores, pokemonNuevo);
 				}
@@ -177,7 +184,10 @@ void cargar_obtenidos_global(t_list* pokemonesObtenidos){
 					pokemonEncontrado -> cantidad+=((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->cantidad;
 				}
 				else{
-					pokemonNuevo -> pokemon = ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->pokemon;
+					t_pokemon_entrenador *pokemonNuevo = malloc(sizeof(t_pokemon_entrenador));
+					char* nombrePokemonNuevo = ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->pokemon;
+					pokemonNuevo->pokemon = malloc(strlen(nombrePokemonNuevo)+1);
+					memcpy(pokemonNuevo->pokemon, nombrePokemonNuevo, strlen(nombrePokemonNuevo)+1);
 					pokemonNuevo -> cantidad = ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->cantidad;
 					list_add(pokemonesAtrapadosGlobal, pokemonNuevo);
 					}
@@ -194,10 +204,12 @@ t_pokemon_entrenador* list_buscar(t_list* lista, char* elementoAbuscar){
 
 		//printf("El valor de la lista procesados es %s \n", ((t_pokemon_entrenador*)list_get(lista, i))->pokemon);
 		//printf("El elemento a comparar es %s \n", elementoAbuscar);
-		if(strcmp(((t_pokemon_entrenador*)list_get(lista, i))->pokemon, elementoAbuscar) == 0){
+		t_pokemon_entrenador *pokAux = list_get(lista, i);
+
+		if(strcmp(pokAux->pokemon, elementoAbuscar) == 0){
 
 			//printf("Entro al if \n");
-			return (t_pokemon_entrenador*)list_get(lista, i);
+			return list_get(lista, i);
 
 		}
 	}
@@ -238,7 +250,18 @@ void enviar_msjs_get_por_clase_de_pokemon(t_pokemon_entrenador *poke)
 }
 
 void liberar_lista_de_pokemones(t_list* lista){
-	liberar_lista(lista);
+
+	int contador = 0;
+	t_pokemon_entrenador* pokemon;
+	    while (list_get(lista, contador) != NULL) {
+
+	    	pokemon= (t_pokemon_entrenador*) list_get(lista,contador);
+	    	free(pokemon->posicion);
+	        free(pokemon);
+	        contador++;
+	    }
+
+	    free(lista);
 }
 
 void liberar_lista(t_list* lista) {
@@ -266,3 +289,90 @@ void liberar_cola(t_queue* cola) {
 //Con las tres funciones anteriores ya podemos crear dos funciones: Una que defina el objetivo
 //global del Team, y otra que inicialice a cada uno de los entrenadores con sus posiciones
 //y sus objetivos particulares
+
+
+void iniciar_variables_globales(){
+
+	ciclosCPU = 0;
+
+	cantidadCambiosDeContexto = 0;
+
+	finalizarProceso = 0;
+
+	colaReadyEntrenadores = queue_create();
+
+	colaBlockedEntrenadores = queue_create();
+
+	colaExitEntrenadores =queue_create();
+
+	pokemonesLibresEnElMapa = list_create();
+
+	pokemonesReservadosEnElMapa = list_create();
+
+	pokemonesAtrapadosGlobal = list_create();
+
+	idCorrelativosCatch = list_create();
+
+	idCorrelativosGet = list_create();
+
+	pokemonesLlegadosDelBroker = list_create();
+
+
+
+	//--------------SEMAFOROS LISTAS DE POKEMONES------------------------------
+
+	sem_init(&sem_pokemonesGlobalesAtrapados,0,1);
+
+	sem_init(&sem_pokemonesReservados,0,1);
+
+	sem_init(&sem_pokemonesLibresEnElMapa,0,1);
+
+	sem_init(&sem_pokemonesObjetivoGlobal,0,1);
+
+
+
+	//---------------SEMAFOROS COLAS DE ENTRENADORES---------------------------
+
+	sem_init(&sem_cola_blocked,0,1);
+
+	sem_init(&sem_cola_new,0,1);
+
+	sem_init(&sem_cola_ready,0,1);
+
+	sem_init(&sem_cola_exit,0,1);
+
+
+	//--------------SEMAFOROS PLANIFICADORES-----------------------------------
+
+	sem_init(&sem_planificador_cplazoReady,0,0);
+
+	sem_init(&sem_planificador_cplazoEntrenador,0,0);
+
+	sem_init(&sem_planificador_mplazo,0,1);
+
+	sem_init(&sem_hay_pokemones_mapa,1,0);
+
+	sem_init(&sem_activacionPlanificadorMPlazo,0,0);
+
+	sem_init(&sem_terminar_todo,0,0);
+
+	///---MUTEX UTILS--------
+
+
+	//sem_init(&mutex_listaPokemonesLlegadosDelBroker,0,1);
+
+	pthread_mutex_init(&mutex_listaPokemonesLlegadosDelBroker, NULL);
+
+	printf("INICIALIZO SEMAFORO");
+
+	sem_init(&mutex_idCorrelativosGet,0,1);
+
+	sem_init(&mutex_ciclosCPU,0,1);
+
+	sem_init(&mutex_idCorrelativos,0,1);
+
+	sem_init(&mutex_entrenador,0,1);
+
+
+
+}
