@@ -73,7 +73,7 @@ t_bitmap_fs *g_bitmap_bloques;
 
 t_list *g_archivos_abiertos;
 
-t_list g_reintentos;
+t_list *g_reintentos;
 
 pthread_mutex_t g_mutex_tallgrass;
 

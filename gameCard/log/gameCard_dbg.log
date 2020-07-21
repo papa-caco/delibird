@@ -1,0 +1,6 @@
+[DEBUG] 11:47:12:110 GAMECARD_DBG/(557:557): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:555)
+
+[DEBUG] 11:47:12:115 GAMECARD_DBG/(557:557): (TallGrass Iniciado  | Bloques Libres:4097| Espacio Disponible:256 Kb.)
+
+[DEBUG] 11:47:13:118 GAMECARD_DBG/(557:561): (Intervalo para reconexión con Broker: 600 segundos)
+
