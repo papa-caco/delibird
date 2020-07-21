@@ -73,6 +73,8 @@ t_list *g_gamecards_suscriptos;
 
 //---------------FIRMA DE FUNCIONES------------------//
 
+void inicializar_server_broker(char *ip, char *puerto, pthread_mutex_t mutex_clientes, t_log* logger);
+
 void iniciar_log_broker(void);
 
 void leer_config_broker(char *path);

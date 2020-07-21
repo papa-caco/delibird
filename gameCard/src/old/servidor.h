@@ -25,7 +25,6 @@ pthread_t thread;
 
 /*****  definicion de funciones   *****/
 void* recibir_buffer(int*, int);
-int crear_conexion(void);
 
 void* recibir_mensaje(int socket_cliente, int* size);
 int recibir_operacion(int);

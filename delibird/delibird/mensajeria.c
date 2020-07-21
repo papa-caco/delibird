@@ -191,7 +191,6 @@ void enviar_msj_localized_broker(int cliente_fd, t_log *logger, t_msg_localized_
 	t_paquete* paquete = empaquetar_msg_localized_broker(msg_localized_broker);
 	int bytes = tamano_paquete(paquete);
 	void* a_enviar = serializar_paquete(paquete, bytes);
-	eliminar_paquete(paquete);
 	if (send(cliente_fd, a_enviar, bytes, MSG_WAITALL) != bytes) {
 		log_error(logger, "(SENDING: LOCALIZED_POKEMON FAILED)");
 	} else {
@@ -202,6 +201,8 @@ void enviar_msj_localized_broker(int cliente_fd, t_log *logger, t_msg_localized_
 		free(concatenada);
 	}
 	free(a_enviar);
+	eliminar_paquete(paquete);
+
 }
 
 void enviar_msj_get_broker(int cliente_fd, t_log *logger,t_msg_get_broker *msg_get_broker)
@@ -325,7 +326,7 @@ void enviar_msj_handshake_suscriptor(int socket_cliente, t_log *logger, t_handsa
 char *concat_posiciones(t_list *posiciones)
 {
 	int cant_elem = posiciones->elements_count;
-		char *cadena = malloc(200);
+	char *cadena = calloc(2000, sizeof(char));
 	strcpy(cadena, "[");
 	for (int i = 0; i < cant_elem; i ++) {
 		t_coordenada *coord_xy =  list_get(posiciones,i);
@@ -334,7 +335,7 @@ char *concat_posiciones(t_list *posiciones)
 		memcpy(&pos_y,&coord_xy->pos_y, sizeof(int));
 		char *posx = string_itoa(pos_x);
 		char *posy = string_itoa(pos_y);
-		char auxiliar[3];
+		char auxiliar[5];
 		strcpy(auxiliar,posx);
 		strcat(cadena,auxiliar);
 		strcat(cadena,"|");
@@ -436,13 +437,13 @@ t_msg_localized_broker *rcv_msj_localized_broker(int socket_cliente, t_log *logg
 	int size;
 	void *msg = recibir_buffer(socket_cliente, &size);
 	t_msg_localized_broker *msg_localized_broker = deserializar_msg_localized_broker(msg);
-	free(msg);
 	int tamano = tamano_recibido(size);
 	char *concatenada = concat_posiciones(msg_localized_broker->posiciones->coordenadas);
 	log_info(logger,"(RECEIVING_FROM SOCKET:%d|LOCALIZED_POKEMON|%s|ID_CORRELATIVE:%d|POS_QTY=%d|{Xn|Yn}:%s|SIZE:%d Bytes)",
 		socket_cliente, msg_localized_broker->pokemon, msg_localized_broker->id_correlativo,
-		msg_localized_broker->posiciones->cant_posic, concatenada,tamano);
+		msg_localized_broker->posiciones->cant_posic, concatenada, tamano);
 	free(concatenada);
+	free(msg);
 	return msg_localized_broker;
 }
 

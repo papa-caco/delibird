@@ -97,6 +97,7 @@ int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon,
 	args->id_entrenador = id_entrenador;
 	int thread_status = pthread_create(&tid_send_catch, NULL,
 			(void*) connect_broker_y_enviar_mensaje_catch, (void*) args);
+	printf("PROBANDO LO DEL CATCH, EL THREAD STATUS ES: %d \n", thread_status);
 	if (thread_status != 0) {
 		log_error(logger, "Thread create returned %d | %s", thread_status,
 				strerror(thread_status));
@@ -137,6 +138,45 @@ int connect_broker_y_enviar_mensaje_catch(
 
 	return id_mensaje;
 }
+
+/*int connect_broker_y_enviar_mensaje_catch(
+		t_mensaje_Caugth_and_IdEntrenador* args) {
+	int id_mensaje = -1, cliente_fd = -1;
+	char *ip = g_config_team->ip_broker;
+	char *puerto = g_config_team->puerto_broker;
+	char *proceso = "BROKER";
+	char *name_cola = nombre_cola(CATCH_POKEMON);
+	sem_wait(&sem_mutex_msjs);
+	cliente_fd = crear_conexion(ip, puerto, g_logger, proceso, name_cola);
+	if (cliente_fd > 0) {
+		enviar_msj_catch_broker(cliente_fd, g_logger, args->msg_catch_broker);
+		op_code code_op = rcv_codigo_operacion(cliente_fd);
+		if (code_op == ID_MENSAJE) {
+			id_mensaje = rcv_id_mensaje(cliente_fd, g_logger);
+		} else if (code_op == MSG_ERROR) {
+			void *a_recibir = recibir_buffer(*cliente_fd, &id_mensaje);
+			log_warning(g_logger, "(RECEIVING: |%s)", a_recibir);
+			free(a_recibir);
+		}
+	}
+	sem_post(&sem_mutex_msjs);
+	close(cliente_fd);
+	eliminar_msg_catch_broker(args->msg_catch_broker);
+	pthread_exit(&tid_send_catch);
+
+	t_id_Correlativo_and_Entrenador* ids = malloc(
+			sizeof(t_id_Correlativo_and_Entrenador));
+	ids->id_Correlativo = id_mensaje;
+	ids->id_Entrenador = args->id_entrenador;
+
+	sem_wait(&mutex_idCorrelativos);
+	list_add(idCorrelativosCatch, &ids);
+	sem_post(&mutex_idCorrelativos);
+
+	printf("PROBANDO LO DEL CATCH, EL ID MENSAJE ES: %d \n", id_mensaje);
+
+	return id_mensaje;
+}*/
 
 void inicio_suscripcion(t_tipo_mensaje *cola) {
 	char *ip = g_config_team->ip_broker;
@@ -216,28 +256,40 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 		//meSirvePokemon ya tiene semaforos dentro
 		//if (meSirvePokemon(msg_appeared->pokemon)) {
 		//Las dos líneas anteriores las comento por las dudas de que en realidad al final sí haya que realizar ese tipo de
-		//validación
+		//validació
 
 
 		//necesitoPokemon ya tiene los semáforos adentro
 		if (necesitoPokemon(msg_appeared->pokemon) != 0) {
 
-			sem_wait(&mutex_listaPokemonesLlegadosDelBroker);
+			pthread_mutex_lock(&mutex_listaPokemonesLlegadosDelBroker);
 			list_add(pokemonesLlegadosDelBroker, msg_appeared->pokemon);
-			sem_post(&mutex_listaPokemonesLlegadosDelBroker);
+			pthread_mutex_unlock(&mutex_listaPokemonesLlegadosDelBroker);
 
 			t_pokemon_entrenador* pokemonAAgregarAlMapa = malloc(sizeof(t_pokemon_entrenador));
 			pokemonAAgregarAlMapa->cantidad = 1;
-			pokemonAAgregarAlMapa->pokemon = msg_appeared->pokemon;
+			pokemonAAgregarAlMapa->pokemon = malloc(strlen(msg_appeared->pokemon)+1);
+			memcpy(pokemonAAgregarAlMapa->pokemon, msg_appeared->pokemon, strlen(msg_appeared->pokemon)+1);
 			pokemonAAgregarAlMapa->posicion = malloc(sizeof(t_posicion_entrenador));
 			pokemonAAgregarAlMapa->posicion->pos_x =msg_appeared->coord->pos_x;
 			pokemonAAgregarAlMapa->posicion->pos_y =msg_appeared->coord->pos_y;
+
+			if (necesitoIrAAtraparlo(pokemonAAgregarAlMapa->pokemon)) {
+				sem_post(&sem_hay_pokemones_mapa);
+			}
 
 			sem_wait(&sem_pokemonesLibresEnElMapa);
 			list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 			sem_post(&sem_pokemonesLibresEnElMapa);
 
-			sem_post(&sem_hay_pokemones_mapa);
+			//sem_post(&sem_hay_pokemones_mapa);
+
+
+
+			if(cantidadDeEntrenadores == queue_size(colaNewEntrenadores)){
+
+				sem_post(&sem_activacionPlanificadorMPlazo);
+			}
 
 			////ANALIZAR SI TENEMOS QUE ACTIVAR EL PLANIFICADOR MEDIANO PLAZO PARA IR A ATRAPAR A UN POKEMON
 
@@ -295,18 +347,13 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 				//AGREGAR POKEMON A LA LISTA DE ENTRENADORES DEL POKEMON
 
 				//Transformo el pokemonReservado al tipo pokemon_entrenador
-				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(
-						sizeof(t_pokemon_entrenador));
-				pokemonAAgregarConvertido->cantidad =
-						pokemonReservadoAAgregar->cantidad;
-				pokemonAAgregarConvertido->pokemon =
-						pokemonReservadoAAgregar->pokemon;
-				pokemonAAgregarConvertido->posicion = malloc(
-						sizeof(t_posicion_entrenador));
-				pokemonAAgregarConvertido->posicion->pos_x =
-						pokemonReservadoAAgregar->posicion->pos_x;
-				pokemonAAgregarConvertido->posicion->pos_y =
-						pokemonReservadoAAgregar->posicion->pos_y;
+				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(sizeof(t_pokemon_entrenador));
+				pokemonAAgregarConvertido->cantidad = pokemonReservadoAAgregar->cantidad;
+				pokemonAAgregarConvertido->pokemon = malloc(strlen(pokemonReservadoAAgregar->pokemon)+1);
+				memcpy(pokemonAAgregarConvertido->pokemon, pokemonReservadoAAgregar->pokemon, strlen(pokemonReservadoAAgregar->pokemon)+1);
+				pokemonAAgregarConvertido->posicion = malloc(sizeof(t_posicion_entrenador));
+				pokemonAAgregarConvertido->posicion->pos_x = pokemonReservadoAAgregar->posicion->pos_x;
+				pokemonAAgregarConvertido->posicion->pos_y = pokemonReservadoAAgregar->posicion->pos_y;
 
 				//Borro de la lista al pokemon reservado
 				sem_wait(&(sem_pokemonesReservados));
@@ -327,9 +374,10 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 				sem_post(&(sem_pokemonesReservados));
 
 				free(pokemonReservadoAAgregar->posicion);
+				//free(pokemonReservadoAAgregar->pokemon);
 				free(pokemonReservadoAAgregar);
 
-				//Agrego el Poke usano una funcion de nombre rancio que hace LO MISMO que la de entrenador.c
+				//Agrego el Poke
 				sem_wait(&(entrenadorReservador->mutex_entrenador));
 				agregarPokemon(entrenadorReservador, pokemonAAgregarConvertido);
 				sem_post(&(entrenadorReservador->mutex_entrenador));
@@ -370,7 +418,14 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 						pokemonesReservadosEnElMapa, indice);
 				sem_post(&(sem_pokemonesReservados));
 
+				if(list_buscar(pokemonesLibresEnElMapa, pokemonReservadoAAgregar->pokemon) != NULL){
+					sem_post(&sem_hay_pokemones_mapa);
+				}
+
 				free(pokemonReservadoAAgregar->posicion);
+
+				free(pokemonReservadoAAgregar->pokemon);
+
 				free(pokemonReservadoAAgregar);
 
 				sem_wait(&(entrenadorReservador->mutex_entrenador));
@@ -388,6 +443,7 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 		msg_localized = rcv_msj_localized_team(socket_cliente, logger);
 		g_cnt_msjs_localized++;
 		id_recibido = msg_localized->id_mensaje;
+
 
 		char meSirveGet = 0;
 		int idAuxGet = 0;
@@ -470,6 +526,44 @@ void process_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger) {
 		msg_appeared = rcv_msj_appeared_team(cliente_fd, logger);
 		g_cnt_msjs_appeared++;
 		//TODO Hacer lo que corresponda con el msg_appeared
+
+		if (necesitoPokemon(msg_appeared->pokemon) != 0) {
+
+
+			pthread_mutex_lock(&mutex_listaPokemonesLlegadosDelBroker);
+
+					list_add(pokemonesLlegadosDelBroker, msg_appeared->pokemon);
+					pthread_mutex_unlock(&mutex_listaPokemonesLlegadosDelBroker);
+
+
+					t_pokemon_entrenador* pokemonAAgregarAlMapa = malloc(sizeof(t_pokemon_entrenador));
+					pokemonAAgregarAlMapa->cantidad = 1;
+					pokemonAAgregarAlMapa->pokemon = malloc(strlen(msg_appeared->pokemon)+1);
+					memcpy(pokemonAAgregarAlMapa->pokemon, msg_appeared->pokemon, strlen(msg_appeared->pokemon)+1);
+					pokemonAAgregarAlMapa->posicion = malloc(sizeof(t_posicion_entrenador));
+					pokemonAAgregarAlMapa->posicion->pos_x =msg_appeared->coord->pos_x;
+					pokemonAAgregarAlMapa->posicion->pos_y =msg_appeared->coord->pos_y;
+
+			if (necesitoIrAAtraparlo(pokemonAAgregarAlMapa->pokemon)) {
+				sem_post(&sem_hay_pokemones_mapa);
+			}
+
+					sem_wait(&sem_pokemonesLibresEnElMapa);
+					list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
+					sem_post(&sem_pokemonesLibresEnElMapa);
+
+
+
+
+					if(cantidadDeEntrenadores == queue_size(colaNewEntrenadores)){
+
+									sem_post(&sem_activacionPlanificadorMPlazo);
+								}
+
+
+				}
+
+
 		enviar_msg_confirmed(cliente_fd, logger);
 		eliminar_msg_appeared_team(msg_appeared);
 		break;
@@ -613,13 +707,21 @@ int contador_msjs_cola(t_tipo_mensaje cola_suscripcion) {
 ///Ya leagregué semaforos en los lugares en las que se la llama
 t_pokemon_entrenador_reservado* buscarPokemonReservado(int id_Entrenador) {
 
-	for (int i = 0; list_get(pokemonesReservadosEnElMapa, i) != NULL; i++) {
-		int idAux = ((t_pokemon_entrenador_reservado*) list_get(
-				pokemonesReservadosEnElMapa, i))->id_entrenadorReserva;
+	t_pokemon_entrenador_reservado* pokemonReservado;
+
+
+	for (int i = 0; i< list_size(pokemonesReservadosEnElMapa); i++) {
+
+		pokemonReservado = list_get(pokemonesReservadosEnElMapa, i);
+
+		printf("POKEMON RESERVADO ES %s \n ", pokemonReservado->pokemon);
+
+		int idAux = pokemonReservado->id_entrenadorReserva;
+
 		if (idAux == id_Entrenador) {
 
-			return (t_pokemon_entrenador_reservado*) list_get(
-					pokemonesReservadosEnElMapa, i);
+			printf("ENTRO AL IF Y SU POKEMON RESERVADO ES %s \n ", pokemonReservado->pokemon);
+			return pokemonReservado;
 
 		}
 	}
@@ -660,6 +762,7 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon) {
 			pokemonABuscar->cantidad++;
 			loEncontro = 1;
 			free(pokemon->posicion);
+			//free(pokemon->pokemon);
 			free(pokemon);
 		}
 	}
@@ -673,28 +776,45 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon) {
 }
 
 void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
-	t_list* pokemonesPendiente = pokemonesPendientes(unEntrenador);
-	int cantidadPokemonesPendientes = list_size(pokemonesPendiente);
-	int cantidadPokemonesObjetivo = list_size(unEntrenador->objetivoEntrenador);
-	int cantidadPokemonesObtenidos = list_size(unEntrenador->pokemonesObtenidos);
 
-	//OJO NO SE SI ESTA BIEN EL ULTIMO ELSE!!!
-	if (cantidadPokemonesPendientes == 0) {
-		unEntrenador->estado_entrenador = EXIT;
-	} else if ((cantidadPokemonesObjetivo == cantidadPokemonesObtenidos) && (tieneDeadlockEntrenador(unEntrenador))) {
-		unEntrenador->estado_entrenador = DEADLOCK;
-	} else {
-		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
+	t_estado_entrenador estado = unEntrenador->estado_entrenador;
+
+	if( estado != MOVERSE_A_ENTRENADOR && estado!= ATRAPAR && estado!= INTERCAMBIAR && estado!= ESPERAR_CAUGHT){
+
+		t_list* pokemonesPendiente = pokemonesPendientes(unEntrenador);
+			int cantidadPokemonesPendientes = list_size(pokemonesPendiente);
+			int cantidadPokemonesObjetivo = cantidadDePokemonesEnLista(unEntrenador->objetivoEntrenador);
+			int cantidadPokemonesObtenidos = cantidadDePokemonesEnLista(unEntrenador->pokemonesObtenidos);
+
+			//OJO NO SE SI ESTA BIEN EL ULTIMO ELSE!!!
+			if (cantidadPokemonesPendientes == 0) {
+				printf("----------------------------------------------------------------------------\n");
+				printf("ENTRENADOR %d, VA A EXIT CON %d CICLOS DE CPU \n", unEntrenador->id, unEntrenador->ciclosCPU);
+				printf("----------------------------------------------------------------------------\n");
+				unEntrenador->estado_entrenador = EXIT;
+			} else if ((cantidadPokemonesObjetivo == cantidadPokemonesObtenidos) && (tieneDeadlockEntrenador(unEntrenador))) {
+				printf("----------------------------------------------------------------------------\n");
+				printf("ENTRENADOR %d, TIENE DEADLOCK \n", unEntrenador->id);
+				printf("----------------------------------------------------------------------------\n");
+				unEntrenador->estado_entrenador = DEADLOCK;
+			} else {
+				int probita = tieneDeadlockEntrenador(unEntrenador);
+				unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
+			}
+
+
+			liberar_lista_de_pokemones(pokemonesPendiente);
 	}
 
-	liberar_lista_de_pokemones(pokemonesPendiente);
+
+
 }
 
 //Es un for adentro de un for, donde se busca que la lista de obtenidos sea igual a la del objetivo. Entonces hay que evaluar
 //lo que se puede dar: si hay un pokemon distinto chau, hay deadlock. Ahora si son todos iguales pero la cantidad es distinta,
 //también. Ahora si tanto la cantidad como el nombre son iguales, entonces todo ok, no tiene dedalock.
 //Si tiene deadlock devuelve true 1 y si no tiene, false 0.
-char tieneDeadlockEntrenador(t_entrenador* unEntrenador){
+int tieneDeadlockEntrenador(t_entrenador* unEntrenador){
 	t_list* poksObjetivo = unEntrenador->objetivoEntrenador;
 	t_list* poksObtenidos = unEntrenador->pokemonesObtenidos;
 
@@ -704,7 +824,7 @@ char tieneDeadlockEntrenador(t_entrenador* unEntrenador){
 		if(unObtenido == NULL){
 			return 1;
 		}
-		else if(unObtenido->cantidad!= unObjetivo->cantidad){
+		else if(unObtenido->cantidad != unObjetivo->cantidad){
 			return 1;
 		}
 	}
@@ -721,17 +841,101 @@ void agregarPokemonesDelLocalized(t_msg_localized_team* mensajeLocalized){
 
 		t_pokemon_entrenador* pokemonAAgregarAlMapa = malloc(sizeof(t_pokemon_entrenador));
 		pokemonAAgregarAlMapa->cantidad = 1;
-		pokemonAAgregarAlMapa->pokemon = mensajeLocalized->pokemon;
+		pokemonAAgregarAlMapa->pokemon = malloc(strlen(mensajeLocalized->pokemon)+1);
+		memcpy(pokemonAAgregarAlMapa->pokemon, mensajeLocalized->pokemon, strlen(mensajeLocalized->pokemon)+1);
 		pokemonAAgregarAlMapa->posicion = malloc(sizeof(t_posicion_entrenador));
 		pokemonAAgregarAlMapa->posicion->pos_x =coordenada->pos_x;
 		pokemonAAgregarAlMapa->posicion->pos_y =coordenada->pos_y;
+
+		if (necesitoIrAAtraparlo(pokemonAAgregarAlMapa->pokemon)) {
+			sem_post(&sem_hay_pokemones_mapa);
+		}
 
 		sem_wait(&sem_pokemonesLibresEnElMapa);
 		list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 		sem_post(&sem_pokemonesLibresEnElMapa);
 
-		sem_post(&sem_hay_pokemones_mapa);
 
-			}
+
+	}
+
+	if (cantidadDeEntrenadores == queue_size(colaNewEntrenadores)) {
+
+		sem_post(&sem_activacionPlanificadorMPlazo);
+	}
 }
 
+int cantidadDePokemonesEnLista(t_list* lista){
+
+	int valorDeRetorno = 0;
+
+	if(list_size(lista) == 0){
+		return valorDeRetorno;
+	}
+
+	for(int i = 0; i < list_size(lista); i++){
+		t_pokemon_entrenador* pokemonAux = list_get(lista, i);
+		valorDeRetorno += pokemonAux->cantidad;
+	}
+
+
+	return valorDeRetorno;
+}
+
+char necesitoIrAAtraparlo(char* nombrePokemonLlegado){
+	char valorDeRetorno = 0;
+	int cantidadEnReservados = 0;
+	int cantidadLibres = 0;
+	int cantidadEnObjetivoGlobal = 0;
+	int cantidadEnAtrapadosGlobal = 0;
+
+	if(necesitoPokemon(nombrePokemonLlegado)){
+		sem_wait(&sem_pokemonesObjetivoGlobal);
+		t_pokemon_entrenador* pokEnObjetivoGlobal = list_buscar(objetivoGlobalEntrenadores, nombrePokemonLlegado);
+		if(pokEnObjetivoGlobal != NULL){
+			cantidadEnObjetivoGlobal = pokEnObjetivoGlobal->cantidad;
+		}
+		sem_post(&sem_pokemonesObjetivoGlobal);
+
+		sem_wait(&sem_pokemonesGlobalesAtrapados);
+		t_pokemon_entrenador* pokEnAtrapadosGlobal = list_buscar(pokemonesAtrapadosGlobal, nombrePokemonLlegado);
+		if(pokEnAtrapadosGlobal != NULL){
+			cantidadEnAtrapadosGlobal = pokEnAtrapadosGlobal->cantidad;
+		}
+		sem_post(&sem_pokemonesGlobalesAtrapados);
+
+		sem_wait(&sem_pokemonesLibresEnElMapa);
+		for(int i = 0; i < list_size(pokemonesLibresEnElMapa); i++){
+			t_pokemon_entrenador* pokLibre = list_get(pokemonesLibresEnElMapa, i);
+			if(pokLibre->pokemon == nombrePokemonLlegado){
+				cantidadLibres += pokLibre->cantidad;
+			}
+		}
+		sem_post(&sem_pokemonesLibresEnElMapa);
+
+		sem_wait(&sem_pokemonesReservados);
+		for(int i=0; i < list_size(pokemonesReservadosEnElMapa); i++){
+			t_pokemon_entrenador_reservado* pokReservado = list_get(pokemonesReservadosEnElMapa, i);
+			if(pokReservado->pokemon == nombrePokemonLlegado){
+				cantidadEnReservados+=pokReservado->cantidad;
+			}
+		}
+		sem_post(&sem_pokemonesReservados);
+
+		printf("Cantidad en reservados es %d \n", cantidadEnReservados);
+
+		printf("Cantidad en libres es %d \n", cantidadLibres);
+
+		printf("Cantidad en objetivo global es %d \n", cantidadEnObjetivoGlobal);
+
+		printf("Cantidad en atrapados es %d \n", cantidadEnAtrapadosGlobal);
+
+		valorDeRetorno = (cantidadEnReservados + cantidadLibres) < (cantidadEnObjetivoGlobal - cantidadEnAtrapadosGlobal);
+
+	}
+
+	printf("ValorDeRetorno es %d \n", valorDeRetorno);
+
+
+	return valorDeRetorno;
+}

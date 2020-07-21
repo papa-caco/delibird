@@ -14,14 +14,65 @@
 
 #include "broker_utils.h"
 
+void inicializar_server_broker(char *ip, char *puerto, pthread_mutex_t mutex_clientes, t_log* logger)
+{
+	int socket_servidor, status;
+	struct sockaddr_storage dir_cliente;
+	socklen_t tam_direccion;
+	struct addrinfo hints, *servinfo; 	//hints no es puntero
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;			// No importa si uso IPv4 o IPv6 - vale 0
+	hints.ai_socktype = SOCK_STREAM;		// Indica que usaremos el protocolo TCP
+	hints.ai_flags = AI_PASSIVE;			// Asigna el address del localhost: 127.0.0.1
+
+	getaddrinfo(ip, puerto, &hints, &servinfo);
+
+	if ((status = getaddrinfo(NULL, puerto, &hints, &servinfo)) != 0) {
+			fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
+			exit(EXIT_FAILURE);
+	}
+	log_trace(logger, "(Esperando conexiones en Direccion: %s, Puerto: %s)", ip, puerto);
+	socket_servidor = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
+	int yes = 1;
+	setsockopt(socket_servidor, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
+	bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen);
+
+	if (listen(socket_servidor, 10) == -1) {
+		perror("listen");
+	}
+
+	freeaddrinfo(servinfo);
+
+	while (1){
+		tam_direccion = sizeof(dir_cliente);
+
+		int socket_cliente = accept(socket_servidor, (void*) &dir_cliente, &tam_direccion);
+		pthread_mutex_lock(&mutex_clientes);
+		pthread_t pid;
+		t_socket_cliente_broker *socket = malloc(sizeof(t_socket_cliente_broker));
+		socket->cliente_fd = socket_cliente;
+		// inicializa contador de mensajes enviados al cliente que se conectó.
+		socket->cant_msg_enviados = 0;
+		int thread_status = pthread_create(&pid, NULL, (void*) atender_cliente_broker,(void*) socket);
+		pthread_mutex_unlock(&mutex_clientes);
+		if( thread_status != 0 ){
+			log_error(logger, "Thread create returno %d", thread_status );
+			log_error(logger, "Thread create returno %s", strerror( thread_status ) );
+		} else {
+			pthread_detach( pid );
+		}
+	}
+}
+
 void inicio_server_broker(void)
 {
 	char *ip = g_config_broker->ip_broker;
 	char *puerto = g_config_broker->puerto_broker;
-	iniciar_server_broker(ip, puerto, g_logger);
+	inicializar_server_broker(ip, puerto, g_mutex_msjs, g_logger);
 }
 
-void atender_cliente_broker(t_socket_cliente_broker *socket) {
+void atender_cliente_broker(t_socket_cliente_broker *socket)
+{
 	int cliente_fd = socket->cliente_fd;
 	op_code cod_op = rcv_codigo_operacion(cliente_fd);
 	if (!codigo_operacion_valido_broker(cod_op)) {
@@ -38,9 +89,13 @@ void atender_cliente_broker(t_socket_cliente_broker *socket) {
 void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 {
 	int cliente_fd = socket->cliente_fd;
+	puts("");
+	pthread_mutex_lock(&g_mutex_msjs);
+	log_debug(g_logger,"(NEW CLIENT CONNECTED | SOCKET#:%d)", cliente_fd);
 	switch (cod_op) {
 	case GET_BROKER:;
 		t_msg_get_broker *msg_get = rcv_msj_get_broker(cliente_fd, g_logger);
+		pthread_mutex_unlock(&g_mutex_msjs);
 		if(cache_espacio_suficiente(espacio_cache_msg_get(msg_get))) {
 			pthread_mutex_lock(&g_mutex_msjs);
 				enqueue_msg_get(msg_get, g_logger, cliente_fd);
@@ -52,6 +107,7 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 		break;
 	case NEW_BROKER:;
 		t_msg_new_broker *msg_new = rcv_msj_new_broker(cliente_fd, g_logger);
+		pthread_mutex_unlock(&g_mutex_msjs);
 		int size_msg = espacio_cache_msg_new(msg_new);
 		if(cache_espacio_suficiente(espacio_cache_msg_new(msg_new))) {
 			pthread_mutex_lock(&g_mutex_msjs);
@@ -64,6 +120,7 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 		break;
 	case CATCH_BROKER:;
 		t_msg_catch_broker *msg_catch = rcv_msj_catch_broker(cliente_fd, g_logger);
+		pthread_mutex_unlock(&g_mutex_msjs);
 		if(cache_espacio_suficiente(espacio_cache_msg_catch(msg_catch))) {
 			pthread_mutex_lock(&g_mutex_msjs);
 				enqueue_msg_catch(msg_catch, g_logger, cliente_fd);
@@ -75,6 +132,7 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 		break;
 	case APPEARED_BROKER:;
 		t_msg_appeared_broker *msg_appeared = rcv_msj_appeared_broker(cliente_fd, g_logger);
+		pthread_mutex_unlock(&g_mutex_msjs);
 		if(cache_espacio_suficiente(espacio_cache_msg_appeared(msg_appeared))) {
 			pthread_mutex_lock(&g_mutex_msjs);
 				enqueue_msg_appeared(msg_appeared, g_logger, cliente_fd);
@@ -85,6 +143,7 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 		}break;
 	case CAUGHT_BROKER:;
 		t_msg_caught_broker *msg_caught = rcv_msj_caught_broker(cliente_fd, g_logger);
+		pthread_mutex_unlock(&g_mutex_msjs);
 		if(cache_espacio_suficiente(espacio_cache_msg_caught(msg_caught))) {
 			pthread_mutex_lock(&g_mutex_msjs);
 				enqueue_msg_caught(msg_caught, g_logger, cliente_fd);
@@ -96,6 +155,7 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 		break;
 	case LOCALIZED_BROKER:;
 		t_msg_localized_broker *msg_localized = rcv_msj_localized_broker(cliente_fd, g_logger);
+		pthread_mutex_unlock(&g_mutex_msjs);
 		if(cache_espacio_suficiente(espacio_cache_msg_localized(msg_localized))) {
 			pthread_mutex_lock(&g_mutex_msjs);
 				enqueue_msg_localized(msg_localized, g_logger, cliente_fd);
@@ -107,6 +167,7 @@ void atender_publicacion(op_code cod_op, t_socket_cliente_broker *socket)
 		break;
 	case FIN_SUSCRIPCION:;
 		t_handsake_suscript *handshake = handshake = rcv_msj_handshake_suscriptor(cliente_fd);
+		pthread_mutex_unlock(&g_mutex_msjs);
 		log_info(g_logger,"(RECEIVING: END_SUSCRIPTION|%s|ID_SUSCRIPTOR = %d|Socket# = %d)"
 				,nombre_cola(handshake->cola_id),handshake->id_suscriptor, cliente_fd);
 		deshabilitar_suscriptor_cola(handshake);
@@ -131,6 +192,7 @@ void atender_suscripcion(op_code cod_op, t_socket_cliente_broker *socket)
 	switch (cod_op) {
 	case SUSCRIBER_ACK:;
 		t_handsake_suscript *handshake = rcv_msj_handshake_suscriptor(cliente_fd);
+		pthread_mutex_unlock(&g_mutex_msjs);
 		id_suscriptor = handshake->id_suscriptor;
 		ult_id_recibido = handshake->id_recibido;
 		t_tipo_mensaje id_cola = handshake->cola_id;
