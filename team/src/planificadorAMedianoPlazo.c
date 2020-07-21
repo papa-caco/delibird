@@ -10,6 +10,7 @@ void planificadorMedianoPlazo() {
 
 	printf("SE LEVANTO HILO PLANIFICADOR");
 
+
 	char* estadosEntrenadorStrings[9] = {
 			"Moverse a pokemon", "Moverse a entrenador", "Atrapar",
 			"Intercambiar", "Acabar intercambio", "Recibir respuesta ok",
@@ -19,6 +20,7 @@ void planificadorMedianoPlazo() {
 	sem_wait(&sem_activacionPlanificadorMPlazo);
 
 	while (finalizarProceso == 0) {
+
 
 		//AGREGAR UN SIGNLA POR CADA POKEOMON LIBRE QUE LLEGA EN LA RECEPCION DE MENSAJES DE POKEMONES, MAS
 		//UN SIGNAL EN EL CASO DE FAIL. SIEMPRE Y CUANDO TENGAMOS POKEMONES LIBRES DE ESA ESPECIE.
@@ -87,6 +89,9 @@ void planificadorMedianoPlazo() {
 
 		sem_wait(&sem_cola_exit);
 		if(cantidadDeEntrenadores == queue_size(colaExitEntrenadores)){
+			printf("######################################\n");
+			printf("CERRANDO TEAM \n");
+			printf("######################################\n");
 
 			finalizarProceso = 1;
 			sem_post(&sem_planificador_cplazoReady);
@@ -226,6 +231,7 @@ void planificadorMedianoPlazo() {
 //Los semaforos los tiene afuera
 t_entrenador* buscarPrimerEntrenadorEnDeadlock(){
 
+
 	t_entrenador* entrenadorRetorno = NULL;
 	t_entrenador* entrenadorAux = NULL;
 
@@ -234,13 +240,15 @@ t_entrenador* buscarPrimerEntrenadorEnDeadlock(){
 		entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
 
 		sem_wait(&(entrenadorAux->mutex_entrenador));
-		if((entrenadorAux->estado_entrenador == DEADLOCK) && (entrenadorRetorno!= NULL)){
+		if((entrenadorAux->estado_entrenador == DEADLOCK) && (entrenadorRetorno == NULL)){
 
 			sem_post(&(entrenadorAux->mutex_entrenador));
 			entrenadorRetorno = entrenadorAux;
 
+		} else{
+			queue_push(colaBlockedEntrenadores, entrenadorAux);
 		}
-		queue_push(colaBlockedEntrenadores, entrenadorAux);
+
 	}
 	return entrenadorRetorno;
 }

@@ -52,7 +52,6 @@ void planificarFifo(){
 			sem_post(&(entrenadorAEjecutar->mutex_entrenador));
 
 			if (entrenadorAEjecutar->estado_entrenador == EXIT) { //CASO DESPUES DEL INTERCAMBIO
-
 				//SI ESTA EN EXIT, LO MANDO A LA COLA CORRESPONDIENTE
 				//Este semáforo ya no hace falta, el entreandor finaliza solo cuando cambia su estado a EXIT.
 				sem_post(&(entrenadorAEjecutar->sem_entrenador));
