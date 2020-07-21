@@ -116,6 +116,13 @@ void planificadorMedianoPlazo() {
 
 			for (int i = 0; i < cantidadElementosCola; i++) {
 
+				//Si entra aca quiere decir que al menos uno hay en blocked que quiere hacer algo.
+				//Hay que filtrar los que estan en deadlock y los que estan esperando caught.
+				//Una vex filtrados, hay que preguntar si todos quieren moverse a pokemon y si es asi esperar a
+				//que hayan pokemones libres que nos sirvan.
+				//AHora bien si hay al menos uno que no quiere moverse a pokemon entonces no hay que esperar nada
+				// y metemos a ejecutar a ese.
+
 				t_entrenador* entrenadorAux = (t_entrenador*) queue_pop(
 						colaBlockedEntrenadores);
 
@@ -153,6 +160,10 @@ void planificadorMedianoPlazo() {
 			sem_wait(&sem_cola_new);
 			if (encontreUnoAPasar == 0
 					&& (queue_size(colaNewEntrenadores) != 0)) {
+
+				//Si llego aca es porque blocked esta vacio, y en new hay alguien, por lo cual lo unico que va a
+				//querer hacer es moverse y primero me tengo que fijar si hay pokemones que me sirven en el mapa
+				sem_wait(&sem_hay_pokemones_mapa);
 
 				t_entrenador* entrenadorAux = (t_entrenador*) queue_pop(
 						colaNewEntrenadores);

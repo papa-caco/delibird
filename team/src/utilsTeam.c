@@ -274,11 +274,17 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 			pokemonAAgregarAlMapa->posicion->pos_x =msg_appeared->coord->pos_x;
 			pokemonAAgregarAlMapa->posicion->pos_y =msg_appeared->coord->pos_y;
 
+			if (necesitoIrAAtraparlo(pokemonAAgregarAlMapa->pokemon)) {
+				sem_post(&sem_hay_pokemones_mapa);
+			}
+
 			sem_wait(&sem_pokemonesLibresEnElMapa);
 			list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 			sem_post(&sem_pokemonesLibresEnElMapa);
 
 			//sem_post(&sem_hay_pokemones_mapa);
+
+
 
 			if(cantidadDeEntrenadores == queue_size(colaNewEntrenadores)){
 
@@ -412,9 +418,13 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 						pokemonesReservadosEnElMapa, indice);
 				sem_post(&(sem_pokemonesReservados));
 
+				if(list_buscar(pokemonesLibresEnElMapa, pokemonReservadoAAgregar->pokemon) != NULL){
+					sem_post(&sem_hay_pokemones_mapa);
+				}
+
 				free(pokemonReservadoAAgregar->posicion);
 
-				//free(pokemonReservadoAAgregar->pokemon);
+				free(pokemonReservadoAAgregar->pokemon);
 
 				free(pokemonReservadoAAgregar);
 
@@ -534,11 +544,15 @@ void process_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger) {
 					pokemonAAgregarAlMapa->posicion->pos_x =msg_appeared->coord->pos_x;
 					pokemonAAgregarAlMapa->posicion->pos_y =msg_appeared->coord->pos_y;
 
-
+			if (necesitoIrAAtraparlo(pokemonAAgregarAlMapa->pokemon)) {
+				sem_post(&sem_hay_pokemones_mapa);
+			}
 
 					sem_wait(&sem_pokemonesLibresEnElMapa);
 					list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 					sem_post(&sem_pokemonesLibresEnElMapa);
+
+
 
 
 					if(cantidadDeEntrenadores == queue_size(colaNewEntrenadores)){
@@ -833,9 +847,15 @@ void agregarPokemonesDelLocalized(t_msg_localized_team* mensajeLocalized){
 		pokemonAAgregarAlMapa->posicion->pos_x =coordenada->pos_x;
 		pokemonAAgregarAlMapa->posicion->pos_y =coordenada->pos_y;
 
+		if (necesitoIrAAtraparlo(pokemonAAgregarAlMapa->pokemon)) {
+			sem_post(&sem_hay_pokemones_mapa);
+		}
+
 		sem_wait(&sem_pokemonesLibresEnElMapa);
 		list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 		sem_post(&sem_pokemonesLibresEnElMapa);
+
+
 
 	}
 
@@ -857,6 +877,64 @@ int cantidadDePokemonesEnLista(t_list* lista){
 		t_pokemon_entrenador* pokemonAux = list_get(lista, i);
 		valorDeRetorno += pokemonAux->cantidad;
 	}
+
+
+	return valorDeRetorno;
+}
+
+char necesitoIrAAtraparlo(char* nombrePokemonLlegado){
+	char valorDeRetorno = 0;
+	int cantidadEnReservados = 0;
+	int cantidadLibres = 0;
+	int cantidadEnObjetivoGlobal = 0;
+	int cantidadEnAtrapadosGlobal = 0;
+
+	if(necesitoPokemon(nombrePokemonLlegado)){
+		sem_wait(&sem_pokemonesObjetivoGlobal);
+		t_pokemon_entrenador* pokEnObjetivoGlobal = list_buscar(objetivoGlobalEntrenadores, nombrePokemonLlegado);
+		if(pokEnObjetivoGlobal != NULL){
+			cantidadEnObjetivoGlobal = pokEnObjetivoGlobal->cantidad;
+		}
+		sem_post(&sem_pokemonesObjetivoGlobal);
+
+		sem_wait(&sem_pokemonesGlobalesAtrapados);
+		t_pokemon_entrenador* pokEnAtrapadosGlobal = list_buscar(pokemonesAtrapadosGlobal, nombrePokemonLlegado);
+		if(pokEnAtrapadosGlobal != NULL){
+			cantidadEnAtrapadosGlobal = pokEnAtrapadosGlobal->cantidad;
+		}
+		sem_post(&sem_pokemonesGlobalesAtrapados);
+
+		sem_wait(&sem_pokemonesLibresEnElMapa);
+		for(int i = 0; i < list_size(pokemonesLibresEnElMapa); i++){
+			t_pokemon_entrenador* pokLibre = list_get(pokemonesLibresEnElMapa, i);
+			if(pokLibre->pokemon == nombrePokemonLlegado){
+				cantidadLibres += pokLibre->cantidad;
+			}
+		}
+		sem_post(&sem_pokemonesLibresEnElMapa);
+
+		sem_wait(&sem_pokemonesReservados);
+		for(int i=0; i < list_size(pokemonesReservadosEnElMapa); i++){
+			t_pokemon_entrenador_reservado* pokReservado = list_get(pokemonesReservadosEnElMapa, i);
+			if(pokReservado->pokemon == nombrePokemonLlegado){
+				cantidadEnReservados+=pokReservado->cantidad;
+			}
+		}
+		sem_post(&sem_pokemonesReservados);
+
+		printf("Cantidad en reservados es %d \n", cantidadEnReservados);
+
+		printf("Cantidad en libres es %d \n", cantidadLibres);
+
+		printf("Cantidad en objetivo global es %d \n", cantidadEnObjetivoGlobal);
+
+		printf("Cantidad en atrapados es %d \n", cantidadEnAtrapadosGlobal);
+
+		valorDeRetorno = (cantidadEnReservados + cantidadLibres) < (cantidadEnObjetivoGlobal - cantidadEnAtrapadosGlobal);
+
+	}
+
+	printf("ValorDeRetorno es %d \n", valorDeRetorno);
 
 
 	return valorDeRetorno;

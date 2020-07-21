@@ -79,4 +79,6 @@ int tieneDeadlockEntrenador(t_entrenador* unEntrenador);
 
 int cantidadDePokemonesEnLista(t_list* lista);
 
+char necesitoIrAAtraparlo(char* nombrePokemonLlegado);
+
 #endif /* SRC_UTILSTEAM_H_ */
