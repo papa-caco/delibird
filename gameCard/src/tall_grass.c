@@ -103,6 +103,7 @@ int grabar_bloque(char *block_buffer, size_t size, t_log *logger)
 	fwrite(block_buffer,sizeof(char), size, fd);
 	fclose(fd);
 	log_info(logger,"SAVE BLOCK | FILE %d.bin", block_nro);
+	incremento_cont_bloques();
 	pthread_mutex_lock(&g_mutex_cnt_blocks);
 	if (!incremento_contador_bloques()) {
 		log_error(logger, "-->>!!Sin Espacio en File System - Cerrar GAMECARD!! <<--");
@@ -230,7 +231,7 @@ int valor_magic_number(char *string_fijo)
 }
 
 int crear_archivo_pokemon(char *pokemon, t_posicion_pokemon *posicion, t_log *logger)
-{	// TODO
+{
 	t_coordenada *coordenada = malloc(sizeof(t_coordenada));
 	coordenada->pos_x = posicion->pos_x;
 	coordenada->pos_y = posicion->pos_y;
@@ -240,12 +241,12 @@ int crear_archivo_pokemon(char *pokemon, t_posicion_pokemon *posicion, t_log *lo
 	grabar_metadata_pokemon(blocks, pokemon, file_size, "N", logger);
 	list_destroy_and_destroy_elements(blocks, (void*) free);
 	free(coordenada);
-	free(posicion);
+	//free(posicion);
 	return file_size;
 }
 
 t_archivo_pokemon *abrir_archivo_pokemon(char *pokemon, t_log *logger)
-{	// TODO Falta control de archivos abiertos.
+{
 	t_archivo_pokemon *archivo = malloc(sizeof(t_archivo_pokemon));
 	int size_pokemon = strlen(pokemon) + 1;
 	archivo->pokemon = malloc(size_pokemon);
@@ -263,7 +264,7 @@ t_archivo_pokemon *abrir_archivo_pokemon(char *pokemon, t_log *logger)
 }
 
 void cerrar_archivo_pokemon(t_archivo_pokemon *archivo, t_log *logger)
-{	// TODO
+{
 	quitar_de_lista_archivos_abiertos(archivo->pokemon);
 	modificar_metadata_pokemon(archivo->pokemon, "OPEN", "N");
 	log_info(g_logger,"(Archivo Pokemon %s Cerrado)", archivo->metadata->archivo_pokemon);
@@ -286,9 +287,6 @@ int modificar_archivo_pokemon(t_archivo_pokemon *archivo, t_log *logger)
 	list_destroy(bloques);
 	char* string_blocks = generar_string_bloques_metadata(archivo->metadata->blocks);
 	char* tamano = string_itoa(archivo->metadata->size);
-	//puts(string_blocks);
-	//puts(tamano);
-	//printf("cant_bloq-d-actualiz:%d\n",archivo->metadata->blocks->elements_count);
 	modificar_metadata_pokemon(archivo->pokemon, "BLOCKS",string_blocks);
 	modificar_metadata_pokemon(archivo->pokemon, "SIZE", tamano);
 	free(tamano);
@@ -348,7 +346,7 @@ int agregar_nueva_posicion_en_archivo(t_archivo_pokemon *archivo, t_posicion_pok
 {
 	list_add(archivo->posiciones, posicion);
 	int cant_posiciones = modificar_archivo_pokemon(archivo, logger);
-	return cant_posiciones; //TODO
+	return cant_posiciones;
 }
 
 int modificar_posicion_en_archivo(t_archivo_pokemon *archivo, t_posicion_pokemon *posicion, t_log *logger)
@@ -362,7 +360,8 @@ int modificar_posicion_en_archivo(t_archivo_pokemon *archivo, t_posicion_pokemon
 	t_posicion_pokemon *position = (t_posicion_pokemon*) list_find(archivo->posiciones,(void*) misma_posicion);
 	position->cantidad += posicion->cantidad;
 	int cant_posiciones = modificar_archivo_pokemon(archivo, logger);
-	return cant_posiciones; //TODO
+	free(posicion);
+	return cant_posiciones;
 }
 
 int eliminar_posicion_en_archivo(t_archivo_pokemon *archivo, t_posicion_pokemon *posicion, t_log *logger)
@@ -379,7 +378,7 @@ int eliminar_posicion_en_archivo(t_archivo_pokemon *archivo, t_posicion_pokemon 
 		list_remove_and_destroy_by_condition(archivo->posiciones, misma_posicion,(void*) free);
 	}
 	int cant_posiciones = modificar_archivo_pokemon(archivo, logger);
-	return cant_posiciones; //TODO
+	return cant_posiciones;
 }
 
 int actualizar_posiciones_archivo(t_archivo_pokemon *archivo, t_posicion_pokemon *posicion, t_log *logger)
@@ -462,7 +461,6 @@ t_pokemon_medatada *leer_metadata_pokemon(char *pokemon,  t_log *logger)
 		t_config* metadata_file_info = config_create(path_metadata);
 		free(path_metadata);
 		char *string_bloques = config_get_string_value(metadata_file_info, "BLOCKS");
-		//puts(string_bloques);
 		size_pokemon = strlen(pokemon) + 1;
 		pokemon_metadata->archivo_pokemon = malloc(size_pokemon);
 		memcpy(pokemon_metadata->archivo_pokemon, pokemon, size_pokemon);
@@ -574,7 +572,7 @@ bool esta_abierto_archivo_pokemon(char *pokemon)
 		return resultado;
 	}
 	pthread_mutex_lock(&g_mutex_open_files_list);
-	printf("cant_arch_abiertos:%d\n", g_archivos_abiertos->elements_count);
+	//printf("cant_arch_abiertos:%d\n", g_archivos_abiertos->elements_count);
 	resultado = list_any_satisfy(g_archivos_abiertos, archivo_en_lista);
 	for (int i = 0; i < g_archivos_abiertos->elements_count; i ++) {
 		char *abierto = (char*) list_get(g_archivos_abiertos, i);
@@ -588,7 +586,7 @@ bool esta_abierto_archivo_pokemon(char *pokemon)
 		config_destroy(metadata_file_info);
 		free(path_metadata);
 	}
-	printf("abierto?:%d\n", resultado);
+	//printf("abierto?:%d\n", resultado);
 	return resultado;
 }
 
@@ -602,7 +600,7 @@ void quitar_de_lista_archivos_abiertos(char *pokemon)
 	pthread_mutex_lock(&g_mutex_open_files_list);
 	if (g_archivos_abiertos->elements_count > 0) {
 		list_remove_by_condition(g_archivos_abiertos, archivo_en_lista);
-		puts("a ver si quedan archivos abiertos");
+		//puts("a ver si quedan archivos abiertos");
 		for (int i = 0; i < g_archivos_abiertos->elements_count; i ++) {
 			char *abierto = (char*) list_get(g_archivos_abiertos, i);
 			puts(abierto);
@@ -663,12 +661,13 @@ void leer_contador_bloques(void)
 	for (int i = 0; i < g_bitmap_bloques->total_blocks; i ++) {
 		if (!bitarray_test_bit(g_bitmap_bloques->bitmap, i)) {
 			g_bitmap_bloques->nro_bloque = i;
+			//printf("nro_bloque%d\n",g_bitmap_bloques->nro_bloque);
 			i = g_bitmap_bloques->total_blocks;
 		} else {
 			used_blocks ++;
 		}
 	}
-	g_bitmap_bloques->used_blocks += used_blocks - 1;
+	g_bitmap_bloques->used_blocks += used_blocks;
 	pthread_mutex_unlock(&g_mutex_cnt_blocks);
 }
 
@@ -678,19 +677,41 @@ bool incremento_contador_bloques(void)
 	for (int i = 0; i < g_bitmap_bloques->total_blocks; i ++) {
 		if (!bitarray_test_bit(g_bitmap_bloques->bitmap, i)) {
 			bitarray_set_bit(g_bitmap_bloques->bitmap, i);
-			g_bitmap_bloques->nro_bloque = i + 1;
+			g_bitmap_bloques->nro_bloque = i ;
+			//printf("++ nro_bloque%d\n",g_bitmap_bloques->nro_bloque);
 			i = g_bitmap_bloques->total_blocks;
 			resultado = true;
-			g_bitmap_bloques->used_blocks ++;
 		}
 	}
+	g_bitmap_bloques->used_blocks ++;
 	return resultado;
+}
+
+void incremento_cont_bloques(void)
+{
+	for (int i = 0; i < g_bitmap_bloques->total_blocks; i ++) {
+		if (!bitarray_test_bit(g_bitmap_bloques->bitmap, i)) {
+			bitarray_set_bit(g_bitmap_bloques->bitmap, i);
+			g_bitmap_bloques->nro_bloque = i ;
+			//printf("++ nro_bloque%d\n",g_bitmap_bloques->nro_bloque);
+			i = g_bitmap_bloques->total_blocks;
+		}
+	}
+	g_bitmap_bloques->used_blocks ++;
 }
 
 void liberar_nro_bloque_bitmap(int block_nro)
 {	//cuando libero un bloque no hace falta decrementar g_bitmap_bloques->used_blocks
 	pthread_mutex_lock(&g_mutex_cnt_blocks);// se le resta 1 porque el bitmap arranca en cero
-	bitarray_clean_bit(g_bitmap_bloques->bitmap, (block_nro - 1));
+	bitarray_clean_bit(g_bitmap_bloques->bitmap, block_nro);
+	for (int i = 0; i < g_bitmap_bloques->total_blocks; i ++) {
+		if (!bitarray_test_bit(g_bitmap_bloques->bitmap, i)) {
+			g_bitmap_bloques->nro_bloque = i;
+			//printf("-- nro_bloque%d\n",g_bitmap_bloques->nro_bloque);
+			i = g_bitmap_bloques->total_blocks;
+		}
+	}
+	g_bitmap_bloques->used_blocks --;
 	pthread_mutex_unlock(&g_mutex_cnt_blocks);
 }
 

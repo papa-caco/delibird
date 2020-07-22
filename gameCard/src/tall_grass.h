@@ -12,18 +12,17 @@
 #define TALL_GRASS 555
 
 
-
-//Estructura del metadata
-typedef struct tall_grass {
+typedef struct tall_grass
+{	//Estructura del metadata
 	int block_size;
 	int blocks;
 	int tamano_fs;
 	int magic_number;
 } t_config_tall_grass;
 
-//Estructura de la metadata del pokemon
+
 typedef struct pokemon_metadada
-{
+{	//Estructura de la metadata del pokemon
 	char *archivo_pokemon;
 	bool directory;
 	bool open;
@@ -31,10 +30,8 @@ typedef struct pokemon_metadada
 	t_list* blocks;
 } t_pokemon_medatada;
 
-
-//Lista de todas las posiciones de los pokemons
 typedef struct pokemon_posiciones
-{
+{	//Lista de todas las posiciones de los pokemons
 	t_list *posiciones; //guarda las posicione t_posicion_pokemon
 	uint32_t cantidad_elementos;
 	uint32_t bytes;
@@ -158,6 +155,8 @@ void *abrir_archivo_bitmap(char *path, int size, t_log *logger);
 void leer_contador_bloques(void);
 
 bool incremento_contador_bloques(void);
+
+void incremento_cont_bloques(void);
 
 void liberar_nro_bloque_bitmap(int block_nro);
 

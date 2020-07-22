@@ -129,7 +129,7 @@ void lanzar_reconexion_broker_gc(t_log *logger)
 	pthread_mutex_init(&mutex_reconexion, NULL);
 	pthread_mutex_lock(&g_mutex_envio);
 	int arg = 0;
-	int thread_status = pthread_create(&tid_reconexion_gc, NULL, (void*) funciones_reconexion_gc, &arg);
+	int thread_status = pthread_create(&tid_reconexion_gc, NULL, (void*) funciones_reconexion_gc, NULL);
 	if (thread_status != 0) {
 		log_error(logger, "Error al crear el thread para reconexión con BROKER");
 		exit(EXIT_FAILURE);
@@ -138,7 +138,7 @@ void lanzar_reconexion_broker_gc(t_log *logger)
 	}
 }
 
-void funciones_reconexion_gc(int valor)
+void funciones_reconexion_gc(void)
 {
 	int intervalo = g_config_gc->tiempo_reconexion;
 	log_debug(g_logdebug, "(Intervalo para reconexión con Broker: %d segundos)\n", intervalo);
@@ -151,30 +151,9 @@ void funciones_reconexion_gc(int valor)
 	}
 }
 
-int enviar_appeared_pokemon_broker(t_msg_new_gamecard *msg_new, t_log *logger)
+int enviar_appeared_pokemon_broker(t_msg_appeared_broker *msg_appeared, t_log *logger)
 {	// ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES APPEARED_POKEMON AL BROKER ----------//
-	t_msg_appeared_broker *msj_appeared = malloc(sizeof(t_msg_appeared_broker));
-	msj_appeared->size_pokemon = msg_new->size_pokemon;
-	msj_appeared->pokemon = string_new();
-	string_append(&(msj_appeared->pokemon),msg_new->pokemon);
-	msj_appeared->id_correlativo = msg_new->id_mensaje;
-	msj_appeared->coordenada = malloc(sizeof(t_coordenada));
-	msj_appeared->coordenada->pos_x = msg_new->coord->pos_x;
-	msj_appeared->coordenada->pos_y = msg_new->coord->pos_y;
-	memcpy(msj_appeared->pokemon, msg_new->pokemon, msj_appeared->size_pokemon);
-	pthread_mutex_lock(&g_mutex_envio);
-	int thread_status = pthread_create(&tid_send_appeared, NULL, (void*) connect_broker_y_enviar_mensaje_appeared, (void*) msj_appeared);
-	if (thread_status != 0) {
-		log_error(logger, "Thread create returned %d | %s", thread_status, strerror(thread_status));
-	} else {
-		pthread_detach(tid_send_appeared);
-	}
-	//eliminar_msg_new_gamecard(msg_new);
-	return thread_status;
-}
-
-int connect_broker_y_enviar_mensaje_appeared(t_msg_appeared_broker *msg_appeared)
-{
+	pthread_mutex_lock(&g_mutex_recepcion);
 	int id_mensaje = -1;
 	char *ip = g_config_gc->ip_broker;
 	char *puerto = g_config_gc->puerto_broker;
@@ -193,7 +172,7 @@ int connect_broker_y_enviar_mensaje_appeared(t_msg_appeared_broker *msg_appeared
 			free(a_recibir);
 		}
 	}
-	pthread_mutex_unlock(&g_mutex_envio);
+	pthread_mutex_unlock(&g_mutex_recepcion);
 	eliminar_msg_appeared_broker(msg_appeared);
 	close(cliente_fd);
 	return id_mensaje;
@@ -242,18 +221,7 @@ int enviar_caught_pokemon_broker(uint32_t id_correlativo, t_result_caught result
 	t_msg_caught_broker *msg_caught = malloc(sizeof(t_msg_caught_broker));
 	msg_caught->id_correlativo = id_correlativo;
 	msg_caught->resultado = resultado;
-	pthread_mutex_lock(&g_mutex_envio);
-	int thread_status = pthread_create(&tid_send_caught, NULL,(void*) connect_broker_y_enviar_mensaje_caught, (void*) msg_caught);
-	if (thread_status != 0) {
-		log_error(logger, "Thread create returned %d | %s", thread_status, strerror(thread_status));
-	} else {
-		pthread_detach(tid_send_caught);
-	}
-	return thread_status;
-}
-
-int connect_broker_y_enviar_mensaje_caught(t_msg_caught_broker *msg_caught)
-{
+	pthread_mutex_lock(&g_mutex_recepcion);
 	int id_mensaje = -1, cliente_fd = 0;
 	char *ip = g_config_gc->ip_broker;
 	char *puerto = g_config_gc->puerto_broker;
@@ -272,7 +240,7 @@ int connect_broker_y_enviar_mensaje_caught(t_msg_caught_broker *msg_caught)
 			free(a_recibir);
 		}
 	}
-	pthread_mutex_unlock(&g_mutex_envio);
+	pthread_mutex_unlock(&g_mutex_recepcion);
 	free(msg_caught);
 	close(cliente_fd);
 	return id_mensaje;
@@ -286,7 +254,6 @@ int enviar_end_suscripcion_broker(t_tipo_mensaje cola_id, int contador_msgs, t_l
 	handshake->msjs_recibidos = contador_msgs;
 	handshake->id_recibido = handshake->msjs_recibidos;
 	handshake->cola_id = cola_id;
-
 	pthread_mutex_lock(&g_mutex_envio);
 	int thread_status = pthread_create(&tid, NULL,(void*) connect_broker_y_enviar_end_suscript, (void*) handshake);
 	if (thread_status != 0) {
@@ -317,9 +284,9 @@ void connect_broker_y_enviar_end_suscript(t_handsake_suscript *handshake)
 		}
 	}
 	pthread_mutex_unlock(&g_mutex_envio);
-	free(handshake);
 	close(cliente_fd);
-	pthread_exit(NULL);
+	free(handshake);
+	//pthread_exit(NULL);
 }
 
 int conexion_broker_gc(t_tipo_mensaje cola, t_log *logger)

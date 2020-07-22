@@ -19,19 +19,13 @@ uint32_t rcv_msjs_broker_gc(op_code codigo_operacion, int socket_cliente, t_log 
 
 void lanzar_reconexion_broker_gc(t_log *logger);
 
-void funciones_reconexion_gc(int valor);
+void funciones_reconexion_gc(void);
 
-int enviar_appeared_pokemon_broker(t_msg_new_gamecard *msg_new, t_log *logger);
-
-int connect_broker_y_enviar_mensaje_appeared(t_msg_appeared_broker *msg_appeared);
+int enviar_appeared_pokemon_broker(t_msg_appeared_broker *msg_appeared, t_log *logger);
 
 int enviar_localized_pokemon_broker(uint32_t id_correlativo, char *pokemon, t_list *posiciones, t_log *logger);
 
-int connect_broker_y_enviar_mensaje_localized(t_msg_localized_broker *msg_localized);
-
 int enviar_caught_pokemon_broker(uint32_t id_correlativo, t_result_caught resultado, t_log *logger);
-
-int connect_broker_y_enviar_mensaje_caught(t_msg_caught_broker *msg_caught);
 
 int enviar_end_suscripcion_broker(t_tipo_mensaje cola_id, int contador_msgs, t_log *logger);
 

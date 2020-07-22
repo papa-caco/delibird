@@ -118,17 +118,11 @@ void procesar_msg_catch_pokemon(t_msg_catch_gamecard *msg_catch);
 
 void encolar_operacion_tallgrass(int32_t id_correlativo, char *pokemon, t_posicion_pokemon *posicion, t_tipo_mensaje id_cola);
 
-void rcv_new_pokemon(t_msg_new_gamecard *msg);
-
 void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente);
-
-void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon);
 
 void liberar_lista_posiciones(t_list* lista);
 
 void liberar_listas(char** lista);
-
-void verificarPokemon(char* pathPokemon,t_posicion_pokemon* posicion);
 
 // Funciones para la lista de semaforos global
 
@@ -137,8 +131,6 @@ t_pokemon_semaforo *obtener_semaforo_pokemon(char* pokemon);
 void eliminar_semaforo_pokemon(char* pokemon);
 
 void crear_semaforo_pokemon(char* pokemon);
-
-void prueba_semaforo(void);
 
 char *concatenar_posiciones_pokemon(t_list *posiciones);
 
