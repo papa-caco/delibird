@@ -127,10 +127,26 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 	cargar_obtenidos_global(pokemonesObtenidos);
 	printf("-------YA TERMNINO DE CARGAR EL OBTENIDOS GLOBAL------\n");
 
+	//Capaz nos pueden llegar a mandar pokemones atrapados solo para algunos entrenadores y no para todos
+	//Lo que yo haria es contar la longitud de la lista de listas llamada "pokemonesObtenidos".
+	//Una vez que tengo la longitud, antes de hacer un list get de esa lista de listas pregunto si esa cantidad
+	//es 0. Si no lo es, entonces asigno esa lista al entrenador y decremento esa variable.
+
+	//Lo codeo pero lo dejo comentado porque ahora anda perfecto y no nos toco aun correr ninguna prueba en la que
+	//algun entrenador no llegue con pokemones atrapados desde las config
+
+	//int cantidadDeEntrenadoresConObtenidos = list_size(pokemonesObtenidos);
+
 	for(int i=0; list_get(posiciones, i) != NULL; i++){
 		t_entrenador* unEntrenador = malloc(sizeof(t_entrenador));
 		unEntrenador->posicion = (t_posicion_entrenador*)list_get(posiciones, i);
 		unEntrenador->objetivoEntrenador = (t_list*)list_get(objetivosEntrenadores, i);
+		/*if(cantidadDeEntrenadoresConObtenidos == 0){
+			unEntrenador->pokemonesObtenidos = list_create();
+		} else{
+			unEntrenador->pokemonesObtenidos = list_get(pokemonesObtenidos, cantidadDeEntrenadoresConObtenidos - 1);
+			cantidadDeEntrenadoresConObtenidos--;
+		}*/
 		unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
 		unEntrenador->id = i;
 		unEntrenador->ciclosCPU = 0;

@@ -80,8 +80,12 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 				printf("ENTRO AL CASE DE ATRAPAR \n");
 				pokemonReservado = buscarPokemonReservado(entrenador->id);
 
+				printf("Salio de buscar al reservado, el cual es %s \n", pokemonReservado->pokemon);
 
-				//int resultadoEnvioMensaje = intentarAtraparPokemon(entrenador, pokemonReservado);
+
+				int resultadoEnvioMensaje = intentarAtraparPokemon(entrenador, pokemonReservado);
+
+				printf("El resultado del mensaje es %d \n", resultadoEnvioMensaje);
 
 				sleep(g_config_team->retardo_ciclo_cpu);
 
@@ -89,19 +93,64 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 				entrenador->ciclosCPU++;
 
-			/*if (resultadoEnvioMensaje == -1) {
-				sem_wait(entrenador->mutex_entrenador);
+			if (resultadoEnvioMensaje == -1) {
+				sem_wait(&entrenador->mutex_entrenador);
 				entrenador->estado_entrenador = RECIBIO_RESPUESTA_OK;
-				sem_post(entrenador->mutex_entrenador);
+				sem_post(&entrenador->mutex_entrenador);
 			} else {
-				sem_wait(entrenador->mutex_entrenador);
+				sem_wait(&entrenador->mutex_entrenador);
 				entrenador->estado_entrenador = ESPERAR_CAUGHT;
-				sem_post(entrenador->mutex_entrenador);
-			}*/
+				sem_post(&entrenador->mutex_entrenador);
+			}
 
-				//entrenador->estado_entrenador = ESPERAR_CAUGHT;
-				entrenador->estado_entrenador = RECIBIO_RESPUESTA_OK;
+			sem_wait(&entrenador->mutex_entrenador);
+			if (entrenador->estado_entrenador == RECIBIO_RESPUESTA_OK) {
 
+				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(sizeof(t_pokemon_entrenador));
+				pokemonAAgregarConvertido->cantidad = pokemonReservado->cantidad;
+				pokemonAAgregarConvertido->pokemon = malloc(strlen(pokemonReservado->pokemon) + 1);
+				memcpy(pokemonAAgregarConvertido->pokemon, pokemonReservado->pokemon, strlen(pokemonReservado->pokemon) + 1);
+				pokemonAAgregarConvertido->posicion = malloc(sizeof(t_posicion_entrenador));
+				pokemonAAgregarConvertido->posicion->pos_x = pokemonReservado->posicion->pos_x;
+				pokemonAAgregarConvertido->posicion->pos_y = pokemonReservado->posicion->pos_y;
+
+				//Borro de la lista al pokemon reservado
+				sem_wait(&(sem_pokemonesReservados));
+				int indice;
+				for (int i = 0; i < list_size(pokemonesReservadosEnElMapa);
+						i++) {
+
+					t_pokemon_entrenador_reservado* aux =
+							((t_pokemon_entrenador_reservado*) list_get(
+									pokemonesReservadosEnElMapa, i));
+
+					if (aux == pokemonReservado) {
+						indice = i;
+					}
+				}
+				pokemonReservado = list_remove(pokemonesReservadosEnElMapa,
+						indice);
+				sem_post(&(sem_pokemonesReservados));
+
+				free(pokemonReservado->posicion);
+				free(pokemonReservado->pokemon);
+				free(pokemonReservado);
+
+				//Agrego el Poke
+				//sem_wait(&(entrenador->mutex_entrenador));
+				agregarPokemon(entrenador, pokemonAAgregarConvertido);
+				//sem_post(&(entrenador->mutex_entrenador));
+
+				//Muevo el pokemon a la lista global de atrapados
+				sem_wait(&(sem_pokemonesGlobalesAtrapados));
+				agregarPokemonAGlobalesAtrapados(pokemonAAgregarConvertido);
+				sem_post(&(sem_pokemonesGlobalesAtrapados));
+
+			}
+			sem_post(&entrenador->mutex_entrenador);
+				//entrenador->estado_entrenador = RECIBIO_RESPUESTA_OK;
+
+				/*
 	//----------EL SIGUIENTE CACHO DE CODIGO ES SOLO PARA PROBAR ESTO DE "RECIBIO_RESPUESTA_OK"
 				//CUANDO SE ARREGLE EL MENSAJE DEFAULT ESTO SE TIENE QUE BORRAR Y SE HACE DESDE LA RECECPION
 				//DEL MENSAJE
@@ -144,7 +193,7 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 //----------------------------HASTA ACA HAY QUE BORRAR---------------------------
 
-
+*/
 				log_info(g_logger,"Entrenador %d intenta atrapar al pokemon %s, en la posicion (%d,%d)", entrenador->id, pokemonReservado->pokemon, entrenador->posicion->pos_x, entrenador->posicion->pos_y);
 
 
@@ -156,7 +205,13 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 				entrenador2 = buscarEntrenadorDelIntercambio(entrenador);
 
-				intercambiarPokemon(entrenador, entrenador2);
+				if(elIntercambioEsIdeal(entrenador, entrenador2)){
+					intercambiarIdealPokemon(entrenador, entrenador2);
+				} else{
+					intercambiarNormalPokemon(entrenador, entrenador2);
+				}
+
+
 
 				entrenador->estado_entrenador = ACABO_INTERCAMBIO;
 
@@ -235,7 +290,7 @@ t_entrenador* buscarEntrenadorDelIntercambio(t_entrenador* entrenador){
 		distanciaAux = calcularDistancia(entrenador->posicion, entrenadorAux->posicion);
 
 		if(distanciaAux == 0 && entrenadorAux->estado_entrenador == DEADLOCK
-				&& puedeIntercambiarPokemon(entrenador, entrenadorAux)){
+				&& puedoIntercambiar(entrenador, entrenadorAux)){
 
 			entrenadorMasCercano = entrenadorAux;
 
@@ -253,34 +308,52 @@ t_entrenador* buscarEntrenadorDelIntercambio(t_entrenador* entrenador){
 
 }
 
-t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador){
+t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador) {
 
-	t_posicion_entrenador* posicionAMoverse;
+	t_posicion_entrenador* posicionAMoverse = NULL;
 	t_entrenador* entrenadorAux;
 
 	sem_wait(&(sem_cola_blocked));
 
 	for (int i = 0; i < queue_size(colaBlockedEntrenadores); i++) {
 
-
-
 		entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
 
-
-		if(entrenadorAux->estado_entrenador == DEADLOCK
-				&& puedeIntercambiarPokemon(entrenador, entrenadorAux)){
+		if (entrenadorAux->estado_entrenador == DEADLOCK
+				&& elIntercambioEsIdeal(entrenador, entrenadorAux)) {
 
 			posicionAMoverse = entrenadorAux->posicion;
 
 		}
 
-
 		queue_push(colaBlockedEntrenadores, entrenadorAux);
 
-		}
+	}
 
 	sem_post(&(sem_cola_blocked));
 
+	if (posicionAMoverse == NULL) {
+		sem_wait(&(sem_cola_blocked));
+
+		for (int i = 0; i < queue_size(colaBlockedEntrenadores); i++) {
+
+			entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
+
+			if (entrenadorAux->estado_entrenador == DEADLOCK
+					&& puedoIntercambiar(entrenador, entrenadorAux)) {
+
+				posicionAMoverse = entrenadorAux->posicion;
+
+			}
+
+			queue_push(colaBlockedEntrenadores, entrenadorAux);
+
+		}
+
+		sem_post(&(sem_cola_blocked));
+	}
+
+	sem_post(&(sem_cola_blocked));
 
 	return posicionAMoverse;
 
@@ -407,7 +480,7 @@ int intentarAtraparPokemon(t_entrenador* entrenador, t_pokemon_entrenador_reserv
 
 //////INTERCAMBIAR UN POKEMON/////////////
 
-void intercambiarPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2) {
+void intercambiarIdealPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2) {
 
 	t_list* pokemonesInnecesariosDT1 = pokemonesInnecesarios(entrenador1);
 	t_list* pokemonesInnecesariosDT2 = pokemonesInnecesarios(entrenador2);
@@ -479,6 +552,70 @@ void intercambiarPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2) {
 
 }
 
+void intercambiarNormalPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2){
+
+	t_list* pokemonesInnecesariosDT1 = pokemonesInnecesarios(entrenador1);
+	t_list* pokemonesInnecesariosDT2 = pokemonesInnecesarios(entrenador2);
+	t_list* pokemonesPendientesDT1 = pokemonesPendientes(entrenador1);
+
+	//NO HAY QUE LIBERAR ESTOS CUATRO!
+	t_pokemon_entrenador* pokemonInnecesario1 = malloc(sizeof(t_pokemon_entrenador));
+	//t_pokemon_entrenador* pokemonPendiente2 = malloc(sizeof(t_pokemon_entrenador));
+	t_pokemon_entrenador* pokemonInnecesario2 = malloc(sizeof(t_pokemon_entrenador));
+	//t_pokemon_entrenador* pokemonPendiente1 = malloc(sizeof(t_pokemon_entrenador));
+
+	//Busco uno que al entrenador 1 no le sirva
+	char encontreUnoQueNoSirve = 0;
+
+	for (int i = 0; i < list_size(pokemonesInnecesariosDT1); i++) {
+
+		if(encontreUnoQueNoSirve == 0){
+			encontreUnoQueNoSirve = 1;
+			t_pokemon_entrenador* pokInnecesarioAux = ((t_pokemon_entrenador*) list_get(pokemonesInnecesariosDT1, i));
+			pokemonInnecesario1->cantidad = pokInnecesarioAux->cantidad;
+			pokemonInnecesario1->pokemon = pokInnecesarioAux->pokemon;
+
+			agregarPokemon(entrenador2, pokemonInnecesario1);
+			quitarPokemon(entrenador1, pokemonInnecesario1);
+		}
+
+	}
+
+	//Busco uno que le sirva al entrenador 1, de los innecesarios del entrenador 2
+	for (int i = 0; i < list_size(pokemonesInnecesariosDT2); i++) {
+
+		t_pokemon_entrenador* pokInnecesarioAux = ((t_pokemon_entrenador*) list_get(pokemonesInnecesariosDT2, i));
+		pokemonInnecesario2->cantidad=pokInnecesarioAux->cantidad;
+		pokemonInnecesario2->pokemon=pokInnecesarioAux->pokemon;
+
+		for (int j = 0; j < list_size(pokemonesPendientesDT1); j++) {
+			t_pokemon_entrenador* pokemonPendiente1 =
+					((t_pokemon_entrenador*) list_get(pokemonesPendientesDT1, j));
+
+			if (strcmp(pokemonInnecesario2->pokemon, pokemonPendiente1->pokemon) == 0) {
+
+				agregarPokemon(entrenador1, pokemonInnecesario2);
+				quitarPokemon(entrenador2, pokemonInnecesario2);
+
+			}
+
+		}
+	}
+	//VER SI TENEMOS QUE HACERLO AFUERA POR LA PLANIFICACION RR DE QUANTUM
+	sleep((g_config_team->retardo_ciclo_cpu)*5);
+	sem_wait(&mutex_ciclosCPU);
+	ciclosCPU+=5;
+	sem_post(&mutex_ciclosCPU);
+
+	entrenador1->ciclosCPU+=5;
+	entrenador2->ciclosCPU+=5;
+
+	liberar_lista_de_pokemones(pokemonesInnecesariosDT1);
+	liberar_lista_de_pokemones(pokemonesInnecesariosDT2);
+	liberar_lista_de_pokemones(pokemonesPendientesDT1);
+
+}
+
 void agregarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon){
 
 	char loEncontro = 0;
@@ -530,7 +667,7 @@ void quitarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon) {
 }
 
 ///FALTA LIBERAR LAS 4 LISTAS
-char puedeIntercambiarPokemon(t_entrenador* entrenador1,
+char elIntercambioEsIdeal(t_entrenador* entrenador1,
 		t_entrenador* entrenador2) {
 
 	t_list* pokemonesInnecesariosDT1 = pokemonesInnecesarios(entrenador1);
@@ -587,6 +724,35 @@ char puedeIntercambiarPokemon(t_entrenador* entrenador1,
 	//Para poder intercambiar, a los dos les debe interesar el intercambio
 	return leSirveAlDT1 && leSirveAlDT2;
 
+}
+
+char puedoIntercambiar(t_entrenador* entrenadorPorEjecutar, t_entrenador* otroEntrenador){
+
+	t_list* pokemonesPendientesEntrenadorPorEjecutar = pokemonesPendientes(entrenadorPorEjecutar);
+	t_list* pokemonesInnecesariosOtroEntrenador = pokemonesInnecesarios(otroEntrenador);
+
+
+	char leSirveAlDTPorEjecutar = 0;
+
+	//Evalúo que le sirva al entrenador por ejecutar
+	for (int i = 0; i < list_size(pokemonesInnecesariosOtroEntrenador); i++) {
+
+		char* pokemonInnecesario = ((t_pokemon_entrenador*) list_get(
+				pokemonesInnecesariosOtroEntrenador, i))->pokemon;
+
+		for (int j = 0; j < list_size(pokemonesPendientesEntrenadorPorEjecutar); j++) {
+			char* pokemonPendiente = ((t_pokemon_entrenador*) list_get(
+					pokemonesPendientesEntrenadorPorEjecutar, j))->pokemon;
+
+			if (strcmp(pokemonInnecesario, pokemonPendiente) == 0) {
+
+				leSirveAlDTPorEjecutar = 1;
+
+			}
+
+		}
+	}
+	return leSirveAlDTPorEjecutar;
 }
 
 

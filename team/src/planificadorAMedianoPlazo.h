@@ -17,4 +17,6 @@ void liberar_variables_globales();
 
 void logearResultadoTeam();
 
+char todosQuierenMoverseAPokemon(t_queue* colaDeEntrenadores);
+
 #endif /* SRC_PLANIFICADORAMEDIANOPLAZO_H_ */

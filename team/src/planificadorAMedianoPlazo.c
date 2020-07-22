@@ -114,6 +114,40 @@ void planificadorMedianoPlazo() {
 
 			char encontreUnoAPasar = 0;
 
+
+			//Si todos quieren moverse a pokemon, entonces esperen a que haya pokemones en el mapa que
+			//nos sirvan. Si se encuentra uno a pasar se asigna 1 para saltear el resto de busquedas.
+			if(cantidadElementosCola != 0 && todosQuierenMoverseAPokemon(colaBlockedEntrenadores)){
+
+				//Espero que haya pokemones
+				printf("TODOS QUIEREN MOVERSE A UN POKEMON Y HAY QUE ESPERAR A QUE EN EL MAPA HAYAN POKEMONES QUE NOS SIRVAN \n");
+				sem_wait(&sem_hay_pokemones_mapa);
+
+				//Busco al primer entrenador que tiene el estado "Moverse a pokemon"
+				for (int i = 0; i < cantidadElementosCola; i++){
+					t_entrenador* entrenadorAux = (t_entrenador*) queue_pop(
+							colaBlockedEntrenadores);
+
+					if (encontreUnoAPasar == 1 || entrenadorAux->estado_entrenador != MOVERSE_A_POKEMON) {
+
+						queue_push(colaBlockedEntrenadores, entrenadorAux);
+
+					}
+					else{
+						encontreUnoAPasar = 1;
+
+						sem_wait(&sem_cola_ready);
+						queue_push(colaReadyEntrenadores, entrenadorAux);
+
+						log_info(g_logger, "Entrenador %d se movio a la cola de Ready, porque va a %s", entrenadorAux->id, estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
+
+						sem_post(&sem_cola_ready);
+
+						sem_post(&sem_planificador_cplazoReady);
+					}
+				}
+			}
+
 			for (int i = 0; i < cantidadElementosCola; i++) {
 
 				//Si entra aca quiere decir que al menos uno hay en blocked que quiere hacer algo.
@@ -163,6 +197,7 @@ void planificadorMedianoPlazo() {
 
 				//Si llego aca es porque blocked esta vacio, y en new hay alguien, por lo cual lo unico que va a
 				//querer hacer es moverse y primero me tengo que fijar si hay pokemones que me sirven en el mapa
+				printf("TODOS ESTAN EN NEW Y HAY QUE ESPERAR A QUE EN EL MAPA HAYAN POKEMONES QUE NOS SIRVAN \n");
 				sem_wait(&sem_hay_pokemones_mapa);
 
 				t_entrenador* entrenadorAux = (t_entrenador*) queue_pop(
@@ -201,6 +236,8 @@ void planificadorMedianoPlazo() {
 				//Si está en deadlock entonces lo que tenemos que hacer es cambiarle el estado para que pueda
 				//moverse a un entrenador
 				entrenadorAux->estado_entrenador = MOVERSE_A_ENTRENADOR;
+
+				log_info(g_logger,"Entrenador %d se movio a la cola de Ready, porque va a %s", entrenadorAux->id, estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
 
 				//pasarlo a la cola de ready
 				sem_wait(&sem_cola_ready);
@@ -280,33 +317,33 @@ void liberar_variables_globales(){
 			free(entrenador);
 		}
 
-		printf("Libero a los entrenadores \n");
-
 	    queue_destroy(colaReadyEntrenadores);
 
 	    queue_destroy(colaBlockedEntrenadores);
 
 	    queue_destroy(colaExitEntrenadores);
 
-	    printf("Libero las colas de entrenadores \n");
-
 		if(pokemonesLibresEnElMapa->elements_count == 0){
 			list_destroy(pokemonesLibresEnElMapa);
+		} else{
+			liberar_lista_de_pokemones(pokemonesLibresEnElMapa);
 		}
 
 		list_destroy(pokemonesReservadosEnElMapa);
 
-		liberar_lista_de_pokemones(pokemonesAtrapadosGlobal);
+		list_clean(pokemonesAtrapadosGlobal);
 
-		printf("Libero las listas de pokemones \n");
+		list_destroy(pokemonesAtrapadosGlobal);
+
+		list_clean(objetivoGlobalEntrenadores);
+
+		list_destroy(objetivoGlobalEntrenadores);
 
 		liberar_lista(idCorrelativosCatch);
 
 		list_destroy(idCorrelativosGet);
 
 		liberar_lista(pokemonesLlegadosDelBroker);
-
-		printf("Libero las listas de pokemones \n");
 
 
 		//--------------SEMAFOROS LISTAS DE POKEMONES------------------------------
@@ -318,7 +355,6 @@ void liberar_variables_globales(){
 		sem_destroy(&sem_pokemonesLibresEnElMapa);
 
 		sem_destroy(&sem_pokemonesObjetivoGlobal);
-
 
 
 		//---------------SEMAFOROS COLAS DE ENTRENADORES---------------------------
@@ -358,7 +394,6 @@ void liberar_variables_globales(){
 
 		sem_destroy(&mutex_entrenador);
 
-
 }
 
 void logearResultadoTeam(){
@@ -379,5 +414,26 @@ void logearResultadoTeam(){
 			}
 
 
+}
+
+//Filtrando a los que estan en blocked o esperando respuesta caught, se fija si todos quieren moverse a pokemon
+char todosQuierenMoverseAPokemon(t_queue* colaDeEntrenadores){
+
+	char valorDeRetorno = 1;
+
+	for(int i=0; i < queue_size(colaDeEntrenadores); i++){
+
+		t_entrenador* unEntrenador = queue_pop(colaDeEntrenadores);
+
+		if(unEntrenador->estado_entrenador == DEADLOCK || unEntrenador->estado_entrenador == ESPERAR_CAUGHT ||
+				unEntrenador->estado_entrenador == MOVERSE_A_POKEMON){
+			queue_push(colaDeEntrenadores, unEntrenador);
+		} else{
+			valorDeRetorno = 0;
+			queue_push(colaDeEntrenadores, unEntrenador);
+		}
+
+	}
+	return valorDeRetorno;
 }
 
