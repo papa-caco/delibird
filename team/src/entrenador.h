@@ -30,7 +30,9 @@ t_pokemon_entrenador_reservado* moverPokemonAReservados(t_pokemon_entrenador* po
 
 int intentarAtraparPokemon(t_entrenador* entrenador, t_pokemon_entrenador_reservado* pokemon);
 
-char puedeIntercambiarPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2);
+char elIntercambioEsIdeal(t_entrenador* entrenador1, t_entrenador* entrenador2);
+
+char puedoIntercambiar(t_entrenador* entrenadorPorEjecutar, t_entrenador* otroEntrenador);
 
 t_list* pokemonesInnecesarios(t_entrenador* entrenador);
 
@@ -38,7 +40,9 @@ t_list* pokemonesPendientes(t_entrenador* entrenador);
 
 int calcularDistancia(t_posicion_entrenador* posicionActual, t_posicion_entrenador* posicionAMoverse);
 
-void intercambiarPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2);
+void intercambiarIdealPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2);
+
+void intercambiarNormalPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2);
 
 void agregarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon);
 

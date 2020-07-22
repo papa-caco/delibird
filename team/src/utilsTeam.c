@@ -83,6 +83,51 @@ int connect_broker_y_enviar_mensaje_get(t_msg_get_broker *msg_get) {
 }
 
 // ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES CATCH_POKEMON AL BROKER ----------//
+int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon,t_log *logger, int id_entrenador)
+{    // ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES CATCH_POKEMON AL BROKER ----------//
+    int id_mensaje = -1;
+    t_msg_catch_broker* msg_catch = malloc(sizeof(t_msg_catch_broker));
+    msg_catch->coordenada = malloc(sizeof(t_coordenada));
+    msg_catch->coordenada->pos_x = pos_x;
+    msg_catch->coordenada->pos_y = pos_y;
+    msg_catch->size_pokemon = strlen(pokemon) + 1;
+    msg_catch->pokemon = malloc(msg_catch->size_pokemon);
+    memcpy(msg_catch->pokemon, pokemon, msg_catch->size_pokemon);
+    t_mensaje_Caugth_and_IdEntrenador* args;
+    args->msg_catch_broker = msg_catch;
+    args->id_entrenador = id_entrenador;
+    char *ip = g_config_team->ip_broker;
+    char *puerto = g_config_team->puerto_broker;
+    char *proceso = "BROKER";
+    char *name_cola = nombre_cola(CATCH_POKEMON);
+    sem_wait(&sem_mutex_msjs);
+    int cliente_fd = crear_conexion(ip, puerto, g_logger, proceso, name_cola);
+    if (cliente_fd > 0) {
+        enviar_msj_catch_broker(cliente_fd, g_logger, args->msg_catch_broker);
+        op_code code_op = rcv_codigo_operacion(cliente_fd);
+        if (code_op == ID_MENSAJE) {
+            id_mensaje = rcv_id_mensaje(cliente_fd, g_logger);
+        } else if (code_op == MSG_ERROR) {
+            void* a_recibir = recibir_buffer(cliente_fd, &id_mensaje);
+            log_warning(g_logger, "(RECEIVING: |%s)", a_recibir);
+            free(a_recibir);
+        }
+    }
+    sem_post(&sem_mutex_msjs);
+    close(cliente_fd);
+    eliminar_msg_catch_broker(args->msg_catch_broker);
+    t_id_Correlativo_and_Entrenador* ids = malloc(sizeof(t_id_Correlativo_and_Entrenador));
+    ids->id_Correlativo = id_mensaje;
+    ids->id_Entrenador = args->id_entrenador;
+    sem_wait(&mutex_idCorrelativos);
+    if (ids->id_Correlativo != -1) {
+        list_add(idCorrelativosCatch, ids);
+    }
+    sem_post(&mutex_idCorrelativos);
+
+    return id_mensaje;
+}
+/*
 int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon,
 		t_log *logger, int id_entrenador) {
 	t_msg_catch_broker *msg_catch = malloc(sizeof(t_msg_catch_broker));
@@ -138,6 +183,7 @@ int connect_broker_y_enviar_mensaje_catch(
 
 	return id_mensaje;
 }
+*/
 
 /*int connect_broker_y_enviar_mensaje_catch(
 		t_mensaje_Caugth_and_IdEntrenador* args) {
