@@ -57,7 +57,7 @@ void cargar_argumentos(t_mensaje_gameboy *argumentos_mensaje, t_list *lista) {
 }
 
 bool validar_argumentos(t_mensaje_gameboy *argumentos_mensaje) {
-	int proceso = argumentos_mensaje->proceso;
+	t_proceso proceso = argumentos_mensaje->proceso;
 	int tipo_mensaje = argumentos_mensaje->tipo_mensaje;
 	int cant_argumentos = argumentos_mensaje->argumentos->elements_count;
 	int resultado;

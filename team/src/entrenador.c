@@ -128,10 +128,11 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 						indice = i;
 					}
 				}
-				pokemonReservado = list_remove(pokemonesReservadosEnElMapa,
-						indice);
+				pokemonReservado = list_remove(pokemonesReservadosEnElMapa, indice);
 				sem_post(&(sem_pokemonesReservados));
-
+				//-->> Les repetí la línea del log porque abajo le hacen free  al Pokemon y se imprimía mal
+				log_info(g_logger,"Entrenador %d intenta atrapar al pokemon %s, en la posicion (%d,%d)", entrenador->id,
+					pokemonReservado->pokemon, entrenador->posicion->pos_x, entrenador->posicion->pos_y);
 				free(pokemonReservado->posicion);
 				free(pokemonReservado->pokemon);
 				free(pokemonReservado);
@@ -194,8 +195,10 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 //----------------------------HASTA ACA HAY QUE BORRAR---------------------------
 
 */
-				log_info(g_logger,"Entrenador %d intenta atrapar al pokemon %s, en la posicion (%d,%d)", entrenador->id, pokemonReservado->pokemon, entrenador->posicion->pos_x, entrenador->posicion->pos_y);
-
+			if (entrenador->estado_entrenador != RECIBIO_RESPUESTA_OK) {
+				log_info(g_logger,"Entrenador %d intenta atrapar al pokemon %s, en la posicion (%d,%d)",
+						entrenador->id, pokemonReservado->pokemon, entrenador->posicion->pos_x, entrenador->posicion->pos_y);
+			} // -->> Acá le dejé el log con la condición del estado entrenador
 
 				sem_post(&(sem_planificador_cplazoEntrenador));
 
