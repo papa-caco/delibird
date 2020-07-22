@@ -136,18 +136,30 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 	//Lo codeo pero lo dejo comentado porque ahora anda perfecto y no nos toco aun correr ninguna prueba en la que
 	//algun entrenador no llegue con pokemones atrapados desde las config
 
-	int cantidadDeEntrenadoresConObtenidos = list_size(pokemonesObtenidos);
+	//int cantidadDeEntrenadoresConObtenidos = list_size(pokemonesObtenidos);
 
 	for(int i=0; list_get(posiciones, i) != NULL; i++){
 		t_entrenador* unEntrenador = malloc(sizeof(t_entrenador));
 		unEntrenador->posicion = (t_posicion_entrenador*)list_get(posiciones, i);
 		unEntrenador->objetivoEntrenador = (t_list*)list_get(objetivosEntrenadores, i);
-		if(cantidadDeEntrenadoresConObtenidos == 0){
+
+
+		t_list* obtenidos = (t_list*) list_get(pokemonesObtenidos, i);
+		if (obtenidos == NULL) {
+			unEntrenador->pokemonesObtenidos = list_create();
+		} else {
+			unEntrenador->pokemonesObtenidos = obtenidos;
+		}
+		//unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
+
+
+
+		/*if(cantidadDeEntrenadoresConObtenidos == 0){
 			unEntrenador->pokemonesObtenidos = list_create();
 		} else{
 			unEntrenador->pokemonesObtenidos = list_get(pokemonesObtenidos, cantidadDeEntrenadoresConObtenidos - 1);
 			cantidadDeEntrenadoresConObtenidos--;
-		}
+		}*/
 		unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
 		unEntrenador->id = i;
 		unEntrenador->ciclosCPU = 0;

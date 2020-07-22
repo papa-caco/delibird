@@ -205,8 +205,10 @@ void planificadorMedianoPlazo() {
 				printf("TODOS ESTAN EN NEW Y HAY QUE ESPERAR A QUE EN EL MAPA HAYAN POKEMONES QUE NOS SIRVAN \n");
 				sem_wait(&sem_hay_pokemones_mapa);
 
-				t_entrenador* entrenadorAux = (t_entrenador*) queue_pop(
-						colaNewEntrenadores);
+				t_entrenador* entrenadorAux = buscarEntrenadorMasCercanoAPokemon();
+
+				//t_entrenador* entrenadorAux = (t_entrenador*) queue_pop(
+						//colaNewEntrenadores);
 
 				queue_push(colaReadyEntrenadores, entrenadorAux);
 
@@ -466,4 +468,52 @@ char todosQuierenMoverseAPokemon(t_queue* colaDeEntrenadores) {
 
 	//printf("El valorDeRetorno es %d \n", valorDeRetorno);
 	return valorDeRetorno;
+}
+
+t_entrenador* buscarEntrenadorMasCercanoAPokemon(void){
+
+	int distanciaMasCorta = 100000;
+	t_entrenador* unEntrenador = NULL;
+
+	for(int i = 0; i < queue_size(colaNewEntrenadores); i++){
+
+		unEntrenador = queue_pop(colaNewEntrenadores);
+		printf("Entrenador %d \n", unEntrenador->id);
+		t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(unEntrenador->posicion);
+		puts(pokemonCercano->pokemon);
+		int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion, pokemonCercano->posicion);
+
+		if(distanciaEntreAmbos < distanciaMasCorta){
+			distanciaMasCorta = distanciaEntreAmbos;
+		}
+
+		queue_push(colaNewEntrenadores, unEntrenador);
+
+	}
+
+	printf("La distancia mas corta es %d \n", distanciaMasCorta);
+
+	printf("Cantidad de entrenadores es %d \n", queue_size(colaNewEntrenadores));
+
+	//unEntrenador = NULL;
+
+	for (int i = 0; i < queue_size(colaNewEntrenadores); i++) {
+
+		unEntrenador = queue_pop(colaNewEntrenadores);
+		printf("Entrenador %d \n", unEntrenador->id);
+		t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(unEntrenador->posicion);
+		int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion, pokemonCercano->posicion);
+
+		if (distanciaEntreAmbos == distanciaMasCorta) {
+			unEntrenador = queue_pop(colaNewEntrenadores);
+		}else {
+			queue_push(colaNewEntrenadores, unEntrenador);
+		}
+
+	}
+
+	printf("El entrenador que va a pasar de New a Ready es %d \n", unEntrenador->id);
+
+
+	return unEntrenador;
 }
