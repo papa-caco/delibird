@@ -11,6 +11,10 @@
 #include <delibird/conexiones.h>
 #include <delibird/mensajeria.h>
 #include <delibird/serializaciones.h>
+#include <signal.h>
+#include <time.h>
+#include <math.h>
+#include <commons/process.h>
 #include <commons/txt.h>
 #include <sys/stat.h>
 #include "tall_grass.h"
@@ -64,7 +68,15 @@ sem_t sem_mutex_semaforos;
 
 sem_t mutex_msjs_gc;
 
-pthread_mutex_t g_mutex_cnt_blocks;
+pthread_t tid_send_appeared;
+
+pthread_t tid_send_caught;
+
+pthread_t tid_send_localized;
+
+pthread_mutex_t g_mutex_envio;
+
+pthread_mutex_t g_mutex_recepcion;
 
 bool status_conexion_broker;
 
@@ -88,37 +100,41 @@ void iniciar_estructuras_gamecard(void);
 
 void leer_config(void);
 
-void procesar_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger);
+void atender_gameboy_gc(int *cliente_fd);
+
+void recibir_msjs_gameboy(op_code cod_op, int *cliente_fd, t_log *logger);
+
+int recibir_msg_get_pokemon(t_msg_get_gamecard *msg_get, t_log *logger);
+
+void procesar_msg_get_pokemon(t_msg_get_gamecard *msg_get);
+
+int recibir_msg_new_pokemon(t_msg_new_gamecard *msg_new, t_log *logger);
+
+void procesar_msg_new_pokemon(t_msg_new_gamecard *msg_new);
+
+int recibir_msg_catch_pokemon(t_msg_catch_gamecard *msg_catch, t_log *logger);
+
+void procesar_msg_catch_pokemon(t_msg_catch_gamecard *msg_catch);
+
+void encolar_operacion_tallgrass(int32_t id_correlativo, char *pokemon, t_posicion_pokemon *posicion, t_tipo_mensaje id_cola);
 
 void rcv_new_pokemon(t_msg_new_gamecard *msg);
 
-void devolver_appeared_pokemon(t_msg_new_gamecard *msg, int socket_cliente);
-
-void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon);
-
-//void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon);
-
 void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente);
 
-void rcv_get_pokemon(t_msg_get_gamecard *msg, int socket_cliente);
+void devolver_posiciones(int socket_cliente, char* pokemon,	int* encontroPokemon);
 
 void liberar_lista_posiciones(t_list* lista);
 
 void liberar_listas(char** lista);
 
-
-
-int tamano_recibido(int bytes);
-
-//void verificarPokemon(char* pathPokemon,t_posicion_pokemon* posicion);
+void verificarPokemon(char* pathPokemon,t_posicion_pokemon* posicion);
 
 // Funciones para la lista de semaforos global
 
 t_pokemon_semaforo *obtener_semaforo_pokemon(char* pokemon);
 
 void eliminar_semaforo_pokemon(char* pokemon);
-
-void crear_semaforos_pokemon();
 
 void crear_semaforo_pokemon(char* pokemon);
 
@@ -128,7 +144,7 @@ char *concatenar_posiciones_pokemon(t_list *posiciones);
 
 bool es_cod_oper_mensaje_gamecard(op_code codigo_operacion);
 
-t_list* obtener_posiciones_pokemon(char* pokemon, t_posicion_pokemon *posicion, int incrementar_posicion);
+bool nro_par(int numero);
 
 #endif
 // export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/utnso/tp-2020-1c-Los-Que-Aprueban/delibird/build

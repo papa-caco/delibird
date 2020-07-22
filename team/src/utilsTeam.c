@@ -985,4 +985,3 @@ char necesitoIrAAtraparlo(char* nombrePokemonLlegado){
 
 	return valorDeRetorno;
 }
-

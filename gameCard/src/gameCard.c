@@ -10,7 +10,12 @@
 #include "utils_gc.h"
 #include "tall_grass.h"
 
+pthread_t thread;
+
+
 int main(void) {
 	iniciar_gamecard();
 	inicio_server_gamecard();
 }
+
+

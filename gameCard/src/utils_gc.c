@@ -5,28 +5,20 @@
  *      Author: utnso
  */
 #include "utils_gc.h"
-#include "suscripcion.h"
-#include "tall_grass.h"
 
 void iniciar_gamecard(void)
 {
 	leer_config();
 	iniciar_log_gamecard();
 	iniciar_estructuras_gamecard();
-
-
-//	prueba_semaforo();
-	//prueba_file_system("Chorizo",50);
-	//prueba_leer_bloques_pokemon("Choripa");
+	manejo_senial_externa_gc();
 	iniciar_suscripciones_broker_gc(g_logger);
 	lanzar_reconexion_broker_gc(g_logger);
+	//prueba_file_system("Charizard",10);
+	//prueba_file_system("Pikachu",14);
+	//prueba_leer_bloques_pokemon("Charizard");
+	//prueba_semaforo();
 
-
-		//prueba_semaforo();
-		//prueba_file_system("Charizard",40);
-		//prueba_leer_bloques_pokemon("Charizard");
-		//iniciar_suscripcion();
-		//inicio_server_game_card();
 }
 
 void iniciar_log_gamecard(void)
@@ -35,8 +27,8 @@ void iniciar_log_gamecard(void)
 	if (g_config_gc->show_logs_on_screen) {
 		log_habilitado = true;
 	}
-	g_logger = log_create(g_config_gc->ruta_log, "GAME_CARD", log_habilitado, LOG_LEVEL_DEBUG);
-	g_logdebug = log_create(PATH_LOG, "GAMECARD_DBG", log_habilitado, LOG_LEVEL_DEBUG);
+	g_logger = log_create(g_config_gc->ruta_log, "GAME_CARD", log_habilitado, LOG_LEVEL_TRACE);
+	g_logdebug = log_create(PATH_LOG, "GAMECARD_DBG", log_habilitado, LOG_LEVEL_TRACE);
 	log_info(g_logger, "INICIO_LOG_SUCESS");
 }
 
@@ -60,18 +52,12 @@ void leer_config(void)
 	g_config_gc->ruta_bitmap = config_get_string_value(gc_config, "RUTA_BITMAP");
 }
 
-void finalizar_log(void) {
-	log_destroy(g_logger);
-}
-void destruir_config(void) {
-	//config_destroy(config);
-}
-
-void inicio_server_gamecard(void) {
+void inicio_server_gamecard(void)
+{
 	char *ip = g_config_gc->ip_gamecard;
 	char *puerto = g_config_gc->puerto_gamecard;
 	puts("");
-	iniciar_servidor(ip, puerto, g_logger);
+	iniciar_servidor_gc(ip, puerto, g_mutex_recepcion, g_logger);
 }
 
 void iniciar_estructuras_gamecard(void)
@@ -79,8 +65,13 @@ void iniciar_estructuras_gamecard(void)
 	sem_init(&sem_mutex_suscripcion, 0, 1);
 	sem_init(&sem_mutex_semaforos, 0, 1);
 	pthread_mutex_init(&g_mutex_cnt_blocks, 0);
+	pthread_mutex_init(&g_mutex_tallgrass, 0);
+	pthread_mutex_init(&g_mutex_envio, 0);
+	pthread_mutex_init(&g_mutex_recepcion, 0);
+	pthread_mutex_init(&g_mutex_open_files_list, 0);
+	pthread_mutex_init(&g_mutex_reintentos, 0);
+	g_reintentos = list_create();
 	semaforos_pokemon = list_create();
-	crear_semaforos_pokemon();
 	leer_metadata_tall_grass(g_logdebug);
 	inicializar_bitmap_tallgrass(g_logdebug);
 	iniciar_cnt_msjs_gc();
@@ -88,70 +79,294 @@ void iniciar_estructuras_gamecard(void)
 	sem_init(&mutex_msjs_gc, 0, 1);
 }
 
-void atender_gameboy(int *cliente_fd) {
+void atender_gameboy_gc(int *cliente_fd)
+{
+	pthread_mutex_lock(&g_mutex_recepcion);
+	log_trace(g_logger,"(NEW CLIENT CONNECTED | SOCKET#:%d)", *cliente_fd);
 	op_code cod_op;
 	if (recv(*cliente_fd, &cod_op, sizeof(op_code), MSG_WAITALL) == -1) {
 		cod_op = -1;
 	}
 	if (es_cod_oper_mensaje_gamecard(cod_op)) {
-		procesar_msjs_gameboy(cod_op, *cliente_fd, g_logger);
+		recibir_msjs_gameboy(cod_op, cliente_fd, g_logger);
 	} else {
 		log_error(g_logger, "RECIBI MSJ EQUIVOCADO DEL GAMEBOY");
 	}
 }
 
-void procesar_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger)
+void recibir_msjs_gameboy(op_code cod_op, int *cliente_fd, t_log *logger)
 {	// Procesa los diferentes mensajes que recibe del GAMEBOY
 	switch (cod_op) {
 	case GET_GAMECARD:;
-		t_msg_get_gamecard *msg_get = rcv_msj_get_gamecard(cliente_fd, logger);
-		//TODO Hacer lo que corresponda con el msg_get (funcion que dispare un nuevo hilo)
-		enviar_msg_confirmed(cliente_fd, logger);
-		rcv_get_pokemon(msg_get,cliente_fd);
-		eliminar_msg_get_gamecard(msg_get);
+		t_msg_get_gamecard *msg_get = rcv_msj_get_gamecard(*cliente_fd, logger);
+		enviar_msg_confirmed(*cliente_fd, logger);
+		pthread_mutex_unlock(&g_mutex_recepcion);
+		recibir_msg_get_pokemon(msg_get, logger);
+		puts("");
 		break;
 	case CATCH_GAMECARD:;
-		t_msg_catch_gamecard *msg_catch = rcv_msj_catch_gamecard(cliente_fd, logger);
-		//TODO (funcion que dispare un nuevo hilo)
-		enviar_msg_confirmed(cliente_fd, logger);
-		devolver_caught_pokemon(msg_catch, cliente_fd);
-		eliminar_msg_catch_gamecard(msg_catch);
+		t_msg_catch_gamecard *msg_catch = rcv_msj_catch_gamecard(*cliente_fd, logger);
+		enviar_msg_confirmed(*cliente_fd, logger);
+		pthread_mutex_unlock(&g_mutex_recepcion);
+		recibir_msg_catch_pokemon(msg_catch, logger);
+		puts("");
 		break;
 	case NEW_GAMECARD:;
-		t_msg_new_gamecard *msg_new = rcv_msj_new_gamecard(cliente_fd, logger);
-		//TODO  (funcion que dispare un nuevo hilo)
-		enviar_msg_confirmed(cliente_fd, logger);
-		rcv_new_pokemon(msg_new);
-		devolver_appeared_pokemon(msg_new, cliente_fd);
-		eliminar_msg_new_gamecard(msg_new);
+		t_msg_new_gamecard *msg_new = rcv_msj_new_gamecard(*cliente_fd, logger);
+		enviar_msg_confirmed(*cliente_fd, logger);
+		pthread_mutex_unlock(&g_mutex_recepcion);
+		recibir_msg_new_pokemon(msg_new, logger);
+		puts("");
 		break;
 	}
-	close(cliente_fd);
+	close(*cliente_fd);
+	free(cliente_fd);
 }
 
+int recibir_msg_get_pokemon(t_msg_get_gamecard *msg_get, t_log *logger)
+{
+	pthread_t tid;
+	int thread_status = pthread_create(&tid, NULL, (void*) procesar_msg_get_pokemon, (void*) msg_get);
+	if (thread_status != 0) {
+		log_error(logger, "Thread create returned %d | %s", thread_status, strerror(thread_status));
+	} else {
+		pthread_detach(tid);
+	}
+	return thread_status;
+}
 
+void procesar_msg_get_pokemon(t_msg_get_gamecard *msg_get)
+{
+	uint32_t id_correlativo = msg_get->id_mensaje;
+	char *pokemon = msg_get->pokemon;
+	t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
+	if (!existe_archivo_pokemon(pokemon)) {
+		log_warning(g_logger,"(-->> El archivo Pokemon %s no existe en el File System <<--)", pokemon);
+	} else if (esta_abierto_archivo_pokemon(pokemon)) {
+		log_warning(g_logger,"(-->> Archivo Pokemon %s bloqueado por otro mensaje <<--)", pokemon);
+			encolar_operacion_tallgrass(id_correlativo, pokemon, posicion, GET_POKEMON);
+	} else {
+		pthread_mutex_lock(&g_mutex_tallgrass);
+		t_archivo_pokemon *archivo = abrir_archivo_pokemon(pokemon, g_logger);
+		t_list *coordenadas = obtener_coordenadas_archivo_pokemon(archivo, g_logger);
+		cerrar_archivo_pokemon(archivo, g_logger);
+		puts("");
+		pthread_mutex_unlock(&g_mutex_tallgrass);
+		enviar_localized_pokemon_broker(id_correlativo, pokemon, coordenadas, g_logger);
+	}
+	free(posicion);
+	eliminar_msg_get_gamecard(msg_get);
+	pthread_exit(NULL);
+}
 
+int recibir_msg_new_pokemon(t_msg_new_gamecard *msg_new, t_log *logger)
+{
+	pthread_t tid;
+	int thread_status = pthread_create(&tid, NULL, (void*) procesar_msg_new_pokemon, (void*) msg_new);
+	if (thread_status != 0) {
+		log_error(logger, "Thread create returned %d | %s", thread_status, strerror(thread_status));
+	} else {
+		pthread_detach(tid);
+	}
+	return thread_status;
+}
 
+void procesar_msg_new_pokemon(t_msg_new_gamecard *msg_new)
+{
+	uint32_t id_correlativo = msg_new->id_mensaje;
+	bool encolado = false;
+	char *pokemon = string_new();
+	string_append(&pokemon, msg_new->pokemon);
+	//memcpy(pokemon, msg_new->pokemon, msg_new->size_pokemon);
+	t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
+	memcpy(&posicion->pos_x, &msg_new->coord->pos_x, sizeof(uint32_t));
+	memcpy(&posicion->pos_y, &msg_new->coord->pos_y, sizeof(uint32_t));
+	memcpy(&posicion->cantidad, &msg_new->cantidad, sizeof(uint32_t));
+	if (!existe_archivo_pokemon(pokemon)) {
+		log_info(g_logger,"(El archivo Pokemon %s no existe en el File System - Creando Nuevo)", pokemon);
+		crear_archivo_pokemon(pokemon, posicion, g_logger);
+	} else if (esta_abierto_archivo_pokemon(pokemon)) {
+		log_warning(g_logger,"(-->> Archivo Pokemon %s bloqueado por otro mensaje <<--)", pokemon);
+		encolar_operacion_tallgrass(id_correlativo, pokemon, posicion, NEW_POKEMON);
+		encolado = true;
+	} else {
+		pthread_mutex_lock(&g_mutex_tallgrass);
+		t_archivo_pokemon *archivo = abrir_archivo_pokemon(pokemon, g_logger);
+		actualizar_posiciones_archivo(archivo, posicion, g_logger);
+		cerrar_archivo_pokemon(archivo, g_logger);
+		puts("");
+		pthread_mutex_unlock(&g_mutex_tallgrass);
+	}
+	if (!encolado){
+		enviar_appeared_pokemon_broker(msg_new, g_logger);
+	}
+	free(pokemon);
+	//free(posicion);
+	puts("fin-new");
+	pthread_exit(NULL);
+}
 
+int recibir_msg_catch_pokemon(t_msg_catch_gamecard *msg_catch, t_log *logger)
+{
+	pthread_t tid;
+	int thread_status = pthread_create(&tid, NULL, (void*) procesar_msg_catch_pokemon, (void*) msg_catch);
+	if (thread_status != 0) {
+		log_error(logger, "Thread create returned %d | %s", thread_status, strerror(thread_status));
+	} else {
+		pthread_detach(tid);
+	}
+	return thread_status;
+}
 
-void devolver_recepcion_fail(int socket_cliente, char* mensajeError) {
+void procesar_msg_catch_pokemon(t_msg_catch_gamecard *msg_catch)
+{
+	uint32_t id_correlativo = msg_catch->id_mensaje;
+	t_result_caught resultado = FAIL;
+	char *pokemon = msg_catch->pokemon;
+	t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
+	posicion->pos_x = msg_catch->coord->pos_x;
+	posicion->pos_y = msg_catch->coord->pos_y;
+	posicion->cantidad = 1;
+	if (!existe_archivo_pokemon(pokemon)) {
+		log_warning(g_logger,"(-->> El archivo Pokemon %s no existe en el File System <<--)", pokemon);
+	} else if (esta_abierto_archivo_pokemon(pokemon)) {
+		log_warning(g_logger,"(-->> Archivo Pokemon %s bloqueado por otro mensaje <<--)", pokemon);
+		encolar_operacion_tallgrass(id_correlativo, pokemon, posicion, CATCH_BROKER);
+	} else {
+		pthread_mutex_lock(&g_mutex_tallgrass);
+		t_archivo_pokemon *archivo = abrir_archivo_pokemon(pokemon, g_logger);
+		if (!existe_posicion_en_archivo(archivo, posicion)) {
+			log_warning(g_logger,"(-->>No existe Posición [X=%d|Y=%d] en Archivo Pokemon %s <<--)",
+				posicion->pos_x, posicion->pos_y, pokemon);
+		} else {
+			eliminar_posicion_en_archivo(archivo, posicion, g_logger);
+			resultado = OK;
+		}
+		cerrar_archivo_pokemon(archivo, g_logger);
+		puts("");
+		pthread_mutex_unlock(&g_mutex_tallgrass);
+		enviar_caught_pokemon_broker(id_correlativo, resultado, g_logger);
+	}
+	free(posicion);
+	eliminar_msg_catch_gamecard(msg_catch);
+	pthread_exit(NULL);
+}
+
+void encolar_operacion_tallgrass(int32_t id_correlativo, char *pokemon, t_posicion_pokemon *posicion, t_tipo_mensaje cola)
+{
+	//TODO
+}
+
+void rcv_new_pokemon(t_msg_new_gamecard *msg)
+{/* 1.  Verificar si el Pokémon existe dentro de nuestro Filesystem. Para esto se deberá buscar
+		dentro del directorio Pokemon si existe el archivo con el nombre de nuestro pokémon. En
+		caso de no existir se deberá crear.
+	2.  Verificar si se puede abrir el archivo (si no hay otro proceso que lo esté abriendo). En caso
+		que el archivo se encuentre abierto se deberá reintentar la operación luego de un tiempo
+		definido en el archivo de configuración.
+	3.  Verificar si las posiciones ya existen dentro del archivo. En caso de existir, se deben agregar
+		la cantidad pasada por parámetro a la actual. En caso de no existir se debe agregar al final
+		del archivo una nueva línea indicando la cantidad de pokémon pasadas.
+	4.  Esperar la cantidad de segundos definidos por archivo de configuración
+	5.  Cerrar el archivo.
+	6.  Conectarse al Broker y enviar el mensaje a la Cola de Mensajes APPEARED_POKEMON con
+		los los datos:
+		○ ID del mensaje recibido.
+		○ Pokemon.
+		○ Posición del mapa.
+		En caso que no se pueda realizar la conexión con el Broker se debe informar por logs y continuar la
+		ejecución.*/
+	t_pokemon_semaforo *semaforo_pokemon = obtener_semaforo_pokemon(msg->pokemon);
+	// SI ES NULL, EL POKEMON NO ESTÁ CREADO EN EL FS
+	if (msg->id_mensaje == GET_POKEMON) {
+	if (semaforo_pokemon == NULL) {
+			// DEVOLVER MENSAJES SIN POSICIONES NI CANTIDADES
+	} else {
+			// SI SE ENCUENTRA AL MENOS 1
+			sem_wait(&semaforo_pokemon->semaforo);
+			// RETORNAR TODAS LAS POSICIONES A LA COLA LOCALIZED_POKEMON DEL BROKER
+			sem_post(&semaforo_pokemon->semaforo);
+		}
+	} else {
+			// ESTE ES EL CASO DE SI ES UN NEW POKEMON
+		if (semaforo_pokemon == NULL) {
+			// LOGICA DE CREACION DE NUEVO ARCHIVO EN EL FS
+			crear_semaforo_pokemon(msg->pokemon);
+		} else {
+			sem_wait(&semaforo_pokemon->semaforo);
+			// SE OBTIENE EL ARCHIVO
+			// SE PREGUNTA POR EL "OPEN" Y SE LIBERA EL SEMAFORO
+			sem_post(&semaforo_pokemon->semaforo);
+			// UNA VEZ SETEADO EL OPEN EN "Y", SE PROCEDE A ACTUALIZAR EL ARCHIVO
+		}
+		t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
+		posicion->pos_x = msg->coord->pos_x;
+		posicion->pos_y = msg->coord->pos_y;
+		posicion->cantidad = msg->cantidad;
+		///Guarda la informacion en el FS
+		char* pathPokemon = malloc(strlen(g_config_gc->path_tall_grass) + 8); //9= /pokemon/; 3 = .txt
+		strcpy(pathPokemon, g_config_gc->path_tall_grass);
+		strcat(pathPokemon, "/Pokemon");
+		struct stat st = { 0 };
+		if (stat(pathPokemon, &st) == -1) {
+			log_error(g_logger, "CREATE_DIR Pokemon");
+			mkdir(pathPokemon, 0774);
+		}
+		pathPokemon = realloc(pathPokemon,
+				strlen(pathPokemon) + strlen(msg->pokemon) + 4); //9= /pokemon/; 3 = .txt
+		strcat(pathPokemon, "/");
+		strcat(pathPokemon, msg->pokemon);
+		strcat(pathPokemon, ".txt");
+		verificarPokemon(pathPokemon, posicion);
+		free(pathPokemon);
+		free(posicion);
+		/*	log_info(g_logger, "(ID-MSG= %d | %s | %d | %d | %d -- SIZE = %d Bytes)",
+		 msg->id_mensaje, msg->pokemon, msg->coord->pos_x, msg->coord->pos_y,
+		 msg->cantidad);
+		 */
+	}
+}
+
+void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente)
+{
+	uint32_t id_mensaje = msg->id_mensaje;
+
+	t_pokemon_semaforo* sem_pok = obtener_semaforo_pokemon(msg->pokemon);
+
+	//SI NO EXISTE, SE DEBE RETORNAR UN MENSAJE DE ERROR
+	if(sem_pok == NULL){
+		//enviar_msj_caught_broker(cliente_fd, logger, msg_caught_broker);
+	} else {
+		sem_wait(&sem_pok->semaforo);
+		// ABRIR ARCHIVO
+		// CONSULTAR POSICIONES
+		// SI NO EXISTEN, SE RETORNA UN ERROR
+		// SI EXISTEN, SE DECREMENTA EN 1 CADA POSICION SOLICITADA
+		// SI CANTIDAD = 1 => ELIMINAR LINEA
+		sem_post(&sem_pok->semaforo);
+	}
+
 	t_paquete* paquete = malloc(sizeof(t_paquete));
-
-	log_info(g_logger, "(RESPUESTA = %s)", mensajeError);
-
-	paquete->codigo_operacion = MSG_ERROR;
+	paquete->codigo_operacion = CAUGHT_BROKER; //Luego debe ser CAUGHT_POKEMON
 	paquete->buffer = malloc(sizeof(t_stream));
-	paquete->buffer->size = strlen(mensajeError) + 1;
-	paquete->buffer->data = malloc(paquete->buffer->size);
+	paquete->buffer->size = 2 * sizeof(int);
+	void *stream = malloc(paquete->buffer->size);
 
-	memcpy(paquete->buffer->data, mensajeError, paquete->buffer->size);
+	int offset = 0;
+	memcpy(stream + offset, msg, sizeof(int)); // Tomamos el id_mensaje Recibido en CATCH_GAMECARD
+	t_result_caught resultado = OK;
+	offset += sizeof(t_result_caught);
+	memcpy(stream + offset, &(resultado), sizeof(t_result_caught));
+	paquete->buffer->data = stream;
 
 	int bytes = paquete->buffer->size + 2 * sizeof(int);
-	void* a_enviar = serializar_paquete(paquete, bytes);
-	send(socket_cliente, a_enviar, bytes, 0);
+//	void* a_enviar = serializar_paquete(paquete, bytes);
 
-	free(a_enviar);
-	eliminar_paquete(paquete);
+	//enviar_mensaje_a_broker(paquetes
+	/*	void* a_enviar = serializar_paquete(paquete, bytes);
+	 send(socket_cliente, a_enviar, bytes, 0);
+	 free(a_enviar);
+	 eliminar_paquete(paquete);*/
 }
 
 void liberar_lista_posiciones(t_list* lista) {
@@ -172,7 +387,7 @@ void liberar_listas(char** lista) {
 
 	free(lista);
 }
-/*
+
 void devolver_posiciones(int socket_cliente, char* pokemon, int* encontroPokemon) {
 
 	printf("El socket es : %d \n", socket_cliente);
@@ -202,7 +417,7 @@ void devolver_posiciones(int socket_cliente, char* pokemon, int* encontroPokemon
 
 		//Verifico que si el archivo esta vacio
 		if (read == -1) {
-			devolver_recepcion_fail(socket_cliente,
+			enviar_mensaje_error(socket_cliente, g_logger,
 					"SE ENCONTRO EL ARCHIVO PERO ESTA VACIO");
 			free(line);
 			//Si tiene contenido, hago el flujo de carga
@@ -352,26 +567,12 @@ void devolver_posiciones(int socket_cliente, char* pokemon, int* encontroPokemon
 	free(ruta);
 }
 
-*/
-
-/*
- void eliminar_paquete(t_paquete* paquete) {
- free(paquete->buffer->data);
- free(paquete->buffer);
- free(paquete);
- }
- */
-int tamano_recibido(int bytes) {
-	return bytes + 2 * sizeof(int);
-}
-
-/**
- * Verificar si las posiciones ya existen dentro del archivo.
+/* Verificar si las posiciones ya existen dentro del archivo.
  * En caso de existir se deben agregar la cantidad pasada por parámetro a la actual.
  * En caso de no existir se debe agregar al final del archivo una nueva línea indicando
  * la cantidad de pokémon pasadas.
  * Cerrar el archivo.
-
+ */
 void verificarPokemon(char* pathPokemon, t_posicion_pokemon* posicion) {
 
 	int encontroPosicion = 0;
@@ -393,7 +594,8 @@ void verificarPokemon(char* pathPokemon, t_posicion_pokemon* posicion) {
 			line_size = getline(&line_buf, &line_buf_size, fd);
 
 			while (line_size >= 0) {
-
+				/* printf("line[%06d]: chars=%06zd, buf size=%06zu, contents: %s", line_count,
+				 line_size, line_buf_size, line_buf);*/
 				char** keyValue = string_split(line_buf, "=");
 				char* key = keyValue[0];
 				int cantidad = atoi(keyValue[1]);
@@ -431,16 +633,14 @@ void verificarPokemon(char* pathPokemon, t_posicion_pokemon* posicion) {
 	}
 
 }
-*/
-t_pokemon_semaforo *obtener_semaforo_pokemon(char* pokemon)
-{
+
+t_pokemon_semaforo *obtener_semaforo_pokemon(char* pokemon) {
+
 	sem_wait(&sem_mutex_semaforos);
 	for (int i = 0; i < list_size(semaforos_pokemon); i++) {
 		t_pokemon_semaforo *actual = list_get(semaforos_pokemon, i);
-
 		char* nombrePokemon = actual->pokemon;
 		if (strcmp(nombrePokemon, pokemon) == 0) {
-			log_info(g_logger,"SEMAFORO ENCONTRADO %s",pokemon);
 			sem_post(&sem_mutex_semaforos);
 			return actual;
 		}
@@ -466,20 +666,8 @@ void eliminar_semaforo_pokemon(char* pokemon) {
 
 }
 
-/**
- * Crea los semaforos para los pokemon que existen en el sistema
- */
-void crear_semaforos_pokemon(){
-	t_list* lista_pokemon =  get_files_pokemon();
+void crear_semaforo_pokemon(char* pokemon) {
 
-	for( int i=0; i< list_size(lista_pokemon); i++ ){
-		crear_semaforo_pokemon(list_get(lista_pokemon,i));
-	}
-}
-
-
-void crear_semaforo_pokemon(char* pokemon)
-{
 	t_pokemon_semaforo *pok = malloc(sizeof(t_pokemon_semaforo));
 	pok->pokemon = pokemon;
 	sem_t semaforo;
@@ -534,7 +722,7 @@ void prueba_semaforo() {
 char *concatenar_posiciones_pokemon(t_list *posiciones)
 {
 	int cant_elem = posiciones->elements_count;
-	char *cadena = calloc(1000, sizeof(char));
+	char *cadena = calloc(2000, sizeof(char));
 	strcpy(cadena, "[");
 	for (int i = 0; i < cant_elem; i ++) {
 		t_posicion_pokemon *posicion =  list_get(posiciones,i);
@@ -545,7 +733,7 @@ char *concatenar_posiciones_pokemon(t_list *posiciones)
 		char *posx = string_itoa(pos_x);
 		char *posy = string_itoa(pos_y);
 		char *cant = string_itoa(cantidad);
-		char auxiliar[4];
+		char auxiliar[5];
 		strcpy(auxiliar,posx);
 		strcat(cadena,auxiliar);
 		strcat(cadena,"-");
@@ -569,258 +757,11 @@ char *concatenar_posiciones_pokemon(t_list *posiciones)
 
 bool es_cod_oper_mensaje_gamecard(op_code codigo_operacion)
 {
-	return codigo_operacion == NEW_GAMECARD || codigo_operacion == CATCH_GAMECARD || codigo_operacion == GET_GAMECARD;
+	return codigo_operacion == NEW_GAMECARD || codigo_operacion == CATCH_GAMECARD
+			|| codigo_operacion == GET_GAMECARD || codigo_operacion == COLA_VACIA || codigo_operacion == SUSCRIP_END;
 }
 
-
-void rcv_new_pokemon(t_msg_new_gamecard *msg)
+bool nro_par(int numero)
 {
-	log_info(g_logger,"PROCESANDO NEW POKEMON");
-	t_list* lista_posiciones = list_create();
-	t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
-	posicion->pos_x = msg->coord->pos_x;
-	posicion->pos_y = msg->coord->pos_y;
-	posicion->cantidad = msg->cantidad;
-
-	t_pokemon_semaforo *semaforo_pokemon = obtener_semaforo_pokemon(msg->pokemon);
-	if(semaforo_pokemon == NULL){
-		//No existe  el pokemon
-		//	=> Se crea el semaforo
-		//     se retorna la unica posicion recibida
-		crear_semaforo_pokemon(msg->pokemon);
-		list_add(lista_posiciones, posicion);
-	}
-	else{
-		int incrementar_posicion = 1;
-		lista_posiciones = obtener_posiciones_pokemon(msg->pokemon, posicion,  incrementar_posicion);
-	}
-
-//  TODO: SI LA LISTA ESTA VACIA no retorna apparead pokemon
-
-	file_system_pokemon(msg->pokemon, lista_posiciones);
-	//destruir_lista_posiciones_bloques(lista_posiciones);
-
+	return ((int) (numero % 2) == 0);
 }
-
-t_result_caught codificar_resultado_caught(char *valor) {
-	if (strcmp(valor, "OK") == 0) {
-		return OK;
-	} else {
-		return FAIL;
-	}
-}
-
-/**
- * Se retorna la respuesta al catch
- *
- */
-void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente)
-{
-
-	t_list* lista_posiciones = list_create();
-log_info(g_logger,"CAUGH");
-	t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
-	posicion->pos_x = msg->coord->pos_x;
-	posicion->pos_y = msg->coord->pos_y;
-	posicion->cantidad = 0;
-
-	t_pokemon_semaforo *semaforo_pokemon = obtener_semaforo_pokemon(msg->pokemon);
-	if(semaforo_pokemon != NULL){
-		log_info(g_logger,"CAUGH EXISTE POKEMON");
-		//Existe el pokemon
-		int incrementar_posicion = 0;
-		lista_posiciones = obtener_posiciones_pokemon(msg->pokemon, posicion,incrementar_posicion);
-
-	}else{
-		log_info(g_logger,"POKEMON %s NOT FOUND",msg->pokemon);
-	}
-
-	char *arg_resul_caught = (char*) calloc(2, sizeof(char));
-	if( list_size(lista_posiciones)>0 ){
-		arg_resul_caught ="OK";
-		file_system_pokemon(msg->pokemon, lista_posiciones);
-	}
-
-	t_msg_caught_broker *msg_caught = malloc(sizeof(t_msg_caught_broker));
-	msg_caught->id_correlativo = msg->id_mensaje;
-	msg_caught->resultado = codificar_resultado_caught(arg_resul_caught);
-	enviar_msj_caught_broker(socket_cliente, g_logger, msg_caught);
-
-	free(msg_caught);
-
-
-	//list_destroy(lista_posiciones);
-/*
-	t_pokemon_semaforo* sem_pok = obtener_semaforo_pokemon(msg->pokemon);
-
-	if(sem_pok == NULL){
-		//SI NO EXISTE, SE DEBE RETORNAR UN MENSAJE DE ERROR
-	} else {
-		sem_wait(&sem_pok->semaforo);
-		// ABRIR ARCHIVO
-		// CONSULTAR POSICIONES
-		// SI NO EXISTEN, SE RETORNA UN ERROR
-		// SI EXISTEN, SE DECREMENTA EN 1 CADA POSICION SOLICITADA
-		// SI CANTIDAD = 1 => ELIMINAR LINEA
-		sem_post(&sem_pok->semaforo);
-	}
-	*/
-}
-
-void devolver_appeared_pokemon(t_msg_new_gamecard *msg, int socket_cliente)
-{
-	log_info(g_logger,"INICIO RETORNO APPARED POKEMON");
-	t_msg_appeared_broker *msg_appeared = malloc(sizeof(t_msg_appeared_broker));
-	msg_appeared->coordenada = malloc(sizeof(t_coordenada));
-	char *pokemon = msg->pokemon;
-	msg_appeared->coordenada->pos_x = msg->coord->pos_x;
-	msg_appeared->coordenada->pos_y = msg->coord->pos_y;
-	msg_appeared->id_correlativo = msg->id_mensaje;
-	msg_appeared->size_pokemon = strlen(pokemon) + 1;
-	msg_appeared->pokemon = malloc(msg->size_pokemon);
-	memcpy(msg_appeared->pokemon, pokemon, msg_appeared->size_pokemon);
-	enviar_msj_appeared_broker(socket_cliente, g_logger, msg_appeared);
-	eliminar_msg_appeared_broker(msg_appeared);
-}
-
-/**
- * Retorna las posiciones actualizadas del pokemon.
- * Si es el primer new pokemon, retorna la posicion recibida
- * Caso contrario retorna la lista de posiciones actualizada
- *     La posicion No Existe => se agrega la posicion
- *     La posicion Existe => Se actualiza la cantidad
- *
- */
-t_list* obtener_posiciones_pokemon(char* pokemon, t_posicion_pokemon *posicion, int incrementar_posicion)
-{
-//TODO SI es incrementar_posicion y la cantidad == 0 => retornar lista vacia
-
-	t_list* lista_posiciones = list_create();
-
-	t_pokemon_semaforo *semaforo_pokemon = obtener_semaforo_pokemon(pokemon);
-
-	sem_wait(&semaforo_pokemon->semaforo);
-//TODO
-	// SE OBTIENE EL ARCHIVO
-	// SE PREGUNTA POR EL "OPEN" Y SE LIBERA EL SEMAFORO
-
-	sem_post(&semaforo_pokemon->semaforo);
-	// UNA VEZ SETEADO EL OPEN EN "Y", SE PROCEDE A ACTUALIZAR EL ARCHIVO
-	//Leer las posiciones
-	//Buscar si la posicion recibida se encuetra
-	//Se encuentra => Actualizar
-	//No se encuentra => Agregar
-	//Retornar posiciones
-
-	//t_list* lista_posiciones_bloques = list_create();
-	t_list* lista_posiciones_bloques = leer_bloques(pokemon);
-
-	int encontrado = 0;
-	for( int i = 0; i< list_size(lista_posiciones_bloques); i++){
-		t_posicion_pokemon *posicion_bloque = (t_posicion_pokemon*) list_get(lista_posiciones_bloques,i);
-
-		if( posicion_bloque->pos_x == posicion->pos_x && posicion_bloque->pos_y == posicion->pos_y ){
-				//Se encontro el pokemon
-				encontrado = 1;
-				if( incrementar_posicion ){
-					posicion_bloque->cantidad += posicion->cantidad ;
-					//msg->cantidad += posicion_bloque->cantidad;
-				}
-				else if( posicion_bloque->cantidad > 1){
-					posicion_bloque->cantidad -= 1 ;
-				}
-				if( posicion_bloque->cantidad == 1 ){
-					list_remove(lista_posiciones_bloques,i);
-				}
-		}
-	}
-	if( encontrado == 0 ){
-		//No se encontro la posicion que se paso
-		// => Se agrega al final de la lista
-		list_add(lista_posiciones_bloques, posicion);
-	}
-
-	return lista_posiciones_bloques;
-}
-
-
-void rcv_get_pokemon(t_msg_get_gamecard *msg, int socket_cliente)
-{	// TODO
-	/*Al recibir este mensaje se deberán realizar las siguientes operaciones:
-	1. 	Verificar si el Pokémon existe dentro de nuestro Filesystem. Para esto se deberá buscar
-		dentro del directorio Pokemon, si existe el archivo con el nombre de nuestro pokémon. En
-		caso de no existir se deberá informar el mensaje sin posiciones ni cantidades.
-	2. 	Verificar si se puede abrir el archivo (si no hay otro proceso que lo esté abriendo). En caso
-		que el archivo se encuentre abierto se deberá reintentar la operación luego de un tiempo
-		definido por configuración.
-	3. 	Obtener todas las posiciones y cantidades de Pokemon requerido.
-	4. 	Esperar la cantidad de segundos definidos por archivo de configuración
-	5. 	Cerrar el archivo.
-	6. 	Conectarse al Broker y enviar el mensaje con todas las posiciones y su cantidad.
-		En caso que se encuentre por lo menos una posición para el Pokémon solicitado se deberá enviar un
-		mensaje al Broker a la Cola de Mensajes LOCALIZED_POKEMON indicando:
-	3. 	ID del mensaje recibido originalmente.
-	4. 	El Pokémon solicitado.
-	5. 	La lista de posiciones y la cantidad de posiciones X e Y de cada una de ellas en el mapa.
-		En caso que no se pueda realizar la conexión con el Broker se debe informar por logs y continuar la
-		ejecución.
-	 *
-	 */
-
-
-	t_msg_localized_broker *msg_localized_broker = malloc(sizeof(t_msg_localized_broker));
-	msg_localized_broker->posiciones = malloc(sizeof(t_posiciones_localized));
-	msg_localized_broker->posiciones->coordenadas = list_create();
-
-	msg_localized_broker->id_correlativo = msg->id_mensaje;
-
-	t_pokemon_semaforo *semaforo_pokemon = obtener_semaforo_pokemon(msg->pokemon);
-	if( semaforo_pokemon != NULL ){
-		//SE obtienen todas las posiciones
-		sem_wait(&semaforo_pokemon->semaforo);
-//TODO
-		// SE OBTIENE EL ARCHIVO
-		// SE PREGUNTA POR EL "OPEN" Y SE LIBERA EL SEMAFORO
-		sem_post(&semaforo_pokemon->semaforo);
-
-		t_list* lista_posiciones_bloques = list_create();
-		lista_posiciones_bloques = leer_bloques(msg->pokemon);
-
-		msg_localized_broker->id_correlativo = msg->id_mensaje;
-		msg_localized_broker->pokemon = msg->pokemon;
-		msg_localized_broker->size_pokemon = msg->size_pokemon;
-		msg_localized_broker->posiciones->cant_posic =  list_size(lista_posiciones_bloques);
-
-		for( int i =0 ; i< list_size(lista_posiciones_bloques) ; i++ ){
-			t_posicion_pokemon *posicion_bloque = (t_posicion_pokemon*) list_get(lista_posiciones_bloques,i);
-			t_coordenada *coord_xy = malloc(sizeof(t_coordenada));
-			coord_xy->pos_x = posicion_bloque->pos_x;
-			coord_xy->pos_y = posicion_bloque->pos_y;
-			list_add(msg_localized_broker->posiciones->coordenadas, coord_xy);
-		}
-	}
-	//enviar_msj_localized_al_broker(msg_localized_broker);
-
-	enviar_msj_localized_broker(socket_cliente, g_logger, msg_localized_broker);
-	eliminar_msg_localized_broker(msg_localized_broker);
-}
-
-
-/**
- * Se queda esperando para leer el pokemoon
- * Cuando pueda leer
- * Si open = N =>  SETEA EL OPEN EN "Y"
- * Libera el semaforo
- */
-void mientras_no_pueda_leer_pokemon(t_pokemon_semaforo *semaforo_pokemon){
-	sem_wait(&semaforo_pokemon->semaforo);
-//TODO
-	// SE OBTIENE EL ARCHIVO
-	// SE PREGUNTA POR EL "OPEN" Y SE LIBERA EL SEMAFORO
-
-	sem_post(&semaforo_pokemon->semaforo);
-}
-
-
-
-

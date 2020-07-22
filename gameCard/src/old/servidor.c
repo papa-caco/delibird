@@ -8,39 +8,7 @@
 #include "servidor.h"
 
 
-int crear_conexion(){
-	struct addrinfo hints;
-	struct addrinfo *server_info;
-
-	t_config* config = leer_config();
-	char *ip = config_get_string_value(config, "IP_BROKER");
-	char* puerto = config_get_string_value(config, "PUERTO_BROKER");
-
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;
-
-
-
-	getaddrinfo(ip, puerto, &hints, &server_info);
-
-	int socket_cliente = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
-
-	if(connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen) == -1){
-		//error
-		log_error(g_logger,	"(CONN_FAILED |  REMOTE_IP=%s | PORT=%s)", ip, puerto);
-	}
-	else{
-		log_info(g_logger,"(CONN_SUCCESS | SOCKET=%d |  REMOTE_IP=%s | PORT=%s)",
-						socket_cliente, ip, puerto);
-	}
-
-	freeaddrinfo(server_info);
-
-	return socket_cliente;
-}
-
+/*
 ////////////
 
 
@@ -103,5 +71,5 @@ void suscribirse( int socket_gamecard)
 	}
 	eliminar_paquete(paquete);
 }
-
+*/
 
