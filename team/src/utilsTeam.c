@@ -112,13 +112,14 @@ int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon,t_log *logge
     sem_post(&sem_mutex_msjs);
     close(cliente_fd);
     eliminar_msg_catch_broker(msg_catch);
-    t_id_Correlativo_and_Entrenador* ids = malloc(sizeof(t_id_Correlativo_and_Entrenador));
-    ids->id_Correlativo = id_mensaje;
-    ids->id_Entrenador = id_entrenador;
     sem_wait(&mutex_idCorrelativos);
-    if (ids->id_Correlativo != -1) {
-        list_add(idCorrelativosCatch, ids);
-    }
+
+	t_id_Correlativo_and_Entrenador* ids = malloc(
+			sizeof(t_id_Correlativo_and_Entrenador));
+	ids->id_Correlativo = id_mensaje;
+	ids->id_Entrenador = id_entrenador;
+	list_add(idCorrelativosCatch, ids);
+
     sem_post(&mutex_idCorrelativos);
 
     return id_mensaje;
