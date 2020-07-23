@@ -152,8 +152,6 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		}
 		//unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
 
-
-
 		/*if(cantidadDeEntrenadoresConObtenidos == 0){
 			unEntrenador->pokemonesObtenidos = list_create();
 		} else{
@@ -162,6 +160,24 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		}*/
 		unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
 		unEntrenador->id = i;
+
+
+		printf("Los pokemones atrapados del entrenador %d son: \n", unEntrenador->id);
+		for (int k = 0; k < list_size(unEntrenador->pokemonesObtenidos); k++) {
+			t_pokemon_entrenador* pokePrint = list_get(
+					unEntrenador->pokemonesObtenidos, k);
+			puts(pokePrint->pokemon);
+		}
+
+		printf("Los pokemones objetivo del entrenador %d son: \n",
+				unEntrenador->id);
+		for (int k = 0; k < list_size(unEntrenador->objetivoEntrenador); k++) {
+			t_pokemon_entrenador* pokePrint = list_get(
+					unEntrenador->objetivoEntrenador, k);
+			puts(pokePrint->pokemon);
+		}
+
+
 		unEntrenador->ciclosCPU = 0;
 		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
 		sem_init(&(unEntrenador->mutex_entrenador), 0, 1);
