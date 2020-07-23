@@ -112,7 +112,7 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 
 
 void iniciar_entrenadores_and_objetivoGlobal(){
-	colaNewEntrenadores = queue_create();
+
 	objetivoGlobalEntrenadores = list_create();
 	pokemonesAtrapadosGlobal = list_create();
 
@@ -168,11 +168,11 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		sem_init(&(unEntrenador->sem_entrenador), 0, 0);
 		pthread_create(&(unEntrenador->hilo_entrenador), NULL, (void*) comportamiento_entrenador, unEntrenador);
 		pthread_detach(unEntrenador->hilo_entrenador);
-		queue_push(colaNewEntrenadores, unEntrenador);
+		queue_push(colaBlockedEntrenadores, unEntrenador);
 	}
 	//Al finalizar el programa vamos a tener que destruir la lista de entrenadores, lo cual implicará destruir
 	//también cada una de las listas que creamos acá para llenar a cada uno
-	cantidadDeEntrenadores = queue_size(colaNewEntrenadores);
+	cantidadDeEntrenadores = queue_size(colaBlockedEntrenadores);
 
 }
 

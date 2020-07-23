@@ -329,7 +329,7 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 
 
 
-			if(cantidadDeEntrenadores == queue_size(colaNewEntrenadores)){
+			if(cantidadDeEntrenadores == queue_size(colaBlockedEntrenadores)){
 
 				sem_post(&sem_activacionPlanificadorMPlazo);
 			}
@@ -637,7 +637,7 @@ void process_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger) {
 
 
 
-					if(cantidadDeEntrenadores == queue_size(colaNewEntrenadores)){
+					if(cantidadDeEntrenadores == queue_size(colaBlockedEntrenadores)){
 
 									sem_post(&sem_activacionPlanificadorMPlazo);
 								}
@@ -940,7 +940,7 @@ void agregarPokemonesDelLocalized(t_msg_localized_team* mensajeLocalized){
 
 	}
 
-	if (cantidadDeEntrenadores == queue_size(colaNewEntrenadores)) {
+	if (cantidadDeEntrenadores == queue_size(colaBlockedEntrenadores)) {
 
 		sem_post(&sem_activacionPlanificadorMPlazo);
 	}
