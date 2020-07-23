@@ -190,6 +190,7 @@ int enviar_localized_pokemon_broker(uint32_t id_correlativo, char *pokemon, t_li
 	msg_localized->size_pokemon = strlen(pokemon) + 1;
 	msg_localized->pokemon = malloc(sizeof(msg_localized->size_pokemon));
 	memcpy(msg_localized->pokemon, pokemon, msg_localized->size_pokemon);
+	free(pokemon);//TODO
 	pthread_mutex_lock(&g_mutex_recepcion);
 	int id_mensaje;
 	char *ip = g_config_gc->ip_broker;

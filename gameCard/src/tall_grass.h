@@ -17,7 +17,7 @@ typedef struct tall_grass
 	int block_size;
 	int blocks;
 	int tamano_fs;
-	int magic_number;
+	char *magic_number;
 } t_config_tall_grass;
 
 
@@ -53,24 +53,15 @@ typedef struct archivo_pokemon
 	t_list* posiciones;
 } t_archivo_pokemon;
 
-typedef struct operaciones_tallgrass
-{
-	uint32_t id_correlativo;
-	char *pokemon;
-	t_posicion_pokemon *posicion;
-	t_tipo_mensaje id_cola;
-}t_operacion_tallgrass;
-
-
 //-------------------------Variables globales-----------------------------------------//
 
 t_config_tall_grass *g_config_tg;
 
+t_config *g_config_paths;
+
 t_bitmap_fs *g_bitmap_bloques;
 
 t_list *g_archivos_abiertos;
-
-t_list *g_reintentos;
 
 pthread_mutex_t g_mutex_tallgrass;
 
@@ -108,7 +99,11 @@ char *obtengo_ruta_metadata_pokemon(char *pokemon);
 
 t_list *obtengo_lista_bloques(char *string_bloques);
 
-int valor_magic_number(char *string_fijo);
+bool estructura_file_system_tg_valida(t_log *logger);
+
+void crear_estructura_tallgrass(t_log *logger);
+
+void crear_directorios_estructura_tall_grass(char *path, t_log *logger);
 
 void inicializar_bitmap_tallgrass(t_log *logger);
 
@@ -144,7 +139,7 @@ t_pokemon_medatada *leer_metadata_pokemon(char *pokemon,  t_log *logger);
 
 void modificar_metadata_pokemon(char *pokemon, char *clave, char *valor);
 
-bool existe_archivo_pokemon(char *pokemon);
+bool existe_archivo(char *pokemon);
 
 bool esta_abierto_archivo_pokemon(char *pokemon);
 
@@ -154,7 +149,7 @@ void *abrir_archivo_bitmap(char *path, int size, t_log *logger);
 
 void leer_contador_bloques(void);
 
-bool incremento_contador_bloques(void);
+bool bloques_disponibles(void);
 
 void incremento_cont_bloques(void);
 

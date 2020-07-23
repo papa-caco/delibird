@@ -33,13 +33,15 @@ typedef struct Configuracion_GameCard
 	char *path_tall_grass; //PUNTO_MONTAJE_TALLGRASS
 	char *dirname_blocks;
 	char *dirname_files;
-	char *file_metadata;
 	int id_suscriptor;
 	int tiempo_reconexion;
 	int tmp_reintento_oper;
 	char *ruta_log;
 	bool show_logs_on_screen;
 	char *ruta_bitmap;
+	char *tg_block_size;
+	char *tg_blocks;
+	char *magic_number;
 } t_config_gamecard;
 
 typedef struct socket_cliente{
@@ -51,6 +53,14 @@ typedef struct pokemon_semaforo{
 	char* pokemon;
 	sem_t semaforo;
 } t_pokemon_semaforo; //Para verificar si un archivo de pokemon está siendo utilizado
+
+typedef struct operaciones_tallgrass
+{
+	uint32_t id_correlativo;
+	char *pokemon;
+	t_posicion_pokemon *posicion;
+	t_tipo_mensaje id_cola;
+}t_operacion_tallgrass;
 
 /* --- VARIABLES GLOBALES ---*/
 
@@ -88,6 +98,8 @@ t_list *semaforos_pokemon; // Lista global de semaforos
 
 int g_cnt_msjs_get, g_cnt_msjs_catch, g_cnt_msjs_new;
 
+t_queue *g_reintentos;
+
 /*** DEFINICION INTERFACES **/
 
 void iniciar_gamecard(void);
@@ -116,9 +128,17 @@ int recibir_msg_catch_pokemon(t_msg_catch_gamecard *msg_catch, t_log *logger);
 
 void procesar_msg_catch_pokemon(t_msg_catch_gamecard *msg_catch);
 
-void encolar_operacion_tallgrass(int32_t id_correlativo, char *pokemon, t_posicion_pokemon *posicion, t_tipo_mensaje id_cola);
+void encolar_operacion_tallgrass(int32_t id_correlativo, char *pokemon, t_posicion_pokemon *posicion, t_tipo_mensaje cola, t_log *logger);
 
 void devolver_caught_pokemon(t_msg_catch_gamecard *msg, int socket_cliente);
+
+int dispatcher_operaciones_pendientes(t_log *logger);
+
+void inicio_dispatcher_operaciones_pendientes(void);
+
+void completar_operaciones_pendientes(t_log *logger);
+
+void eliminar_operacion_tallgrass(t_operacion_tallgrass *operacion);
 
 void liberar_lista_posiciones(t_list* lista);
 

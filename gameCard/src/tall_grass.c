@@ -105,7 +105,7 @@ int grabar_bloque(char *block_buffer, size_t size, t_log *logger)
 	log_info(logger,"SAVE BLOCK | FILE %d.bin", block_nro);
 	incremento_cont_bloques();
 	pthread_mutex_lock(&g_mutex_cnt_blocks);
-	if (!incremento_contador_bloques()) {
+	if (!bloques_disponibles()) {
 		log_error(logger, "-->>!!Sin Espacio en File System - Cerrar GAMECARD!! <<--");
 		pthread_mutex_lock(&g_mutex_cnt_blocks);
 	}
@@ -207,27 +207,156 @@ void crear_dirname_pokemon(char *pokemon, t_log *logger)
 
 void leer_metadata_tall_grass(t_log *logger)
 {
-	t_config* g_config;
-	g_config = config_create(g_config_gc->file_metadata);
+	crear_estructura_tallgrass(logger);
+	if (!estructura_file_system_tg_valida(logger)) {
+		exit(EXIT_FAILURE);
+	}
+	int size_path_metadata = strlen(g_config_gc->path_tall_grass) + strlen("metadata/Metadata.bin");
+	char *ruta_metadata_bin = (char*) calloc(size_path_metadata, sizeof(char));
+	string_append(&ruta_metadata_bin, g_config_gc->path_tall_grass);
+	string_append(&ruta_metadata_bin,"metadata/Metadata.bin");
+	t_config*config = config_create(ruta_metadata_bin);
 	g_config_tg = malloc(sizeof(t_config_tall_grass));
-	g_config_tg->block_size = config_get_int_value(g_config,"BLOCK_SIZE");
-	g_config_tg->blocks = config_get_int_value(g_config,"BLOCKS");
-	g_config_tg->magic_number = valor_magic_number(config_get_string_value(g_config,"MAGIC_NUMBER"));
+	g_config_tg->block_size = config_get_int_value(config,"BLOCK_SIZE");
+	g_config_tg->blocks = config_get_int_value(config,"BLOCKS");
+	g_config_tg->magic_number = config_get_string_value(config,"MAGIC_NUMBER");
 	g_config_tg->tamano_fs = g_config_tg->blocks * g_config_tg->block_size;
 	int tamano = (int) g_config_tg->tamano_fs / 1024;
-	log_debug(logger, "(FileSystem TallGrass| Tam.Bloque:%d Bytes| Cant.Bloques:%d| Tamaño FS:%d Kbytes| Magic_Number:%d)\n",
+	log_debug(logger, "(FileSystem TallGrass| Tam.Bloque:%d Bytes| Cant.Bloques:%d| Tamaño FS:%d Kbytes| Magic_Number:%s)\n",
 			g_config_tg->block_size, g_config_tg->blocks, tamano, g_config_tg->magic_number );
-	config_destroy(g_config);
+	config_destroy(config);
+	free(ruta_metadata_bin);
 }
 
-int valor_magic_number(char *string_fijo)
+bool estructura_file_system_tg_valida(t_log *logger)
 {
-	int magic_number = 0 , comparador = 0;
-	comparador = strcmp(string_fijo, "TALL_GRASS");
-	if (comparador == 0) {
-		magic_number = TALL_GRASS;
+	bool resultado = false;
+	int size_path_metadata = strlen(g_config_gc->path_tall_grass) + strlen("metadata/metadata.bin");
+	char *ruta_metadata_bin = (char*) calloc(size_path_metadata, sizeof(char));
+	string_append(&ruta_metadata_bin, g_config_gc->path_tall_grass);
+	string_append(&ruta_metadata_bin,"metadata/Metadata.bin");
+	t_config *metadata_bin = config_create(ruta_metadata_bin);
+	if (config_has_property(metadata_bin, "MAGIC_NUMBER")) {
+		char *directory = config_get_string_value(metadata_bin, "DIRECTORY");
+		char *magic_number = config_get_string_value(metadata_bin, "MAGIC_NUMBER");
+		char *block_size = config_get_string_value(metadata_bin, "BLOCK_SIZE");
+		char *blocks = config_get_string_value(metadata_bin, "BLOCKS");
+		int chk_magic_number = strcmp(magic_number, g_config_gc->magic_number);
+		int chk_dir = strcmp(directory, "N");
+		int chk_block_size = strcmp(block_size, g_config_gc->tg_block_size);
+		int chk_blocks = strcmp(blocks, g_config_gc->tg_blocks);
+		bool check_parametros = chk_magic_number == 0 && chk_dir == 0 && chk_block_size == 0 && chk_blocks == 0;
+		if (check_parametros) {
+			puts("");
+			log_info(logger, "(Configuración File System Tall_Grass Consistente OK)\n");
+			resultado = true;
+		} else {
+			puts("");
+			log_error(logger, "(--->>Configuración File System Tall_Grass Inconsistente -- Revisar!!<<---)\n");
+		}
+	} else {
+		puts("");
+		log_error(logger, "(--->>Configuración File System Tall_Grass Erronea -- Se debe Reconstruir <<---)\n");
 	}
-	return magic_number;
+	config_destroy(metadata_bin);
+	free(ruta_metadata_bin);
+	return resultado; //TODO
+}
+
+void crear_estructura_tallgrass(t_log *logger)
+{
+	int size_path_metadata = strlen(g_config_gc->path_tall_grass) + strlen("metadata/metadata.bin");
+	char *ruta_metadata_bin = (char*) calloc(size_path_metadata, sizeof(char));
+	string_append(&ruta_metadata_bin, g_config_gc->path_tall_grass);
+	int size_path_config = strlen(g_config_gc->path_tall_grass) + strlen("Config_tg/Metadata.bin");
+	char *ruta_config_tg = (char*) calloc(size_path_config, sizeof(char));
+	string_append(&ruta_config_tg, g_config_gc->path_tall_grass);
+	string_append(&ruta_config_tg, "Config_tg/Metadata.bin");
+	int status = mkdir(ruta_metadata_bin, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+	puts("");
+	log_info(logger, "(Verificando Configuración File System Tall_Grass...)\n");
+	if (status == -1) {
+		log_info(logger,"(Mount Point Directory (%s)	-%s)", ruta_metadata_bin, strerror(errno));
+	} else {
+		log_info(logger,"(Creating Mount Point Directory (%s)	-%s)", ruta_metadata_bin, strerror(errno));
+	}
+	crear_directorios_estructura_tall_grass("metadata", logger);
+	crear_directorios_estructura_tall_grass("Files", logger);
+	crear_directorios_estructura_tall_grass("Blocks", logger);
+	crear_directorios_estructura_tall_grass("Config_tg", logger);
+	string_append(&ruta_metadata_bin,"metadata/Metadata.bin");
+	t_config *metadata_bin = config_create(ruta_metadata_bin);
+	if (!config_has_property(metadata_bin, "MAGIC_NUMBER")) {
+		config_set_value(metadata_bin, "DIRECTORY", "N");
+		config_set_value(metadata_bin, "BLOCK_SIZE", g_config_gc->tg_block_size);
+		config_set_value(metadata_bin, "BLOCKS", g_config_gc->tg_blocks);
+		config_set_value(metadata_bin, "MAGIC_NUMBER", g_config_gc->magic_number);
+		config_save(metadata_bin);
+	}
+	int size_path_files = strlen(g_config_gc->path_tall_grass) + strlen("Files/");
+	char *ruta_files = (char*) calloc(size_path_files, sizeof(char));
+	string_append(&ruta_files, g_config_gc->path_tall_grass);
+	string_append(&ruta_files, "Files/");
+	int size_path_blocks = strlen(g_config_gc->path_tall_grass) + strlen("Blocks/");
+	char *ruta_blocks = (char*) calloc(size_path_blocks, sizeof(char));
+	string_append(&ruta_blocks, g_config_gc->path_tall_grass);
+	string_append(&ruta_blocks, "Blocks/");
+	int size_path_bitmap = strlen(g_config_gc->path_tall_grass) + strlen("metadata/bitmap.bin");
+	char *ruta_bitmap = (char*) calloc(size_path_bitmap, sizeof(char));
+	string_append(&ruta_bitmap, g_config_gc->path_tall_grass);
+	string_append(&ruta_bitmap, "metadata/bitmap.bin");
+	g_config_paths = config_create(ruta_config_tg);
+	if (config_has_property(g_config_paths, "DIRECTORY")) {
+		config_set_value(g_config_paths, "DIRECTORY", "N");
+		config_set_value(g_config_paths, "PATH_BLOCKS", ruta_blocks);
+		config_set_value(g_config_paths, "PATH_FILES", ruta_files);
+		config_set_value(g_config_paths, "PATH_BITMAP", ruta_bitmap);
+		config_save(g_config_paths);
+	}
+	g_config_gc->dirname_blocks = config_get_string_value(g_config_paths, "PATH_BLOCKS");
+	g_config_gc->dirname_files = config_get_string_value(g_config_paths, "PATH_FILES");
+	g_config_gc->ruta_bitmap = config_get_string_value(g_config_paths, "PATH_BITMAP");
+	config_destroy(metadata_bin);
+	free(ruta_metadata_bin);
+	free(ruta_files);
+	free(ruta_blocks);
+	free(ruta_bitmap);
+	free(ruta_config_tg);
+}
+
+void crear_directorios_estructura_tall_grass(char *path, t_log *logger)
+{
+	int size_path_files = strlen(g_config_gc->path_tall_grass)  + strlen(path) + strlen("/Metadata.bin")  ;
+	char *ruta_files = (char*) calloc(size_path_files, sizeof(char));
+		string_append(&ruta_files, g_config_gc->path_tall_grass);
+	string_append(&ruta_files, path);
+	int status = mkdir(ruta_files, 0774);
+	if (status == -1) {
+		log_info(logger,"(Directory (%s)	-%s)", ruta_files, strerror(errno));
+	} else {
+		log_info(logger,"(Creating Directory (%s))", ruta_files);
+	}
+	string_append(&ruta_files, "/Metadata.bin");
+	int fd = open(ruta_files, O_RDONLY);
+	if (fd < 0) {
+		void *data = malloc(1);
+		memset(data, 0, 1);
+		FILE* metadata_file = fopen(ruta_files,"w");
+		fwrite(data,sizeof(char), 1, metadata_file);
+		fclose(metadata_file);
+		free(data);
+		log_info(logger,"(Creating File: %s	-Success)", ruta_files);
+	} else {
+		log_info(logger,"(File: %s	-File Exists)", ruta_files);
+	}
+	close(fd);
+	t_config* metadata_files = config_create(ruta_files);
+	if (!config_has_property(metadata_files, "DIRECTORY")) {
+		config_set_value(metadata_files, "DIRECTORY", "Y");
+		config_save(metadata_files);
+	}
+	config_destroy(metadata_files);
+	free(ruta_files);
 }
 
 int crear_archivo_pokemon(char *pokemon, t_posicion_pokemon *posicion, t_log *logger)
@@ -241,7 +370,8 @@ int crear_archivo_pokemon(char *pokemon, t_posicion_pokemon *posicion, t_log *lo
 	grabar_metadata_pokemon(blocks, pokemon, file_size, "N", logger);
 	list_destroy_and_destroy_elements(blocks, (void*) free);
 	free(coordenada);
-	//free(posicion);
+	//free(posicion);//TODO
+	//free(pokemon);
 	return file_size;
 }
 
@@ -550,7 +680,7 @@ t_list *obtengo_lista_bloques(char *string_bloques)
 	return lista_bloques;
 }
 
-bool existe_archivo_pokemon(char *pokemon)
+bool existe_archivo(char *pokemon)
 {
 	bool resultado = false;
 	char *ruta_metadata = obtengo_ruta_metadata_pokemon(pokemon);
@@ -584,6 +714,7 @@ bool esta_abierto_archivo_pokemon(char *pokemon)
 		t_config* metadata_file_info = config_create(path_metadata);
 		resultado = si_no(config_get_string_value(metadata_file_info, "OPEN"));
 		config_destroy(metadata_file_info);
+		//printf("(Archivo %s BLOCKED=Y)\n", pokemon);//TODO
 		free(path_metadata);
 	}
 	//printf("abierto?:%d\n", resultado);
@@ -603,7 +734,7 @@ void quitar_de_lista_archivos_abiertos(char *pokemon)
 		//puts("a ver si quedan archivos abiertos");
 		for (int i = 0; i < g_archivos_abiertos->elements_count; i ++) {
 			char *abierto = (char*) list_get(g_archivos_abiertos, i);
-			puts(abierto);
+			//puts(abierto);
 		}
 	}
 	pthread_mutex_unlock(&g_mutex_open_files_list);
@@ -671,7 +802,7 @@ void leer_contador_bloques(void)
 	pthread_mutex_unlock(&g_mutex_cnt_blocks);
 }
 
-bool incremento_contador_bloques(void)
+bool bloques_disponibles(void)
 {
 	bool resultado = false;
 	for (int i = 0; i < g_bitmap_bloques->total_blocks; i ++) {

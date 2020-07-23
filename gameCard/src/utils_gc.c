@@ -14,8 +14,7 @@ void iniciar_gamecard(void)
 	manejo_senial_externa_gc();
 	iniciar_suscripciones_broker_gc(g_logger);
 	lanzar_reconexion_broker_gc(g_logger);
-	//prueba_file_system("Charizard",10);
-	//prueba_leer_bloques_pokemon("Charizard");
+	dispatcher_operaciones_pendientes(g_logger);
 }
 
 void iniciar_log_gamecard(void)
@@ -26,6 +25,7 @@ void iniciar_log_gamecard(void)
 	}
 	g_logger = log_create(g_config_gc->ruta_log, "GAME_CARD", log_habilitado, LOG_LEVEL_TRACE);
 	g_logdebug = log_create(PATH_LOG, "GAMECARD_DBG", log_habilitado, LOG_LEVEL_TRACE);
+	puts("");
 	log_info(g_logger, "INICIO_LOG_SUCESS");
 }
 
@@ -39,14 +39,13 @@ void leer_config(void)
 	g_config_gc->puerto_broker = config_get_string_value(gc_config, "PUERTO_BROKER");
 	g_config_gc->path_tall_grass = config_get_string_value(gc_config, "PUNTO_MONTAJE_TALLGRASS");
 	g_config_gc->id_suscriptor = config_get_int_value(gc_config, "ID_SUSCRIPTOR");
-	g_config_gc->dirname_blocks = config_get_string_value(gc_config, "DIRNAME_BLOCKS");
-	g_config_gc->dirname_files = config_get_string_value(gc_config, "DIRNAME_FILES");
-	g_config_gc->file_metadata = config_get_string_value(gc_config, "FILE_METADATA");
 	g_config_gc->tiempo_reconexion = config_get_int_value(gc_config, "TIEMPO_DE_REINTENTO_CONEXION");
 	g_config_gc->tmp_reintento_oper = config_get_int_value(gc_config, "TIEMPO_DE_REINTENTO_OPERACION");
 	g_config_gc->ruta_log = config_get_string_value(gc_config, "RUTA_LOG");
 	g_config_gc->show_logs_on_screen = verdadero_falso(config_get_string_value(gc_config,"SHOW_LOGS_ON_SCREEN"));
-	g_config_gc->ruta_bitmap = config_get_string_value(gc_config, "RUTA_BITMAP");
+	g_config_gc->tg_block_size = config_get_string_value(gc_config, "BLOCK_SIZE");
+	g_config_gc->tg_blocks = config_get_string_value(gc_config, "BLOCKS");
+	g_config_gc->magic_number = config_get_string_value(gc_config, "MAGIC_NUMBER");
 }
 
 void inicio_server_gamecard(void)
@@ -67,13 +66,14 @@ void iniciar_estructuras_gamecard(void)
 	pthread_mutex_init(&g_mutex_recepcion, 0);
 	pthread_mutex_init(&g_mutex_open_files_list, 0);
 	pthread_mutex_init(&g_mutex_reintentos, 0);
-	g_reintentos = list_create();
+	g_reintentos = queue_create();
 	semaforos_pokemon = list_create();
 	leer_metadata_tall_grass(g_logdebug);
 	inicializar_bitmap_tallgrass(g_logdebug);
 	iniciar_cnt_msjs_gc();
 	status_conexion_broker = true;
 	sem_init(&mutex_msjs_gc, 0, 1);
+
 }
 
 void atender_gameboy_gc(int *cliente_fd)
@@ -135,13 +135,15 @@ int recibir_msg_get_pokemon(t_msg_get_gamecard *msg_get, t_log *logger)
 void procesar_msg_get_pokemon(t_msg_get_gamecard *msg_get)
 {
 	uint32_t id_correlativo = msg_get->id_mensaje;
-	char *pokemon = msg_get->pokemon;
+	char *pokemon = malloc(msg_get->size_pokemon);
+	memcpy(pokemon, msg_get->pokemon, msg_get->size_pokemon);
 	t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
-	if (!existe_archivo_pokemon(pokemon)) {
+	posicion->pos_x = 0, posicion->pos_y = 0, posicion->cantidad = 0;
+	if (!existe_archivo(pokemon)) {
 		log_warning(g_logger,"(-->> El archivo Pokemon %s no existe en el File System <<--)", pokemon);
 	} else if (esta_abierto_archivo_pokemon(pokemon)) {
-		log_warning(g_logger,"(-->> Archivo Pokemon %s bloqueado por otro mensaje <<--)", pokemon);
-			encolar_operacion_tallgrass(id_correlativo, pokemon, posicion, GET_POKEMON);
+		log_warning(g_logger,"(-->> Archivo Pokemon %s Abierto por otro mensaje <<--)\n", pokemon);
+			encolar_operacion_tallgrass(id_correlativo, pokemon, posicion, LOCALIZED_POKEMON, g_logdebug);
 	} else {
 		pthread_mutex_lock(&g_mutex_tallgrass);
 		t_archivo_pokemon *archivo = abrir_archivo_pokemon(pokemon, g_logger);
@@ -178,13 +180,13 @@ void procesar_msg_new_pokemon(t_msg_new_gamecard *msg_new)
 	memcpy(&posicion->pos_x, &msg_new->coord->pos_x, sizeof(uint32_t));
 	memcpy(&posicion->pos_y, &msg_new->coord->pos_y, sizeof(uint32_t));
 	memcpy(&posicion->cantidad, &msg_new->cantidad, sizeof(uint32_t));
-	if (!existe_archivo_pokemon(pokemon)) {
+	if (!existe_archivo(pokemon)) {
 		log_info(g_logger,"(El archivo Pokemon %s no existe en el File System - Creando Nuevo)", pokemon);
 		int file_size = crear_archivo_pokemon(pokemon, posicion, g_logger);
 		free(posicion);
 	} else if (esta_abierto_archivo_pokemon(pokemon)) {
 		log_warning(g_logger,"(-->> Archivo Pokemon %s bloqueado por otro mensaje <<--)", pokemon);
-		encolar_operacion_tallgrass(id_correlativo, pokemon, posicion, NEW_POKEMON);
+		encolar_operacion_tallgrass(id_correlativo, pokemon, posicion, APPEARED_POKEMON, g_logdebug);
 		encolado = true;
 	} else {
 		pthread_mutex_lock(&g_mutex_tallgrass);
@@ -206,7 +208,7 @@ void procesar_msg_new_pokemon(t_msg_new_gamecard *msg_new)
 		enviar_appeared_pokemon_broker(msj_appeared, g_logger);
 	}
 	eliminar_msg_new_gamecard(msg_new);
-	free(pokemon);
+	free(pokemon);//TODO
 }
 
 int recibir_msg_catch_pokemon(t_msg_catch_gamecard *msg_catch, t_log *logger)
@@ -225,22 +227,23 @@ void procesar_msg_catch_pokemon(t_msg_catch_gamecard *msg_catch)
 {
 	uint32_t id_correlativo = msg_catch->id_mensaje;
 	t_result_caught resultado = FAIL;
-	char *pokemon = msg_catch->pokemon;
+	char *pokemon = malloc(msg_catch->size_pokemon);
+	memcpy(pokemon, msg_catch->pokemon, msg_catch->size_pokemon);
 	t_posicion_pokemon *posicion = malloc(sizeof(t_posicion_pokemon));
 	posicion->pos_x = msg_catch->coord->pos_x;
 	posicion->pos_y = msg_catch->coord->pos_y;
 	posicion->cantidad = 1;
-	if (!existe_archivo_pokemon(pokemon)) {
+	if (!existe_archivo(pokemon)) {
 		log_warning(g_logger,"(-->> El archivo Pokemon %s no existe en el File System <<--)", pokemon);
 	} else if (esta_abierto_archivo_pokemon(pokemon)) {
 		log_warning(g_logger,"(-->> Archivo Pokemon %s bloqueado por otro mensaje <<--)", pokemon);
-		encolar_operacion_tallgrass(id_correlativo, pokemon, posicion, CATCH_BROKER);
+		encolar_operacion_tallgrass(id_correlativo, pokemon, posicion, CAUGHT_POKEMON, g_logdebug);
 	} else {
 		pthread_mutex_lock(&g_mutex_tallgrass);
 		t_archivo_pokemon *archivo = abrir_archivo_pokemon(pokemon, g_logger);
 		if (!existe_posicion_en_archivo(archivo, posicion)) {
 			log_warning(g_logger,"(-->>No existe Posición [X=%d|Y=%d] en Archivo Pokemon %s <<--)",
-				posicion->pos_x, posicion->pos_y, pokemon);
+				posicion->pos_x, posicion->pos_y, archivo->pokemon);
 		} else {
 			eliminar_posicion_en_archivo(archivo, posicion, g_logger);
 			resultado = OK;
@@ -249,15 +252,114 @@ void procesar_msg_catch_pokemon(t_msg_catch_gamecard *msg_catch)
 		puts("");
 		pthread_mutex_unlock(&g_mutex_tallgrass);
 		enviar_caught_pokemon_broker(id_correlativo, resultado, g_logger);
+		free(pokemon);
 	}
 	free(posicion);
 	eliminar_msg_catch_gamecard(msg_catch);
 	pthread_exit(NULL);
 }
 
-void encolar_operacion_tallgrass(int32_t id_correlativo, char *pokemon, t_posicion_pokemon *posicion, t_tipo_mensaje cola)
+void encolar_operacion_tallgrass(int32_t id_correlativo, char *pokemon, t_posicion_pokemon *posicion, t_tipo_mensaje cola, t_log* logger)
 {
-	//TODO
+	t_operacion_tallgrass *operacion = malloc(sizeof(t_operacion_tallgrass));
+	operacion->posicion = malloc(sizeof(t_posicion_pokemon));
+	int size_pokemon =  strlen(pokemon)+1;
+	operacion->pokemon = malloc(size_pokemon);
+	operacion->id_correlativo = id_correlativo;
+	operacion->posicion->pos_x = posicion->pos_x;
+	operacion->posicion->pos_y = posicion->pos_y;
+	operacion->posicion->cantidad = posicion->cantidad;
+	operacion->id_cola = cola;
+	memcpy(operacion->pokemon, pokemon, size_pokemon);
+	pthread_mutex_lock(&g_mutex_reintentos);
+	log_trace(logger, "(Mensaje %s con ID_Correlativo %d pendiente de envío|Archivo Pokemon %s Abierto)",
+			nombre_cola(cola), id_correlativo, operacion->pokemon);
+	queue_push(g_reintentos, (t_operacion_tallgrass*) operacion);
+	pthread_mutex_unlock(&g_mutex_reintentos);
+	if (cola != APPEARED_POKEMON) {
+		free(pokemon); //TODO
+	}
+	if (cola == APPEARED_POKEMON) {
+		free(posicion);
+	}
+
+}
+
+int dispatcher_operaciones_pendientes(t_log *logger)
+{
+	pthread_t tid;
+	int tid_status = pthread_create(&tid, NULL, (void*) inicio_dispatcher_operaciones_pendientes, NULL);
+	if (tid_status != 0) {
+		log_error(logger, "Thread create returned %d | %s", tid_status,	strerror(tid_status));
+	} else {
+		pthread_detach(tid);
+	}
+	return tid_status;
+}
+
+void inicio_dispatcher_operaciones_pendientes(void)
+{
+	int intervalo_reintento = g_config_gc->tmp_reintento_oper;
+	while (1) {
+		sleep(intervalo_reintento);
+		int cant_operaciones = queue_size(g_reintentos);
+		if(cant_operaciones > 0) {
+			log_info(g_logger,"(Procesando %d Mensajes pendientes)", cant_operaciones);
+			completar_operaciones_pendientes(g_logger);
+		}
+
+	}
+}
+
+void completar_operaciones_pendientes(t_log *logger)
+{
+	pthread_mutex_lock(&g_mutex_reintentos);
+	while(queue_size(g_reintentos) > 0) {
+		t_operacion_tallgrass *operacion = (t_operacion_tallgrass*) queue_pop(g_reintentos);
+		quitar_de_lista_archivos_abiertos(operacion->pokemon);
+		switch (operacion->id_cola) {
+		case LOCALIZED_POKEMON:;
+			t_msg_get_gamecard *msg_get = malloc(sizeof(t_msg_get_gamecard));
+			msg_get->id_mensaje = operacion->id_correlativo;
+			msg_get->size_pokemon = strlen(operacion->pokemon) + 1;
+			msg_get->pokemon = malloc(msg_get->size_pokemon);
+			memcpy(msg_get->pokemon, operacion->pokemon, msg_get->size_pokemon);
+			recibir_msg_get_pokemon(msg_get, logger);
+			break;
+		case APPEARED_POKEMON:;
+			t_msg_new_gamecard *msg_new = malloc(sizeof(t_msg_new_gamecard));
+			msg_new->id_mensaje = operacion->id_correlativo;
+			msg_new->size_pokemon = strlen(operacion->pokemon) + 1;
+			msg_new->pokemon = malloc(msg_new->size_pokemon);
+			memcpy(msg_new->pokemon, operacion->pokemon, msg_new->size_pokemon);
+			msg_new->coord = malloc(sizeof(t_coordenada));
+			msg_new->coord->pos_x = operacion->posicion->pos_x;
+			msg_new->coord->pos_y = operacion->posicion->pos_y;
+			msg_new->cantidad = operacion->posicion->cantidad;
+			recibir_msg_new_pokemon(msg_new, logger);
+			break;
+		case CAUGHT_POKEMON:;
+			t_msg_catch_gamecard *msg_catch = malloc(sizeof(t_msg_catch_gamecard));
+			msg_catch->id_mensaje = operacion->id_correlativo;
+			msg_catch->size_pokemon = strlen(operacion->pokemon) + 1;
+			msg_catch->pokemon = malloc(msg_catch->size_pokemon);
+			memcpy(msg_catch->pokemon, operacion->pokemon, msg_catch->size_pokemon);
+			msg_catch->coord = malloc(sizeof(t_coordenada));
+			msg_catch->coord->pos_x = operacion->posicion->pos_x;
+			msg_catch->coord->pos_y = operacion->posicion->pos_y;
+			recibir_msg_catch_pokemon(msg_catch, logger);
+			break;
+		}
+		eliminar_operacion_tallgrass(operacion);
+	}
+	pthread_mutex_unlock(&g_mutex_reintentos);
+}
+
+void eliminar_operacion_tallgrass(t_operacion_tallgrass *operacion)
+{
+	free(operacion->posicion);
+	free(operacion->pokemon);
+	free(operacion);
 }
 
 void liberar_lista_posiciones(t_list* lista) {
