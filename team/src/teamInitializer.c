@@ -297,11 +297,11 @@ void enviar_msjs_get_por_clase_de_pokemon(t_pokemon_entrenador *poke)
 void liberar_lista_de_pokemones(t_list* lista){
 
 	int contador = 0;
-	t_pokemon_entrenador* pokemon;
-	    while (list_get(lista, contador) != NULL) {
 
-	    	pokemon= (t_pokemon_entrenador*) list_get(lista,contador);
+	    while (list_get(lista, contador) != NULL) {
+	    	t_pokemon_entrenador* pokemon = (t_pokemon_entrenador*) list_get(lista,contador);
 	    	free(pokemon->posicion);
+	    	free(pokemon->pokemon);
 	        free(pokemon);
 	        contador++;
 	    }
@@ -311,11 +311,9 @@ void liberar_lista_de_pokemones(t_list* lista){
 
 void liberar_lista(t_list* lista) {
 
-    int contador = 0;
-    while (list_get(lista, contador) != NULL) {
-        free(list_get(lista,contador));
-        contador++;
-    }
+	for(int i= 0; i< list_size(lista); i++){
+		free(list_get(lista,i));
+	}
 
     free(lista);
 }

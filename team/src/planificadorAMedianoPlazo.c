@@ -328,15 +328,21 @@ void liberar_variables_globales(){
 
 		list_destroy(objetivoGlobalEntrenadores);
 
-		//printf("Ya libere las listas de entrenadores \n");
+		printf("Ya libere las listas de entrenadores \n");
 
 		liberar_lista(idCorrelativosCatch);
 
+		printf("LIBERO ID CORRELATIVO CATCH \n");
+
+		list_clean(idCorrelativosGet);
+
 		list_destroy(idCorrelativosGet);
+
+		printf("LIBERO ID CORRELATIVO GET \n");
 
 		liberar_lista(pokemonesLlegadosDelBroker);
 
-		//printf("Ya libere las listas auxiliares que reciben mensajes \n");
+		printf("Ya libere las listas auxiliares que reciben mensajes \n");
 
 
 		//--------------SEMAFOROS LISTAS DE POKEMONES------------------------------
@@ -349,7 +355,7 @@ void liberar_variables_globales(){
 
 		sem_destroy(&sem_pokemonesObjetivoGlobal);
 
-		//printf("Ya libere los semaforos de listas de pokes \n");
+		printf("Ya libere los semaforos de listas de pokes \n");
 
 		//---------------SEMAFOROS COLAS DE ENTRENADORES---------------------------
 
@@ -361,7 +367,7 @@ void liberar_variables_globales(){
 
 		sem_destroy(&sem_cola_exit);
 
-		//printf("Ya libere los semaforos de colas \n");
+		printf("Ya libere los semaforos de colas \n");
 
 
 		//--------------SEMAFOROS PLANIFICADORES-----------------------------------
@@ -390,7 +396,7 @@ void liberar_variables_globales(){
 
 		sem_destroy(&mutex_entrenador);
 
-		//printf("Ya libere los semaforos varios. Finaliza team \n");
+		printf("Ya libere los semaforos varios. Finaliza team \n");
 
 }
 
@@ -541,6 +547,7 @@ t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores){
 
 	printf("Cantidad de entrenadores es %d \n", queue_size(colaEntrenadores));
 
+	char yaLoEncontre = 0;
 
 	for (int i = 0; i < entrenadoresEnCola; i++) {
 
@@ -554,7 +561,15 @@ t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores){
 			int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion, pokemonCercano->posicion);
 
 			if (distanciaEntreAmbos == distanciaMasCorta) {
-				entrenadorConveniente = unEntrenador;
+
+				if(yaLoEncontre == 0){
+
+					entrenadorConveniente = unEntrenador;
+					yaLoEncontre = 1;
+				}else {
+					queue_push(colaEntrenadores, unEntrenador);
+				}
+
 			} else {
 				queue_push(colaEntrenadores, unEntrenador);
 			}
