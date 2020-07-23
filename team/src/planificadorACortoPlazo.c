@@ -58,6 +58,7 @@ void planificarFifo(){
 				sem_wait(&sem_cola_exit);
 				queue_push(colaExitEntrenadores, entrenadorAEjecutar);
 				sem_post(&sem_cola_exit);
+				printf("El entrenador %d ya se movio fisicamente a la cola de exit \n", entrenadorAEjecutar->id);
 
 			} else {
 				sem_wait(&sem_cola_blocked);
@@ -67,6 +68,7 @@ void planificarFifo(){
 
 			//LE MANDO EL SIGNAL AL PLANIFICADOR DE MEDIANO PLAZO PARA QUE VERIFIQUE LA COLA DE BLOCKED
 			//O FINALICE TODO SI CORRESPONDE
+			printf("Se manda signal para activar al planificador de mediano plazo \n");
 			sem_post(&sem_planificador_mplazo);
 		}
 

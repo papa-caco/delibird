@@ -37,7 +37,6 @@ int main(void) {
 	//AL finalizar el programase deben liberar las listas de las colas de estados y la de objetivoGlobal
 	//liberar_lista(objetivoGlobalEntrenadores);
 
-	//liberar_cola(colaNewEntrenadores);
 
 	sleep(1);
 

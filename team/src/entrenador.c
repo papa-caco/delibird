@@ -208,11 +208,15 @@ void comportamiento_entrenador(t_entrenador* entrenador){
 
 				entrenador2 = buscarEntrenadorDelIntercambio(entrenador);
 
-				if(elIntercambioEsIdeal(entrenador, entrenador2)){
-					intercambiarIdealPokemon(entrenador, entrenador2);
-				} else{
+				//printf("El entrenador del intercambio que encontró el entrenador %d es %d \n", entrenador->id, entrenador2->id);
+
+				//if(elIntercambioEsIdeal(entrenador, entrenador2)){
+					//printf("Van a hacer un intercambio ideal \n");
+					//intercambiarIdealPokemon(entrenador, entrenador2);
+				//} else{
+					printf("Van a hacer un intercambio normal \n");
 					intercambiarNormalPokemon(entrenador, entrenador2);
-				}
+				//}
 
 
 
@@ -316,7 +320,7 @@ t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador) {
 	t_posicion_entrenador* posicionAMoverse = NULL;
 	t_entrenador* entrenadorAux;
 
-	sem_wait(&(sem_cola_blocked));
+	/*sem_wait(&(sem_cola_blocked));
 
 	for (int i = 0; i < queue_size(colaBlockedEntrenadores); i++) {
 
@@ -333,9 +337,9 @@ t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador) {
 
 	}
 
-	sem_post(&(sem_cola_blocked));
+	sem_post(&(sem_cola_blocked));*/
 
-	if (posicionAMoverse == NULL) {
+	//if (posicionAMoverse == NULL) {
 		sem_wait(&(sem_cola_blocked));
 
 		for (int i = 0; i < queue_size(colaBlockedEntrenadores); i++) {
@@ -354,9 +358,9 @@ t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador) {
 		}
 
 		sem_post(&(sem_cola_blocked));
-	}
+	//}
 
-	sem_post(&(sem_cola_blocked));
+	//sem_post(&(sem_cola_blocked));
 
 	return posicionAMoverse;
 
@@ -557,6 +561,10 @@ void intercambiarIdealPokemon(t_entrenador* entrenador1, t_entrenador* entrenado
 
 void intercambiarNormalPokemon(t_entrenador* entrenador1, t_entrenador* entrenador2){
 
+	printf("Ya estan por intercambiar normal \n");
+
+	printf("555555555555555555555555555555555555555555555555555555555555555 \n");
+
 	t_list* pokemonesInnecesariosDT1 = pokemonesInnecesarios(entrenador1);
 	t_list* pokemonesInnecesariosDT2 = pokemonesInnecesarios(entrenador2);
 	t_list* pokemonesPendientesDT1 = pokemonesPendientes(entrenador1);
@@ -567,22 +575,6 @@ void intercambiarNormalPokemon(t_entrenador* entrenador1, t_entrenador* entrenad
 	t_pokemon_entrenador* pokemonInnecesario2 = malloc(sizeof(t_pokemon_entrenador));
 	//t_pokemon_entrenador* pokemonPendiente1 = malloc(sizeof(t_pokemon_entrenador));
 
-	//Busco uno que al entrenador 1 no le sirva
-	char encontreUnoQueNoSirve = 0;
-
-	for (int i = 0; i < list_size(pokemonesInnecesariosDT1); i++) {
-
-		if(encontreUnoQueNoSirve == 0){
-			encontreUnoQueNoSirve = 1;
-			t_pokemon_entrenador* pokInnecesarioAux = ((t_pokemon_entrenador*) list_get(pokemonesInnecesariosDT1, i));
-			pokemonInnecesario1->cantidad = pokInnecesarioAux->cantidad;
-			pokemonInnecesario1->pokemon = pokInnecesarioAux->pokemon;
-
-			agregarPokemon(entrenador2, pokemonInnecesario1);
-			quitarPokemon(entrenador1, pokemonInnecesario1);
-		}
-
-	}
 
 	//Busco uno que le sirva al entrenador 1, de los innecesarios del entrenador 2
 	for (int i = 0; i < list_size(pokemonesInnecesariosDT2); i++) {
@@ -592,10 +584,13 @@ void intercambiarNormalPokemon(t_entrenador* entrenador1, t_entrenador* entrenad
 		pokemonInnecesario2->pokemon=pokInnecesarioAux->pokemon;
 
 		for (int j = 0; j < list_size(pokemonesPendientesDT1); j++) {
-			t_pokemon_entrenador* pokemonPendiente1 =
-					((t_pokemon_entrenador*) list_get(pokemonesPendientesDT1, j));
+			t_pokemon_entrenador* pokemonPendiente1 = ((t_pokemon_entrenador*) list_get(pokemonesPendientesDT1, j));
 
 			if (strcmp(pokemonInnecesario2->pokemon, pokemonPendiente1->pokemon) == 0) {
+
+				printf("Al entrenador %d se le quita el pokemon %s y se lo pasa al entrenador %d \n", entrenador2->id,
+									pokemonInnecesario2->pokemon, entrenador1->id);
+
 
 				agregarPokemon(entrenador1, pokemonInnecesario2);
 				quitarPokemon(entrenador2, pokemonInnecesario2);
@@ -604,6 +599,28 @@ void intercambiarNormalPokemon(t_entrenador* entrenador1, t_entrenador* entrenad
 
 		}
 	}
+
+
+
+	//Busco uno que al entrenador 1 no le sirva
+	for(int i=0; i < list_size(entrenador1->pokemonesObtenidos); i++){
+		t_pokemon_entrenador* pokObtenidoAux = ((t_pokemon_entrenador*) list_get(entrenador1->pokemonesObtenidos, i));
+		t_pokemon_entrenador* pokObjetivoAux = list_buscar(entrenador1->objetivoEntrenador, pokObtenidoAux->pokemon);
+		if(pokObjetivoAux == NULL){
+			pokemonInnecesario1->cantidad = pokObtenidoAux->cantidad;
+			pokemonInnecesario1->pokemon = pokObtenidoAux->pokemon;
+		}
+	}
+
+	printf(
+			"Al entrenador %d se le quita el pokemon %s y se lo pasa al entrenador %d \n",
+			entrenador1->id, pokemonInnecesario1->pokemon, entrenador2->id);
+
+	agregarPokemon(entrenador2, pokemonInnecesario1);
+	quitarPokemon(entrenador1, pokemonInnecesario1);
+
+
+	printf("5555555555555555555555555555555555555555555555555555555555555555555555555 \n");
 	//VER SI TENEMOS QUE HACERLO AFUERA POR LA PLANIFICACION RR DE QUANTUM
 	sleep((g_config_team->retardo_ciclo_cpu)*5);
 	sem_wait(&mutex_ciclosCPU);

@@ -113,8 +113,6 @@ int cantidadDeEntrenadores;
 
 char finalizarProceso;
 
-t_queue* colaNewEntrenadores;
-
 t_queue* colaReadyEntrenadores;
 
 t_queue* colaBlockedEntrenadores;
