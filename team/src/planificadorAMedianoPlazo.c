@@ -205,7 +205,8 @@ void planificadorMedianoPlazo() {
 				printf("TODOS ESTAN EN NEW Y HAY QUE ESPERAR A QUE EN EL MAPA HAYAN POKEMONES QUE NOS SIRVAN \n");
 				sem_wait(&sem_hay_pokemones_mapa);
 
-				t_entrenador* entrenadorAux = buscarEntrenadorMasCercanoAPokemon();
+
+				t_entrenador* entrenadorAux = buscarEntrenadorMasConvenienteEnCola(colaNewEntrenadores);
 
 				//t_entrenador* entrenadorAux = (t_entrenador*) queue_pop(
 						//colaNewEntrenadores);
@@ -470,14 +471,78 @@ char todosQuierenMoverseAPokemon(t_queue* colaDeEntrenadores) {
 	return valorDeRetorno;
 }
 
-t_entrenador* buscarEntrenadorMasCercanoAPokemon(void){
+//Esta funcion necesita que los semaforos mutex de la cola de entrenadores este afuera.
+//Lo que si hay que ver es si necesita los semaforos mutex de la lista de pokemones
+/*t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores){
 
 	int distanciaMasCorta = 100000;
-	t_entrenador* unEntrenador = NULL;
+	int entrenadoresEnCola = queue_size(colaEntrenadores);
+	t_entrenador* entrenadorConveniente;
+	int idEntrenadorConveniente = 100;
 
-	for(int i = 0; i < queue_size(colaNewEntrenadores); i++){
+	//Primero hago un for de la cola de entrenadores. Lo que hago es agarrar cada entrenador y calculo por cada uno
+	//la distancia mas corta que tiene con los pokemones y esa distancia me la guardo.
+	//Una vez que tengo la distancia mas corta, vuelvo a hacer un for dentro de otro for y calculo de nuevo para cada
+	//entrenador la distancia que tiene con cada pokemon, y la comparo con la distancia mas corta. Cuando encuentro al
+	//entrenador que tiene esa distancia corta con algun pokemon, entonces me lo guardo, y al resto los vuelvo a pushear
+	//a la cola
+	for(int i=0; i < entrenadoresEnCola; i++){
+		t_entrenador* entrenadorAux = queue_pop(colaEntrenadores);
 
-		unEntrenador = queue_pop(colaNewEntrenadores);
+		for(int j=0; j < list_size(pokemonesLibresEnElMapa); j++){
+
+			t_pokemon_entrenador* pokemonAux = list_get(pokemonesLibresEnElMapa, j);
+			int distanciaAux = calcularDistancia(entrenadorAux->posicion, pokemonAux->posicion);
+
+			if(distanciaAux < distanciaMasCorta){
+
+				distanciaMasCorta = distanciaAux;
+
+			}
+
+		}
+
+		queue_push(colaEntrenadores, entrenadorAux);
+
+	}
+
+	for(int i=0; i < entrenadoresEnCola; i++){
+
+		t_entrenador* entrenadorAux = queue_pop(colaEntrenadores);
+
+		for(int j=0; j < list_size(pokemonesLibresEnElMapa); j++){
+
+			t_pokemon_entrenador* pokemonAux = list_get(pokemonesLibresEnElMapa, j);
+			int distanciaAux = calcularDistancia(entrenadorAux->posicion, pokemonAux->posicion);
+
+			if(distanciaMasCorta == distanciaAux){
+				idEntrenadorConveniente = entrenadorAux->id;
+			}
+		}
+
+		if(idEntrenadorConveniente == entrenadorAux->id){
+			entrenadorConveniente = entrenadorAux;
+		} else{
+			queue_push(colaEntrenadores, entrenadorAux);
+		}
+
+	}
+
+
+	return entrenadorConveniente;
+}*/
+
+t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores){
+
+	int distanciaMasCorta = 100000;
+	t_entrenador* unEntrenador;
+	t_entrenador* entrenadorConveniente = NULL;
+	int entrenadoresEnCola = queue_size(colaEntrenadores);
+
+
+	for(int i = 0; i < entrenadoresEnCola; i++){
+
+		unEntrenador = queue_pop(colaEntrenadores);
 		printf("Entrenador %d \n", unEntrenador->id);
 		t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(unEntrenador->posicion);
 		puts(pokemonCercano->pokemon);
@@ -487,27 +552,26 @@ t_entrenador* buscarEntrenadorMasCercanoAPokemon(void){
 			distanciaMasCorta = distanciaEntreAmbos;
 		}
 
-		queue_push(colaNewEntrenadores, unEntrenador);
+		queue_push(colaEntrenadores, unEntrenador);
 
 	}
 
 	printf("La distancia mas corta es %d \n", distanciaMasCorta);
 
-	printf("Cantidad de entrenadores es %d \n", queue_size(colaNewEntrenadores));
+	printf("Cantidad de entrenadores es %d \n", queue_size(colaEntrenadores));
 
-	//unEntrenador = NULL;
 
-	for (int i = 0; i < queue_size(colaNewEntrenadores); i++) {
+	for (int i = 0; i < entrenadoresEnCola; i++) {
 
-		unEntrenador = queue_pop(colaNewEntrenadores);
+		unEntrenador = queue_pop(colaEntrenadores);
 		printf("Entrenador %d \n", unEntrenador->id);
 		t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(unEntrenador->posicion);
 		int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion, pokemonCercano->posicion);
 
 		if (distanciaEntreAmbos == distanciaMasCorta) {
-			unEntrenador = queue_pop(colaNewEntrenadores);
+			entrenadorConveniente = unEntrenador;
 		}else {
-			queue_push(colaNewEntrenadores, unEntrenador);
+			queue_push(colaEntrenadores, unEntrenador);
 		}
 
 	}
@@ -515,5 +579,5 @@ t_entrenador* buscarEntrenadorMasCercanoAPokemon(void){
 	printf("El entrenador que va a pasar de New a Ready es %d \n", unEntrenador->id);
 
 
-	return unEntrenador;
+	return entrenadorConveniente;
 }

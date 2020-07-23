@@ -587,13 +587,52 @@ void process_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger) {
 					pokemonAAgregarAlMapa->posicion->pos_x =msg_appeared->coord->pos_x;
 					pokemonAAgregarAlMapa->posicion->pos_y =msg_appeared->coord->pos_y;
 
-			if (necesitoIrAAtraparlo(pokemonAAgregarAlMapa->pokemon)) {
+
+			//El codigo orginal de lo que empieza a continuacion hasta antes de que verifique la long de cola
+			//era este:
+			/*if (necesitoIrAAtraparlo(pokemonAAgregarAlMapa->pokemon)) {
 				sem_post(&sem_hay_pokemones_mapa);
 			}
 
+			sem_wait(&sem_pokemonesLibresEnElMapa);
+			list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
+			sem_post(&sem_pokemonesLibresEnElMapa);*/
+
+			char verificaSiEsNecesarioAtraparlo = 0;
+			char yaLoAgregueAlMapa = 0;
+
+			sem_wait(&sem_pokemonesLibresEnElMapa);
+			if (list_size(pokemonesLibresEnElMapa) == 0) {
+				list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
+				yaLoAgregueAlMapa = 1;
+				sem_post(&sem_hay_pokemones_mapa);
+			} else {
+				//ESTO LO HAGO PORQUE SI NO SE QUEDA HACIENDO UN DOBLE WAIT DEL SEMAFORO DE POKEMONESLIBRESENELMAPA
+				verificaSiEsNecesarioAtraparlo = 1;
+			}
+			sem_post(&sem_pokemonesLibresEnElMapa);
+
+
+
+			if (verificaSiEsNecesarioAtraparlo == 1) {
+				if (necesitoIrAAtraparlo(pokemonAAgregarAlMapa->pokemon)) {
 					sem_wait(&sem_pokemonesLibresEnElMapa);
 					list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
 					sem_post(&sem_pokemonesLibresEnElMapa);
+					yaLoAgregueAlMapa = 1;
+					sem_post(&sem_hay_pokemones_mapa);
+				}
+			}
+
+			if(yaLoAgregueAlMapa == 0){
+				sem_wait(&sem_pokemonesLibresEnElMapa);
+				list_add(pokemonesLibresEnElMapa, pokemonAAgregarAlMapa);
+				sem_post(&sem_pokemonesLibresEnElMapa);
+			}
+
+
+
+
 
 
 
