@@ -1,0 +1,2792 @@
+[INFO] 02:36:09:377 GAME_CARD/(13370:13370): INICIO_LOG_SUCESS
+[TRACE] 02:36:09:407 GAME_CARD/(13370:13370): Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):13370
+[INFO] 02:36:09:416 GAME_CARD/(13370:13371): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 7| QUEUE: NEW_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 02:36:09:419 GAME_CARD/(13370:13371): (SENDING ACK|NEW_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 02:36:09:432 GAME_CARD/(13370:13373): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 8| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 02:36:09:432 GAME_CARD/(13370:13373): (SENDING ACK|GET_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 02:36:09:433 GAME_CARD/(13370:13375): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 9| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 02:36:09:433 GAME_CARD/(13370:13375): (SENDING ACK|CATCH_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[DEBUG] 02:36:10:433 GAME_CARD/(13370:13370): Esperando conexiones en Direccion: 127.0.0.1, Puerto: 5001
+[INFO] 02:36:42:843 GAME_CARD/(13370:13373): (RECEIVING: FROM GET_POKEMON | ID_MSG:1 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 02:36:42:845 GAME_CARD/(13370:13373): (SENDING ACK|GET_POKEMON|ID_MSG:1->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 02:36:42:846 GAME_CARD/(13370:13432): (-->> El archivo Pokemon Pikachu no existe en el File System <<--)
+[INFO] 02:36:42:868 GAME_CARD/(13370:13373): (RECEIVING: FROM GET_POKEMON | ID_MSG:2 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 02:36:42:868 GAME_CARD/(13370:13373): (SENDING ACK|GET_POKEMON|ID_MSG:2->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 02:36:42:880 GAME_CARD/(13370:13435): (-->> El archivo Pokemon Pikachu no existe en el File System <<--)
+[INFO] 02:36:42:888 GAME_CARD/(13370:13373): (RECEIVING: FROM GET_POKEMON | ID_MSG:3 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 02:36:42:888 GAME_CARD/(13370:13373): (SENDING ACK|GET_POKEMON|ID_MSG:3->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 02:36:42:889 GAME_CARD/(13370:13437): (-->> El archivo Pokemon Squirtle no existe en el File System <<--)
+[INFO] 02:36:42:903 GAME_CARD/(13370:13373): (RECEIVING: FROM GET_POKEMON | ID_MSG:4 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 02:36:42:903 GAME_CARD/(13370:13373): (SENDING ACK|GET_POKEMON|ID_MSG:4->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 02:36:42:903 GAME_CARD/(13370:13441): (-->> El archivo Pokemon Squirtle no existe en el File System <<--)
+[INFO] 02:36:42:924 GAME_CARD/(13370:13373): (RECEIVING: FROM GET_POKEMON | ID_MSG:5 | Gengar -- SIZE = 23 Bytes)
+[INFO] 02:36:42:924 GAME_CARD/(13370:13373): (SENDING ACK|GET_POKEMON|ID_MSG:5->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 02:36:42:924 GAME_CARD/(13370:13444): (-->> El archivo Pokemon Gengar no existe en el File System <<--)
+[INFO] 02:36:42:926 GAME_CARD/(13370:13373): (RECEIVING: FROM GET_POKEMON | ID_MSG:6 | Onix -- SIZE = 21 Bytes)
+[INFO] 02:36:42:926 GAME_CARD/(13370:13373): (SENDING ACK|GET_POKEMON|ID_MSG:6->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 02:36:42:927 GAME_CARD/(13370:13446): (-->> El archivo Pokemon Onix no existe en el File System <<--)
+[ERROR] 02:48:20:439 GAME_CARD/(13370:13375): (Se perdió Conexión con BROKER|CATCH_POKEMON)
+[ERROR] 02:48:20:439 GAME_CARD/(13370:13373): (Se perdió Conexión con BROKER|GET_POKEMON)
+[ERROR] 02:48:20:439 GAME_CARD/(13370:13371): (Se perdió Conexión con BROKER|NEW_POKEMON)
+[DEBUG] 02:48:20:440 GAME_CARD/(13370:13375): (GAMECARD END_SUSCRIPTION: |RECVD_MSGs:0|TOTAL_MSGS:0)
+[DEBUG] 02:48:20:440 GAME_CARD/(13370:13371): (GAMECARD END_SUSCRIPTION: |RECVD_MSGs:0|TOTAL_MSGS:0)
+[DEBUG] 02:48:20:440 GAME_CARD/(13370:13373): (GAMECARD END_SUSCRIPTION: |RECVD_MSGs:6|TOTAL_MSGS:6)
+[INFO] 03:17:00:654 GAME_CARD/(14253:14253): INICIO_LOG_SUCESS
+[TRACE] 03:17:00:729 GAME_CARD/(14253:14253): Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):14253
+[INFO] 03:17:00:729 GAME_CARD/(14253:14254): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 7| QUEUE: NEW_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:17:00:729 GAME_CARD/(14253:14254): (SENDING ACK|NEW_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:17:00:730 GAME_CARD/(14253:14256): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 8| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:17:00:731 GAME_CARD/(14253:14256): (SENDING ACK|GET_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:17:00:738 GAME_CARD/(14253:14258): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 9| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:17:00:739 GAME_CARD/(14253:14258): (SENDING ACK|CATCH_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[DEBUG] 03:17:01:732 GAME_CARD/(14253:14253): Esperando conexiones en Direccion: 127.0.0.1, Puerto: 5001
+[INFO] 03:17:04:92 GAME_CARD/(14253:14256): (RECEIVING: FROM GET_POKEMON | ID_MSG:1 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 03:17:04:92 GAME_CARD/(14253:14256): (SENDING ACK|GET_POKEMON|ID_MSG:1->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 03:17:04:115 GAME_CARD/(14253:14281): (-->> El archivo Pokemon Pikachu no existe en el File System <<--)
+[INFO] 03:17:04:125 GAME_CARD/(14253:14256): (RECEIVING: FROM GET_POKEMON | ID_MSG:2 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 03:17:04:125 GAME_CARD/(14253:14256): (SENDING ACK|GET_POKEMON|ID_MSG:2->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 03:17:04:125 GAME_CARD/(14253:14284): (-->> El archivo Pokemon Pikachu no existe en el File System <<--)
+[INFO] 03:17:04:132 GAME_CARD/(14253:14256): (RECEIVING: FROM GET_POKEMON | ID_MSG:3 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 03:17:04:132 GAME_CARD/(14253:14256): (SENDING ACK|GET_POKEMON|ID_MSG:3->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 03:17:04:133 GAME_CARD/(14253:14287): (-->> El archivo Pokemon Squirtle no existe en el File System <<--)
+[INFO] 03:17:04:144 GAME_CARD/(14253:14256): (RECEIVING: FROM GET_POKEMON | ID_MSG:4 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 03:17:04:144 GAME_CARD/(14253:14256): (SENDING ACK|GET_POKEMON|ID_MSG:4->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 03:17:04:144 GAME_CARD/(14253:14290): (-->> El archivo Pokemon Squirtle no existe en el File System <<--)
+[INFO] 03:17:04:168 GAME_CARD/(14253:14256): (RECEIVING: FROM GET_POKEMON | ID_MSG:5 | Gengar -- SIZE = 23 Bytes)
+[INFO] 03:17:04:171 GAME_CARD/(14253:14256): (SENDING ACK|GET_POKEMON|ID_MSG:5->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 03:17:04:172 GAME_CARD/(14253:14293): (-->> El archivo Pokemon Gengar no existe en el File System <<--)
+[INFO] 03:17:04:185 GAME_CARD/(14253:14256): (RECEIVING: FROM GET_POKEMON | ID_MSG:6 | Onix -- SIZE = 21 Bytes)
+[INFO] 03:17:04:185 GAME_CARD/(14253:14256): (SENDING ACK|GET_POKEMON|ID_MSG:6->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 03:17:04:185 GAME_CARD/(14253:14295): (-->> El archivo Pokemon Onix no existe en el File System <<--)
+[INFO] 03:17:09:391 GAME_CARD/(14253:14254): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:7 | Pikachu | POS_X:1 | POS_Y:1 | QTY:1|SIZE:36 Bytes)
+[INFO] 03:17:09:392 GAME_CARD/(14253:14254): (SENDING ACK|NEW_POKEMON|ID_MSG:7->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:17:09:394 GAME_CARD/(14253:14300): (El archivo Pokemon Pikachu no existe en el File System - Creando Nuevo)
+[INFO] 03:17:09:397 GAME_CARD/(14253:14300): CREATE_DIR Pokemon TALL_GRASS/Files/Pikachu
+[INFO] 03:17:09:421 GAME_CARD/(14253:14254): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:8 | Squirtle | POS_X:9 | POS_Y:7 | QTY:1|SIZE:37 Bytes)
+[INFO] 03:17:09:421 GAME_CARD/(14253:14254): (SENDING ACK|NEW_POKEMON|ID_MSG:8->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:17:09:423 GAME_CARD/(14253:14302): (El archivo Pokemon Squirtle no existe en el File System - Creando Nuevo)
+[INFO] 03:17:09:424 GAME_CARD/(14253:14302): CREATE_DIR Pokemon TALL_GRASS/Files/Squirtle
+[INFO] 03:17:09:449 GAME_CARD/(14253:14300): SAVE METADATA  TALL_GRASS/Files/Pikachu/Metadata.bin
+[INFO] 03:17:09:449 GAME_CARD/(14253:14302): SAVE METADATA  TALL_GRASS/Files/Squirtle/Metadata.bin
+[INFO] 03:17:09:452 GAME_CARD/(14253:14300): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 12| QUEUE: APPEARED_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:17:09:452 GAME_CARD/(14253:14300): (SENDING: APPEARED_POKEMON|Pikachu|ID_CORRELATIVE:7|Pos_X:1|Pos_Y:1|SIZE:32 Bytes)
+[INFO] 03:17:09:465 GAME_CARD/(14253:14254): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:9 | Onix | POS_X:2 | POS_Y:2 | QTY:1|SIZE:33 Bytes)
+[INFO] 03:17:09:465 GAME_CARD/(14253:14254): (SENDING ACK|NEW_POKEMON|ID_MSG:9->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:17:09:472 GAME_CARD/(14253:14306): (El archivo Pokemon Onix no existe en el File System - Creando Nuevo)
+[INFO] 03:17:09:474 GAME_CARD/(14253:14306): CREATE_DIR Pokemon TALL_GRASS/Files/Onix
+[INFO] 03:17:09:474 GAME_CARD/(14253:14306): SAVE METADATA  TALL_GRASS/Files/Onix/Metadata.bin
+[INFO] 03:17:09:475 GAME_CARD/(14253:14300): (RECEIVING: ID_MSG:10)
+[INFO] 03:17:09:483 GAME_CARD/(14253:14302): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 12| QUEUE: APPEARED_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:17:09:488 GAME_CARD/(14253:14302): (SENDING: APPEARED_POKEMON|Squirtle|ID_CORRELATIVE:8|Pos_X:9|Pos_Y:7|SIZE:33 Bytes)
+[INFO] 03:17:09:489 GAME_CARD/(14253:14302): (RECEIVING: ID_MSG:11)
+[INFO] 03:17:09:489 GAME_CARD/(14253:14306): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 12| QUEUE: APPEARED_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:17:09:489 GAME_CARD/(14253:14306): (SENDING: APPEARED_POKEMON|Onix|ID_CORRELATIVE:9|Pos_X:2|Pos_Y:2|SIZE:29 Bytes)
+[INFO] 03:17:09:512 GAME_CARD/(14253:14306): (RECEIVING: ID_MSG:12)
+[INFO] 03:17:12:486 GAME_CARD/(14253:14258): (RECEIVING: FROM CATCH_POKEMON | ID_MSG:13 | Pikachu | POS_X:1 | POS_Y:1 -- SIZE = 32 Bytes)
+[INFO] 03:17:12:486 GAME_CARD/(14253:14258): (SENDING ACK|CATCH_POKEMON|ID_MSG:13->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:17:12:487 GAME_CARD/(14253:14310): (Archivo Pokemon Pikachu Abierto)
+[INFO] 03:17:12:488 GAME_CARD/(14253:14310): (READING METADATADA FILE: Pikachu | DIRECTORY: N | SIZE: 6 | OPEN: N | USED_BLOCKS: 1)
+[INFO] 03:17:12:488 GAME_CARD/(14253:14310): (Guardando Posiciones: [)
+[INFO] 03:18:35:574 GAME_CARD/(14363:14363): INICIO_LOG_SUCESS
+[TRACE] 03:18:35:588 GAME_CARD/(14363:14363): Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):14363
+[INFO] 03:18:35:588 GAME_CARD/(14363:14364): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 7| QUEUE: NEW_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:18:35:589 GAME_CARD/(14363:14364): (SENDING ACK|NEW_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:18:35:589 GAME_CARD/(14363:14366): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 8| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:18:35:590 GAME_CARD/(14363:14366): (SENDING ACK|GET_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:18:35:591 GAME_CARD/(14363:14368): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 9| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:18:35:592 GAME_CARD/(14363:14368): (SENDING ACK|CATCH_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:18:35:593 GAME_CARD/(14363:14368): (RECEIVING: FROM CATCH_POKEMON | ID_MSG:14 | Squirtle | POS_X:9 | POS_Y:7 -- SIZE = 33 Bytes)
+[INFO] 03:18:35:593 GAME_CARD/(14363:14368): (SENDING ACK|CATCH_POKEMON|ID_MSG:14->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:18:35:593 GAME_CARD/(14363:14368): (RECEIVING: FROM CATCH_POKEMON | ID_MSG:15 | Onix | POS_X:2 | POS_Y:2 -- SIZE = 29 Bytes)
+[INFO] 03:18:35:594 GAME_CARD/(14363:14368): (SENDING ACK|CATCH_POKEMON|ID_MSG:15->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:18:35:595 GAME_CARD/(14363:14371): (Archivo Pokemon Onix Abierto)
+[INFO] 03:18:35:611 GAME_CARD/(14363:14371): (READING METADATADA FILE: Onix | DIRECTORY: N | SIZE: 6 | OPEN: N | USED_BLOCKS: 1)
+[INFO] 03:18:35:612 GAME_CARD/(14363:14371): (Guardando Posiciones: [)
+[INFO] 03:18:48:352 GAME_CARD/(14376:14376): INICIO_LOG_SUCESS
+[TRACE] 03:18:48:359 GAME_CARD/(14376:14376): Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):14376
+[INFO] 03:18:48:359 GAME_CARD/(14376:14377): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 7| QUEUE: NEW_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:18:48:360 GAME_CARD/(14376:14377): (SENDING ACK|NEW_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:18:48:360 GAME_CARD/(14376:14379): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 8| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:18:48:373 GAME_CARD/(14376:14379): (SENDING ACK|GET_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:18:48:375 GAME_CARD/(14376:14381): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 9| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:18:48:376 GAME_CARD/(14376:14381): (SENDING ACK|CATCH_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[DEBUG] 03:18:49:373 GAME_CARD/(14376:14376): Esperando conexiones en Direccion: 127.0.0.1, Puerto: 5001
+[INFO] 03:18:55:649 GAME_CARD/(14376:14379): (RECEIVING: FROM GET_POKEMON | ID_MSG:1 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 03:18:55:649 GAME_CARD/(14376:14379): (SENDING ACK|GET_POKEMON|ID_MSG:1->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 03:18:55:655 GAME_CARD/(14376:14401): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:18:55:671 GAME_CARD/(14376:14379): (RECEIVING: FROM GET_POKEMON | ID_MSG:2 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 03:18:55:672 GAME_CARD/(14376:14379): (SENDING ACK|GET_POKEMON|ID_MSG:2->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 03:18:55:687 GAME_CARD/(14376:14404): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:18:55:692 GAME_CARD/(14376:14379): (RECEIVING: FROM GET_POKEMON | ID_MSG:3 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 03:18:55:692 GAME_CARD/(14376:14379): (SENDING ACK|GET_POKEMON|ID_MSG:3->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:18:55:692 GAME_CARD/(14376:14407): (Archivo Pokemon Squirtle Abierto)
+[INFO] 03:18:55:698 GAME_CARD/(14376:14407): (READING METADATADA FILE: Squirtle | DIRECTORY: N | SIZE: 6 | OPEN: N | USED_BLOCKS: 1)
+[INFO] 03:18:55:700 GAME_CARD/(14376:14407): (READING FILE CONTENT: Squirtle | POSITIONS OBTAINED: 1 )
+[INFO] 03:18:55:700 GAME_CARD/(14376:14407): (Archivo Pokemon Squirtle Cerrado)
+[INFO] 03:18:55:728 GAME_CARD/(14376:14379): (RECEIVING: FROM GET_POKEMON | ID_MSG:4 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 03:18:55:728 GAME_CARD/(14376:14379): (SENDING ACK|GET_POKEMON|ID_MSG:4->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:18:55:729 GAME_CARD/(14376:14411): (Archivo Pokemon Squirtle Abierto)
+[INFO] 03:18:55:729 GAME_CARD/(14376:14407): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 12| QUEUE: LOCALIZED_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:18:55:730 GAME_CARD/(14376:14411): (READING METADATADA FILE: Squirtle | DIRECTORY: N | SIZE: 6 | OPEN: N | USED_BLOCKS: 1)
+[INFO] 03:18:55:731 GAME_CARD/(14376:14411): (READING FILE CONTENT: Squirtle | POSITIONS OBTAINED: 1 )
+[INFO] 03:18:55:732 GAME_CARD/(14376:14411): (Archivo Pokemon Squirtle Cerrado)
+[INFO] 03:18:55:742 GAME_CARD/(14376:14379): (RECEIVING: FROM GET_POKEMON | ID_MSG:5 | Gengar -- SIZE = 23 Bytes)
+[INFO] 03:18:55:742 GAME_CARD/(14376:14379): (SENDING ACK|GET_POKEMON|ID_MSG:5->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:18:55:742 GAME_CARD/(14376:14407): (SENDING: LOCALIZED_POKEMON|Socket#:12|ID_CORRELATIVE=3|Squirtle|QTY_POS:1|{Xn|Yn}:[9|7]|SIZE:37 Bytes)
+[INFO] 03:18:55:743 GAME_CARD/(14376:14407): (RECEIVING: ID_MSG:6)
+[INFO] 03:18:55:748 GAME_CARD/(14376:14411): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 12| QUEUE: LOCALIZED_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:18:55:749 GAME_CARD/(14376:14411): (SENDING: LOCALIZED_POKEMON|Socket#:12|ID_CORRELATIVE=4|Squirtle|QTY_POS:1|{Xn|Yn}:[9|7]|SIZE:37 Bytes)
+[WARNING] 03:18:55:749 GAME_CARD/(14376:14414): (-->> El archivo Pokemon Gengar no existe en el File System <<--)
+[INFO] 03:18:55:755 GAME_CARD/(14376:14411): (RECEIVING: ID_MSG:7)
+[INFO] 03:18:55:756 GAME_CARD/(14376:14379): (RECEIVING: FROM GET_POKEMON | ID_MSG:8 | Onix -- SIZE = 21 Bytes)
+[INFO] 03:18:55:757 GAME_CARD/(14376:14379): (SENDING ACK|GET_POKEMON|ID_MSG:8->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 03:18:55:758 GAME_CARD/(14376:14417): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:18:59:375 GAME_CARD/(14376:14384): (Procesando 3 Mensajes pendientes)
+[WARNING] 03:18:59:375 GAME_CARD/(14376:14420): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:18:59:376 GAME_CARD/(14376:14419): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:18:59:377 GAME_CARD/(14376:14418): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:19:00:642 GAME_CARD/(14376:14377): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:9 | Pikachu | POS_X:1 | POS_Y:1 | QTY:1|SIZE:36 Bytes)
+[INFO] 03:19:00:642 GAME_CARD/(14376:14377): (SENDING ACK|NEW_POKEMON|ID_MSG:9->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 03:19:00:651 GAME_CARD/(14376:14425): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:19:00:668 GAME_CARD/(14376:14377): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:10 | Squirtle | POS_X:9 | POS_Y:7 | QTY:1|SIZE:37 Bytes)
+[INFO] 03:19:00:668 GAME_CARD/(14376:14377): (SENDING ACK|NEW_POKEMON|ID_MSG:10->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:19:00:677 GAME_CARD/(14376:14428): (Archivo Pokemon Squirtle Abierto)
+[INFO] 03:19:00:677 GAME_CARD/(14376:14428): (READING METADATADA FILE: Squirtle | DIRECTORY: N | SIZE: 6 | OPEN: N | USED_BLOCKS: 1)
+[INFO] 03:19:00:677 GAME_CARD/(14376:14428): (Guardando Posiciones: [9-7=2])
+[INFO] 03:19:00:697 GAME_CARD/(14376:14428): (Archivo Pokemon Squirtle Cerrado)
+[INFO] 03:19:00:699 GAME_CARD/(14376:14428): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 12| QUEUE: APPEARED_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:19:00:700 GAME_CARD/(14376:14428): (SENDING: APPEARED_POKEMON|Squirtle|ID_CORRELATIVE:10|Pos_X:9|Pos_Y:7|SIZE:33 Bytes)
+[INFO] 03:19:00:704 GAME_CARD/(14376:14428): (RECEIVING: ID_MSG:11)
+[INFO] 03:19:00:744 GAME_CARD/(14376:14377): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:12 | Onix | POS_X:2 | POS_Y:2 | QTY:1|SIZE:33 Bytes)
+[INFO] 03:19:00:744 GAME_CARD/(14376:14377): (SENDING ACK|NEW_POKEMON|ID_MSG:12->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 03:19:00:752 GAME_CARD/(14376:14431): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 03:19:02:719 GAME_CARD/(14376:14381): (RECEIVING: FROM CATCH_POKEMON | ID_MSG:13 | Squirtle | POS_X:9 | POS_Y:7 -- SIZE = 33 Bytes)
+[INFO] 03:19:02:719 GAME_CARD/(14376:14381): (SENDING ACK|CATCH_POKEMON|ID_MSG:13->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 03:19:02:720 GAME_CARD/(14376:14433): (Archivo Pokemon Squirtle Abierto)
+[INFO] 03:19:02:720 GAME_CARD/(14376:14433): (READING METADATADA FILE: Squirtle | DIRECTORY: N | SIZE: 6 | OPEN: N | USED_BLOCKS: 1)
+[INFO] 03:19:02:721 GAME_CARD/(14376:14433): (Guardando Posiciones: [9-7=1])
+[INFO] 03:19:02:722 GAME_CARD/(14376:14433): (Archivo Pokemon Squirtle Cerrado)
+[INFO] 03:19:02:722 GAME_CARD/(14376:14433): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 12| QUEUE: CAUGHT_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 03:19:02:723 GAME_CARD/(14376:14433): (SENDING: CAUGHT_POKEMON|ID_CORRELATIVE=13|RESULT=OK|Size:16 Bytes)
+[INFO] 03:19:02:724 GAME_CARD/(14376:14433): (RECEIVING: ID_MSG:14)
+[INFO] 03:19:04:376 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:19:04:377 GAME_CARD/(14376:14439): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:19:04:377 GAME_CARD/(14376:14438): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:19:04:378 GAME_CARD/(14376:14437): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:04:378 GAME_CARD/(14376:14436): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:04:379 GAME_CARD/(14376:14435): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:19:09:377 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:19:09:378 GAME_CARD/(14376:14444): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:09:378 GAME_CARD/(14376:14443): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:09:379 GAME_CARD/(14376:14442): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:09:380 GAME_CARD/(14376:14441): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:19:09:380 GAME_CARD/(14376:14440): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 03:19:14:378 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:19:14:380 GAME_CARD/(14376:14448): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:19:14:380 GAME_CARD/(14376:14449): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:19:14:380 GAME_CARD/(14376:14447): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:14:382 GAME_CARD/(14376:14446): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:14:383 GAME_CARD/(14376:14445): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:19:19:380 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:19:19:382 GAME_CARD/(14376:14458): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:19:383 GAME_CARD/(14376:14459): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:19:383 GAME_CARD/(14376:14457): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:19:19:385 GAME_CARD/(14376:14456): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:19:385 GAME_CARD/(14376:14455): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:19:24:381 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:19:24:382 GAME_CARD/(14376:14464): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:19:24:383 GAME_CARD/(14376:14463): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:24:383 GAME_CARD/(14376:14462): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:19:24:385 GAME_CARD/(14376:14461): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:24:385 GAME_CARD/(14376:14460): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:19:29:382 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:19:29:383 GAME_CARD/(14376:14469): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:29:383 GAME_CARD/(14376:14468): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:29:384 GAME_CARD/(14376:14467): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:29:386 GAME_CARD/(14376:14466): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:19:29:387 GAME_CARD/(14376:14465): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:19:34:383 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:19:34:384 GAME_CARD/(14376:14474): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:19:34:385 GAME_CARD/(14376:14473): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:19:34:386 GAME_CARD/(14376:14472): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:34:387 GAME_CARD/(14376:14471): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:34:388 GAME_CARD/(14376:14470): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:19:39:384 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:19:39:385 GAME_CARD/(14376:14479): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:39:385 GAME_CARD/(14376:14478): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:39:387 GAME_CARD/(14376:14477): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:39:388 GAME_CARD/(14376:14476): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:19:39:388 GAME_CARD/(14376:14475): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:19:44:385 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:19:44:386 GAME_CARD/(14376:14486): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:19:44:386 GAME_CARD/(14376:14485): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:19:44:387 GAME_CARD/(14376:14484): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:44:388 GAME_CARD/(14376:14483): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:44:389 GAME_CARD/(14376:14482): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:19:49:386 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:19:49:387 GAME_CARD/(14376:14491): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:49:387 GAME_CARD/(14376:14490): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:49:388 GAME_CARD/(14376:14489): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:49:388 GAME_CARD/(14376:14488): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:19:49:389 GAME_CARD/(14376:14487): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:19:54:387 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:19:54:388 GAME_CARD/(14376:14496): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:19:54:388 GAME_CARD/(14376:14495): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:19:54:389 GAME_CARD/(14376:14494): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:54:390 GAME_CARD/(14376:14493): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:54:391 GAME_CARD/(14376:14492): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:19:59:388 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:19:59:389 GAME_CARD/(14376:14501): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:59:390 GAME_CARD/(14376:14500): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:59:390 GAME_CARD/(14376:14499): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:19:59:392 GAME_CARD/(14376:14498): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:19:59:393 GAME_CARD/(14376:14497): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:20:04:389 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:20:04:389 GAME_CARD/(14376:14506): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:20:04:390 GAME_CARD/(14376:14505): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:20:04:391 GAME_CARD/(14376:14504): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:04:391 GAME_CARD/(14376:14503): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:04:392 GAME_CARD/(14376:14502): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:20:09:389 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:20:09:390 GAME_CARD/(14376:14511): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:09:391 GAME_CARD/(14376:14510): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:09:392 GAME_CARD/(14376:14509): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:09:392 GAME_CARD/(14376:14508): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:20:09:393 GAME_CARD/(14376:14507): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:20:14:391 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:20:14:392 GAME_CARD/(14376:14516): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:20:14:393 GAME_CARD/(14376:14515): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:20:14:393 GAME_CARD/(14376:14514): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:14:394 GAME_CARD/(14376:14513): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:14:395 GAME_CARD/(14376:14512): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:20:19:392 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:20:19:392 GAME_CARD/(14376:14521): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:19:392 GAME_CARD/(14376:14520): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:19:393 GAME_CARD/(14376:14519): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:19:394 GAME_CARD/(14376:14518): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:20:19:395 GAME_CARD/(14376:14517): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:20:24:392 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:20:24:396 GAME_CARD/(14376:14525): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:20:24:396 GAME_CARD/(14376:14526): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:20:24:396 GAME_CARD/(14376:14524): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:24:396 GAME_CARD/(14376:14523): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:24:398 GAME_CARD/(14376:14522): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:20:29:393 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:20:29:395 GAME_CARD/(14376:14531): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:29:396 GAME_CARD/(14376:14530): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:20:29:396 GAME_CARD/(14376:14529): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:29:397 GAME_CARD/(14376:14528): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:29:399 GAME_CARD/(14376:14527): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 03:20:34:395 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:20:34:395 GAME_CARD/(14376:14536): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:20:34:396 GAME_CARD/(14376:14535): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:34:396 GAME_CARD/(14376:14534): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:20:34:396 GAME_CARD/(14376:14533): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:34:398 GAME_CARD/(14376:14532): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:20:39:399 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:20:39:402 GAME_CARD/(14376:14542): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:20:39:404 GAME_CARD/(14376:14543): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:39:404 GAME_CARD/(14376:14541): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:39:404 GAME_CARD/(14376:14540): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:39:405 GAME_CARD/(14376:14539): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 03:20:44:400 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:20:44:404 GAME_CARD/(14376:14550): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:44:404 GAME_CARD/(14376:14549): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:44:405 GAME_CARD/(14376:14548): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:20:44:406 GAME_CARD/(14376:14547): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:44:406 GAME_CARD/(14376:14546): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:20:49:401 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:20:49:408 GAME_CARD/(14376:14555): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:20:49:408 GAME_CARD/(14376:14554): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:49:408 GAME_CARD/(14376:14553): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:20:49:409 GAME_CARD/(14376:14552): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:49:420 GAME_CARD/(14376:14551): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:20:54:402 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:20:54:403 GAME_CARD/(14376:14560): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:54:404 GAME_CARD/(14376:14559): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:54:404 GAME_CARD/(14376:14558): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:54:405 GAME_CARD/(14376:14557): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:20:54:406 GAME_CARD/(14376:14556): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:20:59:403 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:20:59:404 GAME_CARD/(14376:14565): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:20:59:404 GAME_CARD/(14376:14564): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:20:59:405 GAME_CARD/(14376:14563): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:59:406 GAME_CARD/(14376:14562): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:20:59:407 GAME_CARD/(14376:14561): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:21:04:404 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:21:04:407 GAME_CARD/(14376:14571): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:04:407 GAME_CARD/(14376:14570): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:04:408 GAME_CARD/(14376:14569): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:04:409 GAME_CARD/(14376:14568): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:21:04:412 GAME_CARD/(14376:14567): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:21:09:405 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:21:09:408 GAME_CARD/(14376:14577): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:21:09:408 GAME_CARD/(14376:14578): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:21:09:408 GAME_CARD/(14376:14576): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:09:409 GAME_CARD/(14376:14575): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:09:410 GAME_CARD/(14376:14574): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:21:14:406 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:21:14:407 GAME_CARD/(14376:14584): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:14:407 GAME_CARD/(14376:14583): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:21:14:408 GAME_CARD/(14376:14582): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:14:410 GAME_CARD/(14376:14581): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:14:412 GAME_CARD/(14376:14580): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 03:21:19:407 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:21:19:409 GAME_CARD/(14376:14589): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:19:409 GAME_CARD/(14376:14590): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:21:19:410 GAME_CARD/(14376:14588): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:19:410 GAME_CARD/(14376:14587): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:21:19:413 GAME_CARD/(14376:14586): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:21:24:408 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:21:24:409 GAME_CARD/(14376:14596): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:24:410 GAME_CARD/(14376:14595): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:21:24:412 GAME_CARD/(14376:14594): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:21:24:412 GAME_CARD/(14376:14593): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:24:414 GAME_CARD/(14376:14592): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:21:29:410 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:21:29:416 GAME_CARD/(14376:14602): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:29:416 GAME_CARD/(14376:14601): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:29:416 GAME_CARD/(14376:14600): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:21:29:418 GAME_CARD/(14376:14599): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:21:29:419 GAME_CARD/(14376:14598): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:21:34:412 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:21:34:414 GAME_CARD/(14376:14607): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:34:414 GAME_CARD/(14376:14606): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:21:34:414 GAME_CARD/(14376:14605): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:34:418 GAME_CARD/(14376:14604): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:21:34:418 GAME_CARD/(14376:14603): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:21:39:414 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:21:39:418 GAME_CARD/(14376:14611): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:21:39:418 GAME_CARD/(14376:14612): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:39:419 GAME_CARD/(14376:14610): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:21:39:420 GAME_CARD/(14376:14609): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:39:422 GAME_CARD/(14376:14608): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:21:44:416 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:21:44:417 GAME_CARD/(14376:14619): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:44:417 GAME_CARD/(14376:14618): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:44:418 GAME_CARD/(14376:14617): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:44:419 GAME_CARD/(14376:14616): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:21:44:420 GAME_CARD/(14376:14615): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 03:21:49:417 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:21:49:417 GAME_CARD/(14376:14624): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:21:49:418 GAME_CARD/(14376:14623): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:21:49:419 GAME_CARD/(14376:14622): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:49:419 GAME_CARD/(14376:14621): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:49:420 GAME_CARD/(14376:14620): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:21:54:417 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:21:54:419 GAME_CARD/(14376:14628): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:54:419 GAME_CARD/(14376:14629): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:54:419 GAME_CARD/(14376:14627): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:54:422 GAME_CARD/(14376:14626): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:21:54:423 GAME_CARD/(14376:14625): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 03:21:59:418 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:21:59:419 GAME_CARD/(14376:14634): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:59:420 GAME_CARD/(14376:14633): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:21:59:420 GAME_CARD/(14376:14632): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:21:59:422 GAME_CARD/(14376:14631): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:21:59:422 GAME_CARD/(14376:14630): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:22:04:419 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:22:04:420 GAME_CARD/(14376:14640): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:04:420 GAME_CARD/(14376:14639): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:04:421 GAME_CARD/(14376:14638): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:22:04:422 GAME_CARD/(14376:14637): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:22:04:422 GAME_CARD/(14376:14636): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:22:09:423 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:22:09:432 GAME_CARD/(14376:14645): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:09:432 GAME_CARD/(14376:14644): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:22:09:432 GAME_CARD/(14376:14643): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:22:09:434 GAME_CARD/(14376:14642): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:09:441 GAME_CARD/(14376:14641): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:22:14:424 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:22:14:425 GAME_CARD/(14376:14650): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:22:14:425 GAME_CARD/(14376:14649): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:14:426 GAME_CARD/(14376:14648): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:14:427 GAME_CARD/(14376:14647): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:22:14:427 GAME_CARD/(14376:14646): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:22:19:428 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:22:19:438 GAME_CARD/(14376:14654): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:22:19:444 GAME_CARD/(14376:14655): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:19:444 GAME_CARD/(14376:14653): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:19:444 GAME_CARD/(14376:14652): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:19:444 GAME_CARD/(14376:14651): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 03:22:24:429 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:22:24:429 GAME_CARD/(14376:14660): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:22:24:429 GAME_CARD/(14376:14659): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:24:429 GAME_CARD/(14376:14658): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:22:24:429 GAME_CARD/(14376:14657): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:24:429 GAME_CARD/(14376:14656): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:22:29:429 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:22:29:429 GAME_CARD/(14376:14665): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:29:430 GAME_CARD/(14376:14664): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:29:430 GAME_CARD/(14376:14663): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:22:29:431 GAME_CARD/(14376:14662): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:29:432 GAME_CARD/(14376:14661): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:22:34:430 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:22:34:430 GAME_CARD/(14376:14670): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:22:34:431 GAME_CARD/(14376:14669): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:34:432 GAME_CARD/(14376:14668): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:22:34:432 GAME_CARD/(14376:14667): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:34:433 GAME_CARD/(14376:14666): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:22:39:430 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:22:39:431 GAME_CARD/(14376:14675): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:39:432 GAME_CARD/(14376:14674): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:39:432 GAME_CARD/(14376:14673): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:22:39:434 GAME_CARD/(14376:14672): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:39:437 GAME_CARD/(14376:14671): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:22:44:431 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:22:44:432 GAME_CARD/(14376:14682): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:22:44:433 GAME_CARD/(14376:14681): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:44:434 GAME_CARD/(14376:14680): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:22:44:435 GAME_CARD/(14376:14679): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:44:440 GAME_CARD/(14376:14678): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:22:49:432 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:22:49:433 GAME_CARD/(14376:14687): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:49:433 GAME_CARD/(14376:14686): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:49:438 GAME_CARD/(14376:14685): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:22:49:439 GAME_CARD/(14376:14684): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:49:440 GAME_CARD/(14376:14683): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:22:54:433 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:22:54:434 GAME_CARD/(14376:14692): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:22:54:434 GAME_CARD/(14376:14691): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:54:437 GAME_CARD/(14376:14690): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:22:54:437 GAME_CARD/(14376:14689): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:54:438 GAME_CARD/(14376:14688): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:22:59:434 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:22:59:435 GAME_CARD/(14376:14697): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:59:436 GAME_CARD/(14376:14696): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:59:437 GAME_CARD/(14376:14695): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:22:59:437 GAME_CARD/(14376:14694): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:22:59:438 GAME_CARD/(14376:14693): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:23:04:435 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:23:04:436 GAME_CARD/(14376:14702): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:23:04:439 GAME_CARD/(14376:14701): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:04:440 GAME_CARD/(14376:14700): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:23:04:441 GAME_CARD/(14376:14699): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:04:442 GAME_CARD/(14376:14698): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:23:09:436 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:23:09:438 GAME_CARD/(14376:14707): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:09:438 GAME_CARD/(14376:14706): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:09:440 GAME_CARD/(14376:14705): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:23:09:441 GAME_CARD/(14376:14704): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:09:441 GAME_CARD/(14376:14703): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:23:14:437 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:23:14:440 GAME_CARD/(14376:14712): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:23:14:440 GAME_CARD/(14376:14711): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:14:442 GAME_CARD/(14376:14710): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:23:14:443 GAME_CARD/(14376:14709): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:14:445 GAME_CARD/(14376:14708): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:23:19:440 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:23:19:441 GAME_CARD/(14376:14717): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:19:441 GAME_CARD/(14376:14716): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:19:443 GAME_CARD/(14376:14715): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:23:19:444 GAME_CARD/(14376:14714): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:19:445 GAME_CARD/(14376:14713): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:23:24:441 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:23:24:441 GAME_CARD/(14376:14722): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:23:24:442 GAME_CARD/(14376:14721): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:24:443 GAME_CARD/(14376:14720): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:23:24:443 GAME_CARD/(14376:14719): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:24:444 GAME_CARD/(14376:14718): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:23:29:441 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:23:29:442 GAME_CARD/(14376:14727): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:29:442 GAME_CARD/(14376:14726): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:29:443 GAME_CARD/(14376:14725): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:23:29:444 GAME_CARD/(14376:14724): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:29:444 GAME_CARD/(14376:14723): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:23:34:442 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:23:34:444 GAME_CARD/(14376:14731): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:34:443 GAME_CARD/(14376:14732): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:23:34:444 GAME_CARD/(14376:14730): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:23:34:447 GAME_CARD/(14376:14729): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:34:451 GAME_CARD/(14376:14728): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:23:39:443 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:23:39:444 GAME_CARD/(14376:14737): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:39:444 GAME_CARD/(14376:14736): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:39:445 GAME_CARD/(14376:14735): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:23:39:446 GAME_CARD/(14376:14734): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:23:39:447 GAME_CARD/(14376:14733): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:23:44:444 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:23:44:445 GAME_CARD/(14376:14744): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:44:445 GAME_CARD/(14376:14743): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:23:44:446 GAME_CARD/(14376:14742): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:44:450 GAME_CARD/(14376:14741): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:23:44:451 GAME_CARD/(14376:14740): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:23:49:445 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:23:49:446 GAME_CARD/(14376:14749): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:49:446 GAME_CARD/(14376:14748): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:23:49:448 GAME_CARD/(14376:14747): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:23:49:448 GAME_CARD/(14376:14746): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:49:449 GAME_CARD/(14376:14745): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:23:54:446 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:23:54:447 GAME_CARD/(14376:14754): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:54:447 GAME_CARD/(14376:14753): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:54:448 GAME_CARD/(14376:14752): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:23:54:449 GAME_CARD/(14376:14751): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:23:54:450 GAME_CARD/(14376:14750): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:23:59:447 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:23:59:449 GAME_CARD/(14376:14759): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:59:450 GAME_CARD/(14376:14758): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:23:59:451 GAME_CARD/(14376:14757): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:23:59:453 GAME_CARD/(14376:14756): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:23:59:455 GAME_CARD/(14376:14755): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:24:04:451 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:24:04:452 GAME_CARD/(14376:14764): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:04:452 GAME_CARD/(14376:14763): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:04:452 GAME_CARD/(14376:14762): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:24:04:452 GAME_CARD/(14376:14761): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:24:04:453 GAME_CARD/(14376:14760): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:24:09:452 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:24:09:454 GAME_CARD/(14376:14769): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:09:454 GAME_CARD/(14376:14768): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:24:09:454 GAME_CARD/(14376:14767): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:24:09:456 GAME_CARD/(14376:14766): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:09:459 GAME_CARD/(14376:14765): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:24:14:454 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:24:14:460 GAME_CARD/(14376:14781): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:14:460 GAME_CARD/(14376:14782): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:24:14:460 GAME_CARD/(14376:14783): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:14:460 GAME_CARD/(14376:14780): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:24:14:462 GAME_CARD/(14376:14779): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:24:19:456 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:24:19:458 GAME_CARD/(14376:14790): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:19:459 GAME_CARD/(14376:14789): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:19:460 GAME_CARD/(14376:14788): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:24:19:462 GAME_CARD/(14376:14787): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:24:19:472 GAME_CARD/(14376:14786): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:24:24:458 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:24:24:460 GAME_CARD/(14376:14795): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:24:460 GAME_CARD/(14376:14794): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:24:24:461 GAME_CARD/(14376:14793): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:24:24:462 GAME_CARD/(14376:14792): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:24:464 GAME_CARD/(14376:14791): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 03:24:29:460 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:24:29:461 GAME_CARD/(14376:14800): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:29:462 GAME_CARD/(14376:14799): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:24:29:463 GAME_CARD/(14376:14798): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:29:464 GAME_CARD/(14376:14797): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:24:29:466 GAME_CARD/(14376:14796): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 03:24:34:462 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:24:34:467 GAME_CARD/(14376:14801): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:34:468 GAME_CARD/(14376:14802): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:34:468 GAME_CARD/(14376:14804): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:24:34:469 GAME_CARD/(14376:14805): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:34:469 GAME_CARD/(14376:14803): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 03:24:39:464 GAME_CARD/(14376:14384): (Procesando 5 Mensajes pendientes)
+[WARNING] 03:24:39:465 GAME_CARD/(14376:14811): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 03:24:39:468 GAME_CARD/(14376:14810): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:39:468 GAME_CARD/(14376:14809): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 03:24:39:478 GAME_CARD/(14376:14808): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 03:24:39:479 GAME_CARD/(14376:14807): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:33:05:492 GAME_CARD/(4376:4376): INICIO_LOG_SUCESS
+[TRACE] 11:33:05:583 GAME_CARD/(4376:4376): Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):4376
+[INFO] 11:33:05:584 GAME_CARD/(4376:4377): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 7| QUEUE: NEW_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:33:05:586 GAME_CARD/(4376:4377): (SENDING ACK|NEW_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:33:05:599 GAME_CARD/(4376:4379): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 8| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:33:05:613 GAME_CARD/(4376:4379): (SENDING ACK|GET_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:33:05:647 GAME_CARD/(4376:4381): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 9| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:33:05:647 GAME_CARD/(4376:4381): (SENDING ACK|CATCH_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[DEBUG] 11:33:06:648 GAME_CARD/(4376:4376): Esperando conexiones en Direccion: 127.0.0.1, Puerto: 5001
+[INFO] 11:33:26:428 GAME_CARD/(4376:4379): (RECEIVING: FROM GET_POKEMON | ID_MSG:1 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 11:33:26:428 GAME_CARD/(4376:4379): (SENDING ACK|GET_POKEMON|ID_MSG:1->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:33:26:429 GAME_CARD/(4376:4406): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:33:26:440 GAME_CARD/(4376:4379): (RECEIVING: FROM GET_POKEMON | ID_MSG:2 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 11:33:26:440 GAME_CARD/(4376:4379): (SENDING ACK|GET_POKEMON|ID_MSG:2->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:33:26:440 GAME_CARD/(4376:4409): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:33:26:463 GAME_CARD/(4376:4379): (RECEIVING: FROM GET_POKEMON | ID_MSG:3 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 11:33:26:463 GAME_CARD/(4376:4379): (SENDING ACK|GET_POKEMON|ID_MSG:3->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:33:26:464 GAME_CARD/(4376:4412): (Archivo Pokemon Squirtle Abierto)
+[INFO] 11:33:26:464 GAME_CARD/(4376:4412): (READING METADATADA FILE: Squirtle | DIRECTORY: N | SIZE: 6 | OPEN: N | USED_BLOCKS: 1)
+[INFO] 11:33:26:470 GAME_CARD/(4376:4379): (RECEIVING: FROM GET_POKEMON | ID_MSG:4 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 11:33:26:470 GAME_CARD/(4376:4379): (SENDING ACK|GET_POKEMON|ID_MSG:4->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:33:26:471 GAME_CARD/(4376:4415): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:33:26:478 GAME_CARD/(4376:4412): (READING FILE CONTENT: Squirtle | POSITIONS OBTAINED: 1 )
+[INFO] 11:33:26:478 GAME_CARD/(4376:4412): (Archivo Pokemon Squirtle Cerrado)
+[INFO] 11:33:26:479 GAME_CARD/(4376:4412): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 12| QUEUE: LOCALIZED_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:33:26:479 GAME_CARD/(4376:4412): (SENDING: LOCALIZED_POKEMON|Socket#:12|ID_CORRELATIVE=3|Squirtle|QTY_POS:1|{Xn|Yn}:[9|7]|SIZE:37 Bytes)
+[INFO] 11:33:26:482 GAME_CARD/(4376:4379): (RECEIVING: FROM GET_POKEMON | ID_MSG:5 | Gengar -- SIZE = 23 Bytes)
+[INFO] 11:33:26:482 GAME_CARD/(4376:4379): (SENDING ACK|GET_POKEMON|ID_MSG:5->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:33:26:482 GAME_CARD/(4376:4419): (-->> El archivo Pokemon Gengar no existe en el File System <<--)
+[INFO] 11:33:26:486 GAME_CARD/(4376:4412): (RECEIVING: ID_MSG:6)
+[INFO] 11:33:26:503 GAME_CARD/(4376:4379): (RECEIVING: FROM GET_POKEMON | ID_MSG:7 | Onix -- SIZE = 21 Bytes)
+[INFO] 11:33:26:503 GAME_CARD/(4376:4379): (SENDING ACK|GET_POKEMON|ID_MSG:7->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:33:26:504 GAME_CARD/(4376:4421): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:33:26:650 GAME_CARD/(4376:4384): (Procesando 4 Mensajes pendientes)
+[WARNING] 11:33:26:650 GAME_CARD/(4376:4425): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:33:26:651 GAME_CARD/(4376:4424): (Archivo Pokemon Squirtle Abierto)
+[INFO] 11:33:26:651 GAME_CARD/(4376:4424): (READING METADATADA FILE: Squirtle | DIRECTORY: N | SIZE: 6 | OPEN: N | USED_BLOCKS: 1)
+[INFO] 11:33:26:651 GAME_CARD/(4376:4424): (READING FILE CONTENT: Squirtle | POSITIONS OBTAINED: 1 )
+[INFO] 11:33:26:652 GAME_CARD/(4376:4424): (Archivo Pokemon Squirtle Cerrado)
+[WARNING] 11:33:26:653 GAME_CARD/(4376:4423): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:33:26:654 GAME_CARD/(4376:4422): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:33:26:655 GAME_CARD/(4376:4424): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 12| QUEUE: LOCALIZED_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:33:26:655 GAME_CARD/(4376:4424): (SENDING: LOCALIZED_POKEMON|Socket#:12|ID_CORRELATIVE=4|Squirtle|QTY_POS:1|{Xn|Yn}:[9|7]|SIZE:37 Bytes)
+[INFO] 11:33:26:659 GAME_CARD/(4376:4424): (RECEIVING: ID_MSG:8)
+[INFO] 11:33:31:650 GAME_CARD/(4376:4384): (Procesando 3 Mensajes pendientes)
+[WARNING] 11:33:31:651 GAME_CARD/(4376:4429): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:33:31:652 GAME_CARD/(4376:4428): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:33:31:656 GAME_CARD/(4376:4427): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:33:34:753 GAME_CARD/(4376:4381): (RECEIVING: FROM CATCH_POKEMON | ID_MSG:9 | Pikachu | POS_X:1 | POS_Y:1 -- SIZE = 32 Bytes)
+[INFO] 11:33:34:754 GAME_CARD/(4376:4381): (SENDING ACK|CATCH_POKEMON|ID_MSG:9->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:33:34:755 GAME_CARD/(4376:4438): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:33:36:651 GAME_CARD/(4376:4384): (Procesando 4 Mensajes pendientes)
+[WARNING] 11:33:36:653 GAME_CARD/(4376:4442): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:33:36:655 GAME_CARD/(4376:4441): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:33:36:656 GAME_CARD/(4376:4440): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:33:36:658 GAME_CARD/(4376:4439): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:33:37:762 GAME_CARD/(4376:4381): (RECEIVING: FROM CATCH_POKEMON | ID_MSG:10 | Squirtle | POS_X:9 | POS_Y:7 -- SIZE = 33 Bytes)
+[INFO] 11:33:37:763 GAME_CARD/(4376:4381): (SENDING ACK|CATCH_POKEMON|ID_MSG:10->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:33:37:764 GAME_CARD/(4376:4444): (Archivo Pokemon Squirtle Abierto)
+[INFO] 11:33:37:790 GAME_CARD/(4376:4444): (READING METADATADA FILE: Squirtle | DIRECTORY: N | SIZE: 6 | OPEN: N | USED_BLOCKS: 1)
+[INFO] 11:33:37:791 GAME_CARD/(4376:4444): (Guardando Posiciones: [)
+[INFO] 11:36:14:860 GAME_CARD/(4536:4536): INICIO_LOG_SUCESS
+[TRACE] 11:36:14:914 GAME_CARD/(4536:4536): Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):4536
+[INFO] 11:36:14:914 GAME_CARD/(4536:4537): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 7| QUEUE: NEW_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:36:14:914 GAME_CARD/(4536:4537): (SENDING ACK|NEW_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:36:14:915 GAME_CARD/(4536:4539): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 8| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:36:14:918 GAME_CARD/(4536:4539): (SENDING ACK|GET_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:36:14:984 GAME_CARD/(4536:4541): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 9| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:36:14:984 GAME_CARD/(4536:4541): (SENDING ACK|CATCH_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[DEBUG] 11:36:15:982 GAME_CARD/(4536:4536): Esperando conexiones en Direccion: 127.0.0.1, Puerto: 5001
+[INFO] 11:36:27:726 GAME_CARD/(4536:4539): (RECEIVING: FROM GET_POKEMON | ID_MSG:12 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 11:36:27:727 GAME_CARD/(4536:4539): (SENDING ACK|GET_POKEMON|ID_MSG:12->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:36:27:734 GAME_CARD/(4536:4569): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:36:30:984 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:36:30:985 GAME_CARD/(4536:4577): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:36:35:985 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:36:35:986 GAME_CARD/(4536:4578): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:36:40:986 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:36:40:987 GAME_CARD/(4536:4586): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:36:45:987 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:36:45:988 GAME_CARD/(4536:4591): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:36:50:988 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:36:50:989 GAME_CARD/(4536:4592): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:36:55:988 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:36:55:990 GAME_CARD/(4536:4595): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:37:00:990 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:37:00:991 GAME_CARD/(4536:4596): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:37:05:991 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:37:05:992 GAME_CARD/(4536:4597): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:37:10:992 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:37:10:995 GAME_CARD/(4536:4599): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:37:15:994 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:37:15:996 GAME_CARD/(4536:4600): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:37:20:997 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:37:20:999 GAME_CARD/(4536:4602): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:37:25:998 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:37:25:0 GAME_CARD/(4536:4608): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:37:30:0 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:37:30:2 GAME_CARD/(4536:4612): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:37:36:1 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:37:36:3 GAME_CARD/(4536:4615): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:37:41:3 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:37:41:6 GAME_CARD/(4536:4618): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:37:45:4 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:37:46:10 GAME_CARD/(4536:4623): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:37:51:5 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:37:51:7 GAME_CARD/(4536:4624): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:37:56:7 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:37:56:9 GAME_CARD/(4536:4631): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:38:01:9 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:38:01:12 GAME_CARD/(4536:4639): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:38:06:14 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:38:06:23 GAME_CARD/(4536:4640): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:38:11:14 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:38:11:16 GAME_CARD/(4536:4646): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:38:16:16 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:38:16:19 GAME_CARD/(4536:4648): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:38:21:19 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:38:21:21 GAME_CARD/(4536:4654): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:38:26:21 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:38:26:23 GAME_CARD/(4536:4655): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:38:31:23 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:38:31:25 GAME_CARD/(4536:4656): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:38:36:24 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:38:36:27 GAME_CARD/(4536:4657): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:38:41:26 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:38:41:28 GAME_CARD/(4536:4663): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:38:46:28 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:38:46:30 GAME_CARD/(4536:4666): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:38:51:30 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:38:51:32 GAME_CARD/(4536:4667): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:38:56:32 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:38:56:35 GAME_CARD/(4536:4668): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:39:01:35 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:39:01:42 GAME_CARD/(4536:4669): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:39:06:37 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:39:06:40 GAME_CARD/(4536:4670): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:39:11:39 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:39:11:40 GAME_CARD/(4536:4681): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:39:16:40 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:39:16:42 GAME_CARD/(4536:4682): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:39:21:42 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:39:21:43 GAME_CARD/(4536:4683): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:39:26:43 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:39:26:44 GAME_CARD/(4536:4684): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:39:31:44 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:39:31:45 GAME_CARD/(4536:4685): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:39:36:45 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:39:36:47 GAME_CARD/(4536:4686): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:39:41:47 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:39:41:49 GAME_CARD/(4536:4687): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:39:46:49 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:39:46:51 GAME_CARD/(4536:4690): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:39:51:51 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:39:51:53 GAME_CARD/(4536:4691): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:39:56:53 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:39:56:55 GAME_CARD/(4536:4692): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:40:01:54 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:40:01:56 GAME_CARD/(4536:4693): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:40:06:56 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:40:06:59 GAME_CARD/(4536:4695): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:40:11:59 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:40:11:60 GAME_CARD/(4536:4696): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:40:16:60 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:40:16:62 GAME_CARD/(4536:4697): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:40:21:62 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:40:21:64 GAME_CARD/(4536:4698): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:40:26:64 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:40:26:66 GAME_CARD/(4536:4699): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:40:31:66 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:40:31:68 GAME_CARD/(4536:4700): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:40:36:68 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:40:36:70 GAME_CARD/(4536:4701): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:40:41:69 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:40:41:72 GAME_CARD/(4536:4707): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:40:46:71 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:40:46:72 GAME_CARD/(4536:4710): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:40:51:72 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:40:51:72 GAME_CARD/(4536:4713): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:40:56:72 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:40:56:81 GAME_CARD/(4536:4714): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:41:01:73 GAME_CARD/(4536:4544): (Procesando 1 Mensajes pendientes)
+[WARNING] 11:41:01:75 GAME_CARD/(4536:4715): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:41:14:365 GAME_CARD/(4717:4717): INICIO_LOG_SUCESS
+[TRACE] 11:41:14:375 GAME_CARD/(4717:4717): Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):4717
+[INFO] 11:41:14:390 GAME_CARD/(4717:4718): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 7| QUEUE: NEW_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:41:14:390 GAME_CARD/(4717:4718): (SENDING ACK|NEW_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:41:14:391 GAME_CARD/(4717:4720): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 8| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:41:14:391 GAME_CARD/(4717:4720): (SENDING ACK|GET_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:41:14:399 GAME_CARD/(4717:4722): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 9| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:41:14:399 GAME_CARD/(4717:4722): (SENDING ACK|CATCH_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[DEBUG] 11:41:15:392 GAME_CARD/(4717:4717): Esperando conexiones en Direccion: 127.0.0.1, Puerto: 5001
+[INFO] 11:41:25:312 GAME_CARD/(4717:4720): (RECEIVING: FROM GET_POKEMON | ID_MSG:1 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 11:41:25:312 GAME_CARD/(4717:4720): (SENDING ACK|GET_POKEMON|ID_MSG:1->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:41:25:312 GAME_CARD/(4717:4747): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:41:25:364 GAME_CARD/(4717:4720): (RECEIVING: FROM GET_POKEMON | ID_MSG:2 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 11:41:25:364 GAME_CARD/(4717:4720): (SENDING ACK|GET_POKEMON|ID_MSG:2->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:41:25:374 GAME_CARD/(4717:4750): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:41:25:387 GAME_CARD/(4717:4720): (RECEIVING: FROM GET_POKEMON | ID_MSG:3 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 11:41:25:387 GAME_CARD/(4717:4720): (SENDING ACK|GET_POKEMON|ID_MSG:3->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:41:25:389 GAME_CARD/(4717:4753): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:41:25:398 GAME_CARD/(4717:4725): (Procesando 3 Mensajes pendientes)
+[INFO] 11:41:25:402 GAME_CARD/(4717:4720): (RECEIVING: FROM GET_POKEMON | ID_MSG:4 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 11:41:25:402 GAME_CARD/(4717:4720): (SENDING ACK|GET_POKEMON|ID_MSG:4->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:41:25:404 GAME_CARD/(4717:4755): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:25:404 GAME_CARD/(4717:4756): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:25:404 GAME_CARD/(4717:4757): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:25:410 GAME_CARD/(4717:4759): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:41:25:411 GAME_CARD/(4717:4720): (RECEIVING: FROM GET_POKEMON | ID_MSG:5 | Gengar -- SIZE = 23 Bytes)
+[INFO] 11:41:25:411 GAME_CARD/(4717:4720): (SENDING ACK|GET_POKEMON|ID_MSG:5->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:41:25:429 GAME_CARD/(4717:4762): (-->> El archivo Pokemon Gengar no existe en el File System <<--)
+[INFO] 11:41:25:439 GAME_CARD/(4717:4720): (RECEIVING: FROM GET_POKEMON | ID_MSG:6 | Onix -- SIZE = 21 Bytes)
+[INFO] 11:41:25:439 GAME_CARD/(4717:4720): (SENDING ACK|GET_POKEMON|ID_MSG:6->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:41:25:439 GAME_CARD/(4717:4764): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:41:30:398 GAME_CARD/(4717:4725): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:41:30:402 GAME_CARD/(4717:4769): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:30:402 GAME_CARD/(4717:4768): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:30:403 GAME_CARD/(4717:4767): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:30:403 GAME_CARD/(4717:4766): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:30:404 GAME_CARD/(4717:4765): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:41:35:399 GAME_CARD/(4717:4725): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:41:35:400 GAME_CARD/(4717:4774): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:35:400 GAME_CARD/(4717:4773): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:35:401 GAME_CARD/(4717:4772): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:35:402 GAME_CARD/(4717:4771): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:35:403 GAME_CARD/(4717:4770): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:41:40:400 GAME_CARD/(4717:4725): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:41:40:406 GAME_CARD/(4717:4778): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:40:407 GAME_CARD/(4717:4779): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:40:407 GAME_CARD/(4717:4777): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:40:407 GAME_CARD/(4717:4776): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:40:408 GAME_CARD/(4717:4775): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:41:45:401 GAME_CARD/(4717:4725): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:41:45:402 GAME_CARD/(4717:4798): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:45:402 GAME_CARD/(4717:4797): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:45:403 GAME_CARD/(4717:4796): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:45:406 GAME_CARD/(4717:4795): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:45:407 GAME_CARD/(4717:4794): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:41:45:592 GAME_CARD/(4717:4722): (RECEIVING: FROM CATCH_POKEMON | ID_MSG:7 | Pikachu | POS_X:1 | POS_Y:1 -- SIZE = 32 Bytes)
+[INFO] 11:41:45:592 GAME_CARD/(4717:4722): (SENDING ACK|CATCH_POKEMON|ID_MSG:7->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:41:45:592 GAME_CARD/(4717:4800): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:41:48:597 GAME_CARD/(4717:4722): (RECEIVING: FROM CATCH_POKEMON | ID_MSG:8 | Squirtle | POS_X:9 | POS_Y:7 -- SIZE = 33 Bytes)
+[INFO] 11:41:48:597 GAME_CARD/(4717:4722): (SENDING ACK|CATCH_POKEMON|ID_MSG:8->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:41:48:599 GAME_CARD/(4717:4804): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[INFO] 11:41:50:401 GAME_CARD/(4717:4725): (Procesando 7 Mensajes pendientes)
+[WARNING] 11:41:50:406 GAME_CARD/(4717:4809): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:50:406 GAME_CARD/(4717:4810): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:41:50:406 GAME_CARD/(4717:4811): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:41:50:406 GAME_CARD/(4717:4808): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:50:411 GAME_CARD/(4717:4807): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:50:416 GAME_CARD/(4717:4806): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:50:416 GAME_CARD/(4717:4805): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:41:55:402 GAME_CARD/(4717:4725): (Procesando 7 Mensajes pendientes)
+[WARNING] 11:41:55:406 GAME_CARD/(4717:4816): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:41:55:406 GAME_CARD/(4717:4817): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:55:406 GAME_CARD/(4717:4818): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:55:407 GAME_CARD/(4717:4815): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:55:407 GAME_CARD/(4717:4814): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:41:55:409 GAME_CARD/(4717:4813): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:41:55:409 GAME_CARD/(4717:4812): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:41:56:611 GAME_CARD/(4717:4722): (RECEIVING: FROM CATCH_POKEMON | ID_MSG:9 | Onix | POS_X:2 | POS_Y:2 -- SIZE = 29 Bytes)
+[INFO] 11:41:56:611 GAME_CARD/(4717:4722): (SENDING ACK|CATCH_POKEMON|ID_MSG:9->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:41:56:612 GAME_CARD/(4717:4820): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 11:42:00:403 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:42:00:406 GAME_CARD/(4717:4826): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:00:407 GAME_CARD/(4717:4827): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:42:00:408 GAME_CARD/(4717:4828): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:00:408 GAME_CARD/(4717:4829): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:42:00:408 GAME_CARD/(4717:4825): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:00:411 GAME_CARD/(4717:4824): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:00:418 GAME_CARD/(4717:4823): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:00:418 GAME_CARD/(4717:4822): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[INFO] 11:42:05:406 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:42:05:412 GAME_CARD/(4717:4832): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:05:412 GAME_CARD/(4717:4833): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:05:412 GAME_CARD/(4717:4837): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:42:05:412 GAME_CARD/(4717:4834): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:42:05:412 GAME_CARD/(4717:4835): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:05:412 GAME_CARD/(4717:4836): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:05:412 GAME_CARD/(4717:4831): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:42:05:413 GAME_CARD/(4717:4830): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:42:10:407 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:42:10:411 GAME_CARD/(4717:4842): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:42:10:411 GAME_CARD/(4717:4843): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:42:10:411 GAME_CARD/(4717:4844): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:10:412 GAME_CARD/(4717:4845): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:42:10:412 GAME_CARD/(4717:4841): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:10:412 GAME_CARD/(4717:4840): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:10:413 GAME_CARD/(4717:4839): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:10:423 GAME_CARD/(4717:4838): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:42:15:410 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:42:15:413 GAME_CARD/(4717:4853): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:15:413 GAME_CARD/(4717:4850): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:42:15:414 GAME_CARD/(4717:4852): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:42:15:415 GAME_CARD/(4717:4851): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:15:416 GAME_CARD/(4717:4848): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:15:417 GAME_CARD/(4717:4847): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:15:418 GAME_CARD/(4717:4849): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:15:422 GAME_CARD/(4717:4846): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[INFO] 11:42:20:412 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:42:20:415 GAME_CARD/(4717:4859): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:42:20:416 GAME_CARD/(4717:4858): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:20:416 GAME_CARD/(4717:4861): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:20:417 GAME_CARD/(4717:4857): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:20:417 GAME_CARD/(4717:4860): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:42:20:419 GAME_CARD/(4717:4856): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:42:20:423 GAME_CARD/(4717:4855): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:20:428 GAME_CARD/(4717:4854): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:42:25:414 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:42:25:416 GAME_CARD/(4717:4867): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:25:418 GAME_CARD/(4717:4868): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:25:418 GAME_CARD/(4717:4869): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:25:418 GAME_CARD/(4717:4865): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:25:420 GAME_CARD/(4717:4866): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:42:25:420 GAME_CARD/(4717:4864): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:42:25:425 GAME_CARD/(4717:4863): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:25:428 GAME_CARD/(4717:4862): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:42:30:416 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:42:30:419 GAME_CARD/(4717:4875): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:30:419 GAME_CARD/(4717:4876): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:42:30:419 GAME_CARD/(4717:4877): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:42:30:420 GAME_CARD/(4717:4874): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:42:30:422 GAME_CARD/(4717:4872): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:30:422 GAME_CARD/(4717:4873): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:30:425 GAME_CARD/(4717:4871): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:30:430 GAME_CARD/(4717:4870): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:42:35:418 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:42:35:421 GAME_CARD/(4717:4883): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:42:35:421 GAME_CARD/(4717:4884): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:42:35:422 GAME_CARD/(4717:4885): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:35:422 GAME_CARD/(4717:4881): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:35:424 GAME_CARD/(4717:4880): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:35:425 GAME_CARD/(4717:4882): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:35:427 GAME_CARD/(4717:4879): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:42:35:430 GAME_CARD/(4717:4878): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:42:40:421 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:42:40:423 GAME_CARD/(4717:4891): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:40:424 GAME_CARD/(4717:4893): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:40:424 GAME_CARD/(4717:4890): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:40:424 GAME_CARD/(4717:4889): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:42:40:425 GAME_CARD/(4717:4892): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:42:40:425 GAME_CARD/(4717:4888): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:40:431 GAME_CARD/(4717:4887): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:40:433 GAME_CARD/(4717:4886): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:42:45:423 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:42:45:426 GAME_CARD/(4717:4900): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:42:45:426 GAME_CARD/(4717:4901): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:45:427 GAME_CARD/(4717:4902): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:42:45:427 GAME_CARD/(4717:4903): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:45:427 GAME_CARD/(4717:4899): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:45:427 GAME_CARD/(4717:4898): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:45:428 GAME_CARD/(4717:4897): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:42:45:430 GAME_CARD/(4717:4896): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:42:50:426 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:42:50:428 GAME_CARD/(4717:4909): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:42:50:430 GAME_CARD/(4717:4910): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:42:50:430 GAME_CARD/(4717:4908): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:50:431 GAME_CARD/(4717:4907): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:50:432 GAME_CARD/(4717:4906): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:42:50:435 GAME_CARD/(4717:4911): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:50:436 GAME_CARD/(4717:4905): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:50:444 GAME_CARD/(4717:4904): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:42:55:428 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:42:55:432 GAME_CARD/(4717:4918): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:55:432 GAME_CARD/(4717:4919): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:55:433 GAME_CARD/(4717:4915): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:42:55:433 GAME_CARD/(4717:4914): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:55:433 GAME_CARD/(4717:4917): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:55:434 GAME_CARD/(4717:4916): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:42:55:435 GAME_CARD/(4717:4913): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:42:55:437 GAME_CARD/(4717:4912): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:43:00:431 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:43:00:435 GAME_CARD/(4717:4924): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:00:435 GAME_CARD/(4717:4925): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:00:436 GAME_CARD/(4717:4927): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:43:00:436 GAME_CARD/(4717:4923): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:43:00:436 GAME_CARD/(4717:4922): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:00:437 GAME_CARD/(4717:4926): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:00:440 GAME_CARD/(4717:4921): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:43:00:440 GAME_CARD/(4717:4920): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:43:05:433 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:43:05:435 GAME_CARD/(4717:4933): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:05:436 GAME_CARD/(4717:4934): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:05:436 GAME_CARD/(4717:4935): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:43:05:436 GAME_CARD/(4717:4932): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:05:437 GAME_CARD/(4717:4931): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:43:05:438 GAME_CARD/(4717:4930): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:43:05:443 GAME_CARD/(4717:4929): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:05:445 GAME_CARD/(4717:4928): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:43:10:435 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:43:10:439 GAME_CARD/(4717:4943): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:10:439 GAME_CARD/(4717:4940): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:10:439 GAME_CARD/(4717:4939): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:43:10:441 GAME_CARD/(4717:4938): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:10:442 GAME_CARD/(4717:4942): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:43:10:437 GAME_CARD/(4717:4941): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:10:443 GAME_CARD/(4717:4937): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:43:10:448 GAME_CARD/(4717:4936): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:43:15:437 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:43:15:440 GAME_CARD/(4717:4951): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:15:441 GAME_CARD/(4717:4948): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:43:15:441 GAME_CARD/(4717:4947): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:43:15:443 GAME_CARD/(4717:4950): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:15:443 GAME_CARD/(4717:4946): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:15:443 GAME_CARD/(4717:4949): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:15:446 GAME_CARD/(4717:4945): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:43:15:454 GAME_CARD/(4717:4944): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:43:20:440 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:43:20:443 GAME_CARD/(4717:4961): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:43:20:444 GAME_CARD/(4717:4964): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:20:442 GAME_CARD/(4717:4962): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:20:445 GAME_CARD/(4717:4963): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:20:445 GAME_CARD/(4717:4959): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:43:20:446 GAME_CARD/(4717:4958): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:20:444 GAME_CARD/(4717:4960): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:43:20:456 GAME_CARD/(4717:4957): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:43:25:442 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:43:25:445 GAME_CARD/(4717:4972): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:25:446 GAME_CARD/(4717:4969): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:43:25:447 GAME_CARD/(4717:4971): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:25:448 GAME_CARD/(4717:4967): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:25:448 GAME_CARD/(4717:4968): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:25:449 GAME_CARD/(4717:4970): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:25:450 GAME_CARD/(4717:4966): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:43:25:456 GAME_CARD/(4717:4965): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:43:30:444 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:43:30:447 GAME_CARD/(4717:4983): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:43:30:447 GAME_CARD/(4717:4984): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:30:448 GAME_CARD/(4717:4985): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:43:30:448 GAME_CARD/(4717:4981): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:30:450 GAME_CARD/(4717:4980): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:30:451 GAME_CARD/(4717:4982): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:30:453 GAME_CARD/(4717:4979): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:43:30:458 GAME_CARD/(4717:4978): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:43:35:446 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:43:35:448 GAME_CARD/(4717:4991): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:35:450 GAME_CARD/(4717:4992): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:35:450 GAME_CARD/(4717:4990): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:43:35:450 GAME_CARD/(4717:4993): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:35:452 GAME_CARD/(4717:4988): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:35:454 GAME_CARD/(4717:4989): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:35:455 GAME_CARD/(4717:4987): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:43:35:462 GAME_CARD/(4717:4986): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:43:40:448 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:43:40:452 GAME_CARD/(4717:4998): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:40:452 GAME_CARD/(4717:4999): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:40:452 GAME_CARD/(4717:5000): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:43:40:453 GAME_CARD/(4717:4997): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:43:40:453 GAME_CARD/(4717:4996): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:40:454 GAME_CARD/(4717:5001): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:43:40:455 GAME_CARD/(4717:4995): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:40:459 GAME_CARD/(4717:4994): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:43:45:451 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:43:45:452 GAME_CARD/(4717:5009): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:43:45:452 GAME_CARD/(4717:5010): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:45:453 GAME_CARD/(4717:5011): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:45:453 GAME_CARD/(4717:5008): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:43:45:453 GAME_CARD/(4717:5007): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:45:455 GAME_CARD/(4717:5006): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:43:45:455 GAME_CARD/(4717:5005): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:45:463 GAME_CARD/(4717:5004): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:43:50:452 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:43:50:454 GAME_CARD/(4717:5018): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:50:455 GAME_CARD/(4717:5019): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:50:455 GAME_CARD/(4717:5016): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:50:455 GAME_CARD/(4717:5015): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:50:455 GAME_CARD/(4717:5017): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:43:50:456 GAME_CARD/(4717:5014): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:43:50:459 GAME_CARD/(4717:5013): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:50:466 GAME_CARD/(4717:5012): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:43:55:454 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:43:55:456 GAME_CARD/(4717:5025): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:43:55:457 GAME_CARD/(4717:5026): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:55:457 GAME_CARD/(4717:5027): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:43:55:458 GAME_CARD/(4717:5024): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:55:460 GAME_CARD/(4717:5022): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:55:461 GAME_CARD/(4717:5023): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:43:55:464 GAME_CARD/(4717:5021): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:43:55:466 GAME_CARD/(4717:5020): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:44:00:456 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:44:00:462 GAME_CARD/(4717:5033): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:00:462 GAME_CARD/(4717:5034): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:00:462 GAME_CARD/(4717:5035): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:00:463 GAME_CARD/(4717:5032): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:44:00:463 GAME_CARD/(4717:5031): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:44:00:464 GAME_CARD/(4717:5030): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:00:471 GAME_CARD/(4717:5029): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:00:473 GAME_CARD/(4717:5028): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 11:44:05:462 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:44:05:462 GAME_CARD/(4717:5042): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:05:463 GAME_CARD/(4717:5043): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:44:05:463 GAME_CARD/(4717:5041): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:44:05:463 GAME_CARD/(4717:5040): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:05:463 GAME_CARD/(4717:5039): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:05:463 GAME_CARD/(4717:5038): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:05:463 GAME_CARD/(4717:5037): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:44:05:464 GAME_CARD/(4717:5036): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:44:10:463 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:44:10:465 GAME_CARD/(4717:5049): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:10:466 GAME_CARD/(4717:5050): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:44:10:466 GAME_CARD/(4717:5048): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:10:466 GAME_CARD/(4717:5051): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:10:467 GAME_CARD/(4717:5047): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:10:468 GAME_CARD/(4717:5046): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:44:10:472 GAME_CARD/(4717:5045): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:44:10:478 GAME_CARD/(4717:5044): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:44:15:465 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:44:15:466 GAME_CARD/(4717:5061): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:44:15:466 GAME_CARD/(4717:5062): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:44:15:466 GAME_CARD/(4717:5063): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:15:466 GAME_CARD/(4717:5060): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:15:467 GAME_CARD/(4717:5059): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:44:15:468 GAME_CARD/(4717:5058): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:15:469 GAME_CARD/(4717:5057): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:15:469 GAME_CARD/(4717:5056): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:44:20:466 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:44:20:482 GAME_CARD/(4717:5076): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:20:482 GAME_CARD/(4717:5077): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:20:482 GAME_CARD/(4717:5081): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:20:482 GAME_CARD/(4717:5078): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:44:20:482 GAME_CARD/(4717:5079): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:44:20:482 GAME_CARD/(4717:5080): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:20:482 GAME_CARD/(4717:5082): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:20:483 GAME_CARD/(4717:5075): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 11:44:25:467 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:44:25:468 GAME_CARD/(4717:5090): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:25:468 GAME_CARD/(4717:5091): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:25:469 GAME_CARD/(4717:5089): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:25:471 GAME_CARD/(4717:5088): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:44:25:471 GAME_CARD/(4717:5087): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:25:472 GAME_CARD/(4717:5086): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:44:25:473 GAME_CARD/(4717:5085): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:44:25:474 GAME_CARD/(4717:5084): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:44:30:468 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:44:30:471 GAME_CARD/(4717:5097): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:44:30:471 GAME_CARD/(4717:5098): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:44:30:471 GAME_CARD/(4717:5099): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:30:471 GAME_CARD/(4717:5096): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:30:472 GAME_CARD/(4717:5095): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:44:30:473 GAME_CARD/(4717:5094): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:30:475 GAME_CARD/(4717:5093): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:30:482 GAME_CARD/(4717:5092): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:44:35:471 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:44:35:474 GAME_CARD/(4717:5105): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:35:474 GAME_CARD/(4717:5106): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:44:35:474 GAME_CARD/(4717:5107): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:35:474 GAME_CARD/(4717:5104): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:35:474 GAME_CARD/(4717:5103): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:35:475 GAME_CARD/(4717:5102): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:35:475 GAME_CARD/(4717:5101): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:44:35:482 GAME_CARD/(4717:5100): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 11:44:40:473 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:44:40:485 GAME_CARD/(4717:5113): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:40:486 GAME_CARD/(4717:5114): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:44:40:486 GAME_CARD/(4717:5112): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:44:40:487 GAME_CARD/(4717:5111): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:40:487 GAME_CARD/(4717:5115): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:44:40:488 GAME_CARD/(4717:5110): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:40:489 GAME_CARD/(4717:5109): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:40:489 GAME_CARD/(4717:5108): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:44:45:476 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:44:45:482 GAME_CARD/(4717:5123): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:45:483 GAME_CARD/(4717:5124): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:45:483 GAME_CARD/(4717:5125): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:45:484 GAME_CARD/(4717:5121): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:44:45:484 GAME_CARD/(4717:5120): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:44:45:484 GAME_CARD/(4717:5119): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:44:45:490 GAME_CARD/(4717:5122): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:45:491 GAME_CARD/(4717:5118): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:44:50:481 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:44:50:485 GAME_CARD/(4717:5131): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:44:50:486 GAME_CARD/(4717:5133): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:50:486 GAME_CARD/(4717:5129): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:50:486 GAME_CARD/(4717:5130): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:44:50:487 GAME_CARD/(4717:5132): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:50:487 GAME_CARD/(4717:5128): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:44:50:507 GAME_CARD/(4717:5127): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:50:508 GAME_CARD/(4717:5126): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:44:55:701 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:44:55:705 GAME_CARD/(4717:5214): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:55:705 GAME_CARD/(4717:5215): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:55:705 GAME_CARD/(4717:5216): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:55:706 GAME_CARD/(4717:5213): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:55:706 GAME_CARD/(4717:5212): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:44:55:706 GAME_CARD/(4717:5211): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:44:55:706 GAME_CARD/(4717:5210): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:44:55:706 GAME_CARD/(4717:5209): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 11:45:00:703 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:45:00:704 GAME_CARD/(4717:5236): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:00:705 GAME_CARD/(4717:5238): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:45:00:705 GAME_CARD/(4717:5239): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:00:705 GAME_CARD/(4717:5235): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:45:00:705 GAME_CARD/(4717:5237): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:00:707 GAME_CARD/(4717:5233): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:00:707 GAME_CARD/(4717:5234): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:45:00:709 GAME_CARD/(4717:5232): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:45:05:704 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:45:05:707 GAME_CARD/(4717:5247): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:05:707 GAME_CARD/(4717:5244): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:45:05:708 GAME_CARD/(4717:5243): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:45:05:709 GAME_CARD/(4717:5246): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:45:05:709 GAME_CARD/(4717:5245): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:05:709 GAME_CARD/(4717:5242): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:05:714 GAME_CARD/(4717:5241): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:05:716 GAME_CARD/(4717:5240): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:45:10:706 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:45:10:708 GAME_CARD/(4717:5253): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:45:10:709 GAME_CARD/(4717:5254): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:10:710 GAME_CARD/(4717:5255): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:10:710 GAME_CARD/(4717:5251): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:45:10:711 GAME_CARD/(4717:5250): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:10:712 GAME_CARD/(4717:5252): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:10:712 GAME_CARD/(4717:5249): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:45:10:721 GAME_CARD/(4717:5248): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:45:15:708 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:45:15:709 GAME_CARD/(4717:5261): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:45:15:710 GAME_CARD/(4717:5262): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:45:15:711 GAME_CARD/(4717:5263): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:15:712 GAME_CARD/(4717:5259): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:15:713 GAME_CARD/(4717:5258): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:15:711 GAME_CARD/(4717:5260): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:15:717 GAME_CARD/(4717:5257): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:15:719 GAME_CARD/(4717:5256): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:45:20:710 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:45:20:712 GAME_CARD/(4717:5270): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:20:712 GAME_CARD/(4717:5271): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:45:20:712 GAME_CARD/(4717:5269): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:20:713 GAME_CARD/(4717:5268): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:20:714 GAME_CARD/(4717:5267): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:20:719 GAME_CARD/(4717:5266): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:45:20:720 GAME_CARD/(4717:5265): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:20:723 GAME_CARD/(4717:5264): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 11:45:25:712 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:45:25:713 GAME_CARD/(4717:5277): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:45:25:713 GAME_CARD/(4717:5278): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:25:713 GAME_CARD/(4717:5279): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:45:25:713 GAME_CARD/(4717:5276): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:25:715 GAME_CARD/(4717:5275): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:25:716 GAME_CARD/(4717:5274): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:25:717 GAME_CARD/(4717:5273): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:45:25:718 GAME_CARD/(4717:5272): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:45:30:713 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:45:30:718 GAME_CARD/(4717:5285): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:45:30:719 GAME_CARD/(4717:5286): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:30:719 GAME_CARD/(4717:5287): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:45:30:719 GAME_CARD/(4717:5288): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:30:719 GAME_CARD/(4717:5284): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:30:719 GAME_CARD/(4717:5283): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:30:720 GAME_CARD/(4717:5282): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:30:724 GAME_CARD/(4717:5281): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[INFO] 11:45:35:719 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:45:35:722 GAME_CARD/(4717:5292): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:35:722 GAME_CARD/(4717:5293): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:45:35:722 GAME_CARD/(4717:5294): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:35:722 GAME_CARD/(4717:5295): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:35:722 GAME_CARD/(4717:5296): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:45:35:723 GAME_CARD/(4717:5291): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:35:731 GAME_CARD/(4717:5290): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:35:731 GAME_CARD/(4717:5289): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 11:45:40:720 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:45:40:722 GAME_CARD/(4717:5302): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:40:722 GAME_CARD/(4717:5303): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:40:723 GAME_CARD/(4717:5301): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:40:722 GAME_CARD/(4717:5304): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:45:40:723 GAME_CARD/(4717:5300): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:45:40:725 GAME_CARD/(4717:5299): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:40:735 GAME_CARD/(4717:5298): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:45:40:735 GAME_CARD/(4717:5297): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:45:45:727 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:45:45:731 GAME_CARD/(4717:5312): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:45:731 GAME_CARD/(4717:5313): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:45:731 GAME_CARD/(4717:5314): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:45:731 GAME_CARD/(4717:5315): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:45:45:731 GAME_CARD/(4717:5316): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:45:731 GAME_CARD/(4717:5311): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:45:45:732 GAME_CARD/(4717:5310): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:45:45:735 GAME_CARD/(4717:5309): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:45:50:731 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:45:50:731 GAME_CARD/(4717:5342): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:50:732 GAME_CARD/(4717:5343): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:50:732 GAME_CARD/(4717:5341): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:45:50:732 GAME_CARD/(4717:5340): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:50:733 GAME_CARD/(4717:5339): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:45:50:733 GAME_CARD/(4717:5338): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:45:50:733 GAME_CARD/(4717:5337): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:50:739 GAME_CARD/(4717:5336): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:45:55:732 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:45:55:738 GAME_CARD/(4717:5355): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:55:738 GAME_CARD/(4717:5356): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:55:738 GAME_CARD/(4717:5353): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:45:55:738 GAME_CARD/(4717:5352): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:55:740 GAME_CARD/(4717:5351): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:45:55:741 GAME_CARD/(4717:5350): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:55:742 GAME_CARD/(4717:5349): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:45:55:748 GAME_CARD/(4717:5354): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:46:00:732 GAME_CARD/(4717:4725): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:46:00:736 GAME_CARD/(4717:5362): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:46:00:736 GAME_CARD/(4717:5363): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:46:00:737 GAME_CARD/(4717:5364): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:46:00:737 GAME_CARD/(4717:5361): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:46:00:737 GAME_CARD/(4717:5360): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:46:00:739 GAME_CARD/(4717:5359): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:46:00:741 GAME_CARD/(4717:5358): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:46:00:743 GAME_CARD/(4717:5357): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:47:49:459 GAME_CARD/(5400:5400): INICIO_LOG_SUCESS
+[TRACE] 11:47:49:517 GAME_CARD/(5400:5400): Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):5400
+[INFO] 11:47:49:523 GAME_CARD/(5400:5401): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 7| QUEUE: NEW_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:47:49:523 GAME_CARD/(5400:5401): (SENDING ACK|NEW_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:47:49:524 GAME_CARD/(5400:5403): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 8| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:47:49:526 GAME_CARD/(5400:5403): (SENDING ACK|GET_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:47:49:531 GAME_CARD/(5400:5405): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 9| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:47:49:532 GAME_CARD/(5400:5405): (SENDING ACK|CATCH_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[DEBUG] 11:47:50:528 GAME_CARD/(5400:5400): Esperando conexiones en Direccion: 127.0.0.1, Puerto: 5001
+[INFO] 11:47:55:889 GAME_CARD/(5400:5403): (RECEIVING: FROM GET_POKEMON | ID_MSG:1 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 11:47:55:889 GAME_CARD/(5400:5403): (SENDING ACK|GET_POKEMON|ID_MSG:1->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:47:55:898 GAME_CARD/(5400:5425): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:47:55:909 GAME_CARD/(5400:5403): (RECEIVING: FROM GET_POKEMON | ID_MSG:2 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 11:47:55:909 GAME_CARD/(5400:5403): (SENDING ACK|GET_POKEMON|ID_MSG:2->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:47:55:909 GAME_CARD/(5400:5428): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:47:55:915 GAME_CARD/(5400:5403): (RECEIVING: FROM GET_POKEMON | ID_MSG:3 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 11:47:55:915 GAME_CARD/(5400:5403): (SENDING ACK|GET_POKEMON|ID_MSG:3->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:47:55:923 GAME_CARD/(5400:5431): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:47:55:928 GAME_CARD/(5400:5403): (RECEIVING: FROM GET_POKEMON | ID_MSG:4 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 11:47:55:929 GAME_CARD/(5400:5403): (SENDING ACK|GET_POKEMON|ID_MSG:4->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:47:55:929 GAME_CARD/(5400:5434): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:47:55:951 GAME_CARD/(5400:5403): (RECEIVING: FROM GET_POKEMON | ID_MSG:5 | Gengar -- SIZE = 23 Bytes)
+[INFO] 11:47:55:951 GAME_CARD/(5400:5403): (SENDING ACK|GET_POKEMON|ID_MSG:5->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:47:55:951 GAME_CARD/(5400:5437): (-->> El archivo Pokemon Gengar no existe en el File System <<--)
+[INFO] 11:47:55:956 GAME_CARD/(5400:5403): (RECEIVING: FROM GET_POKEMON | ID_MSG:6 | Onix -- SIZE = 21 Bytes)
+[INFO] 11:47:55:957 GAME_CARD/(5400:5403): (SENDING ACK|GET_POKEMON|ID_MSG:6->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:47:55:957 GAME_CARD/(5400:5439): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:48:00:529 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:48:00:530 GAME_CARD/(5400:5444): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:00:530 GAME_CARD/(5400:5443): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:00:531 GAME_CARD/(5400:5442): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:00:533 GAME_CARD/(5400:5441): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:00:534 GAME_CARD/(5400:5440): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:48:05:530 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:48:05:530 GAME_CARD/(5400:5454): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:05:531 GAME_CARD/(5400:5453): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:05:532 GAME_CARD/(5400:5452): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:05:533 GAME_CARD/(5400:5451): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:05:534 GAME_CARD/(5400:5450): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:48:10:530 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:48:10:531 GAME_CARD/(5400:5459): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:10:531 GAME_CARD/(5400:5458): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:10:533 GAME_CARD/(5400:5457): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:10:535 GAME_CARD/(5400:5456): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:10:535 GAME_CARD/(5400:5455): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:48:15:531 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:48:15:532 GAME_CARD/(5400:5464): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:15:532 GAME_CARD/(5400:5463): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:15:533 GAME_CARD/(5400:5462): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:15:533 GAME_CARD/(5400:5461): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:15:534 GAME_CARD/(5400:5460): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:48:20:532 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:48:20:533 GAME_CARD/(5400:5474): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:20:533 GAME_CARD/(5400:5473): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:20:536 GAME_CARD/(5400:5472): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:20:536 GAME_CARD/(5400:5471): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:20:538 GAME_CARD/(5400:5470): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:48:25:533 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:48:25:534 GAME_CARD/(5400:5479): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:25:534 GAME_CARD/(5400:5478): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:25:537 GAME_CARD/(5400:5477): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:25:537 GAME_CARD/(5400:5476): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:25:538 GAME_CARD/(5400:5475): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:48:30:534 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:48:30:535 GAME_CARD/(5400:5484): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:30:535 GAME_CARD/(5400:5483): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:30:537 GAME_CARD/(5400:5482): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:30:537 GAME_CARD/(5400:5481): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:30:538 GAME_CARD/(5400:5480): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:48:35:535 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:48:35:536 GAME_CARD/(5400:5489): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:35:536 GAME_CARD/(5400:5488): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:35:538 GAME_CARD/(5400:5487): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:35:539 GAME_CARD/(5400:5486): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:35:540 GAME_CARD/(5400:5485): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:48:40:536 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:48:40:537 GAME_CARD/(5400:5494): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:40:538 GAME_CARD/(5400:5493): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:40:540 GAME_CARD/(5400:5492): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:40:541 GAME_CARD/(5400:5491): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:40:544 GAME_CARD/(5400:5490): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:48:45:538 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:48:45:540 GAME_CARD/(5400:5501): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:45:540 GAME_CARD/(5400:5500): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:45:540 GAME_CARD/(5400:5499): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:45:544 GAME_CARD/(5400:5498): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:45:548 GAME_CARD/(5400:5497): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:48:50:540 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:48:50:542 GAME_CARD/(5400:5506): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:50:543 GAME_CARD/(5400:5504): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:50:543 GAME_CARD/(5400:5505): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:50:545 GAME_CARD/(5400:5503): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:50:546 GAME_CARD/(5400:5502): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:48:55:542 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:48:55:544 GAME_CARD/(5400:5511): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:55:564 GAME_CARD/(5400:5509): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:55:564 GAME_CARD/(5400:5508): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:55:565 GAME_CARD/(5400:5507): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:48:55:544 GAME_CARD/(5400:5510): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:49:00:544 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:49:00:546 GAME_CARD/(5400:5516): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:00:548 GAME_CARD/(5400:5515): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:00:549 GAME_CARD/(5400:5513): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:00:547 GAME_CARD/(5400:5514): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:00:552 GAME_CARD/(5400:5512): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:49:05:546 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:49:05:548 GAME_CARD/(5400:5525): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:05:549 GAME_CARD/(5400:5524): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:05:549 GAME_CARD/(5400:5526): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:05:549 GAME_CARD/(5400:5523): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:05:551 GAME_CARD/(5400:5522): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:49:10:548 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:49:10:552 GAME_CARD/(5400:5530): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:10:552 GAME_CARD/(5400:5531): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:10:553 GAME_CARD/(5400:5529): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:10:556 GAME_CARD/(5400:5528): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:10:558 GAME_CARD/(5400:5527): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:49:15:550 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:49:15:551 GAME_CARD/(5400:5536): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:15:551 GAME_CARD/(5400:5535): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:15:553 GAME_CARD/(5400:5534): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:15:553 GAME_CARD/(5400:5533): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:15:554 GAME_CARD/(5400:5532): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:49:20:551 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:49:20:553 GAME_CARD/(5400:5540): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:20:554 GAME_CARD/(5400:5541): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:20:554 GAME_CARD/(5400:5539): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:20:564 GAME_CARD/(5400:5538): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:20:565 GAME_CARD/(5400:5537): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:49:25:553 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:49:25:556 GAME_CARD/(5400:5544): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:25:557 GAME_CARD/(5400:5545): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:25:557 GAME_CARD/(5400:5543): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:25:558 GAME_CARD/(5400:5546): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:25:561 GAME_CARD/(5400:5542): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:49:30:555 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:49:30:556 GAME_CARD/(5400:5551): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:30:557 GAME_CARD/(5400:5550): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:30:558 GAME_CARD/(5400:5549): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:30:560 GAME_CARD/(5400:5548): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:30:565 GAME_CARD/(5400:5547): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:49:35:557 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:49:35:558 GAME_CARD/(5400:5556): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:35:559 GAME_CARD/(5400:5555): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:35:560 GAME_CARD/(5400:5554): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:35:560 GAME_CARD/(5400:5553): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:35:562 GAME_CARD/(5400:5552): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:49:40:558 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:49:40:560 GAME_CARD/(5400:5561): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:40:564 GAME_CARD/(5400:5560): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:40:565 GAME_CARD/(5400:5559): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:40:565 GAME_CARD/(5400:5558): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:40:565 GAME_CARD/(5400:5557): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:49:45:560 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:49:45:561 GAME_CARD/(5400:5568): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:45:562 GAME_CARD/(5400:5567): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:45:563 GAME_CARD/(5400:5566): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:45:564 GAME_CARD/(5400:5565): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:45:564 GAME_CARD/(5400:5564): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:49:50:561 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:49:50:563 GAME_CARD/(5400:5573): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:50:564 GAME_CARD/(5400:5572): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:50:565 GAME_CARD/(5400:5571): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:50:569 GAME_CARD/(5400:5570): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:50:571 GAME_CARD/(5400:5569): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:49:55:563 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:49:55:571 GAME_CARD/(5400:5578): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:55:572 GAME_CARD/(5400:5577): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:55:572 GAME_CARD/(5400:5576): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:55:572 GAME_CARD/(5400:5575): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:49:55:573 GAME_CARD/(5400:5574): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:50:00:571 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:50:00:572 GAME_CARD/(5400:5583): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:00:572 GAME_CARD/(5400:5582): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:00:574 GAME_CARD/(5400:5581): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:00:575 GAME_CARD/(5400:5580): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:00:576 GAME_CARD/(5400:5579): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:50:05:572 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:50:05:574 GAME_CARD/(5400:5588): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:05:574 GAME_CARD/(5400:5587): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:05:583 GAME_CARD/(5400:5586): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:05:595 GAME_CARD/(5400:5584): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:05:599 GAME_CARD/(5400:5585): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:50:10:574 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:50:10:584 GAME_CARD/(5400:5598): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:10:584 GAME_CARD/(5400:5596): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:10:594 GAME_CARD/(5400:5597): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:10:595 GAME_CARD/(5400:5595): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:10:596 GAME_CARD/(5400:5594): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:50:15:583 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:50:15:608 GAME_CARD/(5400:5602): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:15:608 GAME_CARD/(5400:5601): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:15:609 GAME_CARD/(5400:5600): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:15:610 GAME_CARD/(5400:5599): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:15:611 GAME_CARD/(5400:5603): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:50:20:585 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:50:20:588 GAME_CARD/(5400:5607): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:20:588 GAME_CARD/(5400:5606): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:20:588 GAME_CARD/(5400:5608): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:20:592 GAME_CARD/(5400:5605): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:20:593 GAME_CARD/(5400:5604): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:50:25:587 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:50:25:588 GAME_CARD/(5400:5613): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:25:589 GAME_CARD/(5400:5612): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:25:590 GAME_CARD/(5400:5611): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:25:593 GAME_CARD/(5400:5610): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:25:595 GAME_CARD/(5400:5609): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:50:30:588 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:50:30:590 GAME_CARD/(5400:5618): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:30:592 GAME_CARD/(5400:5616): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:30:590 GAME_CARD/(5400:5617): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:30:592 GAME_CARD/(5400:5615): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:30:596 GAME_CARD/(5400:5614): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:50:35:589 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:50:35:591 GAME_CARD/(5400:5623): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:35:592 GAME_CARD/(5400:5622): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:35:593 GAME_CARD/(5400:5621): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:35:595 GAME_CARD/(5400:5620): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:35:596 GAME_CARD/(5400:5619): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:50:40:591 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:50:40:592 GAME_CARD/(5400:5628): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:40:593 GAME_CARD/(5400:5627): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:40:594 GAME_CARD/(5400:5626): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:40:595 GAME_CARD/(5400:5625): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:40:598 GAME_CARD/(5400:5624): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:50:45:592 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:50:45:595 GAME_CARD/(5400:5633): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:45:596 GAME_CARD/(5400:5635): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:45:596 GAME_CARD/(5400:5634): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:45:600 GAME_CARD/(5400:5632): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:45:601 GAME_CARD/(5400:5631): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:50:50:594 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:50:50:596 GAME_CARD/(5400:5640): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:50:597 GAME_CARD/(5400:5639): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:50:597 GAME_CARD/(5400:5638): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:50:598 GAME_CARD/(5400:5637): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:50:600 GAME_CARD/(5400:5636): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:50:55:596 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:50:55:597 GAME_CARD/(5400:5645): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:55:598 GAME_CARD/(5400:5644): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:55:600 GAME_CARD/(5400:5643): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:55:601 GAME_CARD/(5400:5642): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:50:55:602 GAME_CARD/(5400:5641): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:51:00:597 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:51:00:600 GAME_CARD/(5400:5650): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:00:601 GAME_CARD/(5400:5649): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:00:601 GAME_CARD/(5400:5648): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:00:603 GAME_CARD/(5400:5647): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:00:603 GAME_CARD/(5400:5646): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:51:05:600 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:51:05:601 GAME_CARD/(5400:5655): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:05:602 GAME_CARD/(5400:5654): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:05:606 GAME_CARD/(5400:5652): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:05:603 GAME_CARD/(5400:5653): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:05:609 GAME_CARD/(5400:5651): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:51:10:601 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:51:10:602 GAME_CARD/(5400:5660): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:10:603 GAME_CARD/(5400:5659): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:10:605 GAME_CARD/(5400:5658): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:10:605 GAME_CARD/(5400:5657): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:10:608 GAME_CARD/(5400:5656): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:51:15:603 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:51:15:604 GAME_CARD/(5400:5670): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:15:605 GAME_CARD/(5400:5669): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:15:607 GAME_CARD/(5400:5668): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:15:609 GAME_CARD/(5400:5667): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:15:611 GAME_CARD/(5400:5666): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:51:20:604 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:51:20:606 GAME_CARD/(5400:5675): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:20:607 GAME_CARD/(5400:5674): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:20:607 GAME_CARD/(5400:5673): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:20:607 GAME_CARD/(5400:5672): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:20:612 GAME_CARD/(5400:5671): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:51:25:606 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:51:25:611 GAME_CARD/(5400:5683): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:25:612 GAME_CARD/(5400:5684): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:25:612 GAME_CARD/(5400:5682): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:25:619 GAME_CARD/(5400:5681): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:25:610 GAME_CARD/(5400:5685): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:51:30:610 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:51:30:611 GAME_CARD/(5400:5690): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:30:613 GAME_CARD/(5400:5689): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:30:613 GAME_CARD/(5400:5688): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:30:614 GAME_CARD/(5400:5687): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:30:615 GAME_CARD/(5400:5686): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:51:35:611 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:51:35:612 GAME_CARD/(5400:5695): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:35:614 GAME_CARD/(5400:5693): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:35:614 GAME_CARD/(5400:5694): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:35:614 GAME_CARD/(5400:5692): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:35:617 GAME_CARD/(5400:5691): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:51:40:612 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:51:40:615 GAME_CARD/(5400:5700): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:40:615 GAME_CARD/(5400:5699): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:40:615 GAME_CARD/(5400:5698): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:40:616 GAME_CARD/(5400:5697): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:40:619 GAME_CARD/(5400:5696): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:51:45:614 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:51:45:616 GAME_CARD/(5400:5707): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:45:616 GAME_CARD/(5400:5706): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:45:618 GAME_CARD/(5400:5705): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:45:620 GAME_CARD/(5400:5704): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:45:621 GAME_CARD/(5400:5703): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:51:50:616 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:51:50:617 GAME_CARD/(5400:5713): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:50:617 GAME_CARD/(5400:5712): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:50:620 GAME_CARD/(5400:5711): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:50:621 GAME_CARD/(5400:5710): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:50:622 GAME_CARD/(5400:5709): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:51:55:617 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:51:55:621 GAME_CARD/(5400:5717): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:55:622 GAME_CARD/(5400:5718): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:55:622 GAME_CARD/(5400:5716): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:55:624 GAME_CARD/(5400:5715): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:51:55:628 GAME_CARD/(5400:5714): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:52:00:620 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:52:00:621 GAME_CARD/(5400:5723): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:00:622 GAME_CARD/(5400:5722): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:00:623 GAME_CARD/(5400:5721): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:00:624 GAME_CARD/(5400:5720): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:00:625 GAME_CARD/(5400:5719): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:52:05:621 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:52:05:624 GAME_CARD/(5400:5728): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:05:624 GAME_CARD/(5400:5726): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:05:626 GAME_CARD/(5400:5727): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:05:627 GAME_CARD/(5400:5725): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:05:630 GAME_CARD/(5400:5724): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:52:10:623 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:52:10:624 GAME_CARD/(5400:5733): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:10:625 GAME_CARD/(5400:5732): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:10:627 GAME_CARD/(5400:5731): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:10:627 GAME_CARD/(5400:5730): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:10:629 GAME_CARD/(5400:5729): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:52:15:624 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:52:15:633 GAME_CARD/(5400:5738): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:15:634 GAME_CARD/(5400:5737): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:15:634 GAME_CARD/(5400:5736): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:15:637 GAME_CARD/(5400:5734): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:15:638 GAME_CARD/(5400:5735): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:52:20:632 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:52:20:635 GAME_CARD/(5400:5742): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:20:640 GAME_CARD/(5400:5741): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:20:635 GAME_CARD/(5400:5743): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:20:641 GAME_CARD/(5400:5740): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:20:647 GAME_CARD/(5400:5739): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:52:25:634 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:52:25:636 GAME_CARD/(5400:5747): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:25:636 GAME_CARD/(5400:5748): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:25:636 GAME_CARD/(5400:5746): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:25:639 GAME_CARD/(5400:5745): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:25:640 GAME_CARD/(5400:5744): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:52:30:635 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:52:30:636 GAME_CARD/(5400:5753): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:30:636 GAME_CARD/(5400:5752): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:30:638 GAME_CARD/(5400:5751): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:30:640 GAME_CARD/(5400:5750): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:30:642 GAME_CARD/(5400:5749): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:52:35:636 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:52:35:638 GAME_CARD/(5400:5763): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:35:638 GAME_CARD/(5400:5762): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:35:639 GAME_CARD/(5400:5761): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:35:640 GAME_CARD/(5400:5760): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:35:642 GAME_CARD/(5400:5759): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:52:40:638 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:52:40:641 GAME_CARD/(5400:5767): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:40:642 GAME_CARD/(5400:5768): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:40:641 GAME_CARD/(5400:5769): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:40:643 GAME_CARD/(5400:5766): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:40:647 GAME_CARD/(5400:5765): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:52:45:640 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:52:45:641 GAME_CARD/(5400:5776): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:45:643 GAME_CARD/(5400:5774): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:45:643 GAME_CARD/(5400:5775): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:45:644 GAME_CARD/(5400:5773): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:45:646 GAME_CARD/(5400:5772): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:52:50:641 GAME_CARD/(5400:5408): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:52:50:642 GAME_CARD/(5400:5781): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:50:643 GAME_CARD/(5400:5779): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:50:643 GAME_CARD/(5400:5780): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:50:644 GAME_CARD/(5400:5778): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:50:647 GAME_CARD/(5400:5777): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:52:51:463 GAME_CARD/(5400:5401): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:7 | Pikachu | POS_X:1 | POS_Y:1 | QTY:1|SIZE:36 Bytes)
+[INFO] 11:52:51:463 GAME_CARD/(5400:5401): (SENDING ACK|NEW_POKEMON|ID_MSG:7->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:52:51:464 GAME_CARD/(5400:5786): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:52:51:503 GAME_CARD/(5400:5401): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:8 | Squirtle | POS_X:9 | POS_Y:7 | QTY:1|SIZE:37 Bytes)
+[INFO] 11:52:51:503 GAME_CARD/(5400:5401): (SENDING ACK|NEW_POKEMON|ID_MSG:8->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:52:51:505 GAME_CARD/(5400:5789): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[INFO] 11:52:51:538 GAME_CARD/(5400:5401): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:9 | Onix | POS_X:2 | POS_Y:2 | QTY:1|SIZE:33 Bytes)
+[INFO] 11:52:51:539 GAME_CARD/(5400:5401): (SENDING ACK|NEW_POKEMON|ID_MSG:9->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:52:51:547 GAME_CARD/(5400:5791): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 11:52:55:642 GAME_CARD/(5400:5408): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:52:55:643 GAME_CARD/(5400:5798): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:52:55:643 GAME_CARD/(5400:5799): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:52:55:644 GAME_CARD/(5400:5797): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:52:55:646 GAME_CARD/(5400:5796): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:55:647 GAME_CARD/(5400:5795): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:55:649 GAME_CARD/(5400:5794): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:55:650 GAME_CARD/(5400:5793): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:52:55:651 GAME_CARD/(5400:5792): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:53:00:644 GAME_CARD/(5400:5408): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:53:00:657 GAME_CARD/(5400:5805): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:00:657 GAME_CARD/(5400:5806): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:00:657 GAME_CARD/(5400:5807): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:00:657 GAME_CARD/(5400:5803): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:00:657 GAME_CARD/(5400:5802): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:00:658 GAME_CARD/(5400:5801): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:53:00:663 GAME_CARD/(5400:5800): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:53:00:667 GAME_CARD/(5400:5804): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 11:53:05:645 GAME_CARD/(5400:5408): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:53:05:646 GAME_CARD/(5400:5813): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:05:647 GAME_CARD/(5400:5814): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:05:647 GAME_CARD/(5400:5815): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:53:05:649 GAME_CARD/(5400:5811): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:05:649 GAME_CARD/(5400:5812): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:53:05:649 GAME_CARD/(5400:5810): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:53:05:651 GAME_CARD/(5400:5809): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:05:655 GAME_CARD/(5400:5808): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[ERROR] 11:53:09:11 GAME_CARD/(5400:5405): (Se perdió Conexión con BROKER|CATCH_POKEMON)
+[ERROR] 11:53:09:11 GAME_CARD/(5400:5403): (Se perdió Conexión con BROKER|GET_POKEMON)
+[ERROR] 11:53:09:11 GAME_CARD/(5400:5401): (Se perdió Conexión con BROKER|NEW_POKEMON)
+[DEBUG] 11:53:09:15 GAME_CARD/(5400:5405): (GAMECARD END_SUSCRIPTION: |RECVD_MSGs:0|TOTAL_MSGS:0)
+[DEBUG] 11:53:09:16 GAME_CARD/(5400:5401): (GAMECARD END_SUSCRIPTION: |RECVD_MSGs:3|TOTAL_MSGS:3)
+[DEBUG] 11:53:09:16 GAME_CARD/(5400:5403): (GAMECARD END_SUSCRIPTION: |RECVD_MSGs:6|TOTAL_MSGS:6)
+[INFO] 11:53:10:646 GAME_CARD/(5400:5408): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:53:10:647 GAME_CARD/(5400:5821): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:10:647 GAME_CARD/(5400:5822): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:10:647 GAME_CARD/(5400:5823): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:10:648 GAME_CARD/(5400:5820): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:53:10:648 GAME_CARD/(5400:5819): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:10:649 GAME_CARD/(5400:5818): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:53:10:656 GAME_CARD/(5400:5817): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:53:10:659 GAME_CARD/(5400:5816): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:53:21:188 GAME_CARD/(5831:5831): INICIO_LOG_SUCESS
+[TRACE] 11:53:21:201 GAME_CARD/(5831:5831): Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):5831
+[INFO] 11:53:21:201 GAME_CARD/(5831:5832): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 7| QUEUE: NEW_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:53:21:202 GAME_CARD/(5831:5832): (SENDING ACK|NEW_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:53:21:202 GAME_CARD/(5831:5834): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 8| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:53:21:203 GAME_CARD/(5831:5834): (SENDING ACK|GET_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:53:21:205 GAME_CARD/(5831:5836): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 9| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:53:21:206 GAME_CARD/(5831:5836): (SENDING ACK|CATCH_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[DEBUG] 11:53:22:203 GAME_CARD/(5831:5831): Esperando conexiones en Direccion: 127.0.0.1, Puerto: 5001
+[INFO] 11:53:25:864 GAME_CARD/(5831:5834): (RECEIVING: FROM GET_POKEMON | ID_MSG:1 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 11:53:25:865 GAME_CARD/(5831:5834): (SENDING ACK|GET_POKEMON|ID_MSG:1->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:53:25:907 GAME_CARD/(5831:5834): (RECEIVING: FROM GET_POKEMON | ID_MSG:2 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 11:53:25:907 GAME_CARD/(5831:5834): (SENDING ACK|GET_POKEMON|ID_MSG:2->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:53:25:908 GAME_CARD/(5831:5859): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:53:25:919 GAME_CARD/(5831:5834): (RECEIVING: FROM GET_POKEMON | ID_MSG:3 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 11:53:25:920 GAME_CARD/(5831:5834): (SENDING ACK|GET_POKEMON|ID_MSG:3->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:53:25:920 GAME_CARD/(5831:5862): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:53:25:928 GAME_CARD/(5831:5834): (RECEIVING: FROM GET_POKEMON | ID_MSG:4 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 11:53:25:928 GAME_CARD/(5831:5834): (SENDING ACK|GET_POKEMON|ID_MSG:4->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:53:25:929 GAME_CARD/(5831:5865): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:25:929 GAME_CARD/(5831:5856): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:53:25:961 GAME_CARD/(5831:5834): (RECEIVING: FROM GET_POKEMON | ID_MSG:5 | Gengar -- SIZE = 23 Bytes)
+[INFO] 11:53:25:962 GAME_CARD/(5831:5834): (SENDING ACK|GET_POKEMON|ID_MSG:5->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:53:25:962 GAME_CARD/(5831:5868): (-->> El archivo Pokemon Gengar no existe en el File System <<--)
+[INFO] 11:53:25:981 GAME_CARD/(5831:5834): (RECEIVING: FROM GET_POKEMON | ID_MSG:6 | Onix -- SIZE = 21 Bytes)
+[INFO] 11:53:25:983 GAME_CARD/(5831:5834): (SENDING ACK|GET_POKEMON|ID_MSG:6->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:53:25:983 GAME_CARD/(5831:5870): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:53:27:206 GAME_CARD/(5831:5839): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:53:27:207 GAME_CARD/(5831:5875): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:27:207 GAME_CARD/(5831:5874): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:27:209 GAME_CARD/(5831:5873): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:27:210 GAME_CARD/(5831:5872): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:27:210 GAME_CARD/(5831:5871): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:53:30:27 GAME_CARD/(5831:5832): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:7 | Pikachu | POS_X:1 | POS_Y:1 | QTY:1|SIZE:36 Bytes)
+[INFO] 11:53:30:27 GAME_CARD/(5831:5832): (SENDING ACK|NEW_POKEMON|ID_MSG:7->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:53:30:28 GAME_CARD/(5831:5880): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:53:30:67 GAME_CARD/(5831:5832): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:8 | Squirtle | POS_X:9 | POS_Y:7 | QTY:1|SIZE:37 Bytes)
+[INFO] 11:53:30:67 GAME_CARD/(5831:5832): (SENDING ACK|NEW_POKEMON|ID_MSG:8->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:53:30:67 GAME_CARD/(5831:5883): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[INFO] 11:53:30:113 GAME_CARD/(5831:5832): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:9 | Onix | POS_X:2 | POS_Y:2 | QTY:1|SIZE:33 Bytes)
+[INFO] 11:53:30:114 GAME_CARD/(5831:5832): (SENDING ACK|NEW_POKEMON|ID_MSG:9->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:53:30:114 GAME_CARD/(5831:5885): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 11:53:32:207 GAME_CARD/(5831:5839): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:53:32:209 GAME_CARD/(5831:5891): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:53:32:210 GAME_CARD/(5831:5890): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:32:210 GAME_CARD/(5831:5889): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:32:212 GAME_CARD/(5831:5892): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:53:32:213 GAME_CARD/(5831:5888): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:32:214 GAME_CARD/(5831:5887): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:32:217 GAME_CARD/(5831:5893): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:53:32:224 GAME_CARD/(5831:5886): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:53:37:209 GAME_CARD/(5831:5839): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:53:37:213 GAME_CARD/(5831:5899): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:53:37:214 GAME_CARD/(5831:5900): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:53:37:214 GAME_CARD/(5831:5901): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:37:214 GAME_CARD/(5831:5898): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:37:214 GAME_CARD/(5831:5897): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:37:214 GAME_CARD/(5831:5896): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:37:216 GAME_CARD/(5831:5895): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:37:232 GAME_CARD/(5831:5894): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:53:42:213 GAME_CARD/(5831:5839): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:53:42:216 GAME_CARD/(5831:5912): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:42:216 GAME_CARD/(5831:5914): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:53:42:216 GAME_CARD/(5831:5911): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:53:42:217 GAME_CARD/(5831:5913): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:42:217 GAME_CARD/(5831:5910): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:42:220 GAME_CARD/(5831:5909): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:42:221 GAME_CARD/(5831:5908): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:53:42:223 GAME_CARD/(5831:5907): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[ERROR] 11:53:43:13 GAME_CARD/(5831:5836): (Se perdió Conexión con BROKER|CATCH_POKEMON)
+[ERROR] 11:53:43:13 GAME_CARD/(5831:5834): (Se perdió Conexión con BROKER|GET_POKEMON)
+[ERROR] 11:53:43:13 GAME_CARD/(5831:5832): (Se perdió Conexión con BROKER|NEW_POKEMON)
+[DEBUG] 11:53:43:15 GAME_CARD/(5831:5836): (GAMECARD END_SUSCRIPTION: |RECVD_MSGs:0|TOTAL_MSGS:0)
+[DEBUG] 11:53:43:16 GAME_CARD/(5831:5832): (GAMECARD END_SUSCRIPTION: |RECVD_MSGs:3|TOTAL_MSGS:3)
+[DEBUG] 11:53:43:17 GAME_CARD/(5831:5834): (GAMECARD END_SUSCRIPTION: |RECVD_MSGs:6|TOTAL_MSGS:6)
+[INFO] 11:56:08:307 GAME_CARD/(5949:5949): INICIO_LOG_SUCESS
+[TRACE] 11:56:08:313 GAME_CARD/(5949:5949): Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):5949
+[INFO] 11:56:08:314 GAME_CARD/(5949:5950): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 7| QUEUE: NEW_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:56:08:314 GAME_CARD/(5949:5950): (SENDING ACK|NEW_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:56:08:315 GAME_CARD/(5949:5952): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 8| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:56:08:321 GAME_CARD/(5949:5952): (SENDING ACK|GET_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:56:08:322 GAME_CARD/(5949:5954): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 9| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:56:08:322 GAME_CARD/(5949:5954): (SENDING ACK|CATCH_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[DEBUG] 11:56:09:322 GAME_CARD/(5949:5949): Esperando conexiones en Direccion: 127.0.0.1, Puerto: 5001
+[INFO] 11:56:13:845 GAME_CARD/(5949:5952): (RECEIVING: FROM GET_POKEMON | ID_MSG:1 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 11:56:13:845 GAME_CARD/(5949:5952): (SENDING ACK|GET_POKEMON|ID_MSG:1->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:56:13:845 GAME_CARD/(5949:5974): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:56:13:847 GAME_CARD/(5949:5952): (RECEIVING: FROM GET_POKEMON | ID_MSG:2 | Pikachu -- SIZE = 24 Bytes)
+[INFO] 11:56:13:847 GAME_CARD/(5949:5952): (SENDING ACK|GET_POKEMON|ID_MSG:2->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:56:13:848 GAME_CARD/(5949:5977): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:56:13:871 GAME_CARD/(5949:5952): (RECEIVING: FROM GET_POKEMON | ID_MSG:3 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 11:56:13:871 GAME_CARD/(5949:5952): (SENDING ACK|GET_POKEMON|ID_MSG:3->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:56:13:873 GAME_CARD/(5949:5980): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:56:13:876 GAME_CARD/(5949:5952): (RECEIVING: FROM GET_POKEMON | ID_MSG:4 | Squirtle -- SIZE = 25 Bytes)
+[INFO] 11:56:13:876 GAME_CARD/(5949:5952): (SENDING ACK|GET_POKEMON|ID_MSG:4->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:56:13:882 GAME_CARD/(5949:5983): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[INFO] 11:56:13:888 GAME_CARD/(5949:5952): (RECEIVING: FROM GET_POKEMON | ID_MSG:5 | Gengar -- SIZE = 23 Bytes)
+[INFO] 11:56:13:888 GAME_CARD/(5949:5952): (SENDING ACK|GET_POKEMON|ID_MSG:5->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:56:13:889 GAME_CARD/(5949:5986): (-->> El archivo Pokemon Gengar no existe en el File System <<--)
+[INFO] 11:56:13:896 GAME_CARD/(5949:5952): (RECEIVING: FROM GET_POKEMON | ID_MSG:6 | Onix -- SIZE = 21 Bytes)
+[INFO] 11:56:13:897 GAME_CARD/(5949:5952): (SENDING ACK|GET_POKEMON|ID_MSG:6->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:56:13:898 GAME_CARD/(5949:5988): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:56:14:323 GAME_CARD/(5949:5957): (Procesando 5 Mensajes pendientes)
+[WARNING] 11:56:14:324 GAME_CARD/(5949:5993): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:14:324 GAME_CARD/(5949:5992): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:14:326 GAME_CARD/(5949:5991): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:14:327 GAME_CARD/(5949:5990): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:14:329 GAME_CARD/(5949:5989): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[INFO] 11:56:18:825 GAME_CARD/(5949:5950): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:7 | Pikachu | POS_X:1 | POS_Y:1 | QTY:1|SIZE:36 Bytes)
+[INFO] 11:56:18:825 GAME_CARD/(5949:5950): (SENDING ACK|NEW_POKEMON|ID_MSG:7->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:56:18:825 GAME_CARD/(5949:5998): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[INFO] 11:56:18:850 GAME_CARD/(5949:5950): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:8 | Squirtle | POS_X:9 | POS_Y:7 | QTY:1|SIZE:37 Bytes)
+[INFO] 11:56:18:850 GAME_CARD/(5949:5950): (SENDING ACK|NEW_POKEMON|ID_MSG:8->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:56:18:867 GAME_CARD/(5949:6001): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[INFO] 11:56:18:899 GAME_CARD/(5949:5950): (RECEIVING: FROM NEW_POKEMON |  ID_MSG:9 | Onix | POS_X:2 | POS_Y:2 | QTY:1|SIZE:33 Bytes)
+[INFO] 11:56:18:899 GAME_CARD/(5949:5950): (SENDING ACK|NEW_POKEMON|ID_MSG:9->CONFIRMED|ID_SUSCRIPTOR:22)
+[WARNING] 11:56:18:919 GAME_CARD/(5949:6003): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[INFO] 11:56:19:325 GAME_CARD/(5949:5957): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:56:19:328 GAME_CARD/(5949:6010): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[WARNING] 11:56:19:329 GAME_CARD/(5949:6011): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:56:19:329 GAME_CARD/(5949:6007): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:19:330 GAME_CARD/(5949:6008): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:19:330 GAME_CARD/(5949:6006): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:19:332 GAME_CARD/(5949:6005): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:19:335 GAME_CARD/(5949:6009): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:56:19:337 GAME_CARD/(5949:6004): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[INFO] 11:56:24:327 GAME_CARD/(5949:5957): (Procesando 8 Mensajes pendientes)
+[WARNING] 11:56:24:330 GAME_CARD/(5949:6017): (-->> Archivo Pokemon Pikachu bloqueado por otro mensaje <<--)
+[WARNING] 11:56:24:331 GAME_CARD/(5949:6019): (-->> Archivo Pokemon Onix Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:24:331 GAME_CARD/(5949:6016): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:24:331 GAME_CARD/(5949:6015): (-->> Archivo Pokemon Squirtle Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:24:331 GAME_CARD/(5949:6018): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:24:331 GAME_CARD/(5949:6014): (-->> Archivo Pokemon Onix bloqueado por otro mensaje <<--)
+[WARNING] 11:56:24:331 GAME_CARD/(5949:6013): (-->> Archivo Pokemon Pikachu Abierto por otro mensaje <<--)
+
+[WARNING] 11:56:24:337 GAME_CARD/(5949:6012): (-->> Archivo Pokemon Squirtle bloqueado por otro mensaje <<--)
+[INFO] 11:58:32:61 GAME_CARD/(6044:6044): INICIO_LOG_SUCESS
+[TRACE] 11:58:32:72 GAME_CARD/(6044:6044): Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):6044
+[INFO] 11:58:32:79 GAME_CARD/(6044:6045): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 7| QUEUE: NEW_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:58:32:80 GAME_CARD/(6044:6045): (SENDING ACK|NEW_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:58:32:80 GAME_CARD/(6044:6047): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 8| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:58:32:81 GAME_CARD/(6044:6047): (SENDING ACK|GET_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[INFO] 11:58:32:81 GAME_CARD/(6044:6049): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 9| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 11:58:32:82 GAME_CARD/(6044:6049): (SENDING ACK|CATCH_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:22)
+[DEBUG] 11:58:33:83 GAME_CARD/(6044:6044): Esperando conexiones en Direccion: 127.0.0.1, Puerto: 5001
+[ERROR] 11:58:43:356 GAME_CARD/(6044:6049): (Se perdió Conexión con BROKER|CATCH_POKEMON)
+[ERROR] 11:58:43:356 GAME_CARD/(6044:6047): (Se perdió Conexión con BROKER|GET_POKEMON)
+[ERROR] 11:58:43:356 GAME_CARD/(6044:6045): (Se perdió Conexión con BROKER|NEW_POKEMON)
+[DEBUG] 11:58:43:359 GAME_CARD/(6044:6045): (GAMECARD END_SUSCRIPTION: |RECVD_MSGs:0|TOTAL_MSGS:0)
+[DEBUG] 11:58:43:359 GAME_CARD/(6044:6047): (GAMECARD END_SUSCRIPTION: |RECVD_MSGs:0|TOTAL_MSGS:0)
+[DEBUG] 11:58:43:360 GAME_CARD/(6044:6049): (GAMECARD END_SUSCRIPTION: |RECVD_MSGs:0|TOTAL_MSGS:0)
