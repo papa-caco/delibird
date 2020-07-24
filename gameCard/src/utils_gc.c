@@ -45,7 +45,7 @@ void leer_config(void)
 	g_config_gc->show_logs_on_screen = verdadero_falso(config_get_string_value(gc_config,"SHOW_LOGS_ON_SCREEN"));
 	g_config_gc->tg_block_size = config_get_string_value(gc_config, "BLOCK_SIZE");
 	g_config_gc->tg_blocks = config_get_string_value(gc_config, "BLOCKS");
-	g_config_gc->magic_number = config_get_string_value(gc_config, "MAGIC_NUMBER");
+	g_config_gc->magic_number = MAGIC_NUMBER;//config_get_string_value(gc_config, "MAGIC_NUMBER");
 }
 
 void inicio_server_gamecard(void)

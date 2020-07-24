@@ -199,7 +199,6 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 						entrenador->posicion->pos_x,
 						entrenador->posicion->pos_y);
 			} // -->> Acá le dejé el log con la condición del estado entrenador
-
 			sem_post(&(sem_planificador_cplazoEntrenador));
 
 			break;

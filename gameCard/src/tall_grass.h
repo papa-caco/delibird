@@ -9,7 +9,7 @@
 #include<commons/bitarray.h>
 
 #include "utils_gc.h"
-#define TALL_GRASS 555
+#define MAGIC_NUMBER "TALL_GRASS"
 
 
 typedef struct tall_grass
