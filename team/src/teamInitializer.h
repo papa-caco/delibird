@@ -210,4 +210,6 @@ void liberar_lista(t_list* lista);
 
 void liberar_cola(t_queue* cola);
 
+void liberar_cola_entrenadores(t_queue* cola);
+
 #endif /* SRC_TEAMINITIALIZER_H_ */

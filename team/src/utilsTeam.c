@@ -38,6 +38,7 @@ int iniciar_suscripcion_cola(t_tipo_mensaje cola_suscripta, t_log *logger) {
 		pthread_detach(tid);
 	}
 	return tid_status;
+	free(cola);
 }
 
 // ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES GET_POKEMON AL BROKER ----------//
@@ -779,10 +780,8 @@ void liberar_lista_posiciones(t_list* lista) {
 
 void liberar_listas(char** lista) {
 
-	int contador = 0;
-	while (lista[contador] != NULL) {
-		free(lista[contador]);
-		contador++;
+	for(int i = 0;i < sizeof(lista); i++){
+		free(lista[i]);
 	}
 
 	free(lista);

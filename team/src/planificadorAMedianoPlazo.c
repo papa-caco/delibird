@@ -286,29 +286,27 @@ void liberar_variables_globales() {
 		free(entrenador);
 	}
 
-	queue_destroy(colaReadyEntrenadores);
+	liberar_cola_entrenadores(colaReadyEntrenadores);
 
-	queue_destroy(colaBlockedEntrenadores);
+	liberar_cola_entrenadores(colaBlockedEntrenadores);
 
-	queue_destroy(colaExitEntrenadores);
+	liberar_cola_entrenadores(colaExitEntrenadores);
 
-	if (pokemonesLibresEnElMapa->elements_count == 0) {
-		list_destroy(pokemonesLibresEnElMapa);
-	} else {
-		liberar_lista_de_pokemones(pokemonesLibresEnElMapa);
-	}
+	liberar_lista_de_pokemones(pokemonesLibresEnElMapa);
 
 	list_destroy(pokemonesReservadosEnElMapa);
 
-	list_clean(pokemonesAtrapadosGlobal);
+	liberar_lista_de_pokemones(pokemonesAtrapadosGlobal);
 
-	list_destroy(pokemonesAtrapadosGlobal);
+	liberar_lista_de_pokemones(objetivoGlobalEntrenadores);
 
-	list_clean(objetivoGlobalEntrenadores);
 
-	list_destroy(objetivoGlobalEntrenadores);
+	for(int i = 0 ; i < list_size(idCorrelativosCatch); i++){
+		t_id_Correlativo_and_Entrenador* id = list_get(idCorrelativosCatch,i);
+		free(id);
+	}
 
-	liberar_lista(idCorrelativosCatch);
+	free(idCorrelativosCatch);
 
 	list_clean(idCorrelativosGet);
 

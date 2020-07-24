@@ -44,10 +44,13 @@ t_list * extraer_posiciones_entrenadores() {
 
 		list_add(posicionesEntrenadores, posicion);
 
+		liberar_listas(posiciones);
 
 	}
 
 	config_destroy(config);
+
+	liberar_listas(listaConfig);
 
 	return posicionesEntrenadores;
 }
@@ -100,10 +103,13 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 
 		list_add(objetivosEntrenadores, objetivosUnEntrenador);
 
+		liberar_listas(pokemonesObjetivo);
+
 	}
 
 	config_destroy(config);
 
+	liberar_listas(arrayConfig);
 
 	return objetivosEntrenadores;
 }
@@ -180,6 +186,11 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 	//también cada una de las listas que creamos acá para llenar a cada uno
 	cantidadDeEntrenadores = queue_size(colaBlockedEntrenadores);
 
+	for(int i = 0; i< list_size(posiciones); i++){
+		free(list_get(posiciones,i));
+	}
+	free(posiciones);
+
 }
 
 void cargar_objetivo_global(t_list* objetivosEntrenadores){
@@ -188,7 +199,6 @@ void cargar_objetivo_global(t_list* objetivosEntrenadores){
 
 
 		for(int j=0; list_get(objetivosUnEntrenador, j) != NULL; j++){
-			t_pokemon_entrenador *pokemonNuevo = malloc(sizeof(t_pokemon_entrenador));
 			t_pokemon_entrenador* pokemonEncontrado = list_buscar(objetivoGlobalEntrenadores, ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->pokemon);
 			if(pokemonEncontrado != NULL){
 				pokemonEncontrado -> cantidad+=((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->cantidad;
@@ -266,6 +276,8 @@ void destroy_entrenador(t_entrenador* entrenador){
 	destroy_posicion_entrenador(entrenador->posicion);
 	liberar_lista_de_pokemones(entrenador->pokemonesObtenidos);
 	liberar_lista_de_pokemones(entrenador->objetivoEntrenador);
+	sem_destroy(&entrenador->sem_entrenador);
+	sem_destroy(&entrenador->mutex_entrenador);
 	free(entrenador);
 }
 
@@ -283,14 +295,11 @@ void enviar_msjs_get_por_clase_de_pokemon(t_pokemon_entrenador *poke)
 
 void liberar_lista_de_pokemones(t_list* lista){
 
-	int contador = 0;
-
-	    while (list_get(lista, contador) != NULL) {
-	    	t_pokemon_entrenador* pokemon = (t_pokemon_entrenador*) list_get(lista,contador);
+	    for(int i = 0;i < list_size(lista); i++) {
+	    	t_pokemon_entrenador* pokemon = (t_pokemon_entrenador*) list_remove(lista,i);
 	    	free(pokemon->posicion);
 	    	free(pokemon->pokemon);
 	        free(pokemon);
-	        contador++;
 	    }
 
 	    free(lista);
@@ -314,6 +323,14 @@ void liberar_cola(t_queue* cola) {
     free(cola);
 }
 
+void liberar_cola_entrenadores(t_queue* cola){
+	for(int i = 0; i < queue_size(cola); i++){
+		t_entrenador* entrenador = (t_entrenador*) queue_pop(cola);
+		destroy_entrenador(entrenador);
+	}
+	free(cola);
+}
+
 
 
 //Con las tres funciones anteriores ya podemos crear dos funciones: Una que defina el objetivo
@@ -333,7 +350,7 @@ void iniciar_variables_globales(){
 
 	colaBlockedEntrenadores = queue_create();
 
-	colaExitEntrenadores =queue_create();
+	colaExitEntrenadores = queue_create();
 
 	pokemonesLibresEnElMapa = list_create();
 
