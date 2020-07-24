@@ -35,6 +35,7 @@ int main(void) {
 	//AL finalizar el programase deben liberar las listas de las colas de estados y la de objetivoGlobal
 	//liberar_lista(objetivoGlobalEntrenadores);
 
+	manejo_senial_externa_tm();
 
 	sleep(1);
 

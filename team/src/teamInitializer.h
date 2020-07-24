@@ -172,6 +172,10 @@ sem_t sem_hay_pokemones_mapa;
 
 sem_t sem_terminar_todo;
 
+//-------MUTEX MENSAJES-------------
+
+pthread_mutex_t g_mutex_mensajes;
+
 int g_cnt_msjs_caught;
 
 int g_cnt_msjs_appeared;

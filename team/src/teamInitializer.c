@@ -401,6 +401,9 @@ void iniciar_variables_globales(){
 
 	sem_init(&mutex_entrenador,0,1);
 
+	//-------MUTEX MENSAJES-------------
+
+	pthread_mutex_init(&g_mutex_mensajes, NULL);
 
 
 }

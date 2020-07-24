@@ -262,8 +262,7 @@ void inicio_suscripcion(t_tipo_mensaje *cola) {
 			}
 		}
 		int contador_global = contador_msjs_cola(*cola);
-		log_debug(g_logger,
-				"(TEAM END_SUSCRIPTION: |RECVD_MSGs:%d|TOTAL_MSGS:%d)",
+		log_debug(g_logger,	"(TEAM END_SUSCRIPTION: |RECVD_MSGs:%d|TOTAL_MSGS:%d)",
 				contador_msjs, contador_global);
 		free(handshake);
 		close(cliente_fd);
@@ -732,7 +731,7 @@ void funciones_reconexion(void) {
 }
 
 bool codigo_operacion_valido(op_code code_op) {
-	return (code_op == CAUGHT_TEAM || code_op == APPEARED_TEAM
+	return (code_op == CAUGHT_TEAM || code_op == APPEARED_TEAM || code_op == COLA_VACIA
 			|| code_op == LOCALIZED_TEAM || code_op == SUSCRIP_END);
 }
 
@@ -1053,3 +1052,99 @@ char necesitoIrAAtraparlo(char* nombrePokemonLlegado) {
 
 	return valorDeRetorno;
 }
+
+int enviar_end_suscripcion_broker_tm(t_tipo_mensaje cola_id, int contador_msgs, t_log *logger)
+{	// ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES FIN_SUSCRIPCION AL BROKER ----------//
+	pthread_t tid;
+	t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
+	handshake->id_suscriptor =  g_config_team->id_suscriptor;
+	handshake->msjs_recibidos = contador_msgs;
+	handshake->id_recibido = handshake->msjs_recibidos;
+	handshake->cola_id = cola_id;
+	pthread_mutex_lock(&g_mutex_mensajes);
+	int thread_status = pthread_create(&tid, NULL,(void*) connect_broker_y_enviar_end_suscript_tm, (void*) handshake);
+	if (thread_status != 0) {
+		log_error(logger, "Thread create returned %d | %s", thread_status, strerror(thread_status));
+	} else {
+		pthread_detach(tid);
+	}
+	return thread_status;
+}
+
+void connect_broker_y_enviar_end_suscript_tm(t_handsake_suscript *handshake)
+{
+	int id_mensaje = -1;
+	char *ip = g_config_team->ip_broker;
+	char *puerto = g_config_team->puerto_broker;
+	char *proceso = "BROKER";
+	char *name_cola = nombre_cola(handshake->cola_id);
+	int cliente_fd = crear_conexion(ip, puerto, g_logger, proceso, name_cola);
+	if (cliente_fd >= 0) {
+		enviar_solicitud_fin_suscripcion(cliente_fd, g_logger, handshake);
+		op_code codigo_operacion = rcv_codigo_operacion(cliente_fd);
+		if (codigo_operacion == MSG_CONFIRMED) {
+			rcv_msg_confirmed(cliente_fd, g_logger);
+		} else if (codigo_operacion == MSG_ERROR) {
+			void *a_recibir = recibir_buffer(cliente_fd, &id_mensaje);
+			log_warning(g_logger, "(RECEIVING: |%s)", a_recibir);
+			free(a_recibir);
+		}
+	}
+	pthread_mutex_unlock(&g_mutex_mensajes);
+	close(cliente_fd);
+	free(handshake);
+}
+
+void manejo_senial_externa_tm(void)
+{
+	pthread_mutex_lock(&g_mutex_mensajes);
+	int team_pid = process_get_thread_id();
+	log_trace(g_logger,"Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):%d", team_pid);
+	puts("");
+	signal(SIGUSR1, funcion_captura_senial_tm);
+	signal(SIGUSR2, funcion_captura_senial_tm);
+	pthread_mutex_unlock(&g_mutex_mensajes);
+}
+
+void funcion_captura_senial_tm(int senial)
+{
+	int gamecard_pid = process_get_thread_id();
+	puts("");
+	log_warning(g_logger,"Señal recibida: %s -->>(kill -%d  %d).",senial_recibida_tm(senial), senial, gamecard_pid);
+	puts("");
+	switch(senial) {
+	case SIGUSR1:;
+		finalizar_suscripciones_team(senial);
+		break;
+	case SIGUSR2:;
+		finalizar_suscripciones_team(senial);
+		break;
+	default:
+		puts("-->>No es posible manejar señal enviada.<<--");
+		break;
+	}
+}
+
+void finalizar_suscripciones_team(int senial) // -->> Si la usan desde el código: usar 10 o 12 como argumento <<--
+{ // ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES FIN_SUSCRIPCION AL BROKER ----------//
+	if (senial == SIGUSR1 || senial == SIGUSR2) {
+		enviar_end_suscripcion_broker_tm(APPEARED_POKEMON, g_cnt_msjs_appeared, g_logger);
+		enviar_end_suscripcion_broker_tm(LOCALIZED_POKEMON, g_cnt_msjs_localized, g_logger);
+		enviar_end_suscripcion_broker_tm(CAUGHT_POKEMON, g_cnt_msjs_caught, g_logger);
+	}
+}
+
+char *senial_recibida_tm(int senial)
+{
+	char *recvd_signal;
+	switch(senial) {
+	case SIGUSR1:;
+		recvd_signal = "SIGUSR1";
+		break;
+	case SIGUSR2:;
+		recvd_signal = "SIGUSR2";
+		break;
+	}
+	return recvd_signal;
+}
+

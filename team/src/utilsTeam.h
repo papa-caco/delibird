@@ -4,7 +4,9 @@
 #include "teamInitializer.h"
 #include "decisionesDeRecepcion.h"
 
+#include <commons/process.h>
 #include <semaphore.h>
+#include <signal.h>
 
 
 
@@ -80,5 +82,17 @@ int tieneDeadlockEntrenador(t_entrenador* unEntrenador);
 int cantidadDePokemonesEnLista(t_list* lista);
 
 char necesitoIrAAtraparlo(char* nombrePokemonLlegado);
+
+int enviar_end_suscripcion_broker_tm(t_tipo_mensaje cola_id, int contador_msgs, t_log *logger);
+
+void connect_broker_y_enviar_end_suscript_tm(t_handsake_suscript *handshake);
+
+void manejo_senial_externa_tm(void);
+
+void funcion_captura_senial_tm(int senial);
+
+void finalizar_suscripciones_team(int senial);
+
+char *senial_recibida_tm(int senial);
 
 #endif /* SRC_UTILSTEAM_H_ */
