@@ -10,60 +10,45 @@ void planificadorMedianoPlazo() {
 
 	printf("SE LEVANTO HILO PLANIFICADOR");
 
-
-	char* estadosEntrenadorStrings[9] = {
-			"Moverse a pokemon", "Moverse a entrenador", "Atrapar",
-			"Intercambiar", "Acabar intercambio", "Recibir respuesta ok",
-			"Esperar caught","Estar en deadlock", "Estar en exit"
-	};
+	char* estadosEntrenadorStrings[9] = { "Moverse a pokemon",
+			"Moverse a entrenador", "Atrapar", "Intercambiar",
+			"Acabar intercambio", "Recibir respuesta ok", "Esperar caught",
+			"Estar en deadlock", "Estar en exit" };
 
 	sem_wait(&sem_activacionPlanificadorMPlazo);
 
 	while (finalizarProceso == 0) {
-
 
 		//AGREGAR UN SIGNLA POR CADA POKEOMON LIBRE QUE LLEGA EN LA RECEPCION DE MENSAJES DE POKEMONES, MAS
 		//UN SIGNAL EN EL CASO DE FAIL. SIEMPRE Y CUANDO TENGAMOS POKEMONES LIBRES DE ESA ESPECIE.
 		//AGREGAR EL SIGNAL AL RECIBIR EL POKEMON A UBICAR EN EL MAPA
 		//VERIFICAR EL MAPA DE POKEMONES LIBRES, SI HAY COMIENZA A EJECUTAR
 
-
 		//SEMAFORO QUE DEBEMOS MANDAR CADA VEZ QUE APARECE UN POKEMON EN EL MAPA, LA CANTIDAD DE POKEMONES
 		//A AGREGAR SERAN LA CANTIDAD DE SIGNALS.
 
-
 		//POR CONFIGURACION QUE ESTE ACTIVADO SIEMPRE
 		sem_wait(&sem_planificador_mplazo);
-		printf("Ya esta corriendo el planificador a mediano plazo \n");
-
 
 		sem_wait(&sem_cola_blocked);
 		int cantidadElementosCola = queue_size(colaBlockedEntrenadores);
-		printf("Ya se calculo la cantidad que hay en blocked y son %d \n", cantidadElementosCola);
 		sem_post(&sem_cola_blocked);
-
 
 		for (int i = 0; i < cantidadElementosCola; i++) {
 
 			sem_wait(&sem_cola_blocked);
-			printf("Estoy buscando a los entrenadores que pueden pasar a exit \n");
 			t_entrenador* entrenadorAux = (t_entrenador*) queue_pop(
 					colaBlockedEntrenadores);
 
 			//VERIFICAR SI EL ENTRENADOR PUEDE PASAR A EXIT O SI TIENE DEADLOCK, O SI DEBE BUSCAR MAS POKEMONES (CAMBIAR ESTADO)
 
-
-
-
-
 			//RECORRER TODA LA COLA DE BLOCKED, VERIFICANDO LOS QUE ESTEN EN ESTADO ACABO_INTERCAMBIAR,
 			//QUE NOS QUEDARON COLGADOS DEL INTERCAMBIO, Y FIJARSE SI DEBEN PASAR A ESTADO EXIT Y A LA COLA EXIT.
-			if (entrenadorAux->estado_entrenador == ACABO_INTERCAMBIO ||
-					entrenadorAux->estado_entrenador == RECIBIO_RESPUESTA_OK) {
-				printf("Va a verificar al entrenador %d \n", entrenadorAux->id);
+			if (entrenadorAux->estado_entrenador == ACABO_INTERCAMBIO
+					|| entrenadorAux->estado_entrenador
+							== RECIBIO_RESPUESTA_OK) {
 
 				sem_wait(&(entrenadorAux->mutex_entrenador));
-				printf("Va a verificar al entrenador %d \n", entrenadorAux->id);
 				verificarYCambiarEstadoEntrenador(entrenadorAux);
 				sem_post(&(entrenadorAux->mutex_entrenador));
 
@@ -76,24 +61,22 @@ void planificadorMedianoPlazo() {
 					queue_push(colaExitEntrenadores, entrenadorAux);
 					sem_post(&sem_cola_exit);
 
-				} else{
+				} else {
 					queue_push(colaBlockedEntrenadores, entrenadorAux);
 				}
 
-			}else
-			{
+			} else {
 				queue_push(colaBlockedEntrenadores, entrenadorAux);
 			}
 			sem_post(&sem_cola_blocked);
 		}
-
 
 		//PREGUNTAR SI TODOS LOS ENTRENADORES ESTAN EN EXIT, ENTONCES:
 		//1.AVISAR AL PLANIFICADOR DEL CORTO PLAZO
 		//2. MATARME A MI MISMO
 
 		sem_wait(&sem_cola_exit);
-		if(cantidadDeEntrenadores == queue_size(colaExitEntrenadores)){
+		if (cantidadDeEntrenadores == queue_size(colaExitEntrenadores)) {
 			printf("######################################\n");
 			printf("CERRANDO TEAM \n");
 			printf("######################################\n");
@@ -126,28 +109,32 @@ void planificadorMedianoPlazo() {
 			//nos sirvan.
 			//Cuando hay pokemones, hay que pasar a ready al entrenador que menos distancia tenga para ejecutar
 			//Si se encuentra uno a pasar se asigna 1 para saltear el resto de busquedas.
-			if(cantidadElementosCola != 0 && todosQuierenMoverseAPokemon(colaBlockedEntrenadores)){
+			if (cantidadElementosCola != 0
+					&& todosQuierenMoverseAPokemon(colaBlockedEntrenadores)) {
 
 				//Espero que haya pokemones
-				printf("TODOS QUIEREN MOVERSE A UN POKEMON Y HAY QUE ESPERAR A QUE EN EL MAPA HAYAN POKEMONES QUE NOS SIRVAN \n");
 				sem_wait(&sem_hay_pokemones_mapa);
+				printf("Todos quieren dirigirse a un Pokemon y Hay que esperar a que en el Mapa hayan Pokemones que sirvan \n");
 
 				//Busco al primer entrenador que tiene el estado "Moverse a pokemon"
 
-				t_entrenador* entrenadorAux = buscarEntrenadorMasConvenienteEnCola(colaBlockedEntrenadores);
+				t_entrenador* entrenadorAux =
+						buscarEntrenadorMasConvenienteEnCola(
+								colaBlockedEntrenadores);
 
 				encontreUnoAPasar = 1;
 
 				sem_wait(&sem_cola_ready);
 				queue_push(colaReadyEntrenadores, entrenadorAux);
 
-				log_info(g_logger, "Entrenador %d se movio a la cola de Ready, porque va a %s", entrenadorAux->id,
+				log_info(g_logger,
+						"Entrenador %d se movio a la cola de Ready, porque va a %s",
+						entrenadorAux->id,
 						estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
 
 				sem_post(&sem_cola_ready);
 
 				sem_post(&sem_planificador_cplazoReady);
-
 
 			}
 
@@ -170,7 +157,9 @@ void planificadorMedianoPlazo() {
 //Aca en este if capaz habria que tambien filtrar a que no puedan ejecutar los que quieren moverseAPokemon
 						if (entrenadorAux->estado_entrenador == DEADLOCK
 								|| entrenadorAux->estado_entrenador
-										== ESPERAR_CAUGHT || entrenadorAux->estado_entrenador == MOVERSE_A_POKEMON) {
+										== ESPERAR_CAUGHT
+								|| entrenadorAux->estado_entrenador
+										== MOVERSE_A_POKEMON) {
 							queue_push(colaBlockedEntrenadores, entrenadorAux);
 						} else {
 							encontreUnoAPasar = 1;
@@ -193,26 +182,24 @@ void planificadorMedianoPlazo() {
 				}
 			}
 
-
 			sem_post(&sem_cola_blocked);
 
 			//variable local que me indique si ENCONTRE UNO LISTA PARA PASAR A READY
 			//Si es FALSE, ahi recien recorre la lista de NEW.
 
-
-			log_info(g_logger, "Se va a correr el algoritmo de deteccion de deadlock");
-
+			log_info(g_logger,
+					"Se va a correr el algoritmo de deteccion de deadlock");
 
 			if (encontreUnoAPasar == 0) {
 
-			log_info(g_logger, "Se detecto deadlock");
-
+				log_info(g_logger, "Se detecto deadlock");
 
 				////TRATAR DEADLOCK
 				sem_wait(&sem_cola_blocked);
 				//Buscamos alguno que esté en deadlock. Asumimos el riesgo de que no haya ninguno en deadlock y que
 				//capaz encuentre a todos en esperarCaught.
-				t_entrenador* entrenadorAux = buscarPrimerEntrenadorEnDeadlock();
+				t_entrenador* entrenadorAux =
+						buscarPrimerEntrenadorEnDeadlock();
 				sem_post(&sem_cola_blocked);
 
 				sem_wait(&(entrenadorAux->mutex_entrenador));
@@ -221,7 +208,10 @@ void planificadorMedianoPlazo() {
 				//moverse a un entrenador
 				entrenadorAux->estado_entrenador = MOVERSE_A_ENTRENADOR;
 
-				log_info(g_logger,"Entrenador %d se movio a la cola de Ready, porque va a %s", entrenadorAux->id, estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
+				log_info(g_logger,
+						"Entrenador %d se movio a la cola de Ready, porque va a %s",
+						entrenadorAux->id,
+						estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
 
 				//pasarlo a la cola de ready
 				sem_wait(&sem_cola_ready);
@@ -235,19 +225,13 @@ void planificadorMedianoPlazo() {
 
 				//sem_post(&sem_hay_pokemones_mapa);
 
-
-
-			}else{
+			} else {
 
 				log_info(g_logger, "No hay deadlock");
 
-
 			}
 
-
 		}
-
-
 
 	}
 
@@ -259,25 +243,24 @@ void planificadorMedianoPlazo() {
 
 }
 
-
 //Los semaforos los tiene afuera
-t_entrenador* buscarPrimerEntrenadorEnDeadlock(){
-
+t_entrenador* buscarPrimerEntrenadorEnDeadlock() {
 
 	t_entrenador* entrenadorRetorno = NULL;
 	t_entrenador* entrenadorAux = NULL;
 
-	for(int i=0; i<queue_size(colaBlockedEntrenadores); i++){
+	for (int i = 0; i < queue_size(colaBlockedEntrenadores); i++) {
 
 		entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
 
 		sem_wait(&(entrenadorAux->mutex_entrenador));
-		if((entrenadorAux->estado_entrenador == DEADLOCK) && (entrenadorRetorno == NULL)){
+		if ((entrenadorAux->estado_entrenador == DEADLOCK)
+				&& (entrenadorRetorno == NULL)) {
 
 			sem_post(&(entrenadorAux->mutex_entrenador));
 			entrenadorRetorno = entrenadorAux;
 
-		} else{
+		} else {
 			queue_push(colaBlockedEntrenadores, entrenadorAux);
 			sem_post(&(entrenadorAux->mutex_entrenador));
 		}
@@ -286,131 +269,123 @@ t_entrenador* buscarPrimerEntrenadorEnDeadlock(){
 	return entrenadorRetorno;
 }
 
-void liberar_variables_globales(){
-
-		int cantidadEntrenadoresExit = queue_size(colaExitEntrenadores);
-
-		for(int i=0; i< cantidadEntrenadoresExit; i++){
-
-			t_entrenador* entrenador = (t_entrenador*) queue_pop(colaExitEntrenadores);
-
-			free(entrenador->posicion);
-			liberar_lista_de_pokemones(entrenador->objetivoEntrenador);
-			liberar_lista_de_pokemones(entrenador->pokemonesObtenidos);
-			sem_destroy(&entrenador->mutex_entrenador);
-			sem_destroy(&entrenador->sem_entrenador);
-			free(entrenador);
-		}
-
-		//printf("Ya libere los entrenadores \n");
-
-	    queue_destroy(colaReadyEntrenadores);
-
-	    queue_destroy(colaBlockedEntrenadores);
-
-	    queue_destroy(colaExitEntrenadores);
-
-	    printf("Ya libere la cola de entrenadores \n");
-
-		if(pokemonesLibresEnElMapa->elements_count == 0){
-			list_destroy(pokemonesLibresEnElMapa);
-		} else{
-			liberar_lista_de_pokemones(pokemonesLibresEnElMapa);
-		}
-
-		list_destroy(pokemonesReservadosEnElMapa);
-
-		list_clean(pokemonesAtrapadosGlobal);
-
-		list_destroy(pokemonesAtrapadosGlobal);
-
-		list_clean(objetivoGlobalEntrenadores);
-
-		list_destroy(objetivoGlobalEntrenadores);
-
-		//printf("Ya libere las listas de entrenadores \n");
-
-		liberar_lista(idCorrelativosCatch);
-
-		list_destroy(idCorrelativosGet);
-
-		liberar_lista(pokemonesLlegadosDelBroker);
-
-		//printf("Ya libere las listas auxiliares que reciben mensajes \n");
-
-
-		//--------------SEMAFOROS LISTAS DE POKEMONES------------------------------
-
-		sem_destroy(&sem_pokemonesGlobalesAtrapados);
-
-		sem_destroy(&sem_pokemonesReservados);
-
-		sem_destroy(&sem_pokemonesLibresEnElMapa);
-
-		sem_destroy(&sem_pokemonesObjetivoGlobal);
-
-		//printf("Ya libere los semaforos de listas de pokes \n");
-
-		//---------------SEMAFOROS COLAS DE ENTRENADORES---------------------------
-
-		sem_destroy(&sem_cola_blocked);
-
-		sem_destroy(&sem_cola_new);
-
-		sem_destroy(&sem_cola_ready);
-
-		sem_destroy(&sem_cola_exit);
-
-		//printf("Ya libere los semaforos de colas \n");
-
-
-		//--------------SEMAFOROS PLANIFICADORES-----------------------------------
-
-		sem_destroy(&sem_planificador_cplazoReady);
-
-		sem_destroy(&sem_planificador_cplazoEntrenador);
-
-		sem_destroy(&sem_planificador_mplazo);
-
-		sem_destroy(&sem_hay_pokemones_mapa);
-
-		sem_destroy(&sem_activacionPlanificadorMPlazo);
-
-		sem_destroy(&sem_terminar_todo);
-
-		//sem_destroy(&mutex_listaPokemonesLlegadosDelBroker);
-
-		pthread_mutex_destroy(&mutex_listaPokemonesLlegadosDelBroker);
-
-		sem_destroy(&mutex_idCorrelativosGet);
-
-		sem_destroy(&mutex_ciclosCPU);
-
-		sem_destroy(&mutex_idCorrelativos);
-
-		sem_destroy(&mutex_entrenador);
-
-		//printf("Ya libere los semaforos varios. Finaliza team \n");
-
-}
-
-void logearResultadoTeam(){
-
-	log_info(g_logger, "CANTIDAD CICLOS CPU TOTALES %d", ciclosCPU);
-
-	log_info(g_logger, "CANTIDAD CAMBIOS DE CONTEXTO %d", cantidadCambiosDeContexto);
+void liberar_variables_globales() {
 
 	int cantidadEntrenadoresExit = queue_size(colaExitEntrenadores);
 
-			for(int i=0; i< cantidadEntrenadoresExit; i++){
+	for (int i = 0; i < cantidadEntrenadoresExit; i++) {
 
-				t_entrenador* entrenador = (t_entrenador*) queue_pop(colaExitEntrenadores);
+		t_entrenador* entrenador = (t_entrenador*) queue_pop(
+				colaExitEntrenadores);
 
-				log_info(g_logger, "CANTIDAD CICLOS CPU ENTRENADOR %d : %d", entrenador->id, entrenador->ciclosCPU);
+		free(entrenador->posicion);
+		liberar_lista_de_pokemones(entrenador->objetivoEntrenador);
+		liberar_lista_de_pokemones(entrenador->pokemonesObtenidos);
+		sem_destroy(&entrenador->mutex_entrenador);
+		sem_destroy(&entrenador->sem_entrenador);
+		free(entrenador);
+	}
 
-				queue_push(colaExitEntrenadores, entrenador);
-			}
+	queue_destroy(colaReadyEntrenadores);
 
+	queue_destroy(colaBlockedEntrenadores);
+
+	queue_destroy(colaExitEntrenadores);
+
+	if (pokemonesLibresEnElMapa->elements_count == 0) {
+		list_destroy(pokemonesLibresEnElMapa);
+	} else {
+		liberar_lista_de_pokemones(pokemonesLibresEnElMapa);
+	}
+
+	list_destroy(pokemonesReservadosEnElMapa);
+
+	list_clean(pokemonesAtrapadosGlobal);
+
+	list_destroy(pokemonesAtrapadosGlobal);
+
+	list_clean(objetivoGlobalEntrenadores);
+
+	list_destroy(objetivoGlobalEntrenadores);
+
+	liberar_lista(idCorrelativosCatch);
+
+	list_clean(idCorrelativosGet);
+
+	list_destroy(idCorrelativosGet);
+
+	liberar_lista(pokemonesLlegadosDelBroker);
+
+	//--------------SEMAFOROS LISTAS DE POKEMONES------------------------------
+
+	sem_destroy(&sem_pokemonesGlobalesAtrapados);
+
+	sem_destroy(&sem_pokemonesReservados);
+
+	sem_destroy(&sem_pokemonesLibresEnElMapa);
+
+	sem_destroy(&sem_pokemonesObjetivoGlobal);
+
+	//---------------SEMAFOROS COLAS DE ENTRENADORES---------------------------
+
+	sem_destroy(&sem_cola_blocked);
+
+	sem_destroy(&sem_cola_new);
+
+	sem_destroy(&sem_cola_ready);
+
+	sem_destroy(&sem_cola_exit);
+
+	//--------------SEMAFOROS PLANIFICADORES-----------------------------------
+
+	sem_destroy(&sem_planificador_cplazoReady);
+
+	sem_destroy(&sem_planificador_cplazoEntrenador);
+
+	sem_destroy(&sem_planificador_mplazo);
+
+	sem_destroy(&sem_hay_pokemones_mapa);
+
+	sem_destroy(&sem_activacionPlanificadorMPlazo);
+
+	sem_destroy(&sem_terminar_todo);
+
+	//sem_destroy(&mutex_listaPokemonesLlegadosDelBroker);
+
+	pthread_mutex_destroy(&mutex_listaPokemonesLlegadosDelBroker);
+
+	sem_destroy(&mutex_idCorrelativosGet);
+
+	sem_destroy(&mutex_ciclosCPU);
+
+	sem_destroy(&mutex_idCorrelativos);
+
+	sem_destroy(&mutex_entrenador);
+
+	printf("######################################\n");
+	printf("FINALIZA EL TEAM \n");
+	printf("######################################\n");
+}
+
+void logearResultadoTeam() {
+
+	log_info(g_logger, "CANTIDAD CICLOS CPU TOTALES %d", ciclosCPU);
+
+	log_info(g_logger, "CANTIDAD CAMBIOS DE CONTEXTO %d",
+			cantidadCambiosDeContexto);
+
+	int cantidadEntrenadoresExit = queue_size(colaExitEntrenadores);
+
+	for (int i = 0; i < cantidadEntrenadoresExit; i++) {
+
+		t_entrenador* entrenador = (t_entrenador*) queue_pop(
+				colaExitEntrenadores);
+
+		log_info(g_logger, "CANTIDAD CICLOS CPU ENTRENADOR %d : %d",
+				entrenador->id, entrenador->ciclosCPU);
+
+		queue_push(colaExitEntrenadores, entrenador);
+	}
 
 }
 
@@ -443,7 +418,6 @@ char todosQuierenMoverseAPokemon(t_queue* colaDeEntrenadores) {
 				== cantidadQueQuierenMoverse;
 	}
 
-	//printf("El valorDeRetorno es %d \n", valorDeRetorno);
 	return valorDeRetorno;
 }
 
@@ -451,81 +425,81 @@ char todosQuierenMoverseAPokemon(t_queue* colaDeEntrenadores) {
 //Lo que si hay que ver es si necesita los semaforos mutex de la lista de pokemones
 /*t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores){
 
-	int distanciaMasCorta = 100000;
-	int entrenadoresEnCola = queue_size(colaEntrenadores);
-	t_entrenador* entrenadorConveniente;
-	int idEntrenadorConveniente = 100;
+ int distanciaMasCorta = 100000;
+ int entrenadoresEnCola = queue_size(colaEntrenadores);
+ t_entrenador* entrenadorConveniente;
+ int idEntrenadorConveniente = 100;
 
-	//Primero hago un for de la cola de entrenadores. Lo que hago es agarrar cada entrenador y calculo por cada uno
-	//la distancia mas corta que tiene con los pokemones y esa distancia me la guardo.
-	//Una vez que tengo la distancia mas corta, vuelvo a hacer un for dentro de otro for y calculo de nuevo para cada
-	//entrenador la distancia que tiene con cada pokemon, y la comparo con la distancia mas corta. Cuando encuentro al
-	//entrenador que tiene esa distancia corta con algun pokemon, entonces me lo guardo, y al resto los vuelvo a pushear
-	//a la cola
-	for(int i=0; i < entrenadoresEnCola; i++){
-		t_entrenador* entrenadorAux = queue_pop(colaEntrenadores);
+ //Primero hago un for de la cola de entrenadores. Lo que hago es agarrar cada entrenador y calculo por cada uno
+ //la distancia mas corta que tiene con los pokemones y esa distancia me la guardo.
+ //Una vez que tengo la distancia mas corta, vuelvo a hacer un for dentro de otro for y calculo de nuevo para cada
+ //entrenador la distancia que tiene con cada pokemon, y la comparo con la distancia mas corta. Cuando encuentro al
+ //entrenador que tiene esa distancia corta con algun pokemon, entonces me lo guardo, y al resto los vuelvo a pushear
+ //a la cola
+ for(int i=0; i < entrenadoresEnCola; i++){
+ t_entrenador* entrenadorAux = queue_pop(colaEntrenadores);
 
-		for(int j=0; j < list_size(pokemonesLibresEnElMapa); j++){
+ for(int j=0; j < list_size(pokemonesLibresEnElMapa); j++){
 
-			t_pokemon_entrenador* pokemonAux = list_get(pokemonesLibresEnElMapa, j);
-			int distanciaAux = calcularDistancia(entrenadorAux->posicion, pokemonAux->posicion);
+ t_pokemon_entrenador* pokemonAux = list_get(pokemonesLibresEnElMapa, j);
+ int distanciaAux = calcularDistancia(entrenadorAux->posicion, pokemonAux->posicion);
 
-			if(distanciaAux < distanciaMasCorta){
+ if(distanciaAux < distanciaMasCorta){
 
-				distanciaMasCorta = distanciaAux;
+ distanciaMasCorta = distanciaAux;
 
-			}
+ }
 
-		}
+ }
 
-		queue_push(colaEntrenadores, entrenadorAux);
+ queue_push(colaEntrenadores, entrenadorAux);
 
-	}
+ }
 
-	for(int i=0; i < entrenadoresEnCola; i++){
+ for(int i=0; i < entrenadoresEnCola; i++){
 
-		t_entrenador* entrenadorAux = queue_pop(colaEntrenadores);
+ t_entrenador* entrenadorAux = queue_pop(colaEntrenadores);
 
-		for(int j=0; j < list_size(pokemonesLibresEnElMapa); j++){
+ for(int j=0; j < list_size(pokemonesLibresEnElMapa); j++){
 
-			t_pokemon_entrenador* pokemonAux = list_get(pokemonesLibresEnElMapa, j);
-			int distanciaAux = calcularDistancia(entrenadorAux->posicion, pokemonAux->posicion);
+ t_pokemon_entrenador* pokemonAux = list_get(pokemonesLibresEnElMapa, j);
+ int distanciaAux = calcularDistancia(entrenadorAux->posicion, pokemonAux->posicion);
 
-			if(distanciaMasCorta == distanciaAux){
-				idEntrenadorConveniente = entrenadorAux->id;
-			}
-		}
+ if(distanciaMasCorta == distanciaAux){
+ idEntrenadorConveniente = entrenadorAux->id;
+ }
+ }
 
-		if(idEntrenadorConveniente == entrenadorAux->id){
-			entrenadorConveniente = entrenadorAux;
-		} else{
-			queue_push(colaEntrenadores, entrenadorAux);
-		}
+ if(idEntrenadorConveniente == entrenadorAux->id){
+ entrenadorConveniente = entrenadorAux;
+ } else{
+ queue_push(colaEntrenadores, entrenadorAux);
+ }
 
-	}
+ }
 
 
-	return entrenadorConveniente;
-}*/
+ return entrenadorConveniente;
+ }*/
 
-t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores){
+t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores) {
 
 	int distanciaMasCorta = 100000;
 	t_entrenador* unEntrenador;
 	t_entrenador* entrenadorConveniente = NULL;
 	int entrenadoresEnCola = queue_size(colaEntrenadores);
 
-
-	for(int i = 0; i < entrenadoresEnCola; i++){
+	for (int i = 0; i < entrenadoresEnCola; i++) {
 
 		unEntrenador = queue_pop(colaEntrenadores);
-		if(unEntrenador->estado_entrenador != MOVERSE_A_POKEMON){
+		if (unEntrenador->estado_entrenador != MOVERSE_A_POKEMON) {
 			queue_push(colaEntrenadores, unEntrenador);
-		} else{
-			//printf("Entrenador %d \n", unEntrenador->id);
-			t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(unEntrenador->posicion);
+		} else {
+			t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(
+					unEntrenador->posicion);
 			puts(pokemonCercano->pokemon);
-			int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion, pokemonCercano->posicion);
+			int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion,
+					pokemonCercano->posicion);
 
 			if (distanciaEntreAmbos < distanciaMasCorta) {
 				distanciaMasCorta = distanciaEntreAmbos;
@@ -537,34 +511,35 @@ t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores){
 
 	}
 
-	printf("La distancia mas corta es %d \n", distanciaMasCorta);
-
-	printf("Cantidad de entrenadores es %d \n", queue_size(colaEntrenadores));
-
+	char yaLoEncontre = 0;
 
 	for (int i = 0; i < entrenadoresEnCola; i++) {
 
 		unEntrenador = queue_pop(colaEntrenadores);
 		if (unEntrenador->estado_entrenador != MOVERSE_A_POKEMON) {
 			queue_push(colaEntrenadores, unEntrenador);
-		}
-		else{
-			printf("Entrenador %d \n", unEntrenador->id);
-			t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(unEntrenador->posicion);
-			int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion, pokemonCercano->posicion);
+		} else {
+			t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(
+					unEntrenador->posicion);
+			int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion,
+					pokemonCercano->posicion);
 
 			if (distanciaEntreAmbos == distanciaMasCorta) {
-				entrenadorConveniente = unEntrenador;
+
+				if (yaLoEncontre == 0) {
+
+					entrenadorConveniente = unEntrenador;
+					yaLoEncontre = 1;
+				} else {
+					queue_push(colaEntrenadores, unEntrenador);
+				}
+
 			} else {
 				queue_push(colaEntrenadores, unEntrenador);
 			}
 		}
 
-
 	}
-
-	printf("El entrenador que va a pasar de Blocked a Ready es %d \n", entrenadorConveniente->id);
-
 
 	return entrenadorConveniente;
 }
