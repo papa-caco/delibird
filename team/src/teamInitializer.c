@@ -85,12 +85,11 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 			t_pokemon_entrenador* pokemonEncontrado = list_buscar(objetivosUnEntrenador, pokemonesObjetivo[j]);
 
 			if(pokemonEncontrado != NULL){
-				printf("Encontro el pokemon %s \n", pokemonesObjetivo[j]);
 				objetivo = pokemonEncontrado;
 				objetivo->cantidad++;
 			}
 			else{
-				printf("Hay un nuevo pokemon que es %s \n", pokemonesObjetivo[j]);
+				printf("Hay un nuevo Pokemon que es %s \n", pokemonesObjetivo[j]);
 				objetivo->pokemon = malloc(strlen(pokemonesObjetivo[j]) +1);
 				memcpy(objetivo->pokemon, pokemonesObjetivo[j], strlen(pokemonesObjetivo[j]) + 1);
 				objetivo->cantidad = 1;
@@ -117,16 +116,10 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 	pokemonesAtrapadosGlobal = list_create();
 
 	t_list* objetivosEntrenadores = extraer_pokemones_entrenadores("OBJETIVOS_ENTRENADORES");
-	printf("-------YA TERMNINO DE EXTRAER LOS OBJETIVOS------\n");
 	t_list* pokemonesObtenidos = extraer_pokemones_entrenadores("POKEMON_ENTRENADORES");
-	printf("-------YA TERMNINO DE EXTRAER LOS OBTENIDOS------\n");
-	printf("-------Las listas de obtenidos que hay son: %d------\n", pokemonesObtenidos->elements_count);
 	t_list* posiciones = extraer_posiciones_entrenadores();
-	printf("-------YA TERMNINO DE EXTRAER LAS POSICIONES DE LOS ENTRENADORES------\n");
 	cargar_objetivo_global(objetivosEntrenadores);
-	printf("-------YA TERMNINO DE CARGAR EL OBJETIVO GLOBAL------\n");
 	cargar_obtenidos_global(pokemonesObtenidos);
-	printf("-------YA TERMNINO DE CARGAR EL OBTENIDOS GLOBAL------\n");
 
 	//Capaz nos pueden llegar a mandar pokemones atrapados solo para algunos entrenadores y no para todos
 	//Lo que yo haria es contar la longitud de la lista de listas llamada "pokemonesObtenidos".
@@ -162,15 +155,12 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		unEntrenador->id = i;
 
 
-		printf("Los pokemones atrapados del entrenador %d son: \n", unEntrenador->id);
 		for (int k = 0; k < list_size(unEntrenador->pokemonesObtenidos); k++) {
 			t_pokemon_entrenador* pokePrint = list_get(
 					unEntrenador->pokemonesObtenidos, k);
 			puts(pokePrint->pokemon);
 		}
 
-		printf("Los pokemones objetivo del entrenador %d son: \n",
-				unEntrenador->id);
 		for (int k = 0; k < list_size(unEntrenador->objetivoEntrenador); k++) {
 			t_pokemon_entrenador* pokePrint = list_get(
 					unEntrenador->objetivoEntrenador, k);
@@ -247,13 +237,10 @@ t_pokemon_entrenador* list_buscar(t_list* lista, char* elementoAbuscar){
 
 	for(int i = 0; list_get(lista, i) != NULL; i++){
 
-		//printf("El valor de la lista procesados es %s \n", ((t_pokemon_entrenador*)list_get(lista, i))->pokemon);
-		//printf("El elemento a comparar es %s \n", elementoAbuscar);
 		t_pokemon_entrenador *pokAux = list_get(lista, i);
 
 		if(strcmp(pokAux->pokemon, elementoAbuscar) == 0){
 
-			//printf("Entro al if \n");
 			return list_get(lista, i);
 
 		}
@@ -405,8 +392,6 @@ void iniciar_variables_globales(){
 	//sem_init(&mutex_listaPokemonesLlegadosDelBroker,0,1);
 
 	pthread_mutex_init(&mutex_listaPokemonesLlegadosDelBroker, NULL);
-
-	printf("INICIALIZO SEMAFORO");
 
 	sem_init(&mutex_idCorrelativosGet,0,1);
 

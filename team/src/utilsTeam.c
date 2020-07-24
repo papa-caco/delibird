@@ -139,7 +139,6 @@ int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon,
  args->id_entrenador = id_entrenador;
  int thread_status = pthread_create(&tid_send_catch, NULL,
  (void*) connect_broker_y_enviar_mensaje_catch, (void*) args);
- printf("PROBANDO LO DEL CATCH, EL THREAD STATUS ES: %d \n", thread_status);
  if (thread_status != 0) {
  log_error(logger, "Thread create returned %d | %s", thread_status,
  strerror(thread_status));
@@ -215,8 +214,6 @@ int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon,
  sem_wait(&mutex_idCorrelativos);
  list_add(idCorrelativosCatch, &ids);
  sem_post(&mutex_idCorrelativos);
-
- printf("PROBANDO LO DEL CATCH, EL ID MENSAJE ES: %d \n", id_mensaje);
 
  return id_mensaje;
  }*/
@@ -821,14 +818,10 @@ t_pokemon_entrenador_reservado* buscarPokemonReservado(int id_Entrenador) {
 
 		pokemonReservado = list_get(pokemonesReservadosEnElMapa, i);
 
-		printf("POKEMON RESERVADO ES %s \n ", pokemonReservado->pokemon);
-
 		int idAux = pokemonReservado->id_entrenadorReserva;
 
 		if (idAux == id_Entrenador) {
 
-			printf("ENTRO AL IF Y SU POKEMON RESERVADO ES %s \n ",
-					pokemonReservado->pokemon);
 			return pokemonReservado;
 
 		}

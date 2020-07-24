@@ -33,15 +33,6 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 			distancia = calcularDistancia(entrenador->posicion,
 					pokemonReservado->posicion);
 
-			printf("LA DISTANCIA ES %d \n", distancia);
-
-			printf("POSICION DEL ENTRENADOR %d %d \n",
-					entrenador->posicion->pos_x, entrenador->posicion->pos_y);
-
-			printf("POSICION DEL POKEMON %d %d \n",
-					pokemonReservado->posicion->pos_x,
-					pokemonReservado->posicion->pos_y);
-
 			for (int i = 0; i < distancia; i++) {
 				moverEntrenador(entrenador, pokemonReservado->posicion);
 
@@ -76,16 +67,10 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 			break;
 		case ATRAPAR:
 
-			printf("ENTRO AL CASE DE ATRAPAR \n");
 			pokemonReservado = buscarPokemonReservado(entrenador->id);
-
-			printf("Salio de buscar al reservado, el cual es %s \n",
-					pokemonReservado->pokemon);
 
 			int resultadoEnvioMensaje = intentarAtraparPokemon(entrenador,
 					pokemonReservado);
-
-			printf("El resultado del mensaje es %d \n", resultadoEnvioMensaje);
 
 			sleep(g_config_team->retardo_ciclo_cpu);
 
@@ -223,13 +208,9 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 			entrenador2 = buscarEntrenadorDelIntercambio(entrenador);
 
-			//printf("El entrenador del intercambio que encontró el entrenador %d es %d \n", entrenador->id, entrenador2->id);
-
 			//if(elIntercambioEsIdeal(entrenador, entrenador2)){
-			//printf("Van a hacer un intercambio ideal \n");
 			//intercambiarIdealPokemon(entrenador, entrenador2);
 			//} else{
-			printf("Van a hacer un intercambio normal \n");
 			intercambiarNormalPokemon(entrenador, entrenador2);
 			//}
 
@@ -271,10 +252,6 @@ t_pokemon_entrenador* buscarPokemonMasCercano(
 
 		t_pokemon_entrenador* pokLibreAux = list_get(pokemonesLibresEnElMapa,
 				j);
-
-		printf("POKEMON EN LIBRE ES %s y su POSICION ES %d %d \n",
-				pokLibreAux->pokemon, pokLibreAux->posicion->pos_x,
-				pokLibreAux->posicion->pos_y);
 
 		if (necesitoPokemon(pokLibreAux->pokemon)) {
 
@@ -383,8 +360,6 @@ t_pokemon_entrenador_reservado* moverPokemonAReservados(
 
 	t_pokemon_entrenador* pokemonAux;
 
-	printf("POSICION DEL POKEMON A MOVER A RESERVADOS ---%d %d ---\n ",
-			pokemonAMover->posicion->pos_x, pokemonAMover->posicion->pos_y);
 
 	t_pokemon_entrenador_reservado* pokemonAAgregar = malloc(
 			sizeof(t_pokemon_entrenador_reservado));
@@ -401,8 +376,6 @@ t_pokemon_entrenador_reservado* moverPokemonAReservados(
 	list_add(pokemonesReservadosEnElMapa, pokemonAAgregar);
 	sem_post(&sem_pokemonesReservados);
 
-	printf("POSICION DEL POKEMON A AGREGADO A RESERVADOS ---%d %d ---\n ",
-			pokemonAAgregar->posicion->pos_x, pokemonAAgregar->posicion->pos_y);
 
 	int indice = 0;
 
@@ -427,10 +400,6 @@ t_pokemon_entrenador_reservado* moverPokemonAReservados(
 		pokemonAMover->cantidad--;
 	}
 	sem_post(&sem_pokemonesLibresEnElMapa);
-
-	printf(
-			"POSICION DEL POKEMON A AGREGADO A RESERVADOS DESPUES DEL FREE---%d %d ---\n ",
-			pokemonAAgregar->posicion->pos_x, pokemonAAgregar->posicion->pos_y);
 
 	return pokemonAAgregar;
 }
@@ -496,7 +465,6 @@ int intentarAtraparPokemon(t_entrenador* entrenador,
 	int prueba = enviar_catch_pokemon_broker(entrenador->posicion->pos_x,
 			entrenador->posicion->pos_y, pokemon->pokemon, g_logger,
 			entrenador->id);
-	printf("PROBANDO LO DEL CATCH, EL ULTIMO PASO ES: %d \n", prueba);
 	return prueba;
 
 }
@@ -583,10 +551,6 @@ void intercambiarIdealPokemon(t_entrenador* entrenador1,
 void intercambiarNormalPokemon(t_entrenador* entrenador1,
 		t_entrenador* entrenador2) {
 
-	printf("Ya estan por intercambiar normal \n");
-
-	printf(
-			"555555555555555555555555555555555555555555555555555555555555555 \n");
 
 	t_list* pokemonesInnecesariosDT1 = pokemonesInnecesarios(entrenador1);
 	t_list* pokemonesInnecesariosDT2 = pokemonesInnecesarios(entrenador2);
@@ -616,7 +580,7 @@ void intercambiarNormalPokemon(t_entrenador* entrenador1,
 					== 0) {
 
 				printf(
-						"Al entrenador %d se le quita el pokemon %s y se lo pasa al entrenador %d \n",
+						"Al Entrenador %d se le quita el pokemon %s y se lo pasa al Entrenador %d \n",
 						entrenador2->id, pokemonInnecesario2->pokemon,
 						entrenador1->id);
 
@@ -628,19 +592,14 @@ void intercambiarNormalPokemon(t_entrenador* entrenador1,
 		}
 	}
 
-	printf("TAMANO LISTA OBTENIDOSSSSS %d \n",
-			list_size(entrenador1->pokemonesObtenidos));
 
 	//Busco uno que al entrenador 1 no le sirva
 	for (int i = 0; i < list_size(entrenador1->pokemonesObtenidos); i++) {
-		printf("ENTRO AL FORRRRRRRRRR \n");
 		t_pokemon_entrenador* pokObtenidoAux = list_get(
 				entrenador1->pokemonesObtenidos, i);
-		printf("POKEMON OBTENIDO AUX %s \n", pokObtenidoAux->pokemon);
 		t_pokemon_entrenador* pokObjetivoAux = list_buscar(
 				entrenador1->objetivoEntrenador, pokObtenidoAux->pokemon);
 		if (pokObjetivoAux == NULL) {
-			printf("ENTRO AL IF DEL POK OBJETIVO AUX \n");
 			pokemonInnecesario1->cantidad = pokObtenidoAux->cantidad;
 			pokemonInnecesario1->pokemon = malloc(
 					strlen(pokObtenidoAux->pokemon) + 1);
@@ -658,14 +617,12 @@ void intercambiarNormalPokemon(t_entrenador* entrenador1,
 	}
 
 	printf(
-			"Al entrenador %d se le quita el pokemon %s y se lo pasa al entrenador %d \n",
+			"Al Entrenador %d se le quita el pokemon %s y se lo pasa al Entrenador %d \n",
 			entrenador1->id, pokemonInnecesario1->pokemon, entrenador2->id);
 
 	agregarPokemon(entrenador2, pokemonInnecesario1);
 	quitarPokemon(entrenador1, pokemonInnecesario1);
 
-	printf(
-			"5555555555555555555555555555555555555555555555555555555555555555555555555 \n");
 	//VER SI TENEMOS QUE HACERLO AFUERA POR LA PLANIFICACION RR DE QUANTUM
 	sleep((g_config_team->retardo_ciclo_cpu) * 5);
 	sem_wait(&mutex_ciclosCPU);
@@ -711,7 +668,6 @@ void agregarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon) {
 }
 
 void quitarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon) {
-	printf("Entro a quitarPOkemon \n");
 	char hayQueEliminarPokemon = 0;
 	int indiceLista = 0;
 
@@ -731,26 +687,18 @@ void quitarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon) {
 		}
 	}
 
-	printf("ANTES DE ELIMINAR POKEMON \n");
 
 	if (hayQueEliminarPokemon == 1) {
 
-		printf("ENTRO AL IF DE HAY QUE ELIMINAR \n");
-		printf("VALOR I %d \n", indiceLista);
-		printf("TAMANO LISTA %d \n", list_size(entrenador->pokemonesObtenidos));
 		t_pokemon_entrenador* pokemonAEliminar =
 				(t_pokemon_entrenador*) list_remove(
 						entrenador->pokemonesObtenidos, indiceLista);
-
-		printf("POKEMON %s, CANTIDAD %d  \n", pokemonAEliminar->pokemon,
-				pokemonAEliminar->cantidad);
 
 		free(pokemonAEliminar->pokemon); //Se deja comentado porque por ahora no malloqueamos los char*
 		free(pokemonAEliminar->posicion);
 		free(pokemonAEliminar);
 	}
 
-	printf("TERMINO LA FUNCION \n");
 }
 
 ///FALTA LIBERAR LAS 4 LISTAS

@@ -18,8 +18,6 @@ int main(void) {
 	sem_wait(&sem_mutex_msjs);
 	iniciar_entrenadores_and_objetivoGlobal();
 
-	printf("----------------------------------\n");
-
 	int id_recibido;
 
 	sem_post(&sem_mutex_msjs);
