@@ -372,7 +372,9 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 		t_msg_caught_team *msg_caught = (t_msg_caught_team*) msg;
 		msg_caught = rcv_msj_caught_team(socket_cliente, logger);
 		g_cnt_msjs_caught++;
-		id_recibido = msg_caught->id_mensaje;
+		id_recibido = msg_caught->id_correlativo;
+
+		//printf("Entro al flujo de recepcion de mensaje caught del broker\n");
 
 		//FIltramos los ids que nos corresponden por id correlativo
 		t_id_Correlativo_and_Entrenador* idAux;
@@ -386,6 +388,9 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 					idCorrelativosCatch, i);
 
 			if (idAux->id_Correlativo == id_recibido) {
+				//printf("5555555555555555555555555555555555555555555555555555555555555555555555555555555 \n");
+				//printf("Encontro el id correlativo %d en la lista de idsCorrelativosCatch \n", id_recibido);
+				//printf("5555555555555555555555555555555555555555555555555555555555555555555555555555555 \n");
 
 				meSirve = 1;
 			}
@@ -445,7 +450,7 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 				sem_post(&(sem_pokemonesReservados));
 
 				free(pokemonReservadoAAgregar->posicion);
-				//free(pokemonReservadoAAgregar->pokemon);
+				free(pokemonReservadoAAgregar->pokemon);
 				free(pokemonReservadoAAgregar);
 
 				//Agrego el Poke
@@ -512,7 +517,7 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 		t_msg_localized_team *msg_localized = (t_msg_localized_team*) msg;
 		msg_localized = rcv_msj_localized_team(socket_cliente, logger);
 		g_cnt_msjs_localized++;
-		id_recibido = msg_localized->id_mensaje;
+		id_recibido = msg_localized->id_correlativo;
 
 		char meSirveGet = 0;
 		int idAuxGet = 0;
