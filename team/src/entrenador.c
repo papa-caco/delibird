@@ -789,9 +789,6 @@ char puedoIntercambiar(t_entrenador* entrenadorPorEjecutar,
 
 		}
 	}
-
-	liberar_lista_de_pokemones(pokemonesPendientesEntrenadorPorEjecutar);
-	liberar_lista_de_pokemones(pokemonesInnecesariosOtroEntrenador);
 	return leSirveAlDTPorEjecutar;
 }
 
@@ -824,30 +821,28 @@ t_list* pokemonesInnecesarios(t_entrenador* entrenador) {
 
 		if (!esObjetivo) {
 
-			t_pokemon_entrenador* auxiliar = ((t_pokemon_entrenador*) list_get(
-					entrenador->pokemonesObtenidos, i));
-
 			t_pokemon_entrenador* pokemonInnesario = malloc(
 					sizeof(t_pokemon_entrenador));
-			pokemonInnesario->cantidad = auxiliar->cantidad;
-			pokemonInnesario->pokemon = malloc(strlen(auxiliar->pokemon) +1);
-			memcpy(pokemonInnesario->pokemon, auxiliar->pokemon, strlen(auxiliar->pokemon) +1);
+			pokemonInnesario->cantidad = ((t_pokemon_entrenador*) list_get(
+					entrenador->pokemonesObtenidos, i))->cantidad;
+			pokemonInnesario->pokemon = malloc(strlen(((t_pokemon_entrenador*) list_get(
+					entrenador->pokemonesObtenidos, i))->pokemon)+1);
+			memcpy(pokemonInnesario->pokemon, ((t_pokemon_entrenador*) list_get(
+					entrenador->pokemonesObtenidos, i))->pokemon, strlen(((t_pokemon_entrenador*) list_get(
+					entrenador->pokemonesObtenidos, i))->pokemon)+1);
 			pokemonInnesario->posicion = malloc(sizeof(t_posicion_entrenador));
-			pokemonInnesario->posicion->pos_x = 0;
-			pokemonInnesario->posicion->pos_y = 0;
 			list_add(pokemonesInnesarios, pokemonInnesario);
 
 		} else if (cantidadObjetivo > 0) {
-			t_pokemon_entrenador* pokAuxiliar = (t_pokemon_entrenador*) list_get(
-					entrenador->pokemonesObtenidos, i);
 			t_pokemon_entrenador* pokemonInnesario = malloc(
 					sizeof(t_pokemon_entrenador));
 			pokemonInnesario->cantidad = cantidadObjetivo;
-			pokemonInnesario->pokemon = malloc(strlen(pokAuxiliar->pokemon)+1);
-			memcpy(pokemonInnesario->pokemon, pokAuxiliar->pokemon , strlen(pokAuxiliar->pokemon)+1);
+			pokemonInnesario->pokemon = malloc(strlen(((t_pokemon_entrenador*) list_get(
+					entrenador->pokemonesObtenidos, i))->pokemon)+1);
+			memcpy(pokemonInnesario->pokemon,((t_pokemon_entrenador*) list_get(
+					entrenador->pokemonesObtenidos, i))->pokemon, strlen(((t_pokemon_entrenador*) list_get(
+					entrenador->pokemonesObtenidos, i))->pokemon)+1 );
 			pokemonInnesario->posicion = malloc(sizeof(t_posicion_entrenador));
-			pokemonInnesario->posicion->pos_x = 0;
-			pokemonInnesario->posicion->pos_y = 0;
 			list_add(pokemonesInnesarios, pokemonInnesario);
 		}
 
@@ -898,8 +893,6 @@ t_list* pokemonesPendientes(t_entrenador* entrenador) {
 					entrenador->objetivoEntrenador, i))->pokemon, strlen(((t_pokemon_entrenador*) list_get(
 					entrenador->objetivoEntrenador, i))->pokemon)+1 );
 			pokemonPendiente->posicion = malloc(sizeof(t_posicion_entrenador));
-			pokemonPendiente->posicion->pos_x = 0;
-			pokemonPendiente->posicion->pos_y = 0;
 			list_add(pokemonesPendientes, pokemonPendiente);
 
 		} else if (cantidadObjetivo > 0) {
@@ -912,8 +905,6 @@ t_list* pokemonesPendientes(t_entrenador* entrenador) {
 					entrenador->objetivoEntrenador, i))->pokemon,strlen(((t_pokemon_entrenador*) list_get(
 					entrenador->objetivoEntrenador, i))->pokemon)+1 );
 			pokemonPendiente->posicion = malloc(sizeof(t_posicion_entrenador));
-			pokemonPendiente->posicion->pos_x = 0;
-			pokemonPendiente->posicion->pos_y = 0;
 			list_add(pokemonesPendientes, pokemonPendiente);
 		}
 
