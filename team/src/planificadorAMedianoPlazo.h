@@ -23,4 +23,6 @@ char todosQuierenMoverseAPokemon(t_queue* colaDeEntrenadores);
 
 t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores);
 
+t_entrenador* buscarEntrenadorMasConvenienteRR(t_queue* colaEntrenadores);
+
 #endif /* SRC_PLANIFICADORAMEDIANOPLAZO_H_ */

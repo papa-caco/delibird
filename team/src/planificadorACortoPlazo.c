@@ -20,11 +20,13 @@ void planificarFifo(){
 
 		//VERIFICAR SI DEBE MATARSE A SI MISMO (saltear o no su lógica)
 		if (finalizarProceso == 0) {
+			printf("ANTES DEL SEMAFORO READY --\n");
 			sem_wait(&sem_cola_ready);
+			printf("DESPUES DEL SEMAFORO READY --\n");
 			t_entrenador* entrenadorAEjecutar = (t_entrenador*) queue_pop(
 					colaReadyEntrenadores);
 
-			while(entrenadorAEjecutar->estado_entrenador == MOVERSE_A_POKEMON && (list_size(pokemonesLibresEnElMapa) == 0)){
+			/*while(entrenadorAEjecutar->estado_entrenador == MOVERSE_A_POKEMON && (list_size(pokemonesLibresEnElMapa) == 0)){
 
 				queue_push(colaReadyEntrenadores, entrenadorAEjecutar);
 
@@ -32,7 +34,8 @@ void planificarFifo(){
 									colaReadyEntrenadores);
 
 
-			}
+			}*/
+			printf("SALIO DEL WHILE FELI PUTOOOO----\n");
 
 			sem_post(&sem_cola_ready);
 

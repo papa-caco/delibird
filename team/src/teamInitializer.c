@@ -170,6 +170,7 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 
 		unEntrenador->ciclosCPU = 0;
 		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
+		unEntrenador->quantumPorEjecutar = g_config_team->quantum;
 		sem_init(&(unEntrenador->mutex_entrenador), 0, 1);
 		sem_init(&(unEntrenador->sem_entrenador), 0, 0);
 		pthread_create(&(unEntrenador->hilo_entrenador), NULL, (void*) comportamiento_entrenador, unEntrenador);

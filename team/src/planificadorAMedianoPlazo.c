@@ -17,6 +17,8 @@ void planificadorMedianoPlazo() {
 
 	sem_wait(&sem_activacionPlanificadorMPlazo);
 
+	int valor = 0;
+
 	while (finalizarProceso == 0) {
 
 		//AGREGAR UN SIGNLA POR CADA POKEOMON LIBRE QUE LLEGA EN LA RECEPCION DE MENSAJES DE POKEMONES, MAS
@@ -51,6 +53,9 @@ void planificadorMedianoPlazo() {
 				sem_wait(&(entrenadorAux->mutex_entrenador));
 				verificarYCambiarEstadoEntrenador(entrenadorAux);
 				sem_post(&(entrenadorAux->mutex_entrenador));
+
+				printf("SALIO DEL VERIFICAR ESTADO CON EL ESTADO: %s \n",
+						estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
 
 				if (entrenadorAux->estado_entrenador == EXIT) {
 
@@ -112,17 +117,50 @@ void planificadorMedianoPlazo() {
 			if (cantidadElementosCola != 0
 					&& todosQuierenMoverseAPokemon(colaBlockedEntrenadores)) {
 
+				t_entrenador* entrenadorAux;
+
 				//Espero que haya pokemones
 				sem_wait(&sem_hay_pokemones_mapa);
-				printf("Todos quieren dirigirse a un Pokemon y Hay que esperar a que en el Mapa hayan Pokemones que sirvan \n");
 
 				//Busco al primer entrenador que tiene el estado "Moverse a pokemon"
+				if (strcmp(g_config_team->algoritmo_planificion, "FIFO") == 0) {
+					entrenadorAux = buscarEntrenadorMasConvenienteEnCola(
+							colaBlockedEntrenadores);
+					encontreUnoAPasar = 1;
+				} else if (strcmp(g_config_team->algoritmo_planificion, "RR")
+						== 0) {
 
-				t_entrenador* entrenadorAux =
-						buscarEntrenadorMasConvenienteEnCola(
+					if (valor == 0) {
+
+						entrenadorAux = buscarEntrenadorMasConvenienteEnCola(
 								colaBlockedEntrenadores);
+						valor = 1;
+						encontreUnoAPasar = 1;
+					} else {
 
-				encontreUnoAPasar = 1;
+						entrenadorAux = buscarEntrenadorMasConvenienteRR(colaBlockedEntrenadores);
+
+						t_entrenador* entrenadorAuxRR;
+
+						for (int e = 0; e < cantidadElementosCola; e++) {
+
+							entrenadorAuxRR = queue_pop(
+									colaBlockedEntrenadores);
+
+							if (entrenadorAuxRR->estado_entrenador
+									== MOVERSE_A_POKEMON
+									&& encontreUnoAPasar == 0) {
+
+								entrenadorAux = entrenadorAuxRR;
+								encontreUnoAPasar = 1;
+							} else {
+								queue_push(colaBlockedEntrenadores,
+										entrenadorAuxRR);
+							}
+
+						}
+					}
+				}
 
 				sem_wait(&sem_cola_ready);
 				queue_push(colaReadyEntrenadores, entrenadorAux);
@@ -521,6 +559,68 @@ t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores) {
 			queue_push(colaEntrenadores, unEntrenador);
 		} else {
 			t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(
+					unEntrenador->posicion);
+			int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion,
+					pokemonCercano->posicion);
+
+			if (distanciaEntreAmbos == distanciaMasCorta) {
+
+				if (yaLoEncontre == 0) {
+
+					entrenadorConveniente = unEntrenador;
+					yaLoEncontre = 1;
+				} else {
+					queue_push(colaEntrenadores, unEntrenador);
+				}
+
+			} else {
+				queue_push(colaEntrenadores, unEntrenador);
+			}
+		}
+
+	}
+
+	return entrenadorConveniente;
+}
+
+t_entrenador* buscarEntrenadorMasConvenienteRR(t_queue* colaEntrenadores) {
+
+	int distanciaMasCorta = 100000;
+	t_entrenador* unEntrenador;
+	t_entrenador* entrenadorConveniente = NULL;
+	int entrenadoresEnCola = queue_size(colaEntrenadores);
+
+	for (int i = 0; i < entrenadoresEnCola; i++) {
+
+		unEntrenador = queue_pop(colaEntrenadores);
+		if (unEntrenador->estado_entrenador != MOVERSE_A_POKEMON) {
+			queue_push(colaEntrenadores, unEntrenador);
+		} else {
+			t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercanoRR(
+					unEntrenador->posicion);
+			puts(pokemonCercano->pokemon);
+			int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion,
+					pokemonCercano->posicion);
+
+			if (distanciaEntreAmbos < distanciaMasCorta) {
+				distanciaMasCorta = distanciaEntreAmbos;
+			}
+
+			queue_push(colaEntrenadores, unEntrenador);
+
+		}
+
+	}
+
+	char yaLoEncontre = 0;
+
+	for (int i = 0; i < entrenadoresEnCola; i++) {
+
+		unEntrenador = queue_pop(colaEntrenadores);
+		if (unEntrenador->estado_entrenador != MOVERSE_A_POKEMON) {
+			queue_push(colaEntrenadores, unEntrenador);
+		} else {
+			t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercanoRR(
 					unEntrenador->posicion);
 			int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion,
 					pokemonCercano->posicion);
