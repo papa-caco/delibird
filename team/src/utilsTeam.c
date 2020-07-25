@@ -72,7 +72,7 @@ int connect_broker_y_enviar_mensaje_get(t_msg_get_broker *msg_get) {
 	}
 	sem_post(&sem_mutex_msjs);
 
-	pthread_exit(&tid_send_get);
+	//pthread_exit(&tid_send_get);
 
 	sem_wait(&mutex_idCorrelativosGet);
 	int *id_msj = malloc(sizeof(int));
@@ -301,7 +301,7 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 		t_posicion_entrenador *posicion = malloc(sizeof(t_posicion_entrenador));
 		posicion->pos_x = msg_appeared->coord->pos_x;
 		posicion->pos_y = msg_appeared->coord->pos_y;
-
+		procesar_msg_appeared(pokemon, posicion, logger);
 		eliminar_msg_appeared_team(msg_appeared);
 
 		break;
