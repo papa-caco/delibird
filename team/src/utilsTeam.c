@@ -1111,7 +1111,7 @@ char necesitoIrAAtraparlo(char* nombrePokemonLlegado) {
 		//printf("Cantidad en libres es %d \n", cantidadLibres);
 
 		//printf("Cantidad en objetivo global es %d \n",
-				cantidadEnObjetivoGlobal);
+				//cantidadEnObjetivoGlobal);
 
 		//printf("Cantidad en atrapados es %d \n", cantidadEnAtrapadosGlobal);
 
