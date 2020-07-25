@@ -146,12 +146,23 @@ void procesar_msg_get_pokemon(t_msg_get_gamecard *msg_get)
 			encolar_operacion_tallgrass(id_correlativo, pokemon, posicion, LOCALIZED_POKEMON, g_logdebug);
 	} else {
 		pthread_mutex_lock(&g_mutex_tallgrass);
+		bool archivo_vacio = true;
+		t_list *coordenadas;
 		t_archivo_pokemon *archivo = abrir_archivo_pokemon(pokemon, g_logger);
-		t_list *coordenadas = obtener_coordenadas_archivo_pokemon(archivo, g_logger);
+		if (archivo->metadata->size > 0) {
+			coordenadas = obtener_coordenadas_archivo_pokemon(archivo, g_logger);
+			archivo_vacio = false;
+		}
 		cerrar_archivo_pokemon(archivo, g_logger);
 		puts("");
 		pthread_mutex_unlock(&g_mutex_tallgrass);
-		enviar_localized_pokemon_broker(id_correlativo, pokemon, coordenadas, g_logger);
+		if (!archivo_vacio) {
+			enviar_localized_pokemon_broker(id_correlativo, pokemon, coordenadas, g_logger);
+		} else {
+			log_warning(g_logger,"(-->> Archivo Pokemon %s Vacío <<--)", pokemon);
+			free(pokemon);
+		}
+
 	}
 	free(posicion);
 	eliminar_msg_get_gamecard(msg_get);
