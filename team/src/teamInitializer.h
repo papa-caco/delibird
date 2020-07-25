@@ -100,9 +100,11 @@ sem_t mutex_entrenador;
 
 sem_t sem_activacionPlanificadorMPlazo;
 
-
+sem_t sem_esperar_caught;
 
 //-----------------Variables Globales----------------------------
+
+t_entrenador* entrenadorEnEjecucion;
 
 int cantidadCambiosDeContexto;
 

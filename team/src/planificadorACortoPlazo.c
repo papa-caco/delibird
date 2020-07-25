@@ -16,13 +16,15 @@ void planificarFifo(){
 		//SEMAFORO QUE RECIBE DEL PLANIFICADOR DE MEDIANO PLAZO
 		sem_wait(&sem_planificador_cplazoReady);
 
-		printf("SE ACTIVO EL PLANIFICADOR A CORTO PLAZO \n");
+	//	printf("SE ACTIVO EL PLANIFICADOR A CORTO PLAZO \n");
 
 		//VERIFICAR SI DEBE MATARSE A SI MISMO (saltear o no su lógica)
 		if (finalizarProceso == 0) {
 			sem_wait(&sem_cola_ready);
 			t_entrenador* entrenadorAEjecutar = (t_entrenador*) queue_pop(
 					colaReadyEntrenadores);
+
+			entrenadorEnEjecucion = entrenadorAEjecutar;
 
 			/*while(entrenadorAEjecutar->estado_entrenador == MOVERSE_A_POKEMON && (list_size(pokemonesLibresEnElMapa) == 0)){
 
@@ -45,10 +47,12 @@ void planificarFifo(){
 			//ESPERA EL SIGNAL DEL ENTRENADOR PARA QUE COMPLETE SU FUNCION
 			sem_wait(&sem_planificador_cplazoEntrenador);
 
+			//printf("ESTOY ANTES DEL VERIFICAR \n");
 			//VERIFCO SI PUEDE PASAR A EXIT, DEADLOCK, O BLOCKED
 			sem_wait(&(entrenadorAEjecutar->mutex_entrenador));
 			verificarYCambiarEstadoEntrenador(entrenadorAEjecutar);
 			sem_post(&(entrenadorAEjecutar->mutex_entrenador));
+			//printf("ESTOY DESPUES DEL VERIFICAR \n");
 
 			if (entrenadorAEjecutar->estado_entrenador == EXIT) { //CASO DESPUES DEL INTERCAMBIO
 				//SI ESTA EN EXIT, LO MANDO A LA COLA CORRESPONDIENTE

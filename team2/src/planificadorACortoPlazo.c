@@ -24,7 +24,9 @@ void planificarFifo(){
 			t_entrenador* entrenadorAEjecutar = (t_entrenador*) queue_pop(
 					colaReadyEntrenadores);
 
-			while(entrenadorAEjecutar->estado_entrenador == MOVERSE_A_POKEMON && (list_size(pokemonesLibresEnElMapa) == 0)){
+			entrenadorEnEjecucion = entrenadorAEjecutar;
+
+			/*while(entrenadorAEjecutar->estado_entrenador == MOVERSE_A_POKEMON && (list_size(pokemonesLibresEnElMapa) == 0)){
 
 				queue_push(colaReadyEntrenadores, entrenadorAEjecutar);
 
@@ -32,8 +34,7 @@ void planificarFifo(){
 									colaReadyEntrenadores);
 
 
-			}
-
+			}*/
 			sem_post(&sem_cola_ready);
 
 			log_info(g_logger,"Entrenador %d se movio a la cola de Exec, porque esta primero en la cola de Ready", entrenadorAEjecutar->id);
@@ -46,10 +47,12 @@ void planificarFifo(){
 			//ESPERA EL SIGNAL DEL ENTRENADOR PARA QUE COMPLETE SU FUNCION
 			sem_wait(&sem_planificador_cplazoEntrenador);
 
+			printf("ESTOY ANTES DEL VERIFICAR \n");
 			//VERIFCO SI PUEDE PASAR A EXIT, DEADLOCK, O BLOCKED
 			sem_wait(&(entrenadorAEjecutar->mutex_entrenador));
 			verificarYCambiarEstadoEntrenador(entrenadorAEjecutar);
 			sem_post(&(entrenadorAEjecutar->mutex_entrenador));
+			printf("ESTOY DESPUES DEL VERIFICAR \n");
 
 			if (entrenadorAEjecutar->estado_entrenador == EXIT) { //CASO DESPUES DEL INTERCAMBIO
 				//SI ESTA EN EXIT, LO MANDO A LA COLA CORRESPONDIENTE

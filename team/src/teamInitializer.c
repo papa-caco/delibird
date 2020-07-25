@@ -16,6 +16,8 @@ void iniciar_team(void){
 	iniciar_cnt_msjs();
 	status_conn_broker = true;
 	sem_init(&sem_mutex_msjs, 0, 1);
+	log_debug(g_logger, "Iniciando TEAM | Algoritmo de Planificación: %s | Quantum %d segundos\n",
+	            g_config_team->algoritmo_planificion, g_config_team->quantum);
 	iniciar_suscripciones_broker();
 	lanzar_reconexion_broker(g_logger);
 }
@@ -65,7 +67,7 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 
 
 	for (int i = 0; arrayConfig[i] != NULL; i++){
-		printf("----------CAMBIO DE ENTRENADOR ------- \n");
+		//printf("----------CAMBIO DE ENTRENADOR ------- \n");
 		//Inicializo lista que contendrá objetivos
 		t_list* objetivosUnEntrenador = list_create();
 
@@ -89,7 +91,7 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 				objetivo->cantidad++;
 			}
 			else{
-				printf("Hay un nuevo Pokemon que es %s \n", pokemonesObjetivo[j]);
+				//printf("Hay un nuevo Pokemon que es %s \n", pokemonesObjetivo[j]);
 				objetivo->pokemon = malloc(strlen(pokemonesObjetivo[j]) +1);
 				memcpy(objetivo->pokemon, pokemonesObjetivo[j], strlen(pokemonesObjetivo[j]) + 1);
 				objetivo->cantidad = 1;
@@ -272,14 +274,14 @@ void destroy_entrenador(t_entrenador* entrenador){
 
 void print_pokemones_objetivo(t_pokemon_entrenador *poke)
 {
-	printf("(%d|%s)\n",poke->cantidad,poke->pokemon);
+	//printf("(%d|%s)\n",poke->cantidad,poke->pokemon);
 }
 
 void enviar_msjs_get_por_clase_de_pokemon(t_pokemon_entrenador *poke)
 {
-	for (int i = 0; i < poke->cantidad; i ++) {
+
 		enviar_get_pokemon_broker(poke->pokemon, g_logger);
-	}
+
 }
 
 void liberar_lista_de_pokemones(t_list* lista){
@@ -323,6 +325,8 @@ void liberar_cola(t_queue* cola) {
 
 
 void iniciar_variables_globales(){
+
+	entrenadorEnEjecucion = NULL;
 
 	ciclosCPU = 0;
 
@@ -401,6 +405,8 @@ void iniciar_variables_globales(){
 	sem_init(&mutex_idCorrelativos,0,1);
 
 	sem_init(&mutex_entrenador,0,1);
+
+	sem_init(&sem_esperar_caught,0,0);
 
 	//-------MUTEX MENSAJES-------------
 

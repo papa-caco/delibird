@@ -16,6 +16,11 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 	t_pokemon_entrenador_reservado* pokemonReservado;
 	t_posicion_entrenador* posicionEntrenadorAMoverse;
 	t_entrenador* entrenador2;
+	int quantum = g_config_team->quantum;
+	char* planificadorAlgoritmo = g_config_team->algoritmo_planificion;
+	printf("PLANIFICADOR -%s- \n", planificadorAlgoritmo);
+	char* fifo = "FIFO";
+	char* rr = "RR";
 
 	//La condición para cortar el hilo será que el entrenador esté en EXIT, y para que la función/hilo termine
 	//va a tener que salir del while y finalizar la ejecución la función.
@@ -25,44 +30,126 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 		switch (entrenador->estado_entrenador) {
 		case MOVERSE_A_POKEMON:
-			pokemon = buscarPokemonMasCercano(entrenador->posicion);
-			//Ya hay semaforos adentro
-			t_pokemon_entrenador_reservado* pokemonReservado =
-					moverPokemonAReservados(pokemon, entrenador->id);
+			if (strcmp(planificadorAlgoritmo,fifo)== 0) {
 
-			distancia = calcularDistancia(entrenador->posicion,
-					pokemonReservado->posicion);
+				pokemon = buscarPokemonMasCercano(entrenador->posicion);
+				//Ya hay semaforos adentro
+				t_pokemon_entrenador_reservado* pokemonReservado =
+						moverPokemonAReservados(pokemon, entrenador->id);
 
-			for (int i = 0; i < distancia; i++) {
-				moverEntrenador(entrenador, pokemonReservado->posicion);
+				distancia = calcularDistancia(entrenador->posicion,
+						pokemonReservado->posicion);
+
+				for (int i = 0; i < distancia; i++) {
+
+					moverEntrenador(entrenador, pokemonReservado->posicion);
+
+				}
+
+				entrenador->estado_entrenador = ATRAPAR;
+
+				sem_post(&(sem_planificador_cplazoEntrenador));
+
+			} else if (strcmp(planificadorAlgoritmo,rr)== 0) {
+				////INICIO ROUND ROBIN
+				pokemonReservado =
+						buscarPokemonReservado(entrenador->id);
+
+				if (pokemonReservado == NULL) {
+
+					pokemon = buscarPokemonMasCercano(entrenador->posicion);
+					//Ya hay semaforos adentro
+					pokemonReservado = moverPokemonAReservados(pokemon,
+							entrenador->id);
+
+				}
+
+				distancia = calcularDistancia(entrenador->posicion,
+						pokemonReservado->posicion);
+
+				for (int i = 0; i < distancia; i++) {
+					if (entrenador->quantumPorEjecutar == 0) {
+
+						continue;
+					}
+					moverEntrenador(entrenador, pokemonReservado->posicion);
+
+				}
+
+				distancia = calcularDistancia(entrenador->posicion,
+						pokemonReservado->posicion);
+
+				if (distancia == 0) {
+
+					entrenador->estado_entrenador = ATRAPAR;
+
+
+				}else {
+
+					sem_post(&sem_hay_pokemones_mapa);
+				}
+
+				entrenador->quantumPorEjecutar = quantum;
+
+				sem_post(&(sem_planificador_cplazoEntrenador));
 
 			}
-
-			entrenador->estado_entrenador = ATRAPAR;
-
-			sem_post(&(sem_planificador_cplazoEntrenador));
-
-			//// SIGNAL A PLANIFICADOR?????????
 
 			break;
 		case MOVERSE_A_ENTRENADOR:
 
-			//RECORDAR que el entrenador que se está moviendo ahora, debería de dejar de estar en la cola de blocked
-			//y estar en exit.
-			posicionEntrenadorAMoverse = buscarEntrenadorAMoverse(entrenador);
+			if (strcmp(planificadorAlgoritmo,fifo)== 0) {
 
-			distancia = calcularDistancia(entrenador->posicion,
-					posicionEntrenadorAMoverse);
+				//RECORDAR que el entrenador que se está moviendo ahora, debería de dejar de estar en la cola de blocked
+				//y estar en exit.
+				posicionEntrenadorAMoverse = buscarEntrenadorAMoverse(
+						entrenador);
 
-			for (int i = 0; i < distancia; i++) {
+				distancia = calcularDistancia(entrenador->posicion,
+						posicionEntrenadorAMoverse);
 
-				moverEntrenador(entrenador, posicionEntrenadorAMoverse);
+				for (int i = 0; i < distancia; i++) {
+
+					moverEntrenador(entrenador, posicionEntrenadorAMoverse);
+
+				}
+
+				entrenador->estado_entrenador = INTERCAMBIAR;
+
+				sem_post(&(sem_planificador_cplazoEntrenador));
+			} else if (strcmp(planificadorAlgoritmo,rr)== 0) {
+
+				//RECORDAR que el entrenador que se está moviendo ahora, debería de dejar de estar en la cola de blocked
+				//y estar en exit.
+				posicionEntrenadorAMoverse = buscarEntrenadorAMoverse(
+						entrenador);
+
+				distancia = calcularDistancia(entrenador->posicion,
+						posicionEntrenadorAMoverse);
+
+				for (int i = 0; i < distancia; i++) {
+					if (entrenador->quantumPorEjecutar == 0) {
+
+						continue;
+					}
+					moverEntrenador(entrenador, posicionEntrenadorAMoverse);
+
+				}
+
+				distancia = calcularDistancia(entrenador->posicion,
+						posicionEntrenadorAMoverse);
+
+				if (distancia == 0) {
+
+					entrenador->estado_entrenador = INTERCAMBIAR;
+
+				}
+
+				entrenador->quantumPorEjecutar = quantum;
+
+				sem_post(&(sem_planificador_cplazoEntrenador));
 
 			}
-
-			entrenador->estado_entrenador = INTERCAMBIAR;
-
-			sem_post(&(sem_planificador_cplazoEntrenador));
 
 			break;
 		case ATRAPAR:
@@ -72,6 +159,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 			int resultadoEnvioMensaje = intentarAtraparPokemon(entrenador,
 					pokemonReservado);
 
+			printf("ESTOY EN ENTRENADOR DESPUES DE INTENTAR ATRAPAR \n");
 			sleep(g_config_team->retardo_ciclo_cpu);
 
 			ciclosCPU++;
@@ -84,12 +172,17 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 				sem_post(&entrenador->mutex_entrenador);
 			} else {
 				sem_wait(&entrenador->mutex_entrenador);
-				entrenador->estado_entrenador = ESPERAR_CAUGHT;
+				printf("ESPERANDO RESPUESTA CAUGHT \n");
+				sem_wait(&sem_esperar_caught);
+				printf("PASO RESPUESTA CAUGHT \n");
+
 				sem_post(&entrenador->mutex_entrenador);
 			}
 
 			sem_wait(&entrenador->mutex_entrenador);
-			if (entrenador->estado_entrenador == RECIBIO_RESPUESTA_OK) {
+			if (entrenador->estado_entrenador == RECIBIO_RESPUESTA_OK && resultadoEnvioMensaje ==-1) {
+
+				printf("ENTRO AL IF DEL RESPUESTA POR DEFAULT \n");
 
 				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(
 						sizeof(t_pokemon_entrenador));
@@ -146,52 +239,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 			}
 			sem_post(&entrenador->mutex_entrenador);
-			//entrenador->estado_entrenador = RECIBIO_RESPUESTA_OK;
 
-			/*
-			 //----------EL SIGUIENTE CACHO DE CODIGO ES SOLO PARA PROBAR ESTO DE "RECIBIO_RESPUESTA_OK"
-			 //CUANDO SE ARREGLE EL MENSAJE DEFAULT ESTO SE TIENE QUE BORRAR Y SE HACE DESDE LA RECECPION
-			 //DEL MENSAJE
-
-			 t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(sizeof(t_pokemon_entrenador));
-			 pokemonAAgregarConvertido->cantidad = pokemonReservado->cantidad;
-			 pokemonAAgregarConvertido->pokemon = malloc(strlen(pokemonReservado->pokemon)+1);
-			 memcpy(pokemonAAgregarConvertido->pokemon, pokemonReservado->pokemon, strlen(pokemonReservado->pokemon)+1);
-			 pokemonAAgregarConvertido->posicion = malloc(sizeof(t_posicion_entrenador));
-			 pokemonAAgregarConvertido->posicion->pos_x = pokemonReservado->posicion->pos_x;
-			 pokemonAAgregarConvertido->posicion->pos_y = pokemonReservado->posicion->pos_y;
-
-			 //Borro de la lista al pokemon reservado
-			 sem_wait(&(sem_pokemonesReservados));
-			 int indice;
-			 for (int i = 0; i < list_size(pokemonesReservadosEnElMapa);i++) {
-
-			 t_pokemon_entrenador_reservado* aux =((t_pokemon_entrenador_reservado*) list_get(pokemonesReservadosEnElMapa, i));
-
-			 if (aux == pokemonReservado) {
-			 indice = i;
-			 }
-			 }
-			 pokemonReservado = list_remove(pokemonesReservadosEnElMapa, indice);
-			 sem_post(&(sem_pokemonesReservados));
-
-			 free(pokemonReservado->posicion);
-			 //free(pokemonReservadoAAgregar->pokemon);
-			 free(pokemonReservado);
-
-			 //Agrego el Poke
-			 sem_wait(&(entrenador->mutex_entrenador));
-			 agregarPokemon(entrenador, pokemonAAgregarConvertido);
-			 sem_post(&(entrenador->mutex_entrenador));
-
-			 //Muevo el pokemon a la lista global de atrapados
-			 sem_wait(&(sem_pokemonesGlobalesAtrapados));
-			 agregarPokemonAGlobalesAtrapados(pokemonAAgregarConvertido);
-			 sem_post(&(sem_pokemonesGlobalesAtrapados));
-
-			 //----------------------------HASTA ACA HAY QUE BORRAR---------------------------
-
-			 */
 			if (entrenador->estado_entrenador != RECIBIO_RESPUESTA_OK) {
 				log_info(g_logger,
 						"Entrenador %d intenta atrapar al pokemon %s, en la posicion (%d,%d)",
@@ -266,6 +314,39 @@ t_pokemon_entrenador* buscarPokemonMasCercano(
 	}
 
 	sem_post(&sem_pokemonesLibresEnElMapa);
+
+	return pokemonMasCercano;
+
+}
+
+t_pokemon_entrenador* buscarPokemonMasCercanoRR(
+		t_posicion_entrenador* posicion_Entrenador) {
+
+	t_pokemon_entrenador* pokemonMasCercano;
+	int distanciaMasCercana = 100000;
+	int distanciaAux = 0;
+
+	sem_wait(&sem_pokemonesReservados);
+
+	for (int j = 0; j < list_size(pokemonesReservadosEnElMapa); j++) {
+
+		t_pokemon_entrenador* pokLibreAux = list_get(pokemonesReservadosEnElMapa,
+				j);
+
+		if (necesitoPokemon(pokLibreAux->pokemon)) {
+
+			distanciaAux = calcularDistancia(posicion_Entrenador,
+					pokLibreAux->posicion);
+
+			if (distanciaAux < distanciaMasCercana) {
+				distanciaMasCercana = distanciaAux;
+				pokemonMasCercano = pokLibreAux;
+			}
+
+		}
+	}
+
+	sem_post(&sem_pokemonesReservados);
 
 	return pokemonMasCercano;
 
@@ -359,7 +440,6 @@ t_pokemon_entrenador_reservado* moverPokemonAReservados(
 
 	t_pokemon_entrenador* pokemonAux;
 
-
 	t_pokemon_entrenador_reservado* pokemonAAgregar = malloc(
 			sizeof(t_pokemon_entrenador_reservado));
 	pokemonAAgregar->cantidad = 1;
@@ -374,7 +454,6 @@ t_pokemon_entrenador_reservado* moverPokemonAReservados(
 	sem_wait(&sem_pokemonesReservados);
 	list_add(pokemonesReservadosEnElMapa, pokemonAAgregar);
 	sem_post(&sem_pokemonesReservados);
-
 
 	int indice = 0;
 
@@ -430,6 +509,8 @@ void moverEntrenador(t_entrenador* entrenador,
 	sem_post(&mutex_ciclosCPU);
 
 	entrenador->ciclosCPU++;
+
+	entrenador->quantumPorEjecutar--;
 
 	log_info(g_logger, "Entrenador %d se movio a la posicion (%d,%d) \n",
 			entrenador->id, entrenador->posicion->pos_x,
@@ -550,7 +631,6 @@ void intercambiarIdealPokemon(t_entrenador* entrenador1,
 void intercambiarNormalPokemon(t_entrenador* entrenador1,
 		t_entrenador* entrenador2) {
 
-
 	t_list* pokemonesInnecesariosDT1 = pokemonesInnecesarios(entrenador1);
 	t_list* pokemonesInnecesariosDT2 = pokemonesInnecesarios(entrenador2);
 	t_list* pokemonesPendientesDT1 = pokemonesPendientes(entrenador1);
@@ -590,7 +670,6 @@ void intercambiarNormalPokemon(t_entrenador* entrenador1,
 
 		}
 	}
-
 
 	//Busco uno que al entrenador 1 no le sirva
 	for (int i = 0; i < list_size(entrenador1->pokemonesObtenidos); i++) {
@@ -685,7 +764,6 @@ void quitarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon) {
 
 		}
 	}
-
 
 	if (hayQueEliminarPokemon == 1) {
 
@@ -824,11 +902,19 @@ t_list* pokemonesInnecesarios(t_entrenador* entrenador) {
 					sizeof(t_pokemon_entrenador));
 			pokemonInnesario->cantidad = ((t_pokemon_entrenador*) list_get(
 					entrenador->pokemonesObtenidos, i))->cantidad;
-			pokemonInnesario->pokemon = malloc(strlen(((t_pokemon_entrenador*) list_get(
-					entrenador->pokemonesObtenidos, i))->pokemon)+1);
-			memcpy(pokemonInnesario->pokemon, ((t_pokemon_entrenador*) list_get(
-					entrenador->pokemonesObtenidos, i))->pokemon, strlen(((t_pokemon_entrenador*) list_get(
-					entrenador->pokemonesObtenidos, i))->pokemon)+1);
+			pokemonInnesario->pokemon =
+					malloc(
+							strlen(
+									((t_pokemon_entrenador*) list_get(
+											entrenador->pokemonesObtenidos, i))->pokemon)
+									+ 1);
+			memcpy(pokemonInnesario->pokemon,
+					((t_pokemon_entrenador*) list_get(
+							entrenador->pokemonesObtenidos, i))->pokemon,
+					strlen(
+							((t_pokemon_entrenador*) list_get(
+									entrenador->pokemonesObtenidos, i))->pokemon)
+							+ 1);
 			pokemonInnesario->posicion = malloc(sizeof(t_posicion_entrenador));
 			list_add(pokemonesInnesarios, pokemonInnesario);
 
@@ -836,11 +922,19 @@ t_list* pokemonesInnecesarios(t_entrenador* entrenador) {
 			t_pokemon_entrenador* pokemonInnesario = malloc(
 					sizeof(t_pokemon_entrenador));
 			pokemonInnesario->cantidad = cantidadObjetivo;
-			pokemonInnesario->pokemon = malloc(strlen(((t_pokemon_entrenador*) list_get(
-					entrenador->pokemonesObtenidos, i))->pokemon)+1);
-			memcpy(pokemonInnesario->pokemon,((t_pokemon_entrenador*) list_get(
-					entrenador->pokemonesObtenidos, i))->pokemon, strlen(((t_pokemon_entrenador*) list_get(
-					entrenador->pokemonesObtenidos, i))->pokemon)+1 );
+			pokemonInnesario->pokemon =
+					malloc(
+							strlen(
+									((t_pokemon_entrenador*) list_get(
+											entrenador->pokemonesObtenidos, i))->pokemon)
+									+ 1);
+			memcpy(pokemonInnesario->pokemon,
+					((t_pokemon_entrenador*) list_get(
+							entrenador->pokemonesObtenidos, i))->pokemon,
+					strlen(
+							((t_pokemon_entrenador*) list_get(
+									entrenador->pokemonesObtenidos, i))->pokemon)
+							+ 1);
 			pokemonInnesario->posicion = malloc(sizeof(t_posicion_entrenador));
 			list_add(pokemonesInnesarios, pokemonInnesario);
 		}
@@ -886,11 +980,19 @@ t_list* pokemonesPendientes(t_entrenador* entrenador) {
 					sizeof(t_pokemon_entrenador));
 			pokemonPendiente->cantidad = ((t_pokemon_entrenador*) list_get(
 					entrenador->objetivoEntrenador, i))->cantidad;
-			pokemonPendiente->pokemon = malloc(strlen(((t_pokemon_entrenador*) list_get(
-					entrenador->objetivoEntrenador, i))->pokemon)+1);
-			memcpy(pokemonPendiente->pokemon, ((t_pokemon_entrenador*) list_get(
-					entrenador->objetivoEntrenador, i))->pokemon, strlen(((t_pokemon_entrenador*) list_get(
-					entrenador->objetivoEntrenador, i))->pokemon)+1 );
+			pokemonPendiente->pokemon =
+					malloc(
+							strlen(
+									((t_pokemon_entrenador*) list_get(
+											entrenador->objetivoEntrenador, i))->pokemon)
+									+ 1);
+			memcpy(pokemonPendiente->pokemon,
+					((t_pokemon_entrenador*) list_get(
+							entrenador->objetivoEntrenador, i))->pokemon,
+					strlen(
+							((t_pokemon_entrenador*) list_get(
+									entrenador->objetivoEntrenador, i))->pokemon)
+							+ 1);
 			pokemonPendiente->posicion = malloc(sizeof(t_posicion_entrenador));
 			list_add(pokemonesPendientes, pokemonPendiente);
 
@@ -898,11 +1000,19 @@ t_list* pokemonesPendientes(t_entrenador* entrenador) {
 			t_pokemon_entrenador* pokemonPendiente = malloc(
 					sizeof(t_pokemon_entrenador));
 			pokemonPendiente->cantidad = cantidadObjetivo;
-			pokemonPendiente->pokemon = malloc(strlen(((t_pokemon_entrenador*) list_get(
-					entrenador->objetivoEntrenador, i))->pokemon)+1);
-			memcpy(pokemonPendiente->pokemon, ((t_pokemon_entrenador*) list_get(
-					entrenador->objetivoEntrenador, i))->pokemon,strlen(((t_pokemon_entrenador*) list_get(
-					entrenador->objetivoEntrenador, i))->pokemon)+1 );
+			pokemonPendiente->pokemon =
+					malloc(
+							strlen(
+									((t_pokemon_entrenador*) list_get(
+											entrenador->objetivoEntrenador, i))->pokemon)
+									+ 1);
+			memcpy(pokemonPendiente->pokemon,
+					((t_pokemon_entrenador*) list_get(
+							entrenador->objetivoEntrenador, i))->pokemon,
+					strlen(
+							((t_pokemon_entrenador*) list_get(
+									entrenador->objetivoEntrenador, i))->pokemon)
+							+ 1);
 			pokemonPendiente->posicion = malloc(sizeof(t_posicion_entrenador));
 			list_add(pokemonesPendientes, pokemonPendiente);
 		}

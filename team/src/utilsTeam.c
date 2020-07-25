@@ -102,6 +102,7 @@ int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon,
 	memcpy(msg_catch->pokemon, pokemon, msg_catch->size_pokemon);
 	int cliente_fd = crear_conexion(ip, puerto, logger, proceso, name_cola);
 	if (cliente_fd > 0) {
+		sem_wait(&mutex_idCorrelativos);
 		enviar_msj_catch_broker(cliente_fd, logger, msg_catch);
 		op_code code_op = rcv_codigo_operacion(cliente_fd);
 		if (code_op == ID_MENSAJE) {
@@ -115,7 +116,8 @@ int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon,
 	sem_post(&sem_mutex_msjs);
 	close(cliente_fd);
 	eliminar_msg_catch_broker(msg_catch);
-	sem_wait(&mutex_idCorrelativos);
+
+	//sem_wait(&mutex_idCorrelativos);
 
 	t_id_Correlativo_and_Entrenador* ids = malloc(
 			sizeof(t_id_Correlativo_and_Entrenador));
@@ -124,6 +126,8 @@ int enviar_catch_pokemon_broker(int pos_x, int pos_y, char* pokemon,
 	list_add(idCorrelativosCatch, ids);
 
 	sem_post(&mutex_idCorrelativos);
+
+	//printf("TERMINO FUNCION ENVIAR CATCH \n");
 
 	return id_mensaje;
 }
@@ -469,7 +473,6 @@ void procesar_msg_appeared(char *pokemon, t_posicion_entrenador *posicion,
 
 void procesar_msg_caught(uint32_t id_correlativo, t_result_caught resultado,
 		t_log *logger) {
-	//printf("Entro al flujo de recepcion de mensaje caught del broker\n");
 
 	//FIltramos los ids que nos corresponden por id correlativo
 	t_id_Correlativo_and_Entrenador* idAux;
@@ -477,9 +480,9 @@ void procesar_msg_caught(uint32_t id_correlativo, t_result_caught resultado,
 
 	sem_wait(&mutex_idCorrelativos);
 
-	int cant_ids = idCorrelativosCatch->elements_count;
+	int cant_ids = list_size(idCorrelativosCatch);
 
-	for (int i = 0; i < list_size(idCorrelativosCatch); i++) {
+	for (int i = 0; i < cant_ids; i++) {
 
 		idAux = (t_id_Correlativo_and_Entrenador*) list_get(idCorrelativosCatch,
 				i);
@@ -500,6 +503,8 @@ void procesar_msg_caught(uint32_t id_correlativo, t_result_caught resultado,
 		t_entrenador* entrenadorReservador = buscarEntrenadorDeLaReserva(
 				idAux->id_Entrenador);
 		sem_post(&(sem_cola_blocked));
+
+		//printf("ID ENTRENADOR %d \n", entrenadorReservador->id);
 
 		//Busco el pokemon que corresponde al entrenador, es decir, el que él reservó
 		sem_wait(&(sem_pokemonesReservados));
@@ -531,7 +536,7 @@ void procesar_msg_caught(uint32_t id_correlativo, t_result_caught resultado,
 			//Borro de la lista al pokemon reservado
 			sem_wait(&(sem_pokemonesReservados));
 			int indice;
-			int cant_reservados = pokemonesReservadosEnElMapa->elements_count;
+			int cant_reservados = list_size(pokemonesReservadosEnElMapa);
 			for (int i = 0; i < cant_reservados; i++) {
 
 				t_pokemon_entrenador_reservado* aux =
@@ -552,10 +557,11 @@ void procesar_msg_caught(uint32_t id_correlativo, t_result_caught resultado,
 
 			//Agrego el Poke
 			if (entrenadorReservador != NULL) {
-				sem_wait(&(entrenadorReservador->mutex_entrenador));
+				//	sem_wait(&(entrenadorReservador->mutex_entrenador));
 				agregarPokemon(entrenadorReservador, pokemonAAgregarConvertido);
-				sem_post(&(entrenadorReservador->mutex_entrenador));
+				//	sem_post(&(entrenadorReservador->mutex_entrenador));
 			}
+			//printf("PASE AGREGAR POKEMON \n");
 
 			//Muevo el pokemon a la lista global de atrapados
 			sem_wait(&(sem_pokemonesGlobalesAtrapados));
@@ -564,13 +570,16 @@ void procesar_msg_caught(uint32_t id_correlativo, t_result_caught resultado,
 
 			//CAMBIAR ESTADO A RECIBIO OK.
 			if (entrenadorReservador != NULL) {
-				sem_wait(&(entrenadorReservador->mutex_entrenador));
+				//sem_wait(&(entrenadorReservador->mutex_entrenador));
 				entrenadorReservador->estado_entrenador = RECIBIO_RESPUESTA_OK;
-				sem_post(&(entrenadorReservador->mutex_entrenador));
+				//sem_post(&(entrenadorReservador->mutex_entrenador));
+
 			}
 			//SEMAFORO MUTEX AL ENTRENADOR
 
 		} else {
+
+			//printf("ESTOY DENRO DEL ELSE DE LA RESPUESTA \n");
 			//Si entra acá quiere decir que la respuesta fue FAIL y no pudo atrapar, entonces sigue pudiendo atrapar poke
 			//PERO OJO! Falta eliminar al pokemon de los reservados porque por algo falló.
 			//Borro de la lista al pokemon reservado
@@ -602,12 +611,17 @@ void procesar_msg_caught(uint32_t id_correlativo, t_result_caught resultado,
 
 			free(pokemonReservadoAAgregar);
 
-			sem_wait(&(entrenadorReservador->mutex_entrenador));
+			//sem_wait(&(entrenadorReservador->mutex_entrenador));
 			entrenadorReservador->estado_entrenador = MOVERSE_A_POKEMON;
-			sem_post(&(entrenadorReservador->mutex_entrenador));
+			//sem_post(&(entrenadorReservador->mutex_entrenador));
 		}
+//		printf(
+//				"YA RECIBIO LA RESPUESTA CAUGHT Y EL ESTADO DEL ENTRENADOR ES; %d \n",
+//				entrenadorReservador->estado_entrenador);
 
 	}
+
+	sem_post(&sem_esperar_caught);
 }
 
 bool mismo_pokemon_entrenador_reservado(t_pokemon_entrenador_reservado *poke1,
@@ -827,7 +841,7 @@ void liberar_lista_posiciones(t_list* lista) {
 void liberar_listas(char** lista) {
 
 	int contador = 0;
-	while (lista[contador] != NULL) {
+	while (lista[contador] != NULL ) {
 		free(lista[contador]);
 		contador++;
 	}
@@ -873,35 +887,42 @@ t_pokemon_entrenador_reservado* buscarPokemonReservado(int id_Entrenador) {
 
 		}
 	}
-	return NULL;
+	return NULL ;
 }
 
 ///Ya tiene los sem{aforos afuera
 t_entrenador* buscarEntrenadorDeLaReserva(int idEntrenadorBuscado) {
-	t_entrenador *entrenadorBuscado = NULL; //* entrenadorAux = NULL;
-	bool mismo_id(void* trainer) {
-		t_entrenador *entrenador = (t_entrenador*) trainer;
-		bool resultado = entrenador->id == idEntrenadorBuscado;
-		return resultado;
+//	t_entrenador *entrenadorBuscado = NULL; //* entrenadorAux = NULL;
+//	bool mismo_id(void* trainer) {
+//		t_entrenador *entrenador = (t_entrenador*) trainer;
+//		bool resultado = entrenador->id == idEntrenadorBuscado;
+//		return resultado;
+//	}
+//	entrenadorBuscado = (t_entrenador*) list_find(
+//			colaBlockedEntrenadores->elements, mismo_id);
+//	return entrenadorBuscado;
+	t_entrenador* entrenadorAux = NULL;
+	t_entrenador *entrenadorBuscado = NULL;
+	int cant_entrenadores = queue_size(colaBlockedEntrenadores);
+
+	for (int i = 0; i < cant_entrenadores; i++) {
+
+		entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
+
+		if (idEntrenadorBuscado == entrenadorAux->id) {
+
+			entrenadorBuscado = entrenadorAux;
+
+		}
+
+		queue_push(colaBlockedEntrenadores, entrenadorAux);
 	}
-	entrenadorBuscado = (t_entrenador*) list_find(
-			colaBlockedEntrenadores->elements, mismo_id);
+
+	if(entrenadorBuscado == NULL){
+		entrenadorBuscado = entrenadorEnEjecucion;
+
+	}
 	return entrenadorBuscado;
-	/*int cant_entrenadores = queue_size(colaBlockedEntrenadores);
-
-	 for (int i = 0; i < cant_entrenadores; i++) {
-
-	 entrenadorAux = (t_entrenador*) queue_pop(cant_entrenadores);
-
-	 if (idEntrenadorBuscado == entrenadorAux->id) {
-
-	 entrenadorBuscado = entrenadorAux;
-
-	 }
-
-	 queue_push(colaBlockedEntrenadores, entrenadorAux);
-	 }*/
-
 }
 //Ya tiene el semaforo correspondiente afuera
 void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon) {
@@ -915,7 +936,7 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon) {
 			pokemonABuscar->cantidad++;
 			loEncontro = 1;
 			free(pokemon->posicion);
-			//free(pokemon->pokemon);
+			free(pokemon->pokemon);
 			free(pokemon);
 		}
 	}
@@ -929,20 +950,20 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon) {
 }
 
 void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
-
 	t_estado_entrenador estado = unEntrenador->estado_entrenador;
-
-	if (estado != MOVERSE_A_ENTRENADOR && estado != ATRAPAR
+	if (estado == MOVERSE_A_POKEMON) {
+		//int probita = tieneDeadlockEntrenador(unEntrenador);
+		//unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
+		return;
+	} else if (estado != MOVERSE_A_ENTRENADOR && estado != ATRAPAR
 			&& estado != INTERCAMBIAR && estado != ESPERAR_CAUGHT) {
-
 		t_list* pokemonesPendiente = pokemonesPendientes(unEntrenador);
 		int cantidadPokemonesPendientes = list_size(pokemonesPendiente);
 		int cantidadPokemonesObjetivo = cantidadDePokemonesEnLista(
 				unEntrenador->objetivoEntrenador);
 		int cantidadPokemonesObtenidos = cantidadDePokemonesEnLista(
 				unEntrenador->pokemonesObtenidos);
-
-		//OJO NO SE SI ESTA BIEN EL ULTIMO ELSE!!!
+		//OJO NO SE SI ESTA BIEN EL ULTIMO ELSE!!
 		if (cantidadPokemonesPendientes == 0) {
 			printf(
 					"----------------------------------------------------------------------------\n");
@@ -962,12 +983,9 @@ void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
 		} else {
 			int probita = tieneDeadlockEntrenador(unEntrenador);
 			unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
-
 		}
-
 		liberar_lista_de_pokemones(pokemonesPendiente);
 	}
-
 }
 
 //Es un for adentro de un for, donde se busca que la lista de obtenidos sea igual a la del objetivo. Entonces hay que evaluar
@@ -1088,27 +1106,27 @@ char necesitoIrAAtraparlo(char* nombrePokemonLlegado) {
 		}
 		sem_post(&sem_pokemonesReservados);
 
-		printf("Cantidad en reservados es %d \n", cantidadEnReservados);
+		//printf("Cantidad en reservados es %d \n", cantidadEnReservados);
 
-		printf("Cantidad en libres es %d \n", cantidadLibres);
+		//printf("Cantidad en libres es %d \n", cantidadLibres);
 
-		printf("Cantidad en objetivo global es %d \n",
+		//printf("Cantidad en objetivo global es %d \n",
 				cantidadEnObjetivoGlobal);
 
-		printf("Cantidad en atrapados es %d \n", cantidadEnAtrapadosGlobal);
+		//printf("Cantidad en atrapados es %d \n", cantidadEnAtrapadosGlobal);
 
 		valorDeRetorno = (cantidadEnReservados + cantidadLibres)
 				< (cantidadEnObjetivoGlobal - cantidadEnAtrapadosGlobal);
 
 	}
 
-	printf("ValorDeRetorno es %d \n", valorDeRetorno);
+	//printf("ValorDeRetorno es %d \n", valorDeRetorno);
 
 	return valorDeRetorno;
 }
 
 int enviar_end_suscripcion_broker_tm(t_tipo_mensaje cola_id, int contador_msgs,
-		t_log *logger) {// ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES FIN_SUSCRIPCION AL BROKER ----------//
+		t_log *logger) { // ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES FIN_SUSCRIPCION AL BROKER ----------//
 	pthread_t tid;
 	t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
 	handshake->id_suscriptor = g_config_team->id_suscriptor;

@@ -1,0 +1,750 @@
+[INFO] 01:39:46:673 GAMECARD_DBG/(4622:4622): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 01:39:46:673 GAMECARD_DBG/(4622:4622): (Mount Point Directory (TALL_GRASS/)	-File exists)
+[INFO] 01:39:46:673 GAMECARD_DBG/(4622:4622): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 01:39:46:673 GAMECARD_DBG/(4622:4622): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 01:39:46:673 GAMECARD_DBG/(4622:4622): (Directory (TALL_GRASS/Files)	-File exists)
+[INFO] 01:39:46:674 GAMECARD_DBG/(4622:4622): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 01:39:46:674 GAMECARD_DBG/(4622:4622): (Directory (TALL_GRASS/Blocks)	-File exists)
+[INFO] 01:39:46:674 GAMECARD_DBG/(4622:4622): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 01:39:46:675 GAMECARD_DBG/(4622:4622): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 01:39:46:675 GAMECARD_DBG/(4622:4622): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 01:39:46:676 GAMECARD_DBG/(4622:4622): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 01:39:46:676 GAMECARD_DBG/(4622:4622): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 01:39:46:676 GAMECARD_DBG/(4622:4622): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 01:39:46:688 GAMECARD_DBG/(4622:4622): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 01:39:47:690 GAMECARD_DBG/(4622:4629): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 01:40:17:720 GAMECARD_DBG/(4622:4763): SAVE BLOCK | FILE 1.bin
+[INFO] 01:40:17:724 GAMECARD_DBG/(4622:4767): SAVE BLOCK | FILE 2.bin
+[INFO] 01:40:17:739 GAMECARD_DBG/(4622:4771): SAVE BLOCK | FILE 5.bin
+[INFO] 01:40:17:755 GAMECARD_DBG/(4622:4774): SAVE BLOCK | FILE 7.bin
+[INFO] 01:42:47:689 GAMECARD_DBG/(5560:5560): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 01:42:47:690 GAMECARD_DBG/(5560:5560): (Mount Point Directory (TALL_GRASS/)	-File exists)
+[INFO] 01:42:47:690 GAMECARD_DBG/(5560:5560): (Directory (TALL_GRASS/metadata)	-File exists)
+[INFO] 01:42:47:690 GAMECARD_DBG/(5560:5560): (File: TALL_GRASS/metadata/Metadata.bin	-File Exists)
+[INFO] 01:42:47:690 GAMECARD_DBG/(5560:5560): (Directory (TALL_GRASS/Files)	-File exists)
+[INFO] 01:42:47:690 GAMECARD_DBG/(5560:5560): (File: TALL_GRASS/Files/Metadata.bin	-File Exists)
+[INFO] 01:42:47:691 GAMECARD_DBG/(5560:5560): (Directory (TALL_GRASS/Blocks)	-File exists)
+[INFO] 01:42:47:691 GAMECARD_DBG/(5560:5560): (File: TALL_GRASS/Blocks/Metadata.bin	-File Exists)
+[INFO] 01:42:47:691 GAMECARD_DBG/(5560:5560): (Directory (TALL_GRASS/Config_tg)	-File exists)
+[INFO] 01:42:47:691 GAMECARD_DBG/(5560:5560): (File: TALL_GRASS/Config_tg/Metadata.bin	-File Exists)
+[INFO] 01:42:47:692 GAMECARD_DBG/(5560:5560): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 01:42:47:692 GAMECARD_DBG/(5560:5560): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[DEBUG] 01:42:47:694 GAMECARD_DBG/(5560:5560): (TallGrass Iniciado  | Bloques Libres:4087| Espacio Disponible:255 Kb.)
+
+[DEBUG] 01:42:48:699 GAMECARD_DBG/(5560:5567): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 01:43:07:962 GAMECARD_DBG/(5560:5583): SAVE BLOCK | FILE 1.bin
+[INFO] 01:43:07:968 GAMECARD_DBG/(5560:5587): SAVE BLOCK | FILE 2.bin
+[INFO] 01:43:07:981 GAMECARD_DBG/(5560:5591): SAVE BLOCK | FILE 5.bin
+[INFO] 01:43:07:996 GAMECARD_DBG/(5560:5594): SAVE BLOCK | FILE 7.bin
+[INFO] 01:46:34:458 GAMECARD_DBG/(5693:5693): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 01:46:34:458 GAMECARD_DBG/(5693:5693): (Mount Point Directory (TALL_GRASS/)	-File exists)
+[INFO] 01:46:34:458 GAMECARD_DBG/(5693:5693): (Directory (TALL_GRASS/metadata)	-File exists)
+[INFO] 01:46:34:459 GAMECARD_DBG/(5693:5693): (File: TALL_GRASS/metadata/Metadata.bin	-File Exists)
+[INFO] 01:46:34:459 GAMECARD_DBG/(5693:5693): (Directory (TALL_GRASS/Files)	-File exists)
+[INFO] 01:46:34:459 GAMECARD_DBG/(5693:5693): (File: TALL_GRASS/Files/Metadata.bin	-File Exists)
+[INFO] 01:46:34:459 GAMECARD_DBG/(5693:5693): (Directory (TALL_GRASS/Blocks)	-File exists)
+[INFO] 01:46:34:459 GAMECARD_DBG/(5693:5693): (File: TALL_GRASS/Blocks/Metadata.bin	-File Exists)
+[INFO] 01:46:34:459 GAMECARD_DBG/(5693:5693): (Directory (TALL_GRASS/Config_tg)	-File exists)
+[INFO] 01:46:34:460 GAMECARD_DBG/(5693:5693): (File: TALL_GRASS/Config_tg/Metadata.bin	-File Exists)
+[INFO] 01:46:34:460 GAMECARD_DBG/(5693:5693): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 01:46:34:460 GAMECARD_DBG/(5693:5693): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[DEBUG] 01:46:34:470 GAMECARD_DBG/(5693:5693): (TallGrass Iniciado  | Bloques Libres:4083| Espacio Disponible:255 Kb.)
+
+[DEBUG] 01:46:35:472 GAMECARD_DBG/(5693:5700): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 01:46:45:619 GAMECARD_DBG/(5693:5706): SAVE BLOCK | FILE 1.bin
+[INFO] 01:46:45:626 GAMECARD_DBG/(5693:5710): SAVE BLOCK | FILE 2.bin
+[INFO] 01:46:45:639 GAMECARD_DBG/(5693:5714): SAVE BLOCK | FILE 5.bin
+[INFO] 01:46:45:653 GAMECARD_DBG/(5693:5717): SAVE BLOCK | FILE 7.bin
+[INFO] 11:19:42:931 GAMECARD_DBG/(7482:7482): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 11:19:42:932 GAMECARD_DBG/(7482:7482): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 11:19:42:932 GAMECARD_DBG/(7482:7482): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 11:19:42:934 GAMECARD_DBG/(7482:7482): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 11:19:42:934 GAMECARD_DBG/(7482:7482): (Creating Directory (TALL_GRASS/Files))
+[INFO] 11:19:42:934 GAMECARD_DBG/(7482:7482): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 11:19:42:934 GAMECARD_DBG/(7482:7482): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 11:19:42:934 GAMECARD_DBG/(7482:7482): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 11:19:42:935 GAMECARD_DBG/(7482:7482): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 11:19:42:935 GAMECARD_DBG/(7482:7482): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 11:19:42:935 GAMECARD_DBG/(7482:7482): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 11:19:42:936 GAMECARD_DBG/(7482:7482): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 11:19:42:936 GAMECARD_DBG/(7482:7482): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 11:19:42:940 GAMECARD_DBG/(7482:7482): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 11:19:43:941 GAMECARD_DBG/(7482:7489): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 11:21:46:423 GAMECARD_DBG/(7482:7807): SAVE BLOCK | FILE 1.bin
+[INFO] 11:26:24:516 GAMECARD_DBG/(8420:8420): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 11:26:24:516 GAMECARD_DBG/(8420:8420): (Mount Point Directory (TALL_GRASS/)	-File exists)
+[INFO] 11:26:24:516 GAMECARD_DBG/(8420:8420): (Directory (TALL_GRASS/metadata)	-File exists)
+[INFO] 11:26:24:516 GAMECARD_DBG/(8420:8420): (File: TALL_GRASS/metadata/Metadata.bin	-File Exists)
+[INFO] 11:26:24:517 GAMECARD_DBG/(8420:8420): (Directory (TALL_GRASS/Files)	-File exists)
+[INFO] 11:26:24:517 GAMECARD_DBG/(8420:8420): (File: TALL_GRASS/Files/Metadata.bin	-File Exists)
+[INFO] 11:26:24:518 GAMECARD_DBG/(8420:8420): (Directory (TALL_GRASS/Blocks)	-File exists)
+[INFO] 11:26:24:518 GAMECARD_DBG/(8420:8420): (File: TALL_GRASS/Blocks/Metadata.bin	-File Exists)
+[INFO] 11:26:24:519 GAMECARD_DBG/(8420:8420): (Directory (TALL_GRASS/Config_tg)	-File exists)
+[INFO] 11:26:24:519 GAMECARD_DBG/(8420:8420): (File: TALL_GRASS/Config_tg/Metadata.bin	-File Exists)
+[INFO] 11:26:24:520 GAMECARD_DBG/(8420:8420): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 11:26:24:521 GAMECARD_DBG/(8420:8420): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[DEBUG] 11:26:24:522 GAMECARD_DBG/(8420:8420): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 11:26:25:524 GAMECARD_DBG/(8420:8427): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 11:27:19:365 GAMECARD_DBG/(8420:8683): SAVE BLOCK | FILE 1.bin
+[INFO] 11:43:18:153 GAMECARD_DBG/(9101:9101): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 11:43:18:153 GAMECARD_DBG/(9101:9101): (Mount Point Directory (TALL_GRASS/)	-File exists)
+[INFO] 11:43:18:153 GAMECARD_DBG/(9101:9101): (Directory (TALL_GRASS/metadata)	-File exists)
+[INFO] 11:43:18:154 GAMECARD_DBG/(9101:9101): (File: TALL_GRASS/metadata/Metadata.bin	-File Exists)
+[INFO] 11:43:18:154 GAMECARD_DBG/(9101:9101): (Directory (TALL_GRASS/Files)	-File exists)
+[INFO] 11:43:18:154 GAMECARD_DBG/(9101:9101): (File: TALL_GRASS/Files/Metadata.bin	-File Exists)
+[INFO] 11:43:18:154 GAMECARD_DBG/(9101:9101): (Directory (TALL_GRASS/Blocks)	-File exists)
+[INFO] 11:43:18:154 GAMECARD_DBG/(9101:9101): (File: TALL_GRASS/Blocks/Metadata.bin	-File Exists)
+[INFO] 11:43:18:155 GAMECARD_DBG/(9101:9101): (Directory (TALL_GRASS/Config_tg)	-File exists)
+[INFO] 11:43:18:155 GAMECARD_DBG/(9101:9101): (File: TALL_GRASS/Config_tg/Metadata.bin	-File Exists)
+[INFO] 11:43:18:160 GAMECARD_DBG/(9101:9101): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 11:43:18:161 GAMECARD_DBG/(9101:9101): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[DEBUG] 11:43:18:165 GAMECARD_DBG/(9101:9101): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 11:43:19:172 GAMECARD_DBG/(9101:9108): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 11:43:40:113 GAMECARD_DBG/(9101:9136): SAVE BLOCK | FILE 1.bin
+[INFO] 11:44:14:837 GAMECARD_DBG/(9148:9148): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 11:44:14:844 GAMECARD_DBG/(9148:9148): (Mount Point Directory (TALL_GRASS/)	-File exists)
+[INFO] 11:44:14:845 GAMECARD_DBG/(9148:9148): (Directory (TALL_GRASS/metadata)	-File exists)
+[INFO] 11:44:14:845 GAMECARD_DBG/(9148:9148): (File: TALL_GRASS/metadata/Metadata.bin	-File Exists)
+[INFO] 11:44:14:845 GAMECARD_DBG/(9148:9148): (Directory (TALL_GRASS/Files)	-File exists)
+[INFO] 11:44:14:845 GAMECARD_DBG/(9148:9148): (File: TALL_GRASS/Files/Metadata.bin	-File Exists)
+[INFO] 11:44:14:846 GAMECARD_DBG/(9148:9148): (Directory (TALL_GRASS/Blocks)	-File exists)
+[INFO] 11:44:14:846 GAMECARD_DBG/(9148:9148): (File: TALL_GRASS/Blocks/Metadata.bin	-File Exists)
+[INFO] 11:44:14:846 GAMECARD_DBG/(9148:9148): (Directory (TALL_GRASS/Config_tg)	-File exists)
+[INFO] 11:44:14:846 GAMECARD_DBG/(9148:9148): (File: TALL_GRASS/Config_tg/Metadata.bin	-File Exists)
+[INFO] 11:44:14:848 GAMECARD_DBG/(9148:9148): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 11:44:14:848 GAMECARD_DBG/(9148:9148): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[DEBUG] 11:44:14:855 GAMECARD_DBG/(9148:9148): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 11:44:15:870 GAMECARD_DBG/(9148:9155): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 11:44:58:994 GAMECARD_DBG/(9148:9224): SAVE BLOCK | FILE 1.bin
+[INFO] 12:13:24:702 GAMECARD_DBG/(11065:11065): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:13:24:702 GAMECARD_DBG/(11065:11065): (Mount Point Directory (TALL_GRASS/)	-File exists)
+[INFO] 12:13:24:702 GAMECARD_DBG/(11065:11065): (Directory (TALL_GRASS/metadata)	-File exists)
+[INFO] 12:13:24:702 GAMECARD_DBG/(11065:11065): (File: TALL_GRASS/metadata/Metadata.bin	-File Exists)
+[INFO] 12:13:24:703 GAMECARD_DBG/(11065:11065): (Directory (TALL_GRASS/Files)	-File exists)
+[INFO] 12:13:24:703 GAMECARD_DBG/(11065:11065): (File: TALL_GRASS/Files/Metadata.bin	-File Exists)
+[INFO] 12:13:24:704 GAMECARD_DBG/(11065:11065): (Directory (TALL_GRASS/Blocks)	-File exists)
+[INFO] 12:13:24:704 GAMECARD_DBG/(11065:11065): (File: TALL_GRASS/Blocks/Metadata.bin	-File Exists)
+[INFO] 12:13:24:704 GAMECARD_DBG/(11065:11065): (Directory (TALL_GRASS/Config_tg)	-File exists)
+[INFO] 12:13:24:705 GAMECARD_DBG/(11065:11065): (File: TALL_GRASS/Config_tg/Metadata.bin	-File Exists)
+[INFO] 12:13:24:706 GAMECARD_DBG/(11065:11065): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:13:24:706 GAMECARD_DBG/(11065:11065): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[DEBUG] 12:13:24:707 GAMECARD_DBG/(11065:11065): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:13:25:709 GAMECARD_DBG/(11065:11072): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:17:41:190 GAMECARD_DBG/(11424:11424): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:17:41:191 GAMECARD_DBG/(11424:11424): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:17:41:191 GAMECARD_DBG/(11424:11424): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:17:41:191 GAMECARD_DBG/(11424:11424): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:17:41:191 GAMECARD_DBG/(11424:11424): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:17:41:191 GAMECARD_DBG/(11424:11424): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:17:41:192 GAMECARD_DBG/(11424:11424): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:17:41:192 GAMECARD_DBG/(11424:11424): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:17:41:192 GAMECARD_DBG/(11424:11424): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:17:41:192 GAMECARD_DBG/(11424:11424): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:17:41:193 GAMECARD_DBG/(11424:11424): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:17:41:194 GAMECARD_DBG/(11424:11424): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:17:41:194 GAMECARD_DBG/(11424:11424): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:17:41:197 GAMECARD_DBG/(11424:11424): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:17:42:199 GAMECARD_DBG/(11424:11431): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:18:48:394 GAMECARD_DBG/(11424:11666): SAVE BLOCK | FILE 1.bin
+[INFO] 12:20:38:216 GAMECARD_DBG/(11761:11761): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:20:38:216 GAMECARD_DBG/(11761:11761): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:20:38:216 GAMECARD_DBG/(11761:11761): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:20:38:216 GAMECARD_DBG/(11761:11761): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:20:38:217 GAMECARD_DBG/(11761:11761): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:20:38:217 GAMECARD_DBG/(11761:11761): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:20:38:217 GAMECARD_DBG/(11761:11761): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:20:38:217 GAMECARD_DBG/(11761:11761): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:20:38:218 GAMECARD_DBG/(11761:11761): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:20:38:218 GAMECARD_DBG/(11761:11761): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:20:38:218 GAMECARD_DBG/(11761:11761): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:20:38:218 GAMECARD_DBG/(11761:11761): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:20:38:219 GAMECARD_DBG/(11761:11761): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:20:38:229 GAMECARD_DBG/(11761:11761): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:20:39:231 GAMECARD_DBG/(11761:11768): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:20:49:96 GAMECARD_DBG/(11761:11794): SAVE BLOCK | FILE 1.bin
+[INFO] 12:25:35:556 GAMECARD_DBG/(11919:11919): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:25:35:556 GAMECARD_DBG/(11919:11919): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:25:35:556 GAMECARD_DBG/(11919:11919): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:25:35:556 GAMECARD_DBG/(11919:11919): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:25:35:556 GAMECARD_DBG/(11919:11919): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:25:35:557 GAMECARD_DBG/(11919:11919): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:25:35:557 GAMECARD_DBG/(11919:11919): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:25:35:557 GAMECARD_DBG/(11919:11919): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:25:35:557 GAMECARD_DBG/(11919:11919): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:25:35:557 GAMECARD_DBG/(11919:11919): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:25:35:558 GAMECARD_DBG/(11919:11919): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:25:35:558 GAMECARD_DBG/(11919:11919): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:25:35:558 GAMECARD_DBG/(11919:11919): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:25:35:564 GAMECARD_DBG/(11919:11919): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:25:36:567 GAMECARD_DBG/(11919:11926): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:25:59:667 GAMECARD_DBG/(11919:11989): SAVE BLOCK | FILE 1.bin
+[INFO] 12:30:55:205 GAMECARD_DBG/(12367:12367): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:30:55:205 GAMECARD_DBG/(12367:12367): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:30:55:205 GAMECARD_DBG/(12367:12367): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:30:55:205 GAMECARD_DBG/(12367:12367): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:30:55:206 GAMECARD_DBG/(12367:12367): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:30:55:206 GAMECARD_DBG/(12367:12367): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:30:55:206 GAMECARD_DBG/(12367:12367): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:30:55:206 GAMECARD_DBG/(12367:12367): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:30:55:207 GAMECARD_DBG/(12367:12367): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:30:55:207 GAMECARD_DBG/(12367:12367): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:30:55:207 GAMECARD_DBG/(12367:12367): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:30:55:207 GAMECARD_DBG/(12367:12367): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:30:55:208 GAMECARD_DBG/(12367:12367): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:30:55:218 GAMECARD_DBG/(12367:12367): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:30:56:220 GAMECARD_DBG/(12367:12376): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:31:12:860 GAMECARD_DBG/(12367:12437): SAVE BLOCK | FILE 1.bin
+[INFO] 12:36:28:123 GAMECARD_DBG/(12651:12651): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:36:28:123 GAMECARD_DBG/(12651:12651): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:36:28:123 GAMECARD_DBG/(12651:12651): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:36:28:123 GAMECARD_DBG/(12651:12651): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:36:28:124 GAMECARD_DBG/(12651:12651): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:36:28:124 GAMECARD_DBG/(12651:12651): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:36:28:124 GAMECARD_DBG/(12651:12651): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:36:28:124 GAMECARD_DBG/(12651:12651): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:36:28:125 GAMECARD_DBG/(12651:12651): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:36:28:125 GAMECARD_DBG/(12651:12651): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:36:28:125 GAMECARD_DBG/(12651:12651): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:36:28:125 GAMECARD_DBG/(12651:12651): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:36:28:126 GAMECARD_DBG/(12651:12651): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:36:28:133 GAMECARD_DBG/(12651:12651): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:36:29:136 GAMECARD_DBG/(12651:12660): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:36:48:528 GAMECARD_DBG/(12651:12721): SAVE BLOCK | FILE 1.bin
+[INFO] 12:38:31:972 GAMECARD_DBG/(12783:12783): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:38:31:973 GAMECARD_DBG/(12783:12783): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:38:31:973 GAMECARD_DBG/(12783:12783): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:38:31:973 GAMECARD_DBG/(12783:12783): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:38:31:973 GAMECARD_DBG/(12783:12783): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:38:31:973 GAMECARD_DBG/(12783:12783): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:38:31:974 GAMECARD_DBG/(12783:12783): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:38:31:974 GAMECARD_DBG/(12783:12783): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:38:31:974 GAMECARD_DBG/(12783:12783): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:38:31:974 GAMECARD_DBG/(12783:12783): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:38:31:975 GAMECARD_DBG/(12783:12783): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:38:31:975 GAMECARD_DBG/(12783:12783): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:38:31:975 GAMECARD_DBG/(12783:12783): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:38:31:984 GAMECARD_DBG/(12783:12783): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:38:32:986 GAMECARD_DBG/(12783:12792): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:38:43:529 GAMECARD_DBG/(12783:12853): SAVE BLOCK | FILE 1.bin
+[INFO] 12:40:49:574 GAMECARD_DBG/(12956:12956): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:40:49:574 GAMECARD_DBG/(12956:12956): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:40:49:575 GAMECARD_DBG/(12956:12956): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:40:49:575 GAMECARD_DBG/(12956:12956): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:40:49:575 GAMECARD_DBG/(12956:12956): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:40:49:575 GAMECARD_DBG/(12956:12956): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:40:49:576 GAMECARD_DBG/(12956:12956): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:40:49:576 GAMECARD_DBG/(12956:12956): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:40:49:576 GAMECARD_DBG/(12956:12956): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:40:49:576 GAMECARD_DBG/(12956:12956): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:40:49:577 GAMECARD_DBG/(12956:12956): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:40:49:577 GAMECARD_DBG/(12956:12956): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:40:49:577 GAMECARD_DBG/(12956:12956): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:40:49:584 GAMECARD_DBG/(12956:12956): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:40:50:587 GAMECARD_DBG/(12956:12964): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:40:57:370 GAMECARD_DBG/(12956:13025): SAVE BLOCK | FILE 1.bin
+[INFO] 12:42:17:247 GAMECARD_DBG/(13047:13047): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:42:17:247 GAMECARD_DBG/(13047:13047): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:42:17:247 GAMECARD_DBG/(13047:13047): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:42:17:248 GAMECARD_DBG/(13047:13047): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:42:17:248 GAMECARD_DBG/(13047:13047): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:42:17:248 GAMECARD_DBG/(13047:13047): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:42:17:249 GAMECARD_DBG/(13047:13047): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:42:17:249 GAMECARD_DBG/(13047:13047): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:42:17:249 GAMECARD_DBG/(13047:13047): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:42:17:250 GAMECARD_DBG/(13047:13047): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:42:17:251 GAMECARD_DBG/(13047:13047): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:42:17:255 GAMECARD_DBG/(13047:13047): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:42:17:255 GAMECARD_DBG/(13047:13047): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:42:17:268 GAMECARD_DBG/(13047:13047): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:42:18:270 GAMECARD_DBG/(13047:13056): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:42:27:127 GAMECARD_DBG/(13047:13125): SAVE BLOCK | FILE 1.bin
+[INFO] 12:44:14:217 GAMECARD_DBG/(13198:13198): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:44:14:218 GAMECARD_DBG/(13198:13198): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:44:14:218 GAMECARD_DBG/(13198:13198): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:44:14:218 GAMECARD_DBG/(13198:13198): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:44:14:219 GAMECARD_DBG/(13198:13198): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:44:14:219 GAMECARD_DBG/(13198:13198): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:44:14:220 GAMECARD_DBG/(13198:13198): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:44:14:221 GAMECARD_DBG/(13198:13198): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:44:14:222 GAMECARD_DBG/(13198:13198): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:44:14:222 GAMECARD_DBG/(13198:13198): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:44:14:223 GAMECARD_DBG/(13198:13198): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:44:14:223 GAMECARD_DBG/(13198:13198): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:44:14:223 GAMECARD_DBG/(13198:13198): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:44:14:234 GAMECARD_DBG/(13198:13198): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:44:15:241 GAMECARD_DBG/(13198:13206): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:44:21:680 GAMECARD_DBG/(13198:13267): SAVE BLOCK | FILE 1.bin
+[INFO] 12:46:19:11 GAMECARD_DBG/(13338:13338): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:46:19:11 GAMECARD_DBG/(13338:13338): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:46:19:11 GAMECARD_DBG/(13338:13338): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:46:19:11 GAMECARD_DBG/(13338:13338): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:46:19:12 GAMECARD_DBG/(13338:13338): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:46:19:12 GAMECARD_DBG/(13338:13338): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:46:19:12 GAMECARD_DBG/(13338:13338): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:46:19:12 GAMECARD_DBG/(13338:13338): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:46:19:13 GAMECARD_DBG/(13338:13338): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:46:19:13 GAMECARD_DBG/(13338:13338): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:46:19:13 GAMECARD_DBG/(13338:13338): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:46:19:13 GAMECARD_DBG/(13338:13338): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:46:19:14 GAMECARD_DBG/(13338:13338): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:46:19:17 GAMECARD_DBG/(13338:13338): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:46:20:23 GAMECARD_DBG/(13338:13347): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:46:31:639 GAMECARD_DBG/(13338:13410): SAVE BLOCK | FILE 1.bin
+[INFO] 12:48:33:145 GAMECARD_DBG/(13497:13497): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:48:33:145 GAMECARD_DBG/(13497:13497): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:48:33:145 GAMECARD_DBG/(13497:13497): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:48:33:145 GAMECARD_DBG/(13497:13497): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:48:33:146 GAMECARD_DBG/(13497:13497): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:48:33:146 GAMECARD_DBG/(13497:13497): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:48:33:146 GAMECARD_DBG/(13497:13497): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:48:33:146 GAMECARD_DBG/(13497:13497): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:48:33:146 GAMECARD_DBG/(13497:13497): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:48:33:147 GAMECARD_DBG/(13497:13497): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:48:33:147 GAMECARD_DBG/(13497:13497): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:48:33:147 GAMECARD_DBG/(13497:13497): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:48:33:148 GAMECARD_DBG/(13497:13497): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:48:33:160 GAMECARD_DBG/(13497:13497): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:48:34:161 GAMECARD_DBG/(13497:13506): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:48:46:276 GAMECARD_DBG/(13497:13567): SAVE BLOCK | FILE 1.bin
+[INFO] 12:51:41:466 GAMECARD_DBG/(13884:13884): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:51:41:466 GAMECARD_DBG/(13884:13884): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:51:41:466 GAMECARD_DBG/(13884:13884): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:51:41:466 GAMECARD_DBG/(13884:13884): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:51:41:466 GAMECARD_DBG/(13884:13884): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:51:41:467 GAMECARD_DBG/(13884:13884): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:51:41:467 GAMECARD_DBG/(13884:13884): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:51:41:467 GAMECARD_DBG/(13884:13884): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:51:41:468 GAMECARD_DBG/(13884:13884): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:51:41:469 GAMECARD_DBG/(13884:13884): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:51:41:469 GAMECARD_DBG/(13884:13884): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:51:41:469 GAMECARD_DBG/(13884:13884): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:51:41:469 GAMECARD_DBG/(13884:13884): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:51:41:472 GAMECARD_DBG/(13884:13884): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:51:42:474 GAMECARD_DBG/(13884:13892): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:51:51:740 GAMECARD_DBG/(13884:13953): SAVE BLOCK | FILE 1.bin
+[INFO] 12:57:18:580 GAMECARD_DBG/(14132:14132): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:57:18:580 GAMECARD_DBG/(14132:14132): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:57:18:580 GAMECARD_DBG/(14132:14132): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:57:18:581 GAMECARD_DBG/(14132:14132): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:57:18:581 GAMECARD_DBG/(14132:14132): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:57:18:581 GAMECARD_DBG/(14132:14132): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:57:18:581 GAMECARD_DBG/(14132:14132): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:57:18:581 GAMECARD_DBG/(14132:14132): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:57:18:582 GAMECARD_DBG/(14132:14132): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:57:18:582 GAMECARD_DBG/(14132:14132): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:57:18:582 GAMECARD_DBG/(14132:14132): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:57:18:583 GAMECARD_DBG/(14132:14132): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:57:18:583 GAMECARD_DBG/(14132:14132): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:57:18:588 GAMECARD_DBG/(14132:14132): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:57:19:592 GAMECARD_DBG/(14132:14141): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:58:51:988 GAMECARD_DBG/(14185:14185): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 12:58:51:988 GAMECARD_DBG/(14185:14185): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 12:58:51:988 GAMECARD_DBG/(14185:14185): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 12:58:51:988 GAMECARD_DBG/(14185:14185): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 12:58:51:989 GAMECARD_DBG/(14185:14185): (Creating Directory (TALL_GRASS/Files))
+[INFO] 12:58:51:989 GAMECARD_DBG/(14185:14185): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 12:58:51:989 GAMECARD_DBG/(14185:14185): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 12:58:51:989 GAMECARD_DBG/(14185:14185): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 12:58:51:989 GAMECARD_DBG/(14185:14185): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 12:58:51:990 GAMECARD_DBG/(14185:14185): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 12:58:51:990 GAMECARD_DBG/(14185:14185): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 12:58:51:990 GAMECARD_DBG/(14185:14185): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 12:58:51:990 GAMECARD_DBG/(14185:14185): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 12:58:51:998 GAMECARD_DBG/(14185:14185): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 12:58:52:0 GAMECARD_DBG/(14185:14194): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 12:59:02:692 GAMECARD_DBG/(14185:14255): SAVE BLOCK | FILE 1.bin
+[INFO] 13:03:02:839 GAMECARD_DBG/(14351:14351): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 13:03:02:839 GAMECARD_DBG/(14351:14351): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 13:03:02:839 GAMECARD_DBG/(14351:14351): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 13:03:02:839 GAMECARD_DBG/(14351:14351): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 13:03:02:839 GAMECARD_DBG/(14351:14351): (Creating Directory (TALL_GRASS/Files))
+[INFO] 13:03:02:840 GAMECARD_DBG/(14351:14351): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 13:03:02:840 GAMECARD_DBG/(14351:14351): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 13:03:02:840 GAMECARD_DBG/(14351:14351): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 13:03:02:840 GAMECARD_DBG/(14351:14351): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 13:03:02:840 GAMECARD_DBG/(14351:14351): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 13:03:02:841 GAMECARD_DBG/(14351:14351): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 13:03:02:841 GAMECARD_DBG/(14351:14351): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 13:03:02:841 GAMECARD_DBG/(14351:14351): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 13:03:02:847 GAMECARD_DBG/(14351:14351): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 13:03:03:852 GAMECARD_DBG/(14351:14360): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 13:03:13:614 GAMECARD_DBG/(14351:14421): SAVE BLOCK | FILE 1.bin
+[INFO] 13:10:31:24 GAMECARD_DBG/(14828:14828): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 13:10:31:24 GAMECARD_DBG/(14828:14828): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 13:10:31:24 GAMECARD_DBG/(14828:14828): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 13:10:31:24 GAMECARD_DBG/(14828:14828): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 13:10:31:25 GAMECARD_DBG/(14828:14828): (Creating Directory (TALL_GRASS/Files))
+[INFO] 13:10:31:25 GAMECARD_DBG/(14828:14828): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 13:10:31:25 GAMECARD_DBG/(14828:14828): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 13:10:31:25 GAMECARD_DBG/(14828:14828): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 13:10:31:26 GAMECARD_DBG/(14828:14828): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 13:10:31:26 GAMECARD_DBG/(14828:14828): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 13:10:31:27 GAMECARD_DBG/(14828:14828): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 13:10:31:27 GAMECARD_DBG/(14828:14828): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 13:10:31:28 GAMECARD_DBG/(14828:14828): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 13:10:31:38 GAMECARD_DBG/(14828:14828): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 13:10:32:41 GAMECARD_DBG/(14828:14837): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 13:10:39:532 GAMECARD_DBG/(14828:14898): SAVE BLOCK | FILE 1.bin
+[INFO] 13:14:52:82 GAMECARD_DBG/(15001:15001): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 13:14:52:82 GAMECARD_DBG/(15001:15001): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 13:14:52:82 GAMECARD_DBG/(15001:15001): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 13:14:52:82 GAMECARD_DBG/(15001:15001): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 13:14:52:83 GAMECARD_DBG/(15001:15001): (Creating Directory (TALL_GRASS/Files))
+[INFO] 13:14:52:83 GAMECARD_DBG/(15001:15001): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 13:14:52:83 GAMECARD_DBG/(15001:15001): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 13:14:52:83 GAMECARD_DBG/(15001:15001): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 13:14:52:84 GAMECARD_DBG/(15001:15001): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 13:14:52:84 GAMECARD_DBG/(15001:15001): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 13:14:52:84 GAMECARD_DBG/(15001:15001): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 13:14:52:84 GAMECARD_DBG/(15001:15001): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 13:14:52:85 GAMECARD_DBG/(15001:15001): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 13:14:52:97 GAMECARD_DBG/(15001:15001): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 13:14:53:100 GAMECARD_DBG/(15001:15010): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 13:15:01:223 GAMECARD_DBG/(15001:15071): SAVE BLOCK | FILE 1.bin
+[INFO] 13:23:50:136 GAMECARD_DBG/(15217:15217): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 13:23:50:137 GAMECARD_DBG/(15217:15217): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 13:23:50:137 GAMECARD_DBG/(15217:15217): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 13:23:50:137 GAMECARD_DBG/(15217:15217): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 13:23:50:137 GAMECARD_DBG/(15217:15217): (Creating Directory (TALL_GRASS/Files))
+[INFO] 13:23:50:137 GAMECARD_DBG/(15217:15217): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 13:23:50:137 GAMECARD_DBG/(15217:15217): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 13:23:50:138 GAMECARD_DBG/(15217:15217): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 13:23:50:138 GAMECARD_DBG/(15217:15217): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 13:23:50:138 GAMECARD_DBG/(15217:15217): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 13:23:50:140 GAMECARD_DBG/(15217:15217): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 13:23:50:140 GAMECARD_DBG/(15217:15217): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 13:23:50:140 GAMECARD_DBG/(15217:15217): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 13:23:50:145 GAMECARD_DBG/(15217:15217): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 13:23:51:149 GAMECARD_DBG/(15217:15225): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 13:23:59:826 GAMECARD_DBG/(15217:15286): SAVE BLOCK | FILE 1.bin
+[INFO] 13:27:09:290 GAMECARD_DBG/(15433:15433): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 13:27:09:290 GAMECARD_DBG/(15433:15433): (Mount Point Directory (TALL_GRASS/)	-File exists)
+[INFO] 13:27:09:291 GAMECARD_DBG/(15433:15433): (Directory (TALL_GRASS/metadata)	-File exists)
+[INFO] 13:27:09:292 GAMECARD_DBG/(15433:15433): (File: TALL_GRASS/metadata/Metadata.bin	-File Exists)
+[INFO] 13:27:09:292 GAMECARD_DBG/(15433:15433): (Directory (TALL_GRASS/Files)	-File exists)
+[INFO] 13:27:09:293 GAMECARD_DBG/(15433:15433): (File: TALL_GRASS/Files/Metadata.bin	-File Exists)
+[INFO] 13:27:09:293 GAMECARD_DBG/(15433:15433): (Directory (TALL_GRASS/Blocks)	-File exists)
+[INFO] 13:27:09:293 GAMECARD_DBG/(15433:15433): (File: TALL_GRASS/Blocks/Metadata.bin	-File Exists)
+[INFO] 13:27:09:293 GAMECARD_DBG/(15433:15433): (Directory (TALL_GRASS/Config_tg)	-File exists)
+[INFO] 13:27:09:293 GAMECARD_DBG/(15433:15433): (File: TALL_GRASS/Config_tg/Metadata.bin	-File Exists)
+[INFO] 13:27:09:294 GAMECARD_DBG/(15433:15433): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 13:27:09:294 GAMECARD_DBG/(15433:15433): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[DEBUG] 13:27:09:296 GAMECARD_DBG/(15433:15433): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 13:27:10:300 GAMECARD_DBG/(15433:15440): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 13:27:29:413 GAMECARD_DBG/(15433:15449): SAVE BLOCK | FILE 1.bin
+[INFO] 13:27:29:418 GAMECARD_DBG/(15433:15453): SAVE BLOCK | FILE 3.bin
+[INFO] 13:27:29:430 GAMECARD_DBG/(15433:15457): SAVE BLOCK | FILE 5.bin
+[INFO] 13:27:29:447 GAMECARD_DBG/(15433:15460): SAVE BLOCK | FILE 7.bin
+[INFO] 13:28:15:268 GAMECARD_DBG/(15465:15465): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 13:28:15:268 GAMECARD_DBG/(15465:15465): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 13:28:15:268 GAMECARD_DBG/(15465:15465): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 13:28:15:268 GAMECARD_DBG/(15465:15465): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 13:28:15:268 GAMECARD_DBG/(15465:15465): (Creating Directory (TALL_GRASS/Files))
+[INFO] 13:28:15:269 GAMECARD_DBG/(15465:15465): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 13:28:15:269 GAMECARD_DBG/(15465:15465): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 13:28:15:269 GAMECARD_DBG/(15465:15465): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 13:28:15:270 GAMECARD_DBG/(15465:15465): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 13:28:15:270 GAMECARD_DBG/(15465:15465): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 13:28:15:270 GAMECARD_DBG/(15465:15465): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 13:28:15:271 GAMECARD_DBG/(15465:15465): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 13:28:15:271 GAMECARD_DBG/(15465:15465): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 13:28:15:279 GAMECARD_DBG/(15465:15465): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 13:28:16:282 GAMECARD_DBG/(15465:15474): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 13:28:24:689 GAMECARD_DBG/(15465:15480): SAVE BLOCK | FILE 1.bin
+[INFO] 13:28:24:694 GAMECARD_DBG/(15465:15484): SAVE BLOCK | FILE 2.bin
+[INFO] 13:28:24:707 GAMECARD_DBG/(15465:15488): SAVE BLOCK | FILE 4.bin
+[INFO] 13:28:24:719 GAMECARD_DBG/(15465:15491): SAVE BLOCK | FILE 6.bin
+[INFO] 13:29:14:786 GAMECARD_DBG/(15465:15600): SAVE BLOCK | FILE 1.bin
+[INFO] 13:29:14:792 GAMECARD_DBG/(15465:15604): SAVE BLOCK | FILE 2.bin
+[INFO] 13:29:14:809 GAMECARD_DBG/(15465:15608): SAVE BLOCK | FILE 10.bin
+[INFO] 13:29:14:822 GAMECARD_DBG/(15465:15612): SAVE BLOCK | FILE 12.bin
+[INFO] 13:29:14:829 GAMECARD_DBG/(15465:15616): SAVE BLOCK | FILE 14.bin
+[INFO] 13:29:14:842 GAMECARD_DBG/(15465:15619): SAVE BLOCK | FILE 16.bin
+[INFO] 13:34:59:243 GAMECARD_DBG/(16035:16035): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 13:34:59:243 GAMECARD_DBG/(16035:16035): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 13:34:59:244 GAMECARD_DBG/(16035:16035): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 13:34:59:244 GAMECARD_DBG/(16035:16035): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 13:34:59:244 GAMECARD_DBG/(16035:16035): (Creating Directory (TALL_GRASS/Files))
+[INFO] 13:34:59:245 GAMECARD_DBG/(16035:16035): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 13:34:59:245 GAMECARD_DBG/(16035:16035): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 13:34:59:245 GAMECARD_DBG/(16035:16035): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 13:34:59:245 GAMECARD_DBG/(16035:16035): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 13:34:59:245 GAMECARD_DBG/(16035:16035): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 13:34:59:246 GAMECARD_DBG/(16035:16035): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 13:34:59:246 GAMECARD_DBG/(16035:16035): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 13:34:59:246 GAMECARD_DBG/(16035:16035): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 13:34:59:251 GAMECARD_DBG/(16035:16035): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 13:35:00:253 GAMECARD_DBG/(16035:16044): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 13:35:05:488 GAMECARD_DBG/(16035:16050): SAVE BLOCK | FILE 1.bin
+[INFO] 13:35:05:493 GAMECARD_DBG/(16035:16054): SAVE BLOCK | FILE 2.bin
+[INFO] 13:35:05:505 GAMECARD_DBG/(16035:16058): SAVE BLOCK | FILE 4.bin
+[INFO] 13:35:05:512 GAMECARD_DBG/(16035:16061): SAVE BLOCK | FILE 6.bin
+[INFO] 13:36:43:404 GAMECARD_DBG/(16035:16214): SAVE BLOCK | FILE 1.bin
+[INFO] 13:36:43:411 GAMECARD_DBG/(16035:16218): SAVE BLOCK | FILE 2.bin
+[INFO] 13:36:43:427 GAMECARD_DBG/(16035:16222): SAVE BLOCK | FILE 9.bin
+[INFO] 13:36:43:445 GAMECARD_DBG/(16035:16226): SAVE BLOCK | FILE 11.bin
+[INFO] 13:36:43:450 GAMECARD_DBG/(16035:16230): SAVE BLOCK | FILE 13.bin
+[INFO] 13:36:43:460 GAMECARD_DBG/(16035:16233): SAVE BLOCK | FILE 15.bin
+[INFO] 13:38:28:927 GAMECARD_DBG/(16310:16310): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 13:38:28:927 GAMECARD_DBG/(16310:16310): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 13:38:28:927 GAMECARD_DBG/(16310:16310): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 13:38:28:927 GAMECARD_DBG/(16310:16310): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 13:38:28:927 GAMECARD_DBG/(16310:16310): (Creating Directory (TALL_GRASS/Files))
+[INFO] 13:38:28:928 GAMECARD_DBG/(16310:16310): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 13:38:28:928 GAMECARD_DBG/(16310:16310): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 13:38:28:928 GAMECARD_DBG/(16310:16310): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 13:38:28:928 GAMECARD_DBG/(16310:16310): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 13:38:28:928 GAMECARD_DBG/(16310:16310): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 13:38:28:929 GAMECARD_DBG/(16310:16310): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 13:38:28:929 GAMECARD_DBG/(16310:16310): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 13:38:28:929 GAMECARD_DBG/(16310:16310): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 13:38:28:939 GAMECARD_DBG/(16310:16310): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 13:38:29:941 GAMECARD_DBG/(16310:16319): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 13:38:34:834 GAMECARD_DBG/(16310:16325): SAVE BLOCK | FILE 1.bin
+[INFO] 13:38:34:865 GAMECARD_DBG/(16310:16329): SAVE BLOCK | FILE 2.bin
+[INFO] 13:38:34:870 GAMECARD_DBG/(16310:16333): SAVE BLOCK | FILE 4.bin
+[INFO] 13:38:34:875 GAMECARD_DBG/(16310:16336): SAVE BLOCK | FILE 6.bin
+[INFO] 13:44:47:476 GAMECARD_DBG/(16860:16860): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 13:44:47:476 GAMECARD_DBG/(16860:16860): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 13:44:47:476 GAMECARD_DBG/(16860:16860): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 13:44:47:477 GAMECARD_DBG/(16860:16860): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 13:44:47:477 GAMECARD_DBG/(16860:16860): (Creating Directory (TALL_GRASS/Files))
+[INFO] 13:44:47:477 GAMECARD_DBG/(16860:16860): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 13:44:47:477 GAMECARD_DBG/(16860:16860): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 13:44:47:478 GAMECARD_DBG/(16860:16860): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 13:44:47:478 GAMECARD_DBG/(16860:16860): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 13:44:47:478 GAMECARD_DBG/(16860:16860): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 13:44:47:479 GAMECARD_DBG/(16860:16860): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 13:44:47:479 GAMECARD_DBG/(16860:16860): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 13:44:47:479 GAMECARD_DBG/(16860:16860): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 13:44:47:489 GAMECARD_DBG/(16860:16860): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 13:44:48:492 GAMECARD_DBG/(16860:16873): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 13:44:53:853 GAMECARD_DBG/(16860:16879): SAVE BLOCK | FILE 1.bin
+[INFO] 13:44:53:858 GAMECARD_DBG/(16860:16883): SAVE BLOCK | FILE 2.bin
+[INFO] 13:44:53:867 GAMECARD_DBG/(16860:16887): SAVE BLOCK | FILE 4.bin
+[INFO] 13:44:53:884 GAMECARD_DBG/(16860:16890): SAVE BLOCK | FILE 6.bin
+[INFO] 13:45:46:374 GAMECARD_DBG/(16860:16978): SAVE BLOCK | FILE 1.bin
+[INFO] 13:45:46:380 GAMECARD_DBG/(16860:16982): SAVE BLOCK | FILE 2.bin
+[INFO] 13:45:46:389 GAMECARD_DBG/(16860:16986): SAVE BLOCK | FILE 6.bin
+[INFO] 13:45:46:404 GAMECARD_DBG/(16860:16990): SAVE BLOCK | FILE 10.bin
+[INFO] 13:45:46:411 GAMECARD_DBG/(16860:16994): SAVE BLOCK | FILE 12.bin
+[INFO] 13:45:46:418 GAMECARD_DBG/(16860:16997): SAVE BLOCK | FILE 14.bin
+[INFO] 13:53:44:361 GAMECARD_DBG/(17157:17157): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 13:53:44:361 GAMECARD_DBG/(17157:17157): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 13:53:44:362 GAMECARD_DBG/(17157:17157): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 13:53:44:362 GAMECARD_DBG/(17157:17157): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 13:53:44:362 GAMECARD_DBG/(17157:17157): (Creating Directory (TALL_GRASS/Files))
+[INFO] 13:53:44:363 GAMECARD_DBG/(17157:17157): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 13:53:44:363 GAMECARD_DBG/(17157:17157): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 13:53:44:363 GAMECARD_DBG/(17157:17157): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 13:53:44:365 GAMECARD_DBG/(17157:17157): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 13:53:44:365 GAMECARD_DBG/(17157:17157): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 13:53:44:366 GAMECARD_DBG/(17157:17157): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 13:53:44:368 GAMECARD_DBG/(17157:17157): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 13:53:44:368 GAMECARD_DBG/(17157:17157): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 13:53:44:379 GAMECARD_DBG/(17157:17157): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 13:53:45:385 GAMECARD_DBG/(17157:17165): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 13:53:50:342 GAMECARD_DBG/(17157:17171): SAVE BLOCK | FILE 1.bin
+[INFO] 13:53:50:349 GAMECARD_DBG/(17157:17175): SAVE BLOCK | FILE 2.bin
+[INFO] 13:53:50:357 GAMECARD_DBG/(17157:17179): SAVE BLOCK | FILE 4.bin
+[INFO] 13:53:50:374 GAMECARD_DBG/(17157:17182): SAVE BLOCK | FILE 6.bin
+[INFO] 13:54:22:234 GAMECARD_DBG/(17157:17226): SAVE BLOCK | FILE 4.bin
+[INFO] 13:54:22:241 GAMECARD_DBG/(17157:17230): SAVE BLOCK | FILE 6.bin
+[INFO] 13:54:22:251 GAMECARD_DBG/(17157:17234): SAVE BLOCK | FILE 2.bin
+[INFO] 13:54:22:268 GAMECARD_DBG/(17157:17238): SAVE BLOCK | FILE 11.bin
+[INFO] 13:54:22:273 GAMECARD_DBG/(17157:17242): SAVE BLOCK | FILE 13.bin
+[INFO] 13:54:22:280 GAMECARD_DBG/(17157:17245): SAVE BLOCK | FILE 15.bin
+[INFO] 13:57:38:311 GAMECARD_DBG/(17306:17306): (Verificando Configuración File System Tall_Grass...)
+
+[INFO] 13:57:38:311 GAMECARD_DBG/(17306:17306): (Creating Mount Point Directory (TALL_GRASS/)	-Success)
+[INFO] 13:57:38:311 GAMECARD_DBG/(17306:17306): (Creating Directory (TALL_GRASS/metadata))
+[INFO] 13:57:38:311 GAMECARD_DBG/(17306:17306): (Creating File: TALL_GRASS/metadata/Metadata.bin	-Success)
+[INFO] 13:57:38:312 GAMECARD_DBG/(17306:17306): (Creating Directory (TALL_GRASS/Files))
+[INFO] 13:57:38:312 GAMECARD_DBG/(17306:17306): (Creating File: TALL_GRASS/Files/Metadata.bin	-Success)
+[INFO] 13:57:38:312 GAMECARD_DBG/(17306:17306): (Creating Directory (TALL_GRASS/Blocks))
+[INFO] 13:57:38:312 GAMECARD_DBG/(17306:17306): (Creating File: TALL_GRASS/Blocks/Metadata.bin	-Success)
+[INFO] 13:57:38:313 GAMECARD_DBG/(17306:17306): (Creating Directory (TALL_GRASS/Config_tg))
+[INFO] 13:57:38:313 GAMECARD_DBG/(17306:17306): (Creating File: TALL_GRASS/Config_tg/Metadata.bin	-Success)
+[INFO] 13:57:38:313 GAMECARD_DBG/(17306:17306): (Configuración File System Tall_Grass Consistente OK)
+
+[DEBUG] 13:57:38:314 GAMECARD_DBG/(17306:17306): (FileSystem TallGrass| Tam.Bloque:64 Bytes| Cant.Bloques:4096| Tamaño FS:256 Kbytes| Magic_Number:TALL_GRASS)
+
+[WARNING] 13:57:38:314 GAMECARD_DBG/(17306:17306): (No such file or directory -->>TALL_GRASS/metadata/bitmap.bin<<-- Creando Archivo Bitmap)
+[DEBUG] 13:57:38:321 GAMECARD_DBG/(17306:17306): (TallGrass Iniciado  | Bloques Libres:4095| Espacio Disponible:255 Kb.)
+
+[DEBUG] 13:57:39:323 GAMECARD_DBG/(17306:17315): (Intervalo para reconexión con Broker: 5 segundos)
+
+[INFO] 13:57:43:138 GAMECARD_DBG/(17306:17326): SAVE BLOCK | FILE 1.bin
+[INFO] 13:57:43:145 GAMECARD_DBG/(17306:17330): SAVE BLOCK | FILE 2.bin
+[INFO] 13:57:43:153 GAMECARD_DBG/(17306:17334): SAVE BLOCK | FILE 4.bin
+[INFO] 13:57:43:169 GAMECARD_DBG/(17306:17337): SAVE BLOCK | FILE 6.bin
+[INFO] 13:58:16:632 GAMECARD_DBG/(17306:17390): SAVE BLOCK | FILE 1.bin
+[INFO] 13:58:16:650 GAMECARD_DBG/(17306:17394): SAVE BLOCK | FILE 2.bin
+[INFO] 13:58:16:666 GAMECARD_DBG/(17306:17398): SAVE BLOCK | FILE 10.bin
+[INFO] 13:58:16:673 GAMECARD_DBG/(17306:17402): SAVE BLOCK | FILE 12.bin
+[INFO] 13:58:16:677 GAMECARD_DBG/(17306:17406): SAVE BLOCK | FILE 14.bin
+[INFO] 13:58:16:683 GAMECARD_DBG/(17306:17409): SAVE BLOCK | FILE 16.bin
+[INFO] 13:58:30:567 GAMECARD_DBG/(17306:17417): SAVE BLOCK | FILE 1.bin
+[INFO] 13:58:30:573 GAMECARD_DBG/(17306:17421): SAVE BLOCK | FILE 2.bin
+[INFO] 13:58:30:587 GAMECARD_DBG/(17306:17425): SAVE BLOCK | FILE 10.bin
+[INFO] 13:58:30:601 GAMECARD_DBG/(17306:17429): SAVE BLOCK | FILE 12.bin
+[INFO] 13:58:30:607 GAMECARD_DBG/(17306:17433): SAVE BLOCK | FILE 14.bin
+[INFO] 13:58:30:615 GAMECARD_DBG/(17306:17436): SAVE BLOCK | FILE 16.bin

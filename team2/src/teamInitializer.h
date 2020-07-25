@@ -65,6 +65,7 @@ typedef struct Entrenador{
 	pthread_t hilo_entrenador;
 	int id;
 	int ciclosCPU;
+	int quantumPorEjecutar;
 
 	//FIJARSE SI HAY QUE AGREGAR UN SEMAFORO MUTEX PARA EL ENTRENADOR CUANDO SE MODIFIQUE O SE LEA.
 } t_entrenador;
@@ -99,9 +100,11 @@ sem_t mutex_entrenador;
 
 sem_t sem_activacionPlanificadorMPlazo;
 
-
+sem_t sem_esperar_caught;
 
 //-----------------Variables Globales----------------------------
+
+t_entrenador* entrenadorEnEjecucion;
 
 int cantidadCambiosDeContexto;
 

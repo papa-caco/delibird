@@ -95,4 +95,14 @@ void finalizar_suscripciones_team(int senial);
 
 char *senial_recibida_tm(int senial);
 
+char esFifo();
+
+char esRR();
+
+void procesar_msg_appeared(char *pokemon, t_posicion_entrenador *posicion, t_log *logger);
+
+void procesar_msg_caught(uint32_t id_correlativo, t_result_caught resultado, t_log *logger);
+
+bool mismo_pokemon_entrenador_reservado(t_pokemon_entrenador_reservado *poke1,  t_pokemon_entrenador_reservado *poke2);
+
 #endif /* SRC_UTILSTEAM_H_ */

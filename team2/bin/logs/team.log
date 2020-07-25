@@ -1,0 +1,128 @@
+[INFO] 01:21:35:690 TEAM/(10741:10742): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 4| QUEUE: APPEARED_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 01:21:35:690 TEAM/(10741:10742): (SENDING ACK|APPEARED_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:20)
+[INFO] 01:21:35:690 TEAM/(10741:10744): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 5| QUEUE: LOCALIZED_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 01:21:35:691 TEAM/(10741:10744): (SENDING ACK|LOCALIZED_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:20)
+[INFO] 01:21:35:691 TEAM/(10741:10746): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 7| QUEUE: CAUGHT_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 01:21:35:691 TEAM/(10741:10746): (SENDING ACK|CAUGHT_POKEMON|ID_MSG:0->CONFIRMED|ID_SUSCRIPTOR:20)
+[DEBUG] 01:21:35:691 TEAM/(10741:10748): (Intervalo para reconexión con Broker: 6000 segundos)
+[INFO] 01:21:35:692 TEAM/(10741:10754): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 8| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 01:21:35:693 TEAM/(10741:10754): (SENDING: GET_POKEMON|Pikachu|Size:20 Bytes)
+[INFO] 01:21:35:693 TEAM/(10741:10754): (RECEIVING: ID_MSG:37)
+[INFO] 01:21:35:693 TEAM/(10741:10756): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 9| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 01:21:35:694 TEAM/(10741:10756): (SENDING: GET_POKEMON|Pikachu|Size:20 Bytes)
+[INFO] 01:21:35:694 TEAM/(10741:10756): (RECEIVING: ID_MSG:38)
+[INFO] 01:21:35:694 TEAM/(10741:10758): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 10| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 01:21:35:694 TEAM/(10741:10758): (SENDING: GET_POKEMON|Squirtle|Size:21 Bytes)
+[INFO] 01:21:35:695 TEAM/(10741:10758): (RECEIVING: ID_MSG:39)
+[INFO] 01:21:35:695 TEAM/(10741:10760): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 11| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 01:21:35:695 TEAM/(10741:10760): (SENDING: GET_POKEMON|Squirtle|Size:21 Bytes)
+[INFO] 01:21:35:695 TEAM/(10741:10760): (RECEIVING: ID_MSG:40)
+[INFO] 01:21:35:695 TEAM/(10741:10762): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 12| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 01:21:35:695 TEAM/(10741:10762): (SENDING: GET_POKEMON|Gengar|Size:19 Bytes)
+[INFO] 01:21:35:696 TEAM/(10741:10762): (RECEIVING: ID_MSG:41)
+[TRACE] 01:21:35:696 TEAM/(10741:10741): Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):10741
+[INFO] 01:21:35:696 TEAM/(10741:10764): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 13| QUEUE: GET_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 01:21:35:696 TEAM/(10741:10764): (SENDING: GET_POKEMON|Onix|Size:17 Bytes)
+[INFO] 01:21:35:696 TEAM/(10741:10764): (RECEIVING: ID_MSG:42)
+[DEBUG] 01:21:36:696 TEAM/(10741:10741): Esperando conexiones en Direccion: 127.0.0.1, Puerto: 5002
+[INFO] 01:22:01:261 TEAM/(10741:10741): (NEW CLIENT CONNECTED | SOCKET#:15)
+[INFO] 01:22:01:262 TEAM/(10741:10897): (RECEIVING: APPEARED_POKEMON|ID_MSG:1123|ID_CORRELATIVE:1124|Pikachu|POS_X:9|POS_Y:9|SIZE:36 Bytes)
+[INFO] 01:22:01:262 TEAM/(10741:10753): Entrenador 1 se movio a la cola de Ready, porque va a Moverse a pokemon
+[INFO] 01:22:01:262 TEAM/(10741:10753): Se va a correr el algoritmo de deteccion de deadlock
+[INFO] 01:22:01:262 TEAM/(10741:10753): No hay deadlock
+[INFO] 01:22:01:262 TEAM/(10741:10752): Entrenador 1 se movio a la cola de Exec, porque esta primero en la cola de Ready
+[INFO] 01:22:01:263 TEAM/(10741:10897): (SENDING_TO Socket:15|MSG_CONFIRMED)
+[INFO] 01:22:01:264 TEAM/(10741:10741): (NEW CLIENT CONNECTED | SOCKET#:16)
+[INFO] 01:22:01:264 TEAM/(10741:10899): (RECEIVING: APPEARED_POKEMON|ID_MSG:1123|ID_CORRELATIVE:1124|Squirtle|POS_X:6|POS_Y:7|SIZE:37 Bytes)
+[INFO] 01:22:01:265 TEAM/(10741:10899): (SENDING_TO Socket:16|MSG_CONFIRMED)
+[INFO] 01:22:01:266 TEAM/(10741:10741): (NEW CLIENT CONNECTED | SOCKET#:17)
+[INFO] 01:22:01:266 TEAM/(10741:10901): (RECEIVING: APPEARED_POKEMON|ID_MSG:1123|ID_CORRELATIVE:1124|Onix|POS_X:2|POS_Y:8|SIZE:33 Bytes)
+[INFO] 01:22:01:267 TEAM/(10741:10901): (SENDING_TO Socket:17|MSG_CONFIRMED)
+[INFO] 01:22:01:268 TEAM/(10741:10741): (NEW CLIENT CONNECTED | SOCKET#:18)
+[INFO] 01:22:01:269 TEAM/(10741:10903): (RECEIVING: APPEARED_POKEMON|ID_MSG:1123|ID_CORRELATIVE:1124|Gengar|POS_X:6|POS_Y:6|SIZE:35 Bytes)
+[INFO] 01:22:01:271 TEAM/(10741:10903): (SENDING_TO Socket:18|MSG_CONFIRMED)
+[INFO] 01:22:01:272 TEAM/(10741:10741): (NEW CLIENT CONNECTED | SOCKET#:19)
+[INFO] 01:22:01:275 TEAM/(10741:10905): (RECEIVING: APPEARED_POKEMON|ID_MSG:1123|ID_CORRELATIVE:1124|Squirtle|POS_X:5|POS_Y:5|SIZE:37 Bytes)
+[INFO] 01:22:01:277 TEAM/(10741:10905): (SENDING_TO Socket:19|MSG_CONFIRMED)
+[INFO] 01:22:02:262 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (3,3) 
+
+[INFO] 01:22:03:263 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (4,3) 
+
+[INFO] 01:22:04:263 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (5,3) 
+
+[INFO] 01:22:05:264 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (6,3) 
+
+[INFO] 01:22:06:264 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (7,3) 
+
+[INFO] 01:22:07:265 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (8,3) 
+
+[INFO] 01:22:08:265 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (9,3) 
+
+[INFO] 01:22:09:265 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (9,4) 
+
+[INFO] 01:22:10:266 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (9,5) 
+
+[INFO] 01:22:11:267 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (9,6) 
+
+[INFO] 01:22:12:268 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (9,7) 
+
+[INFO] 01:22:13:268 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (9,8) 
+
+[INFO] 01:22:14:269 TEAM/(10741:10750): Entrenador 1 se movio a la posicion (9,9) 
+
+[INFO] 01:22:14:269 TEAM/(10741:10753): Entrenador 1 se movio a la cola de Ready, porque va a Atrapar
+[INFO] 01:22:14:269 TEAM/(10741:10753): Se va a correr el algoritmo de deteccion de deadlock
+[INFO] 01:22:14:269 TEAM/(10741:10753): No hay deadlock
+[INFO] 01:22:14:269 TEAM/(10741:10752): Entrenador 1 se movio a la cola de Exec, porque esta primero en la cola de Ready
+[INFO] 01:22:14:270 TEAM/(10741:10750): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 21| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 01:22:14:270 TEAM/(10741:10750): (SENDING: CATCH_POKEMON|Pikachu|POS_X:9|POS_Y:9|SIZE:28 Bytes)
+[INFO] 01:22:14:270 TEAM/(10741:10750): (RECEIVING: ID_MSG:43)
+[INFO] 01:22:15:270 TEAM/(10741:10750): Entrenador 1 intenta atrapar al pokemon Pikachu, en la posicion (9,9)
+[INFO] 01:22:15:270 TEAM/(10741:10753): Entrenador 2 se movio a la cola de Ready, porque va a Moverse a pokemon
+[INFO] 01:22:15:270 TEAM/(10741:10753): Se va a correr el algoritmo de deteccion de deadlock
+[INFO] 01:22:15:270 TEAM/(10741:10753): No hay deadlock
+[INFO] 01:22:15:270 TEAM/(10741:10752): Entrenador 2 se movio a la cola de Exec, porque esta primero en la cola de Ready
+[INFO] 01:22:16:271 TEAM/(10741:10751): Entrenador 2 se movio a la posicion (4,2) 
+
+[INFO] 01:22:17:271 TEAM/(10741:10751): Entrenador 2 se movio a la posicion (5,2) 
+
+[INFO] 01:22:18:272 TEAM/(10741:10751): Entrenador 2 se movio a la posicion (5,3) 
+
+[INFO] 01:22:19:272 TEAM/(10741:10751): Entrenador 2 se movio a la posicion (5,4) 
+
+[INFO] 01:22:20:272 TEAM/(10741:10751): Entrenador 2 se movio a la posicion (5,5) 
+
+[INFO] 01:22:20:272 TEAM/(10741:10753): Entrenador 2 se movio a la cola de Ready, porque va a Atrapar
+[INFO] 01:22:20:272 TEAM/(10741:10753): Se va a correr el algoritmo de deteccion de deadlock
+[INFO] 01:22:20:273 TEAM/(10741:10753): No hay deadlock
+[INFO] 01:22:20:273 TEAM/(10741:10752): Entrenador 2 se movio a la cola de Exec, porque esta primero en la cola de Ready
+[INFO] 01:22:20:273 TEAM/(10741:10751): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 21| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 01:22:20:273 TEAM/(10741:10751): (SENDING: CATCH_POKEMON|Squirtle|POS_X:5|POS_Y:5|SIZE:29 Bytes)
+[INFO] 01:22:20:273 TEAM/(10741:10751): (RECEIVING: ID_MSG:44)
+[INFO] 01:22:21:274 TEAM/(10741:10751): Entrenador 2 intenta atrapar al pokemon Squirtle, en la posicion (5,5)
+[INFO] 01:22:21:274 TEAM/(10741:10753): Entrenador 0 se movio a la cola de Ready, porque va a Moverse a pokemon
+[INFO] 01:22:21:274 TEAM/(10741:10753): Se va a correr el algoritmo de deteccion de deadlock
+[INFO] 01:22:21:274 TEAM/(10741:10753): No hay deadlock
+[INFO] 01:22:21:274 TEAM/(10741:10752): Entrenador 0 se movio a la cola de Exec, porque esta primero en la cola de Ready
+[INFO] 01:22:22:275 TEAM/(10741:10749): Entrenador 0 se movio a la posicion (2,3) 
+
+[INFO] 01:22:23:276 TEAM/(10741:10749): Entrenador 0 se movio a la posicion (2,4) 
+
+[INFO] 01:22:24:276 TEAM/(10741:10749): Entrenador 0 se movio a la posicion (2,5) 
+
+[INFO] 01:22:25:277 TEAM/(10741:10749): Entrenador 0 se movio a la posicion (2,6) 
+
+[INFO] 01:22:26:278 TEAM/(10741:10749): Entrenador 0 se movio a la posicion (2,7) 
+
+[INFO] 01:22:27:279 TEAM/(10741:10749): Entrenador 0 se movio a la posicion (2,8) 
+
+[INFO] 01:22:27:279 TEAM/(10741:10753): Entrenador 0 se movio a la cola de Ready, porque va a Atrapar
+[INFO] 01:22:27:279 TEAM/(10741:10753): Se va a correr el algoritmo de deteccion de deadlock
+[INFO] 01:22:27:279 TEAM/(10741:10753): No hay deadlock
+[INFO] 01:22:27:279 TEAM/(10741:10752): Entrenador 0 se movio a la cola de Exec, porque esta primero en la cola de Ready
+[INFO] 01:22:27:279 TEAM/(10741:10749): (SUCCESS_CONN - PROCESS: BROKER | SOCKET#: 21| QUEUE: CATCH_POKEMON | IP: 127.0.0.1 | PORT: 6009)
+[INFO] 01:22:27:279 TEAM/(10741:10749): (SENDING: CATCH_POKEMON|Onix|POS_X:2|POS_Y:8|SIZE:25 Bytes)
+[INFO] 01:22:27:279 TEAM/(10741:10749): (RECEIVING: ID_MSG:45)
+[INFO] 01:22:28:279 TEAM/(10741:10749): Entrenador 0 intenta atrapar al pokemon Onix, en la posicion (2,8)
+[INFO] 01:22:28:280 TEAM/(10741:10753): Se va a correr el algoritmo de deteccion de deadlock
+[INFO] 01:22:28:280 TEAM/(10741:10753): Se detecto deadlock

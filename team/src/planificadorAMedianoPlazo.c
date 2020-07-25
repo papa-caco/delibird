@@ -8,7 +8,7 @@
 
 void planificadorMedianoPlazo() {
 
-	printf("SE LEVANTO HILO PLANIFICADOR");
+	//printf("SE LEVANTO HILO PLANIFICADOR");
 
 	char* estadosEntrenadorStrings[9] = { "Moverse a pokemon",
 			"Moverse a entrenador", "Atrapar", "Intercambiar",
@@ -54,8 +54,8 @@ void planificadorMedianoPlazo() {
 				verificarYCambiarEstadoEntrenador(entrenadorAux);
 				sem_post(&(entrenadorAux->mutex_entrenador));
 
-				printf("SALIO DEL VERIFICAR ESTADO CON EL ESTADO: %s \n",
-						estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
+				//printf("SALIO DEL VERIFICAR ESTADO CON EL ESTADO: %s \n",
+						//estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
 
 				if (entrenadorAux->estado_entrenador == EXIT) {
 
@@ -375,6 +375,8 @@ void liberar_variables_globales() {
 
 	sem_destroy(&mutex_entrenador);
 
+	sem_destroy(&sem_esperar_caught);
+
 	printf("######################################\n");
 	printf("FINALIZA EL TEAM \n");
 	printf("######################################\n");
@@ -514,8 +516,8 @@ t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores) {
 			int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion,
 					pokemonCercano->posicion);
 
-			printf("EL ENTRENADOR %d tiene una distancia de %d",
-					unEntrenador->id, distanciaEntreAmbos);
+			//printf("EL ENTRENADOR %d tiene una distancia de %d",
+				//	unEntrenador->id, distanciaEntreAmbos);
 
 			if (distanciaEntreAmbos < distanciaMasCorta) {
 				distanciaMasCorta = distanciaEntreAmbos;
