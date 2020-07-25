@@ -262,7 +262,8 @@ void inicio_suscripcion(t_tipo_mensaje *cola) {
 			}
 		}
 		int contador_global = contador_msjs_cola(*cola);
-		log_debug(g_logger,	"(TEAM END_SUSCRIPTION: |RECVD_MSGs:%d|TOTAL_MSGS:%d)",
+		log_debug(g_logger,
+				"(TEAM END_SUSCRIPTION: |RECVD_MSGs:%d|TOTAL_MSGS:%d)",
 				contador_msjs, contador_global);
 		free(handshake);
 		close(cliente_fd);
@@ -300,8 +301,9 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 		//necesitoPokemon ya tiene los semáforos adentro
 		if (necesitoPokemon(msg_appeared->pokemon) != 0) {
 
-			char* mensajeAppeared = malloc(strlen(msg_appeared->pokemon)+1);
-			memcpy(mensajeAppeared, msg_appeared->pokemon, strlen(msg_appeared->pokemon)+1 );
+			char* mensajeAppeared = malloc(strlen(msg_appeared->pokemon) + 1);
+			memcpy(mensajeAppeared, msg_appeared->pokemon,
+					strlen(msg_appeared->pokemon) + 1);
 
 			pthread_mutex_lock(&mutex_listaPokemonesLlegadosDelBroker);
 			list_add(pokemonesLlegadosDelBroker, mensajeAppeared);
@@ -559,8 +561,10 @@ uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente,
 				//LOS SEMAFOROS ESTAN INCLUIDOS EN LA FUNCION
 				agregarPokemonesDelLocalized(msg_localized);
 
-				char* mensajeLocalized = malloc(strlen(msg_localized->pokemon)+1);
-				memcpy(mensajeLocalized, msg_localized->pokemon, strlen(msg_localized->pokemon)+1 );
+				char* mensajeLocalized = malloc(
+						strlen(msg_localized->pokemon) + 1);
+				memcpy(mensajeLocalized, msg_localized->pokemon,
+						strlen(msg_localized->pokemon) + 1);
 
 				pthread_mutex_lock(&mutex_listaPokemonesLlegadosDelBroker);
 				list_add(pokemonesLlegadosDelBroker, mensajeLocalized);
@@ -606,13 +610,13 @@ void process_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger) {
 
 		if (necesitoPokemon(msg_appeared->pokemon) != 0) {
 
-			char* mensajeAppeared = malloc(strlen(msg_appeared->pokemon)+1);
-						memcpy(mensajeAppeared, msg_appeared->pokemon, strlen(msg_appeared->pokemon)+1 );
+			char* mensajeAppeared = malloc(strlen(msg_appeared->pokemon) + 1);
+			memcpy(mensajeAppeared, msg_appeared->pokemon,
+					strlen(msg_appeared->pokemon) + 1);
 
 			pthread_mutex_lock(&mutex_listaPokemonesLlegadosDelBroker);
 			list_add(pokemonesLlegadosDelBroker, mensajeAppeared);
 			pthread_mutex_unlock(&mutex_listaPokemonesLlegadosDelBroker);
-
 
 			t_pokemon_entrenador* pokemonAAgregarAlMapa = malloc(
 					sizeof(t_pokemon_entrenador));
@@ -736,8 +740,9 @@ void funciones_reconexion(void) {
 }
 
 bool codigo_operacion_valido(op_code code_op) {
-	return (code_op == CAUGHT_TEAM || code_op == APPEARED_TEAM || code_op == COLA_VACIA
-			|| code_op == LOCALIZED_TEAM || code_op == SUSCRIP_END);
+	return (code_op == CAUGHT_TEAM || code_op == APPEARED_TEAM
+			|| code_op == COLA_VACIA || code_op == LOCALIZED_TEAM
+			|| code_op == SUSCRIP_END);
 }
 
 void iniciar_cnt_msjs(void) {
@@ -884,8 +889,15 @@ void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
 
 	t_estado_entrenador estado = unEntrenador->estado_entrenador;
 
-	if (estado != MOVERSE_A_ENTRENADOR && estado != ATRAPAR
-			&& estado != INTERCAMBIAR && estado != ESPERAR_CAUGHT) {
+	if (estado == MOVERSE_A_POKEMON) {
+		//int probita = tieneDeadlockEntrenador(unEntrenador);
+		//unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
+		return;
+
+	} else if (estado != MOVERSE_A_ENTRENADOR && estado != ATRAPAR
+			&& estado != INTERCAMBIAR && estado != ESPERAR_CAUGHT)
+
+			{
 
 		t_list* pokemonesPendiente = pokemonesPendientes(unEntrenador);
 		int cantidadPokemonesPendientes = list_size(pokemonesPendiente);
@@ -914,6 +926,7 @@ void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
 		} else {
 			int probita = tieneDeadlockEntrenador(unEntrenador);
 			unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
+
 		}
 
 		liberar_lista_de_pokemones(pokemonesPendiente);
@@ -1058,26 +1071,27 @@ char necesitoIrAAtraparlo(char* nombrePokemonLlegado) {
 	return valorDeRetorno;
 }
 
-int enviar_end_suscripcion_broker_tm(t_tipo_mensaje cola_id, int contador_msgs, t_log *logger)
-{	// ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES FIN_SUSCRIPCION AL BROKER ----------//
+int enviar_end_suscripcion_broker_tm(t_tipo_mensaje cola_id, int contador_msgs,
+		t_log *logger) {// ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES FIN_SUSCRIPCION AL BROKER ----------//
 	pthread_t tid;
 	t_handsake_suscript *handshake = malloc(sizeof(t_handsake_suscript));
-	handshake->id_suscriptor =  g_config_team->id_suscriptor;
+	handshake->id_suscriptor = g_config_team->id_suscriptor;
 	handshake->msjs_recibidos = contador_msgs;
 	handshake->id_recibido = handshake->msjs_recibidos;
 	handshake->cola_id = cola_id;
 	pthread_mutex_lock(&g_mutex_mensajes);
-	int thread_status = pthread_create(&tid, NULL,(void*) connect_broker_y_enviar_end_suscript_tm, (void*) handshake);
+	int thread_status = pthread_create(&tid, NULL,
+			(void*) connect_broker_y_enviar_end_suscript_tm, (void*) handshake);
 	if (thread_status != 0) {
-		log_error(logger, "Thread create returned %d | %s", thread_status, strerror(thread_status));
+		log_error(logger, "Thread create returned %d | %s", thread_status,
+				strerror(thread_status));
 	} else {
 		pthread_detach(tid);
 	}
 	return thread_status;
 }
 
-void connect_broker_y_enviar_end_suscript_tm(t_handsake_suscript *handshake)
-{
+void connect_broker_y_enviar_end_suscript_tm(t_handsake_suscript *handshake) {
 	int id_mensaje = -1;
 	char *ip = g_config_team->ip_broker;
 	char *puerto = g_config_team->puerto_broker;
@@ -1100,28 +1114,31 @@ void connect_broker_y_enviar_end_suscript_tm(t_handsake_suscript *handshake)
 	free(handshake);
 }
 
-void manejo_senial_externa_tm(void)
-{
+void manejo_senial_externa_tm(void) {
 	pthread_mutex_lock(&g_mutex_mensajes);
 	int team_pid = process_get_thread_id();
-	log_trace(g_logger,"Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):%d", team_pid);
+	log_trace(g_logger,
+			"Para finalizar Suscripción -->> Enviar Señales ''kill SIGUSR1/2 '' al proceso (PID):%d",
+			team_pid);
 	puts("");
 	signal(SIGUSR1, funcion_captura_senial_tm);
 	signal(SIGUSR2, funcion_captura_senial_tm);
 	pthread_mutex_unlock(&g_mutex_mensajes);
 }
 
-void funcion_captura_senial_tm(int senial)
-{
+void funcion_captura_senial_tm(int senial) {
 	int gamecard_pid = process_get_thread_id();
 	puts("");
-	log_warning(g_logger,"Señal recibida: %s -->>(kill -%d  %d).",senial_recibida_tm(senial), senial, gamecard_pid);
+	log_warning(g_logger, "Señal recibida: %s -->>(kill -%d  %d).",
+			senial_recibida_tm(senial), senial, gamecard_pid);
 	puts("");
-	switch(senial) {
-	case SIGUSR1:;
+	switch (senial) {
+	case SIGUSR1:
+		;
 		finalizar_suscripciones_team(senial);
 		break;
-	case SIGUSR2:;
+	case SIGUSR2:
+		;
 		finalizar_suscripciones_team(senial);
 		break;
 	default:
@@ -1133,23 +1150,41 @@ void funcion_captura_senial_tm(int senial)
 void finalizar_suscripciones_team(int senial) // -->> Si la usan desde el código: usar 10 o 12 como argumento <<--
 { // ------ USAR ESTA FUNCION PARA ENVIAR MENSAJES FIN_SUSCRIPCION AL BROKER ----------//
 	if (senial == SIGUSR1 || senial == SIGUSR2) {
-		enviar_end_suscripcion_broker_tm(APPEARED_POKEMON, g_cnt_msjs_appeared, g_logger);
-		enviar_end_suscripcion_broker_tm(LOCALIZED_POKEMON, g_cnt_msjs_localized, g_logger);
-		enviar_end_suscripcion_broker_tm(CAUGHT_POKEMON, g_cnt_msjs_caught, g_logger);
+		enviar_end_suscripcion_broker_tm(APPEARED_POKEMON, g_cnt_msjs_appeared,
+				g_logger);
+		enviar_end_suscripcion_broker_tm(LOCALIZED_POKEMON,
+				g_cnt_msjs_localized, g_logger);
+		enviar_end_suscripcion_broker_tm(CAUGHT_POKEMON, g_cnt_msjs_caught,
+				g_logger);
 	}
 }
 
-char *senial_recibida_tm(int senial)
-{
+char *senial_recibida_tm(int senial) {
 	char *recvd_signal;
-	switch(senial) {
-	case SIGUSR1:;
+	switch (senial) {
+	case SIGUSR1:
+		;
 		recvd_signal = "SIGUSR1";
 		break;
-	case SIGUSR2:;
+	case SIGUSR2:
+		;
 		recvd_signal = "SIGUSR2";
 		break;
 	}
 	return recvd_signal;
+}
+
+char esFifo(){
+	if(strcmp(g_config_team->algoritmo_planificion, "FIFO") == 0){
+		return 1;
+	}
+	return 0;
+}
+
+char esRR(){
+	if(strcmp(g_config_team->algoritmo_planificion, "RR")){
+		return 1;
+	}
+	return 0;
 }
 

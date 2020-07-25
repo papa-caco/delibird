@@ -48,6 +48,9 @@ void agregarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon);
 
 void quitarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon);
 
+t_pokemon_entrenador* buscarPokemonMasCercanoRR(
+		t_posicion_entrenador* posicion_Entrenador);
+
 
 
 

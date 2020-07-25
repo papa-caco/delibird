@@ -95,4 +95,8 @@ void finalizar_suscripciones_team(int senial);
 
 char *senial_recibida_tm(int senial);
 
+char esFifo();
+
+char esRR();
+
 #endif /* SRC_UTILSTEAM_H_ */
