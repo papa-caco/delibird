@@ -1174,3 +1174,17 @@ char *senial_recibida_tm(int senial) {
 	return recvd_signal;
 }
 
+char esFifo(){
+	if(strcmp(g_config_team->algoritmo_planificion, "FIFO") == 0){
+		return 1;
+	}
+	return 0;
+}
+
+char esRR(){
+	if(strcmp(g_config_team->algoritmo_planificion, "RR")){
+		return 1;
+	}
+	return 0;
+}
+

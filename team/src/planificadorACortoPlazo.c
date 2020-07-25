@@ -20,9 +20,7 @@ void planificarFifo(){
 
 		//VERIFICAR SI DEBE MATARSE A SI MISMO (saltear o no su lógica)
 		if (finalizarProceso == 0) {
-			printf("ANTES DEL SEMAFORO READY --\n");
 			sem_wait(&sem_cola_ready);
-			printf("DESPUES DEL SEMAFORO READY --\n");
 			t_entrenador* entrenadorAEjecutar = (t_entrenador*) queue_pop(
 					colaReadyEntrenadores);
 
@@ -35,8 +33,6 @@ void planificarFifo(){
 
 
 			}*/
-			printf("SALIO DEL WHILE FELI PUTOOOO----\n");
-
 			sem_post(&sem_cola_ready);
 
 			log_info(g_logger,"Entrenador %d se movio a la cola de Exec, porque esta primero en la cola de Ready", entrenadorAEjecutar->id);
