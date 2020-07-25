@@ -29,6 +29,11 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 		sem_wait(&(entrenador->sem_entrenador));
 
 		switch (entrenador->estado_entrenador) {
+		case ESPERAR_CAUGHT:;
+			puts("que pasa aca?");
+			sleep(2);
+			sem_post(&(entrenador->sem_entrenador));
+			break;
 		case MOVERSE_A_POKEMON:
 			if (strcmp(planificadorAlgoritmo,fifo)== 0) {
 
@@ -172,6 +177,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 			} else {
 				sem_wait(&entrenador->mutex_entrenador);
 				entrenador->estado_entrenador = ESPERAR_CAUGHT;
+
 				sem_post(&entrenador->mutex_entrenador);
 			}
 
@@ -285,6 +291,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 						entrenador->id, pokemonReservado->pokemon,
 						entrenador->posicion->pos_x,
 						entrenador->posicion->pos_y);
+				sem_post(&(entrenador->sem_entrenador));
 			} // -->> Acá le dejé el log con la condición del estado entrenador
 			sem_post(&(sem_planificador_cplazoEntrenador));
 
