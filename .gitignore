@@ -23,16 +23,26 @@ testServer/bin/testServer
 testServer/bin/log/*.log
 testServer/logs/testserver.log
 testServer/debug/*.o
+team/bin/team
 team/logs/team.log
 team/bin/logs/team.log
-team/bin/team
+team/bin2/team
+team/bin2/logs/team.log
+team/.settings/language.settings.xml
+team2/bin/team
+team2/bin2/team
+team2/logs/team.log
+team2/bin/logs/team.log
+team2/bin2/logs/team.log
+team2/.settings/language.settings.xml
 gamecard/logs/
 gameCard/.autotools
 gameCard/.project
 gameCard/.settings/language.settings.xml
 delibird/.settings/language.settings.xml
-gamecard/log/
-gamecard/config/tall-grass/
+gamecard/log/gameCard_dbg.log
+gamecard/log/gameCard.log
+gamecard/TALL_GRASS
 
 # Object files
 *.o
