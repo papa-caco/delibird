@@ -101,21 +101,21 @@ t_list *armar_guardar_data_bloques_file_pokemon(char *string_posiciones)
 int grabar_bloque(char *block_buffer, size_t size, t_log *logger)
 {	//Graba un bloque en el file system
 	int block_nro = obtener_ultimo_nro_bloque();
-	char *file_block = string_itoa(block_nro);
-	char *path_blocks = obtengo_path_bloque(file_block);
-	FILE* fd = fopen(path_blocks,"w");
-	fwrite(block_buffer,sizeof(char), size, fd);
-	fclose(fd);
-	log_info(logger,"SAVE BLOCK | FILE %d.bin", block_nro);
-	incremento_cont_bloques();
-	pthread_mutex_lock(&g_mutex_cnt_blocks);
-	if (!bloques_disponibles()) {
-		log_error(logger, "-->>!!Sin Espacio en File System - Cerrar GAMECARD!! <<--");
-		pthread_mutex_lock(&g_mutex_cnt_blocks);
+	if (block_nro != -1) {
+		char *file_block = string_itoa(block_nro);
+		char *path_blocks = obtengo_path_bloque(file_block);
+		FILE* fd = fopen(path_blocks,"w");
+		fwrite(block_buffer,sizeof(char), size, fd);
+		fclose(fd);
+		log_info(logger,"SAVE BLOCK | FILE %d.bin", block_nro);
+		free(file_block);
+		free(path_blocks);
+	} else {
+		puts("");
+		log_error(logger, "-->>!!Sin Bloques Disponibles en File System TALL_GRASS - Cerrar GAMECARD!! <<--");
+		pthread_mutex_lock(&g_mutex_envio);
+		pthread_exit(NULL);
 	}
-	pthread_mutex_unlock(&g_mutex_cnt_blocks);
-	free(file_block);
-	free(path_blocks);
 	free(block_buffer);
 	return block_nro;
 }
@@ -423,7 +423,6 @@ int modificar_archivo_pokemon(t_archivo_pokemon *archivo, t_log *logger)
 {
 	eliminar_bloques_archivo(archivo);
 	char* string_blocks, *tamano;
-	//printf("cant_bloq-d-borrar:%d\n",archivo->metadata->blocks->elements_count);
 	char *string_posiciones = serializar_lista_posiciones_pokemon(archivo->posiciones, logger);
 	archivo->metadata->size = string_length(string_posiciones);
 	if (archivo->metadata->size > 0) {
@@ -729,7 +728,6 @@ bool esta_abierto_archivo_pokemon(char *pokemon)
 		return resultado;
 	}
 	pthread_mutex_lock(&g_mutex_open_files_list);
-	//printf("cant_arch_abiertos:%d\n", g_archivos_abiertos->elements_count);
 	resultado = list_any_satisfy(g_archivos_abiertos, archivo_en_lista);
 	for (int i = 0; i < g_archivos_abiertos->elements_count; i ++) {
 		char *abierto = (char*) list_get(g_archivos_abiertos, i);
@@ -741,10 +739,8 @@ bool esta_abierto_archivo_pokemon(char *pokemon)
 		t_config* metadata_file_info = config_create(path_metadata);
 		resultado = si_no(config_get_string_value(metadata_file_info, "OPEN"));
 		config_destroy(metadata_file_info);
-		//printf("(Archivo %s BLOCKED=Y)\n", pokemon);//TODO
 		free(path_metadata);
 	}
-	//printf("abierto?:%d\n", resultado);
 	return resultado;
 }
 
@@ -773,7 +769,7 @@ void inicializar_bitmap_tallgrass(t_log *logger)
 	char *path_arhivo = g_config_gc->ruta_bitmap;
 	int cant_bloques = g_config_tg->blocks, tamano_bitmap = (int)(cant_bloques / 8), tamano_fs = 0;
 	g_bitmap_bloques->bits_mmap_file = abrir_archivo_bitmap(path_arhivo , cant_bloques, g_logdebug);
-	g_bitmap_bloques->bitmap = bitarray_create_with_mode(g_bitmap_bloques->bits_mmap_file, tamano_bitmap, MSB_FIRST);
+	g_bitmap_bloques->bitmap = bitarray_create_with_mode(g_bitmap_bloques->bits_mmap_file, tamano_bitmap, LSB_FIRST);
 	g_bitmap_bloques->total_blocks = cant_bloques;
 	g_bitmap_bloques->used_blocks = 0;
 	g_bitmap_bloques->nro_bloque = 0;
@@ -800,13 +796,12 @@ void *abrir_archivo_bitmap(char *path, int size, t_log *logger)
 	int truncate_result = ftruncate(fd, size);
 	if( truncate_result != 0 ) {
 		log_error(logger,"(%s -- Bitmap_File_Not_Truncated:%d)",strerror(errno), truncate_result);
-	}							// Habilito Lectura/Escritura -- Comparto Cambios //
+	}									// Habilito Lectura/Escritura -- Comparto Cambios //
 	void * dataArchivo = mmap( NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	msync(dataArchivo, size, MS_SYNC); // Sincroniza Memoria de forma Sincrónica //
+	msync(dataArchivo, size, MS_SYNC); 	// Sincroniza Memoria de forma Sincrónica //
 	if (new_file) {
 		int size_bitarray = (int)(size / 8);
-		t_bitarray *bitarray_vacio =  bitarray_create_with_mode(dataArchivo, size_bitarray, MSB_FIRST);
-		bitarray_set_bit(bitarray_vacio, 0);
+		t_bitarray *bitarray_vacio =  bitarray_create_with_mode(dataArchivo, size_bitarray, LSB_FIRST);
 		bitarray_destroy(bitarray_vacio);
 	}
 	return dataArchivo;
@@ -817,11 +812,7 @@ void leer_contador_bloques(void)
 	pthread_mutex_lock(&g_mutex_cnt_blocks);
 	int used_blocks = 0;
 	for (int i = 0; i < g_bitmap_bloques->total_blocks; i ++) {
-		if (!bitarray_test_bit(g_bitmap_bloques->bitmap, i)) {
-			g_bitmap_bloques->nro_bloque = i;
-			//printf("nro_bloque%d\n",g_bitmap_bloques->nro_bloque);
-			i = g_bitmap_bloques->total_blocks;
-		} else {
+		if (bitarray_test_bit(g_bitmap_bloques->bitmap, i)) {
 			used_blocks ++;
 		}
 	}
@@ -836,7 +827,6 @@ bool bloques_disponibles(void)
 		if (!bitarray_test_bit(g_bitmap_bloques->bitmap, i)) {
 			bitarray_set_bit(g_bitmap_bloques->bitmap, i);
 			g_bitmap_bloques->nro_bloque = i ;
-			//printf("++ nro_bloque%d\n",g_bitmap_bloques->nro_bloque);
 			i = g_bitmap_bloques->total_blocks;
 			resultado = true;
 		}
@@ -851,7 +841,6 @@ void incremento_cont_bloques(void)
 		if (!bitarray_test_bit(g_bitmap_bloques->bitmap, i)) {
 			bitarray_set_bit(g_bitmap_bloques->bitmap, i);
 			g_bitmap_bloques->nro_bloque = i ;
-			//printf("++ nro_bloque%d\n",g_bitmap_bloques->nro_bloque);
 			i = g_bitmap_bloques->total_blocks;
 		}
 	}
@@ -862,13 +851,6 @@ void liberar_nro_bloque_bitmap(int block_nro)
 {	//cuando libero un bloque no hace falta decrementar g_bitmap_bloques->used_blocks
 	pthread_mutex_lock(&g_mutex_cnt_blocks);// se le resta 1 porque el bitmap arranca en cero
 	bitarray_clean_bit(g_bitmap_bloques->bitmap, block_nro);
-	for (int i = 0; i < g_bitmap_bloques->total_blocks; i ++) {
-		if (!bitarray_test_bit(g_bitmap_bloques->bitmap, i)) {
-			g_bitmap_bloques->nro_bloque = i;
-			//printf("-- nro_bloque%d\n",g_bitmap_bloques->nro_bloque);
-			i = g_bitmap_bloques->total_blocks;
-		}
-	}
 	g_bitmap_bloques->used_blocks --;
 	pthread_mutex_unlock(&g_mutex_cnt_blocks);
 }
@@ -876,9 +858,17 @@ void liberar_nro_bloque_bitmap(int block_nro)
 int obtener_ultimo_nro_bloque(void)
 {
 	pthread_mutex_lock(&g_mutex_cnt_blocks);
-	int nro_bloque = g_bitmap_bloques->nro_bloque;
+	for (int i = 1; i <= g_bitmap_bloques->total_blocks; i ++) {
+		if (!(bitarray_test_bit(g_bitmap_bloques->bitmap, i))) {
+			bitarray_set_bit(g_bitmap_bloques->bitmap, i);
+			g_bitmap_bloques->nro_bloque = i;
+			g_bitmap_bloques->used_blocks ++;
+			pthread_mutex_unlock(&g_mutex_cnt_blocks);
+			return i;
+		}
+	}
 	pthread_mutex_unlock(&g_mutex_cnt_blocks);
-	return nro_bloque;
+	return -1;
 }
 
 bool si_no(char *valor)

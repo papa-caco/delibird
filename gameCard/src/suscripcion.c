@@ -59,7 +59,9 @@ void suscripcion_gc(t_tipo_mensaje *cola)
 				status_conexion_broker = false;
 				flag_salida = 0;
 			} else if (cod_oper_mensaje != SUSCRIP_END) {
+				pthread_mutex_lock(&g_mutex_envio);
 				id_recibido = rcv_msjs_broker_gc(cod_oper_mensaje,cliente_fd, g_logger);
+				pthread_mutex_unlock(&g_mutex_envio);
 				contador_msjs += 1;
 				handshake->msjs_recibidos = contador_msjs;
 				handshake->id_recibido = id_recibido;

@@ -35,14 +35,15 @@ team2/logs/team.log
 team2/bin/logs/team.log
 team2/bin2/logs/team.log
 team2/.settings/language.settings.xml
-gamecard/logs/
+gamecard/log/
 gameCard/.autotools
 gameCard/.project
 gameCard/.settings/language.settings.xml
 delibird/.settings/language.settings.xml
-gamecard/log/gameCard_dbg.log
-gamecard/log/gameCard.log
-gamecard/TALL_GRASS
+gameCard/src/old/*
+gameCard/log/gameCard_dbg.log
+gameCard/log/gameCard.log
+gameCard/TALL_GRASS
 
 # Object files
 *.o

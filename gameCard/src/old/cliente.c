@@ -21,7 +21,7 @@ void* serializar_paquete_cliente(t_paquete* paquete, int *bytes)
 	offset += sizeof(int);
 	memcpy(aEnviar + offset , &(paquete->buffer->size),sizeof(int));
 	offset += sizeof(int);
-	memcpy(aEnviar + offset , paquete->buffer->stream,paquete->buffer->size);
+	memcpy(aEnviar + offset , paquete->buffer->data,paquete->buffer->size);
 	return aEnviar;
 }
 
@@ -137,9 +137,9 @@ void empaquetar_mensaje(char* mensaje,int canal,t_paquete *paquete){
 	offset += sizeof(int);
 
 	memcpy(stream + offset, mensaje, strlen(mensaje) + 1);
-	buffer->stream = stream;
+	buffer->data = stream;
 
-	paquete->codigo_operacion = MENSAJE;
+	paquete->codigo_operacion = NEW_POKEMON;
 	paquete->buffer = buffer;
 
 
