@@ -541,10 +541,11 @@ int calcularDistancia(t_posicion_entrenador* posicionActual,
 
 int intentarAtraparPokemon(t_entrenador* entrenador,
 		t_pokemon_entrenador_reservado* pokemon) {
+	enviar_catch_pokemon_broker(entrenador->posicion->pos_x,
+				entrenador->posicion->pos_y, pokemon->pokemon, g_logger,
+				entrenador->id);
 
-	int prueba = enviar_catch_pokemon_broker(entrenador->posicion->pos_x,
-			entrenador->posicion->pos_y, pokemon->pokemon, g_logger,
-			entrenador->id);
+	int prueba = rta_catch;
 	return prueba;
 
 }

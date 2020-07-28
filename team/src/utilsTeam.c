@@ -143,9 +143,11 @@ int connect_broker_y_enviar_mensaje_catch(t_msg_catch_team_broker *msg_catch_tea
 	//sem_wait(&mutex_idCorrelativos);
 	ids->id_Correlativo = id_mensaje;
 	list_add(idCorrelativosCatch, ids);
-
+	if (id_mensaje != -1) {
+			rta_catch = id_mensaje;
+	}
 	sem_post(&mutex_idCorrelativos);
-	//printf("TERMINO FUNCION ENVIAR CATCH \n");
+
 
 	return id_mensaje;
 }

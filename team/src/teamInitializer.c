@@ -324,6 +324,8 @@ void liberar_cola(t_queue* cola) {
 
 void iniciar_variables_globales(){
 
+	rta_catch = -1;
+
 	entrenadorEnEjecucion = NULL;
 
 	ciclosCPU = 0;

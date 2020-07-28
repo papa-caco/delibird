@@ -92,6 +92,8 @@ t_list* idCorrelativosCatch;
 t_list* idCorrelativosGet;
 t_list* pokemonesLlegadosDelBroker;
 
+int rta_catch;
+
 pthread_mutex_t mutex_listaPokemonesLlegadosDelBroker;
 sem_t mutex_idCorrelativosGet;
 sem_t mutex_ciclosCPU;
