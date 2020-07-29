@@ -146,6 +146,8 @@ pthread_mutex_t mutex_reconexion;
 
 pthread_t tid_reconexion;
 
+sem_t mutex_catch;
+
 sem_t sem_mutex_msjs;
 
 //--------------SEMAFOROS LISTAS DE POKEMONES------------------------------

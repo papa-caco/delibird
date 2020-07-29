@@ -69,16 +69,13 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 				for (int i = 0; i < distancia; i++) {
 					if (entrenador->quantumPorEjecutar == 0) {
-
 						continue;
 					}
 					moverEntrenador(entrenador, pokemonReservado->posicion);
 
 				}
-
 				distancia = calcularDistancia(entrenador->posicion,
 						pokemonReservado->posicion);
-
 				if (distancia == 0) {
 
 					entrenador->estado_entrenador = ATRAPAR;
@@ -88,7 +85,6 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 					sem_post(&sem_hay_pokemones_mapa);
 				}
-
 				entrenador->quantumPorEjecutar = quantum;
 
 				sem_post(&(sem_planificador_cplazoEntrenador));
@@ -129,11 +125,9 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 				for (int i = 0; i < distancia; i++) {
 					if (entrenador->quantumPorEjecutar == 0) {
-
 						continue;
 					}
 					moverEntrenador(entrenador, posicionEntrenadorAMoverse);
-
 				}
 
 				distancia = calcularDistancia(entrenador->posicion,
@@ -153,13 +147,13 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 			break;
 		case ATRAPAR:
-
 			pokemonReservado = buscarPokemonReservado(entrenador->id);
 
 			int resultadoEnvioMensaje = intentarAtraparPokemon(entrenador,
 					pokemonReservado);
 
-			//printf("ESTOY EN ENTRENADOR DESPUES DE INTENTAR ATRAPAR \n");
+			log_trace(g_logger,"Borrar-->>ESTOY EN ENTRENADOR DP DE INTENTAR ATRAPAR|id_msj_catch recibido:%d",
+					resultadoEnvioMensaje); //TODO Borrar
 			sleep(g_config_team->retardo_ciclo_cpu);
 
 			ciclosCPU++;
@@ -541,10 +535,11 @@ int calcularDistancia(t_posicion_entrenador* posicionActual,
 
 int intentarAtraparPokemon(t_entrenador* entrenador,
 		t_pokemon_entrenador_reservado* pokemon) {
-	enviar_catch_pokemon_broker(entrenador->posicion->pos_x,
+
+	int thread_status = enviar_catch_pokemon_broker(entrenador->posicion->pos_x,
 				entrenador->posicion->pos_y, pokemon->pokemon, g_logger,
 				entrenador->id);
-
+	sem_wait(&mutex_catch);
 	int prueba = rta_catch;
 	return prueba;
 

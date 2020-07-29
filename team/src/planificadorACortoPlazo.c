@@ -23,7 +23,6 @@ void planificarFifo(){
 			sem_wait(&sem_cola_ready);
 			t_entrenador* entrenadorAEjecutar = (t_entrenador*) queue_pop(
 					colaReadyEntrenadores);
-
 			entrenadorEnEjecucion = entrenadorAEjecutar;
 
 			/*while(entrenadorAEjecutar->estado_entrenador == MOVERSE_A_POKEMON && (list_size(pokemonesLibresEnElMapa) == 0)){
@@ -32,8 +31,6 @@ void planificarFifo(){
 
 				entrenadorAEjecutar = (t_entrenador*) queue_pop(
 									colaReadyEntrenadores);
-
-
 			}*/
 			sem_post(&sem_cola_ready);
 
@@ -72,6 +69,7 @@ void planificarFifo(){
 			//O FINALICE TODO SI CORRESPONDE
 			sem_post(&sem_planificador_mplazo);
 		}
+
 
 	}
 

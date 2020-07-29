@@ -135,6 +135,11 @@ int connect_broker_y_enviar_mensaje_catch(t_msg_catch_team_broker *msg_catch_tea
 			free(a_recibir);
 		}
 	}
+	if (id_mensaje != -1) {
+			rta_catch = id_mensaje;
+	}
+	log_trace(g_logger,"Borrar-->>Envié MSG_CATCH | RTA: id_msj_catch:%d\n",rta_catch);//TODO Borrar
+	sem_post(&mutex_catch);
 	sem_post(&sem_mutex_msjs);
 	close(cliente_fd);
 	eliminar_msg_catch_broker(msg_catch);
@@ -143,11 +148,7 @@ int connect_broker_y_enviar_mensaje_catch(t_msg_catch_team_broker *msg_catch_tea
 	//sem_wait(&mutex_idCorrelativos);
 	ids->id_Correlativo = id_mensaje;
 	list_add(idCorrelativosCatch, ids);
-	if (id_mensaje != -1) {
-			rta_catch = id_mensaje;
-	}
 	sem_post(&mutex_idCorrelativos);
-
 
 	return id_mensaje;
 }
@@ -645,19 +646,6 @@ void process_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger) {
 		eliminar_msg_appeared_team(msg_appeared);
 		break;
 	}
-}
-
-//Función de prueba - Envía un mensaje CATCH_POKEMON para probar la función.
-void enviar_catch_de_appeared(t_msg_appeared_team *msg_appeared) {
-	int pos_x = msg_appeared->coord->pos_x;
-	int pos_y = msg_appeared->coord->pos_y;
-	enviar_catch_pokemon_broker(pos_x, pos_y, msg_appeared->pokemon, g_logger,
-			1);
-}
-
-//Función de prueba - Envía un mensaje GET_POKEMON para probar la función.
-void enviar_get_de_appeared(t_msg_appeared_team *msg_appeared) {
-	enviar_get_pokemon_broker(msg_appeared->pokemon, g_logger);
 }
 
 void enviar_msjs_get_objetivos(void) {

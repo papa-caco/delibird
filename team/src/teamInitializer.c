@@ -158,7 +158,7 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		for (int k = 0; k < list_size(unEntrenador->pokemonesObtenidos); k++) {
 			t_pokemon_entrenador* pokePrint = list_get(
 					unEntrenador->pokemonesObtenidos, k);
-			puts(pokePrint->pokemon);
+			//puts(pokePrint->pokemon);
 		}
 
 		for (int k = 0; k < list_size(unEntrenador->objetivoEntrenador); k++) {
@@ -397,6 +397,8 @@ void iniciar_variables_globales(){
 	//sem_init(&mutex_listaPokemonesLlegadosDelBroker,0,1);
 
 	pthread_mutex_init(&mutex_listaPokemonesLlegadosDelBroker, NULL);
+
+	sem_init(&mutex_catch, 0, 0);
 
 	sem_init(&mutex_idCorrelativosGet,0,1);
 
