@@ -32,10 +32,11 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 		case MOVERSE_A_POKEMON:
 			if (strcmp(planificadorAlgoritmo,fifo)== 0) {
 
-				pokemon = buscarPokemonMasCercano(entrenador->posicion);
+				//pokemon = buscarPokemonMasCercano(entrenador->posicion);
 				//Ya hay semaforos adentro
-				t_pokemon_entrenador_reservado* pokemonReservado =
-						moverPokemonAReservados(pokemon, entrenador->id);
+				//t_pokemon_entrenador_reservado* pokemonReservado = moverPokemonAReservados(pokemon, entrenador->id);
+
+				t_pokemon_entrenador_reservado* pokemonReservado = buscarPokemonReservado(entrenador->id);
 
 				distancia = calcularDistancia(entrenador->posicion,
 						pokemonReservado->posicion);
@@ -79,7 +80,6 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 				if (distancia == 0) {
 
 					entrenador->estado_entrenador = ATRAPAR;
-
 
 				}else {
 
@@ -222,9 +222,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 				free(pokemonReservado);
 
 				//Agrego el Poke
-				//sem_wait(&(entrenador->mutex_entrenador));
 				agregarPokemon(entrenador, pokemonAAgregarConvertido);
-				//sem_post(&(entrenador->mutex_entrenador));
 
 				//Muevo el pokemon a la lista global de atrapados
 				sem_wait(&(sem_pokemonesGlobalesAtrapados));

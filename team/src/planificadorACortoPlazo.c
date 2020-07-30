@@ -44,12 +44,12 @@ void planificarFifo(){
 			//ESPERA EL SIGNAL DEL ENTRENADOR PARA QUE COMPLETE SU FUNCION
 			sem_wait(&sem_planificador_cplazoEntrenador);
 
-			//printf("ESTOY ANTES DEL VERIFICAR \n");
+			printf("ESTOY ANTES DEL VERIFICAR \n");
 			//VERIFCO SI PUEDE PASAR A EXIT, DEADLOCK, O BLOCKED
 			sem_wait(&(entrenadorAEjecutar->mutex_entrenador));
 			verificarYCambiarEstadoEntrenador(entrenadorAEjecutar);
 			sem_post(&(entrenadorAEjecutar->mutex_entrenador));
-			//printf("ESTOY DESPUES DEL VERIFICAR \n");
+			printf("ESTOY DESPUES DEL VERIFICAR \n");
 
 			if (entrenadorAEjecutar->estado_entrenador == EXIT) { //CASO DESPUES DEL INTERCAMBIO
 				//SI ESTA EN EXIT, LO MANDO A LA COLA CORRESPONDIENTE

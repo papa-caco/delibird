@@ -25,4 +25,6 @@ t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores);
 
 t_entrenador* buscarEntrenadorMasConvenienteRR(t_queue* colaEntrenadores);
 
+char todosEstanBloqueados();
+
 #endif /* SRC_PLANIFICADORAMEDIANOPLAZO_H_ */
