@@ -32,9 +32,6 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 		case MOVERSE_A_POKEMON:
 			if (strcmp(planificadorAlgoritmo,fifo)== 0) {
 
-				//pokemon = buscarPokemonMasCercano(entrenador->posicion);
-				//Ya hay semaforos adentro
-				//t_pokemon_entrenador_reservado* pokemonReservado = moverPokemonAReservados(pokemon, entrenador->id);
 
 				t_pokemon_entrenador_reservado* pokemonReservado = buscarPokemonReservado(entrenador->id);
 
@@ -56,15 +53,6 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 				pokemonReservado =
 						buscarPokemonReservado(entrenador->id);
 
-				if (pokemonReservado == NULL) {
-
-					pokemon = buscarPokemonMasCercano(entrenador->posicion);
-					//Ya hay semaforos adentro
-					pokemonReservado = moverPokemonAReservados(pokemon,
-							entrenador->id);
-
-				}
-
 				distancia = calcularDistancia(entrenador->posicion,
 						pokemonReservado->posicion);
 
@@ -75,15 +63,15 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 					moverEntrenador(entrenador, pokemonReservado->posicion);
 
 				}
-				distancia = calcularDistancia(entrenador->posicion,
-						pokemonReservado->posicion);
+				distancia = calcularDistancia(entrenador->posicion, pokemonReservado->posicion);
+
 				if (distancia == 0) {
 
 					entrenador->estado_entrenador = ATRAPAR;
 
 				}else {
 
-					sem_post(&sem_hay_pokemones_mapa);
+					entrenador->estado_entrenador = SEGUIR_MOVIENDOSE;
 				}
 				entrenador->quantumPorEjecutar = quantum;
 
@@ -92,6 +80,36 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 			}
 
 			break;
+
+		case SEGUIR_MOVIENDOSE:
+
+			pokemonReservado = buscarPokemonReservado(entrenador->id);
+
+			distancia = calcularDistancia(entrenador->posicion,
+					pokemonReservado->posicion);
+
+			for (int i = 0; i < distancia; i++) {
+				if (entrenador->quantumPorEjecutar == 0) {
+					continue;
+				}
+				moverEntrenador(entrenador, pokemonReservado->posicion);
+
+			}
+			distancia = calcularDistancia(entrenador->posicion,
+					pokemonReservado->posicion);
+
+			if (distancia == 0) {
+
+				entrenador->estado_entrenador = ATRAPAR;
+
+			}
+
+			entrenador->quantumPorEjecutar = quantum;
+
+			sem_post(&(sem_planificador_cplazoEntrenador));
+
+
+		break;
 		case MOVERSE_A_ENTRENADOR:
 
 			if (strcmp(planificadorAlgoritmo,fifo)== 0) {
@@ -143,7 +161,6 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 				sem_post(&(sem_planificador_cplazoEntrenador));
 
-			}
 
 			break;
 		case ATRAPAR:
@@ -247,11 +264,8 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 			entrenador2 = buscarEntrenadorDelIntercambio(entrenador);
 
-			//if(elIntercambioEsIdeal(entrenador, entrenador2)){
-			//intercambiarIdealPokemon(entrenador, entrenador2);
-			//} else{
+
 			intercambiarNormalPokemon(entrenador, entrenador2);
-			//}
 
 			entrenador->estado_entrenador = ACABO_INTERCAMBIO;
 
@@ -265,18 +279,18 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 			break;
 
-			//case EXIT:
-			//pthread_exit(NULL);
-			//VERIFICAR SI SE TERMINA EL HILO DE ESTA FORMA.
 
 		case -1:
 			pthread_exit(NULL);
 		}
+
 		//FALTA DETERMINAR EL CASO DEL FINALIZADO DEL ENTRENADOR
 
+		}
 	}
-
 }
+
+
 
 t_pokemon_entrenador* buscarPokemonMasCercano(
 		t_posicion_entrenador* posicion_Entrenador) {
@@ -380,27 +394,8 @@ t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador) {
 
 	t_posicion_entrenador* posicionAMoverse = NULL;
 	t_entrenador* entrenadorAux;
+	char yaEncontre = 0;
 
-	/*sem_wait(&(sem_cola_blocked));
-
-	 for (int i = 0; i < queue_size(colaBlockedEntrenadores); i++) {
-
-	 entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
-
-	 if (entrenadorAux->estado_entrenador == DEADLOCK
-	 && elIntercambioEsIdeal(entrenador, entrenadorAux)) {
-
-	 posicionAMoverse = entrenadorAux->posicion;
-
-	 }
-
-	 queue_push(colaBlockedEntrenadores, entrenadorAux);
-
-	 }
-
-	 sem_post(&(sem_cola_blocked));*/
-
-	//if (posicionAMoverse == NULL) {
 	sem_wait(&(sem_cola_blocked));
 
 	for (int i = 0; i < queue_size(colaBlockedEntrenadores); i++) {
@@ -408,8 +403,8 @@ t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador) {
 		entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
 
 		if (entrenadorAux->estado_entrenador == DEADLOCK
-				&& puedoIntercambiar(entrenador, entrenadorAux)) {
-
+				&& puedoIntercambiar(entrenador, entrenadorAux) && yaEncontre == 0) {
+			yaEncontre=1;
 			posicionAMoverse = entrenadorAux->posicion;
 
 		}
@@ -698,7 +693,7 @@ void intercambiarNormalPokemon(t_entrenador* entrenador1,
 	//VER SI TENEMOS QUE HACERLO AFUERA POR LA PLANIFICACION RR DE QUANTUM
 	sleep((g_config_team->retardo_ciclo_cpu) * 5);
 	sem_wait(&mutex_ciclosCPU);
-	ciclosCPU += 5;
+	ciclosCPU += 10;
 	sem_post(&mutex_ciclosCPU);
 
 	entrenador1->ciclosCPU += 5;

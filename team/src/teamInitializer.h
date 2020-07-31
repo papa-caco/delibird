@@ -53,6 +53,7 @@ typedef enum Estado_Entrenador{
 	ESPERAR_CAUGHT,
 	DEADLOCK,
 	EXIT,
+	SEGUIR_MOVIENDOSE,
 } t_estado_entrenador;
 
 typedef struct Entrenador{

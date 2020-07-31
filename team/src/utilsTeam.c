@@ -852,7 +852,7 @@ void agregarPokemonAGlobalesAtrapados(t_pokemon_entrenador* pokemon) {
 
 void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
 	t_estado_entrenador estado = unEntrenador->estado_entrenador;
-	if (estado == MOVERSE_A_POKEMON) {
+	if (estado == MOVERSE_A_POKEMON || estado == SEGUIR_MOVIENDOSE) {
 		//int probita = tieneDeadlockEntrenador(unEntrenador);
 		//unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
 		return;
@@ -877,7 +877,7 @@ void verificarYCambiarEstadoEntrenador(t_entrenador* unEntrenador) {
 				&& (tieneDeadlockEntrenador(unEntrenador))) {
 			printf(
 					"----------------------------------------------------------------------------\n");
-			printf("ENTRENADOR %d, TIENE DEADLOCK \n", unEntrenador->id);
+			printf("ENTRENADOR %d, ESTA BLOQUEADO \n", unEntrenador->id);
 			printf(
 					"----------------------------------------------------------------------------\n");
 			unEntrenador->estado_entrenador = DEADLOCK;

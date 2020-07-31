@@ -10,14 +10,15 @@ void planificadorMedianoPlazo() {
 
 	//printf("SE LEVANTO HILO PLANIFICADOR");
 
-	char* estadosEntrenadorStrings[9] = { "Moverse a pokemon",
-			"Moverse a entrenador", "Atrapar", "Intercambiar",
-			"Acabar intercambio", "Recibir respuesta ok", "Esperar caught",
-			"Estar en deadlock", "Estar en exit" };
+	char* estadosEntrenadorStrings[10] = { "MOVERSE A POKEMON",
+			"MOVERSE A ENTRENADOR", "ATRAPAR", "INTERCAMBIAR",
+			"ACABAR INTERCAMBIO", "RECIBIR RESPUESTA OK", "ESPERAR CAUGHT",
+			"ESPERAR DEADLOCK", "ESTAR EN EXIT", "SEGUIR MOVIENDOSE" };
 
 	sem_wait(&sem_activacionPlanificadorMPlazo);
 
 	int valor = 0;
+	int esLaPrimeraVez = 0;
 
 	while (finalizarProceso == 0) {
 
@@ -95,6 +96,11 @@ void planificadorMedianoPlazo() {
 		//MATAR A SI MISMO, verifico que finalizarProceso no sea 0. Si es, salteo la lógica para que salga
 		//del while.
 
+		if (esLaPrimeraVez == 0) {
+			sleep(5);
+			esLaPrimeraVez = 1;
+		}
+
 		if (finalizarProceso == 0) {
 
 
@@ -120,12 +126,13 @@ void planificadorMedianoPlazo() {
 				sem_wait(&sem_hay_pokemones_mapa);
 
 				//Busco al primer entrenador que tiene el estado "Moverse a pokemon"
-				if (strcmp(g_config_team->algoritmo_planificion, "FIFO") == 0) {
+				if (strcmp(g_config_team->algoritmo_planificion, "FIFO") == 0 ||
+						strcmp(g_config_team->algoritmo_planificion, "RR") == 0) {
+
 
 					int cantidadDeEntrenadoresAuxiliar = cantidadElementosCola;
 					sem_wait(&sem_pokemonesLibresEnElMapa);
 					int cantidadDePokemonesLibresAuxiliar = list_size(pokemonesLibresEnElMapa);
-					t_list* pokesLibresAuxiliar = pokemonesLibresEnElMapa;
 					sem_post(&sem_pokemonesLibresEnElMapa);
 					//Empiezo a llenar la cola de Ready
 					while( cantidadDeEntrenadoresAuxiliar !=0 && cantidadDePokemonesLibresAuxiliar !=0 ){
@@ -140,7 +147,7 @@ void planificadorMedianoPlazo() {
 						sem_wait(&sem_cola_ready);
 						queue_push(colaReadyEntrenadores, entrenadorAux);
 
-						log_info(g_logger, "Entrenador %d se movio a la cola de Ready, porque va a %s", entrenadorAux->id, estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
+						log_info(g_logger, "Entrenador %d se movio a la cola de READY, porque va a %s", entrenadorAux->id, estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
 
 						sem_post(&sem_cola_ready);
 
@@ -149,21 +156,17 @@ void planificadorMedianoPlazo() {
 
 					}
 					//Mando un post al planificador a corto plazo por cada entrenador que pase a ready
-					for(int i=encontreUnoAPasar; i!=0; i--){
+					for(int i=0; i<encontreUnoAPasar; i++){
 						sem_post(&sem_planificador_cplazoReady);
 					}
 
 
 
-				} else if (strcmp(g_config_team->algoritmo_planificion, "RR")
-						== 0) {
-
-					entrenadorAux = buscarEntrenadorMasConvenienteRR(
-							colaBlockedEntrenadores);
-					encontreUnoAPasar = 1;
-
 				}
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+// VER SI SIRVE PARA SJF
+
+
 				/*sem_wait(&sem_cola_ready);
 				queue_push(colaReadyEntrenadores, entrenadorAux);
 
@@ -206,7 +209,7 @@ void planificadorMedianoPlazo() {
 							queue_push(colaReadyEntrenadores, entrenadorAux);
 
 							log_info(g_logger,
-									"Entrenador %d se movio a la cola de Ready, porque va a %s",
+									"Entrenador %d se movio a la cola de READY, porque va a %s",
 									entrenadorAux->id,
 									estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
 
