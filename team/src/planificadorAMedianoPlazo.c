@@ -121,63 +121,57 @@ void planificadorMedianoPlazo() {
 					&& todosQuierenMoverseAPokemon(colaBlockedEntrenadores)) {
 
 				t_entrenador* entrenadorAux;
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+
 				//Espero que haya pokemones
 				sem_wait(&sem_hay_pokemones_mapa);
 
 				//Busco al primer entrenador que tiene el estado "Moverse a pokemon"
-				if (strcmp(g_config_team->algoritmo_planificion, "FIFO") == 0 ||
-						strcmp(g_config_team->algoritmo_planificion, "RR") == 0) {
 
+				int cantidadDeEntrenadoresAuxiliar = cantidadElementosCola;
+				sem_wait(&sem_pokemonesLibresEnElMapa);
+				int cantidadDePokemonesLibresAuxiliar = list_size(
+						pokemonesLibresEnElMapa);
+				sem_post(&sem_pokemonesLibresEnElMapa);
+				//Empiezo a llenar la cola de Ready
+				while (cantidadDeEntrenadoresAuxiliar != 0
+						&& cantidadDePokemonesLibresAuxiliar != 0) {
 
-					int cantidadDeEntrenadoresAuxiliar = cantidadElementosCola;
-					sem_wait(&sem_pokemonesLibresEnElMapa);
-					int cantidadDePokemonesLibresAuxiliar = list_size(pokemonesLibresEnElMapa);
-					sem_post(&sem_pokemonesLibresEnElMapa);
-					//Empiezo a llenar la cola de Ready
-					while( cantidadDeEntrenadoresAuxiliar !=0 && cantidadDePokemonesLibresAuxiliar !=0 ){
+					entrenadorAux = buscarEntrenadorMasConvenienteEnCola(
+							colaBlockedEntrenadores);
 
-						entrenadorAux = buscarEntrenadorMasConvenienteEnCola(colaBlockedEntrenadores);
-						encontreUnoAPasar++;
-
-						t_pokemon_entrenador* pokemonAReservar = buscarPokemonMasCercano(entrenadorAux->posicion);
-
-						t_pokemon_entrenador_reservado* pokemonReservado = moverPokemonAReservados(pokemonAReservar, entrenadorAux->id);
-
-						sem_wait(&sem_cola_ready);
-						queue_push(colaReadyEntrenadores, entrenadorAux);
-
-						log_info(g_logger, "Entrenador %d se movio a la cola de READY, porque va a %s", entrenadorAux->id, estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
-
-						sem_post(&sem_cola_ready);
-
-						cantidadDeEntrenadoresAuxiliar--;
-						cantidadDePokemonesLibresAuxiliar--;
-
-					}
-					//Mando un post al planificador a corto plazo por cada entrenador que pase a ready
-					for(int i=0; i<encontreUnoAPasar; i++){
-						sem_post(&sem_planificador_cplazoReady);
+					if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
+							|| (!strcmp(g_config_team->algoritmo_planificion,
+									"SJF-SD"))) {
+						estimar_entrenador(entrenadorAux);
 					}
 
+					encontreUnoAPasar++;
 
+					t_pokemon_entrenador* pokemonAReservar =
+							buscarPokemonMasCercano(entrenadorAux->posicion);
+
+					t_pokemon_entrenador_reservado* pokemonReservado =
+							moverPokemonAReservados(pokemonAReservar,
+									entrenadorAux->id);
+
+					sem_wait(&sem_cola_ready);
+					queue_push(colaReadyEntrenadores, entrenadorAux);
+
+					log_info(g_logger,
+							"Entrenador %d se movio a la cola de READY, porque va a %s",
+							entrenadorAux->id,
+							estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
+
+					sem_post(&sem_cola_ready);
+
+					cantidadDeEntrenadoresAuxiliar--;
+					cantidadDePokemonesLibresAuxiliar--;
 
 				}
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-// VER SI SIRVE PARA SJF
-
-
-				/*sem_wait(&sem_cola_ready);
-				queue_push(colaReadyEntrenadores, entrenadorAux);
-
-				log_info(g_logger,
-						"Entrenador %d se movio a la cola de Ready, porque va a %s",
-						entrenadorAux->id,
-						estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
-
-				sem_post(&sem_cola_ready);
-
-				sem_post(&sem_planificador_cplazoReady);*/
+				//Mando un post al planificador a corto plazo por cada entrenador que pase a ready
+				for (int i = 0; i < encontreUnoAPasar; i++) {
+					sem_post(&sem_planificador_cplazoReady);
+				}
 
 			}
 
@@ -204,6 +198,14 @@ void planificadorMedianoPlazo() {
 							queue_push(colaBlockedEntrenadores, entrenadorAux);
 						} else {
 							encontreUnoAPasar = 1;
+
+							if ((!strcmp(g_config_team->algoritmo_planificion,
+									"SJF-CD"))
+									|| (!strcmp(
+											g_config_team->algoritmo_planificion,
+											"SJF-SD"))) {
+								estimar_entrenador(entrenadorAux);
+							}
 							//3.CUALQUIER OTRO CASO, LO PONGO EN LA COLA DE READY.
 							sem_wait(&sem_cola_ready);
 							queue_push(colaReadyEntrenadores, entrenadorAux);
@@ -633,4 +635,14 @@ char todosEstanBloqueados(){
 
 
 	return valorDeRetorno;
+}
+
+
+//SJF
+void estimar_entrenador(t_entrenador* entrenador){
+	double alpha = g_config_team->alpha;
+    entrenador->estimacion_anterior = entrenador->estimacion_real;
+    entrenador->estimacion_real = (alpha * entrenador->instruccion_actual) + ((1-alpha) * entrenador->estimacion_real);
+    entrenador->estimacion_actual  = entrenador->estimacion_real;
+    entrenador->instruccion_actual = 0;
 }

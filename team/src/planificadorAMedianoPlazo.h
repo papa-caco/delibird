@@ -27,4 +27,6 @@ t_entrenador* buscarEntrenadorMasConvenienteRR(t_queue* colaEntrenadores);
 
 char todosEstanBloqueados();
 
+void estimar_entrenador(t_entrenador* entrenador);
+
 #endif /* SRC_PLANIFICADORAMEDIANOPLAZO_H_ */

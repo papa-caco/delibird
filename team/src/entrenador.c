@@ -30,7 +30,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 		switch (entrenador->estado_entrenador) {
 		case MOVERSE_A_POKEMON:
-			if (strcmp(planificadorAlgoritmo,fifo)== 0) {
+			if (strcmp(planificadorAlgoritmo,fifo)== 0 || strcmp(planificadorAlgoritmo,"SJF-SD") == 0) {
 
 
 				t_pokemon_entrenador_reservado* pokemonReservado = buscarPokemonReservado(entrenador->id);
@@ -112,7 +112,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 		break;
 		case MOVERSE_A_ENTRENADOR:
 
-			if (strcmp(planificadorAlgoritmo,fifo)== 0) {
+			if (strcmp(planificadorAlgoritmo,fifo)== 0 || strcmp(planificadorAlgoritmo,"SJF-SD") == 0) {
 
 				//RECORDAR que el entrenador que se está moviendo ahora, debería de dejar de estar en la cola de blocked
 				//y estar en exit.
@@ -177,16 +177,23 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 			entrenador->ciclosCPU++;
 
+			if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
+						|| (!strcmp(g_config_team->algoritmo_planificion,
+								"SJF-SD"))) {
+
+					entrenador->instruccion_actual++;
+					entrenador->estimacion_actual--;
+					entrenador->ejec_anterior = 0;
+
+				}
+
 			if (resultadoEnvioMensaje == -1) {
 				sem_wait(&entrenador->mutex_entrenador);
 				entrenador->estado_entrenador = RECIBIO_RESPUESTA_OK;
 				sem_post(&entrenador->mutex_entrenador);
 			} else {
 				sem_wait(&entrenador->mutex_entrenador);
-				//printf("ESPERANDO RESPUESTA CAUGHT \n");
 				sem_wait(&sem_esperar_caught);
-				//printf("PASO RESPUESTA CAUGHT \n");
-
 				sem_post(&entrenador->mutex_entrenador);
 			}
 
@@ -497,6 +504,17 @@ void moverEntrenador(t_entrenador* entrenador,
 
 	entrenador->ciclosCPU++;
 
+	if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
+						|| (!strcmp(g_config_team->algoritmo_planificion, "SJF-SD"))) {
+
+		entrenador->instruccion_actual++;
+		entrenador->estimacion_actual--;
+		entrenador->ejec_anterior = 0;
+
+	}
+
+
+
 	entrenador->quantumPorEjecutar--;
 
 	log_info(g_logger, "Entrenador %d se movio a la posicion (%d,%d) \n",
@@ -698,6 +716,19 @@ void intercambiarNormalPokemon(t_entrenador* entrenador1,
 
 	entrenador1->ciclosCPU += 5;
 	entrenador2->ciclosCPU += 5;
+
+	if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
+			|| (!strcmp(g_config_team->algoritmo_planificion, "SJF-SD"))) {
+
+		entrenador1->instruccion_actual += 5;
+		entrenador1->estimacion_actual -= 5;
+		entrenador1->ejec_anterior = 0;
+
+		entrenador2->instruccion_actual += 5;
+		entrenador2->estimacion_actual -= 5;
+		entrenador2->ejec_anterior = 0;
+
+	}
 
 	liberar_lista_de_pokemones(pokemonesInnecesariosDT1);
 	liberar_lista_de_pokemones(pokemonesInnecesariosDT2);

@@ -143,14 +143,7 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		} else {
 			unEntrenador->pokemonesObtenidos = obtenidos;
 		}
-		//unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
 
-		/*if(cantidadDeEntrenadoresConObtenidos == 0){
-			unEntrenador->pokemonesObtenidos = list_create();
-		} else{
-			unEntrenador->pokemonesObtenidos = list_get(pokemonesObtenidos, cantidadDeEntrenadoresConObtenidos - 1);
-			cantidadDeEntrenadoresConObtenidos--;
-		}*/
 		unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
 		unEntrenador->id = i;
 
@@ -158,7 +151,6 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		for (int k = 0; k < list_size(unEntrenador->pokemonesObtenidos); k++) {
 			t_pokemon_entrenador* pokePrint = list_get(
 					unEntrenador->pokemonesObtenidos, k);
-			//puts(pokePrint->pokemon);
 		}
 
 		for (int k = 0; k < list_size(unEntrenador->objetivoEntrenador); k++) {
@@ -171,6 +163,9 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		unEntrenador->ciclosCPU = 0;
 		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
 		unEntrenador->quantumPorEjecutar = g_config_team->quantum;
+		unEntrenador->estimacion_actual = g_config_team->estimacion_inicial;
+		unEntrenador->estimacion_anterior = g_config_team->estimacion_inicial;
+		unEntrenador->estimacion_real = g_config_team->estimacion_inicial;
 		sem_init(&(unEntrenador->mutex_entrenador), 0, 1);
 		sem_init(&(unEntrenador->sem_entrenador), 0, 0);
 		pthread_create(&(unEntrenador->hilo_entrenador), NULL, (void*) comportamiento_entrenador, unEntrenador);

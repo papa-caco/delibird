@@ -27,6 +27,7 @@ typedef struct Configuracion_Team
 	int estimacion_inicial;
 	char *ruta_log;
 	int id_suscriptor;
+	double alpha;
 } t_config_team;
 
 typedef struct Posicion_Entrenador{
@@ -67,6 +68,11 @@ typedef struct Entrenador{
 	int id;
 	int ciclosCPU;
 	int quantumPorEjecutar;
+	float estimacion_real;
+	float estimacion_actual;
+	float estimacion_anterior;
+	int instruccion_actual;
+	int ejec_anterior;
 
 	//FIJARSE SI HAY QUE AGREGAR UN SEMAFORO MUTEX PARA EL ENTRENADOR CUANDO SE MODIFIQUE O SE LEA.
 } t_entrenador;

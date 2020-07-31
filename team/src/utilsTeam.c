@@ -729,6 +729,8 @@ void leer_config_team(char *path) {
 	g_config_team->ruta_log = config_get_string_value(g_config, "RUTA_LOG");
 	g_config_team->id_suscriptor = config_get_int_value(g_config,
 			"ID_SUSCRIPTOR");
+	g_config_team->alpha = config_get_double_value(g_config,
+				"ALPHA");
 }
 
 void liberar_lista_posiciones(t_list* lista) {
