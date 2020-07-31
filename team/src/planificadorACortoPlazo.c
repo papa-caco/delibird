@@ -32,7 +32,24 @@ void planificarFifo(){
 			//COMIENZA A EJECUTAR LA FUNCION CORRESPONDIENTE DEL ENTRENADOR
 			sem_post(&(entrenadorAEjecutar->sem_entrenador));
 
-			cantidadCambiosDeContexto++;
+			if (strcmp(g_config_team->algoritmo_planificion,"RR")== 0){
+
+				if(entrenadorAEjecutar->estado_entrenador == INTERCAMBIAR){
+					int parteEntera = 5/g_config_team->quantum;
+					parteEntera++;
+					cantidadCambiosDeContexto += parteEntera;
+					printf("5555555555555555555555555555555555555555555555555555 \n");
+					printf("HUBO INTERCAMBIO Y SE SUMARON %d CAMBIOS DE CONTEXTO \n", parteEntera);
+					printf("5555555555555555555555555555555555555555555555555555 \n");
+				} else{
+					cantidadCambiosDeContexto++;
+				}
+
+			}else {
+				cantidadCambiosDeContexto++;
+			}
+
+
 
 			//ESPERA EL SIGNAL DEL ENTRENADOR PARA QUE COMPLETE SU FUNCION
 			sem_wait(&sem_planificador_cplazoEntrenador);

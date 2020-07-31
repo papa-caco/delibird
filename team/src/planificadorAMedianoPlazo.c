@@ -97,7 +97,7 @@ void planificadorMedianoPlazo() {
 		//del while.
 
 		if (esLaPrimeraVez == 0) {
-			sleep(5);
+			sleep(1);
 			esLaPrimeraVez = 1;
 		}
 
