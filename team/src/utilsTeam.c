@@ -644,6 +644,7 @@ void process_msjs_gameboy(op_code cod_op, int cliente_fd, t_log *logger) {
 		}
 		enviar_msg_confirmed(cliente_fd, logger);
 		eliminar_msg_appeared_team(msg_appeared);
+		close(cliente_fd);
 		break;
 	}
 }

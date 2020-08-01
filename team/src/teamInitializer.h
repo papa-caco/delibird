@@ -73,6 +73,7 @@ typedef struct Entrenador{
 	float estimacion_anterior;
 	int instruccion_actual;
 	int ejec_anterior;
+	bool hayQueDesalojar;
 
 	//FIJARSE SI HAY QUE AGREGAR UN SEMAFORO MUTEX PARA EL ENTRENADOR CUANDO SE MODIFIQUE O SE LEA.
 } t_entrenador;
@@ -197,6 +198,8 @@ int g_cnt_msjs_appeared;
 int g_cnt_msjs_localized;
 
 bool status_conn_broker;
+
+int entroUnoAReady;
 
 //-----------------Firma de Funciones----------------------------
 

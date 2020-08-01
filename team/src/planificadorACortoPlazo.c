@@ -10,6 +10,7 @@
 //PLANIFICADOR FIFO
 
 void planificarFifo(){
+	bool esLaPrimeraVez=true;
 
 	while (finalizarProceso == 0) {
 
@@ -24,11 +25,19 @@ void planificarFifo(){
 
 			if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
 					|| (!strcmp(g_config_team->algoritmo_planificion, "SJF-SD"))) {
-				ordenar_cola_ready_estimacion();
+				if(!esLaPrimeraVez){
+					ordenar_cola_ready_estimacion();
+				} else{
+					esLaPrimeraVez=false;
+				}
+
 			}
 
 			t_entrenador* entrenadorAEjecutar = (t_entrenador*) queue_pop(
 					colaReadyEntrenadores);
+
+			entroUnoAReady = queue_size(colaReadyEntrenadores);
+
 			entrenadorEnEjecucion = entrenadorAEjecutar;
 
 			sem_post(&sem_cola_ready);
@@ -61,6 +70,7 @@ void planificarFifo(){
 			sem_wait(&sem_cola_blocked);
 			queue_push(colaBlockedEntrenadores, entrenadorAEjecutar);
 			sem_post(&sem_cola_blocked);
+
 
 			//LE MANDO EL SIGNAL AL PLANIFICADOR DE MEDIANO PLAZO PARA QUE VERIFIQUE LA COLA DE BLOCKED
 			//O FINALICE TODO SI CORRESPONDE
@@ -101,38 +111,4 @@ void ordenar_cola_ready_estimacion(){
 
 
 
-/*if((!strcmp(algoritmo_planificacion, "SJF-SD"))) {
-	ciclos_de_cpu++;
-	entrenador->ciclos_de_cpu++;
-	sleep(retardo_ciclo_cpu);
-	//log_info(team_logger, "El entrenador %d ejecutó 1 ciclo de cpu", entrenador->id);
-
-	entrenador->instruccion_actual++;
-	entrenador->estimacion_actual--;
-	entrenador->ejec_anterior = 0;
-}
-
-if(!strcmp(algoritmo_planificacion, "SJF-CD")) {
-	ciclos_de_cpu++;
-	entrenador->ciclos_de_cpu++;
-	sleep(retardo_ciclo_cpu);
-	cambios_de_contexto++;
-	//log_info(team_logger, "El entrenador %d ejecutó 1 ciclo de cpu", entrenador->id);
-	entrenador->instruccion_actual++;
-	entrenador->estimacion_actual--;
-	//log_info(team_logger, "Mi estimacion actual es %f", entrenador->estimacion_actual);
-	entrenador->ejec_anterior = 0;
-
-	if(desalojo_en_ejecucion) {
-		entrenador_en_ejecucion = NULL;
-		pthread_mutex_lock(&lista_listos_mutex);
-		list_add(lista_listos, entrenador);
-		pthread_mutex_unlock(&lista_listos_mutex);
-		log_info(team_logger, "El entrenador de id %d fue desalojado y paso a Ready", entrenador->id);
-		log_info(team_logger_oficial, "El entrenador de id %d fue desalojado y pasó a la cola de listos", entrenador->id);
-
-		sem_post(&orden_para_planificar);
-		log_info(team_logger_oficial, "El entrenador %d pasó a exec", entrenador->id);
-	}
-}*/
 

@@ -142,7 +142,12 @@ void planificadorMedianoPlazo() {
 					if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
 							|| (!strcmp(g_config_team->algoritmo_planificion,
 									"SJF-SD"))) {
-						estimar_entrenador(entrenadorAux);
+						if(!entrenadorAux->hayQueDesalojar){
+							estimar_entrenador(entrenadorAux);
+						} else{
+							entrenadorAux->hayQueDesalojar = false;
+						}
+
 					}
 
 					encontreUnoAPasar++;
@@ -204,7 +209,11 @@ void planificadorMedianoPlazo() {
 									|| (!strcmp(
 											g_config_team->algoritmo_planificion,
 											"SJF-SD"))) {
-								estimar_entrenador(entrenadorAux);
+								if (!entrenadorAux->hayQueDesalojar) {
+									estimar_entrenador(entrenadorAux);
+								} else {
+									entrenadorAux->hayQueDesalojar = false;
+								}
 							}
 							//3.CUALQUIER OTRO CASO, LO PONGO EN LA COLA DE READY.
 							sem_wait(&sem_cola_ready);

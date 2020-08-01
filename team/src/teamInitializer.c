@@ -161,6 +161,7 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 
 
 		unEntrenador->ciclosCPU = 0;
+		unEntrenador->hayQueDesalojar = false;
 		unEntrenador->estado_entrenador = MOVERSE_A_POKEMON;
 		unEntrenador->quantumPorEjecutar = g_config_team->quantum;
 		unEntrenador->estimacion_actual = g_config_team->estimacion_inicial;
@@ -324,6 +325,8 @@ void iniciar_variables_globales(){
 	entrenadorEnEjecucion = NULL;
 
 	ciclosCPU = 0;
+
+	entroUnoAReady = 0;
 
 	cantidadCambiosDeContexto = 0;
 
