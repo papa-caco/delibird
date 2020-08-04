@@ -12,5 +12,6 @@
 
 
 void planificarFifo();
+void ordenar_cola_ready_estimacion();
 
 #endif /* SRC_PLANIFICADORACORTOPLAZO_H_ */

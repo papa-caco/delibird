@@ -37,10 +37,6 @@ void inicio_suscripcion(t_tipo_mensaje *cola);
 
 uint32_t rcv_msjs_broker_publish(op_code codigo_operacion, int socket_cliente, t_log *logger);
 
-void enviar_catch_de_appeared(t_msg_appeared_team *msg_appeared);
-
-void enviar_get_de_appeared(t_msg_appeared_team *msg_appeared);
-
 void iniciar_cnt_msjs(void);
 
 void enviar_msjs_get_objetivos(void);

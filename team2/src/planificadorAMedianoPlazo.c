@@ -10,14 +10,15 @@ void planificadorMedianoPlazo() {
 
 	//printf("SE LEVANTO HILO PLANIFICADOR");
 
-	char* estadosEntrenadorStrings[9] = { "Moverse a pokemon",
-			"Moverse a entrenador", "Atrapar", "Intercambiar",
-			"Acabar intercambio", "Recibir respuesta ok", "Esperar caught",
-			"Estar en deadlock", "Estar en exit" };
+	char* estadosEntrenadorStrings[10] = { "MOVERSE A POKEMON",
+			"MOVERSE A ENTRENADOR", "ATRAPAR", "INTERCAMBIAR",
+			"ACABAR INTERCAMBIO", "RECIBIR RESPUESTA OK", "ESPERAR CAUGHT",
+			"ESPERAR DEADLOCK", "ESTAR EN EXIT", "SEGUIR MOVIENDOSE" };
 
 	sem_wait(&sem_activacionPlanificadorMPlazo);
 
 	int valor = 0;
+	int esLaPrimeraVez = 0;
 
 	while (finalizarProceso == 0) {
 
@@ -95,11 +96,13 @@ void planificadorMedianoPlazo() {
 		//MATAR A SI MISMO, verifico que finalizarProceso no sea 0. Si es, salteo la lógica para que salga
 		//del while.
 
+		if (esLaPrimeraVez == 0) {
+			sleep(1);
+			esLaPrimeraVez = 1;
+		}
+
 		if (finalizarProceso == 0) {
 
-			//NO OLVIDARSE DE CORTAR LAS SUSCRIPCIONES A LAS COLAS DEL BROKER.
-			//VERIFICAR CUANDO LLEGA EL CAUGTH SI YA ESTOY EN CONDICIONES DE CORTAR LA SUSCRIPCION
-			//ESO QUIERE DECIR (LOS OBTENIDOS SEAN LOS MISMO QUE LOS GLOBALES), IDEM LOCALIZED Y APPEARED.
 
 			//IR SACANDO DE UN ENTRENADOR DE LA COLA BLOCKED
 			sem_wait(&sem_cola_blocked);
@@ -117,36 +120,89 @@ void planificadorMedianoPlazo() {
 			if (cantidadElementosCola != 0
 					&& todosQuierenMoverseAPokemon(colaBlockedEntrenadores)) {
 
-				t_entrenador* entrenadorAux;
+				t_entrenador* entrenadorAux = NULL, *entrenador_reservador = NULL;
 
 				//Espero que haya pokemones
 				sem_wait(&sem_hay_pokemones_mapa);
 
 				//Busco al primer entrenador que tiene el estado "Moverse a pokemon"
-				if (strcmp(g_config_team->algoritmo_planificion, "FIFO") == 0) {
-					entrenadorAux = buscarEntrenadorMasConvenienteEnCola(
-							colaBlockedEntrenadores);
-					encontreUnoAPasar = 1;
-				} else if (strcmp(g_config_team->algoritmo_planificion, "RR")
-						== 0) {
 
-					entrenadorAux = buscarEntrenadorMasConvenienteRR(
-							colaBlockedEntrenadores);
-					encontreUnoAPasar = 1;
+				int cantidadDeEntrenadoresAuxiliar = cantidadElementosCola;
+				sem_wait(&sem_pokemonesLibresEnElMapa);
+				int cantidadDePokemonesLibresAuxiliar = list_size(pokemonesLibresEnElMapa);
+				sem_post(&sem_pokemonesLibresEnElMapa);
+				//Empiezo a llenar la cola de Ready
+				int pasada = 0, id_reservador = 0;
+				while (cantidadDeEntrenadoresAuxiliar != 0	&& cantidadDePokemonesLibresAuxiliar != 0) {
+					for (int h = 0; h < pokemonesLibresEnElMapa->elements_count; h ++) {
+						int orden_poke = ((t_pokemon_entrenador*)(list_get(pokemonesLibresEnElMapa,h)))->orden;
+						char *poke = ((t_pokemon_entrenador*)(list_get(pokemonesLibresEnElMapa,h)))->pokemon;
+						printf("%d, %s\n", orden_poke, poke);
+					}
+					t_pokemon_entrenador* pokemon_a_reservar = NULL;
+					if (pokemonesLibresEnElMapa->elements_count > 1) {
+						list_sort(pokemonesLibresEnElMapa, ordenador_pokemones_libres_mapa);
+					}
+					if(pokemonesLibresEnElMapa->elements_count > 0) {
+						pokemon_a_reservar = list_get(pokemonesLibresEnElMapa, 0);
+
+					}
+					entrenadorAux = buscarEntrenado_mas_cercano_a_pokemon(colaBlockedEntrenadores, pokemon_a_reservar);
+					if (entrenadorEnEjecucion != NULL) {
+						log_warning(g_logger,"Entrenador_en_Ejecucion: %d |pasada: %d",entrenadorEnEjecucion->id,pasada);
+						} else {
+						log_warning(g_logger,"Pasada: %d", pasada);
+					}
+					pasada ++;
+					if (entrenadorAux != NULL) {
+						log_trace(g_logger,"El entrenador_mas_conveniente para %s es el %d", pokemon_a_reservar->pokemon,  entrenadorAux->id);
+						id_reservador = entrenadorAux->id;
+					} else {
+						log_trace(g_logger,"No encontré entrenador para %s en la cola Blocked", pokemon_a_reservar->pokemon);
+						entrenador_reservador = buscarEntrenado_mas_cercano_a_pokemon(colaReadyEntrenadores, pokemon_a_reservar);
+						if (entrenador_reservador != NULL) {
+							log_trace(g_logger,"El entrenador_mas_conveniente para %s es el %d", pokemon_a_reservar->pokemon,  entrenador_reservador->id);
+							id_reservador = entrenador_reservador->id;
+						}else {
+							log_trace(g_logger,"No encontré entrenador para %s en la cola Ready", pokemon_a_reservar->pokemon);
+							id_reservador = entrenadorEnEjecucion->id;
+							log_trace(g_logger,"El entrenador_mas_conveniente para %s es el %d", pokemon_a_reservar->pokemon,  entrenadorEnEjecucion->id);
+						}
+					}
+					if (entrenadorAux == NULL && queue_size(colaBlockedEntrenadores) == 1) {
+						entrenadorAux = queue_pop(colaBlockedEntrenadores);
+						log_warning(g_logger,"Próximo entrenador a Ready: %d", entrenadorAux->id);
+					}
+					if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
+							|| (!strcmp(g_config_team->algoritmo_planificion,
+									"SJF-SD"))) {
+						if(!entrenadorAux->hayQueDesalojar){
+							estimar_entrenador(entrenadorAux);
+						} else{
+							entrenadorAux->hayQueDesalojar = false;
+						}
+
+					}
+					encontreUnoAPasar++;
+					t_pokemon_entrenador_reservado* pokemonReservado =	moverPokemonAReservados(pokemon_a_reservar, id_reservador);
+					sem_wait(&sem_cola_ready);
+					queue_push(colaReadyEntrenadores, entrenadorAux);
+
+					log_info(g_logger,
+							"Entrenador %d se movio a la cola de READY, porque va a %s",
+							entrenadorAux->id,
+							estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
+
+					sem_post(&sem_cola_ready);
+
+					cantidadDeEntrenadoresAuxiliar--;
+					cantidadDePokemonesLibresAuxiliar--;
 
 				}
-
-				sem_wait(&sem_cola_ready);
-				queue_push(colaReadyEntrenadores, entrenadorAux);
-
-				log_info(g_logger,
-						"Entrenador %d se movio a la cola de Ready, porque va a %s",
-						entrenadorAux->id,
-						estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
-
-				sem_post(&sem_cola_ready);
-
-				sem_post(&sem_planificador_cplazoReady);
+				//Mando un post al planificador a corto plazo por cada entrenador que pase a ready
+				for (int i = 0; i < encontreUnoAPasar; i++) {
+					sem_post(&sem_planificador_cplazoReady);
+				}
 
 			}
 
@@ -165,8 +221,6 @@ void planificadorMedianoPlazo() {
 
 						//1.VERIFICAR SI ESTA EN DEADLOCK: SI OCURRE ESTO, SE DESCARTA Y SE COLACA NUEVAMENTE EN LA COLA
 						//2. VERIFICAR SI ESTA EN ESPERANDO_RESPUESTA:  SI OCURRE ESTO, SE DESCARTA Y SE COLACA NUEVAMENTE EN LA COLA
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//Aca en este if capaz habria que tambien filtrar a que no puedan ejecutar los que quieren moverseAPokemon
 						if (entrenadorAux->estado_entrenador == DEADLOCK
 								|| entrenadorAux->estado_entrenador
 										== ESPERAR_CAUGHT
@@ -175,12 +229,24 @@ void planificadorMedianoPlazo() {
 							queue_push(colaBlockedEntrenadores, entrenadorAux);
 						} else {
 							encontreUnoAPasar = 1;
+
+							if ((!strcmp(g_config_team->algoritmo_planificion,
+									"SJF-CD"))
+									|| (!strcmp(
+											g_config_team->algoritmo_planificion,
+											"SJF-SD"))) {
+								if (!entrenadorAux->hayQueDesalojar) {
+									estimar_entrenador(entrenadorAux);
+								} else {
+									entrenadorAux->hayQueDesalojar = false;
+								}
+							}
 							//3.CUALQUIER OTRO CASO, LO PONGO EN LA COLA DE READY.
 							sem_wait(&sem_cola_ready);
 							queue_push(colaReadyEntrenadores, entrenadorAux);
 
 							log_info(g_logger,
-									"Entrenador %d se movio a la cola de Ready, porque va a %s",
+									"Entrenador %d se movio a la cola de READY, porque va a %s",
 									entrenadorAux->id,
 									estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
 
@@ -202,7 +268,19 @@ void planificadorMedianoPlazo() {
 			log_info(g_logger,
 					"Se va a correr el algoritmo de deteccion de deadlock");
 
-			if (encontreUnoAPasar == 0) {
+			sem_wait(&sem_cola_exit);
+			sem_wait(&sem_cola_blocked);
+
+			int cantidadDeEntrenadoresEnExit = queue_size(colaExitEntrenadores);
+			int cantidadDeEntrenadoresEnBlocked = queue_size(colaBlockedEntrenadores);
+
+
+
+
+			if (todosEstanBloqueados() != 0 &&
+					cantidadDeEntrenadoresEnBlocked == (cantidadDeEntrenadores - cantidadDeEntrenadoresEnExit)) {
+				sem_post(&sem_cola_exit);
+				sem_post(&sem_cola_blocked);
 
 				log_info(g_logger, "Se detecto deadlock");
 
@@ -238,6 +316,8 @@ void planificadorMedianoPlazo() {
 				//sem_post(&sem_hay_pokemones_mapa);
 
 			} else {
+				sem_post(&sem_cola_exit);
+				sem_post(&sem_cola_blocked);
 
 				log_info(g_logger, "No hay deadlock");
 
@@ -442,66 +522,6 @@ char todosQuierenMoverseAPokemon(t_queue* colaDeEntrenadores) {
 	return valorDeRetorno;
 }
 
-//Esta funcion necesita que los semaforos mutex de la cola de entrenadores este afuera.
-//Lo que si hay que ver es si necesita los semaforos mutex de la lista de pokemones
-/*t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores){
-
- int distanciaMasCorta = 100000;
- int entrenadoresEnCola = queue_size(colaEntrenadores);
- t_entrenador* entrenadorConveniente;
- int idEntrenadorConveniente = 100;
-
- //Primero hago un for de la cola de entrenadores. Lo que hago es agarrar cada entrenador y calculo por cada uno
- //la distancia mas corta que tiene con los pokemones y esa distancia me la guardo.
- //Una vez que tengo la distancia mas corta, vuelvo a hacer un for dentro de otro for y calculo de nuevo para cada
- //entrenador la distancia que tiene con cada pokemon, y la comparo con la distancia mas corta. Cuando encuentro al
- //entrenador que tiene esa distancia corta con algun pokemon, entonces me lo guardo, y al resto los vuelvo a pushear
- //a la cola
- for(int i=0; i < entrenadoresEnCola; i++){
- t_entrenador* entrenadorAux = queue_pop(colaEntrenadores);
-
- for(int j=0; j < list_size(pokemonesLibresEnElMapa); j++){
-
- t_pokemon_entrenador* pokemonAux = list_get(pokemonesLibresEnElMapa, j);
- int distanciaAux = calcularDistancia(entrenadorAux->posicion, pokemonAux->posicion);
-
- if(distanciaAux < distanciaMasCorta){
-
- distanciaMasCorta = distanciaAux;
-
- }
-
- }
-
- queue_push(colaEntrenadores, entrenadorAux);
-
- }
-
- for(int i=0; i < entrenadoresEnCola; i++){
-
- t_entrenador* entrenadorAux = queue_pop(colaEntrenadores);
-
- for(int j=0; j < list_size(pokemonesLibresEnElMapa); j++){
-
- t_pokemon_entrenador* pokemonAux = list_get(pokemonesLibresEnElMapa, j);
- int distanciaAux = calcularDistancia(entrenadorAux->posicion, pokemonAux->posicion);
-
- if(distanciaMasCorta == distanciaAux){
- idEntrenadorConveniente = entrenadorAux->id;
- }
- }
-
- if(idEntrenadorConveniente == entrenadorAux->id){
- entrenadorConveniente = entrenadorAux;
- } else{
- queue_push(colaEntrenadores, entrenadorAux);
- }
-
- }
-
-
- return entrenadorConveniente;
- }*/
 
 t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores) {
 
@@ -568,6 +588,57 @@ t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores) {
 	return entrenadorConveniente;
 }
 
+t_entrenador* buscarEntrenado_mas_cercano_a_pokemon(t_queue* colaEntrenadores, t_pokemon_entrenador* pokemon)
+{
+	int distanciaMasCorta = 100000;
+	t_entrenador* unEntrenador;
+	t_entrenador* entrenadorConveniente = NULL;
+	int entrenadoresEnCola = queue_size(colaEntrenadores);
+	for (int i = 0; i < entrenadoresEnCola; i++) {
+		unEntrenador = queue_pop(colaEntrenadores);
+		log_debug(g_logger,"En cola hay %d entrenadores|Entrenador %d |Cant_Objetivos: %d| Obtuvo: %d| cant_reservados:%d",entrenadoresEnCola,
+			unEntrenador->id , unEntrenador->objetivoEntrenador->elements_count,
+			unEntrenador->pokemonesObtenidos->elements_count, cant_pokemones_reservados_entrenador(unEntrenador->id));
+		if (!admite_reservar_pokemon(unEntrenador)) {
+			puts("no_admite");
+			queue_push(colaEntrenadores, unEntrenador);
+		} else if (unEntrenador->estado_entrenador != MOVERSE_A_POKEMON) {
+			queue_push(colaEntrenadores, unEntrenador);
+		} else {
+			int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion,	pokemon->posicion);
+			if (distanciaEntreAmbos < distanciaMasCorta) {
+				distanciaMasCorta = distanciaEntreAmbos;
+			}
+			queue_push(colaEntrenadores, unEntrenador);
+		}
+	}
+	char yaLoEncontre = 0;
+	for (int i = 0; i < entrenadoresEnCola; i++) {
+		unEntrenador = queue_pop(colaEntrenadores);
+		if (!admite_reservar_pokemon(unEntrenador)) {
+			queue_push(colaEntrenadores, unEntrenador);
+		} else if (unEntrenador->estado_entrenador != MOVERSE_A_POKEMON) {
+			queue_push(colaEntrenadores, unEntrenador);
+		} else {
+			int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion,	pokemon->posicion);
+			if (distanciaEntreAmbos == distanciaMasCorta) {
+				if (yaLoEncontre == 0) {
+					entrenadorConveniente = unEntrenador;
+					yaLoEncontre = 1;
+				} else {
+					queue_push(colaEntrenadores, unEntrenador);
+				}
+			} else {
+				queue_push(colaEntrenadores, unEntrenador);
+			}
+		}
+	}
+	if(entrenadorConveniente == NULL) {
+		puts("NULL");
+	}
+	return entrenadorConveniente;
+}
+
 t_entrenador* buscarEntrenadorMasConvenienteRR(t_queue* colaEntrenadores) {
 
 	int distanciaMasCorta = 100000;
@@ -585,8 +656,10 @@ t_entrenador* buscarEntrenadorMasConvenienteRR(t_queue* colaEntrenadores) {
 
 			t_pokemon_entrenador_reservado* pokRes = buscarPokemonReservado(
 					unEntrenador->id);
+			printf("Aca llegas? \n");
 
 			if (pokRes == NULL) {
+				printf("Aca llegas parte 2? \n");
 				t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(
 						unEntrenador->posicion);
 				int distanciaEntreAmbos = calcularDistancia(
@@ -601,8 +674,10 @@ t_entrenador* buscarEntrenadorMasConvenienteRR(t_queue* colaEntrenadores) {
 
 			} else {
 
+
 				int distanciaEntreAmbos = calcularDistancia(
 						unEntrenador->posicion, pokRes->posicion);
+
 				if (distanciaEntreAmbos < distanciaMasCorta) {
 					distanciaMasCorta = distanciaEntreAmbos;
 					idElegido = unEntrenador->id;
@@ -629,4 +704,39 @@ t_entrenador* buscarEntrenadorMasConvenienteRR(t_queue* colaEntrenadores) {
 	}
 
 	return entrenadorConveniente;
+}
+
+char todosEstanBloqueados(){
+	char valorDeRetorno = 1;
+
+	int cantidadEnBlocked = queue_size(colaBlockedEntrenadores);
+
+	for(int i=0; i < cantidadEnBlocked; i++){
+		t_entrenador* unEntrenador = queue_pop(colaBlockedEntrenadores);
+		if(unEntrenador->estado_entrenador != DEADLOCK){
+			valorDeRetorno = 0;
+		}
+		queue_push(colaBlockedEntrenadores, unEntrenador);
+	}
+
+
+	return valorDeRetorno;
+}
+
+
+//SJF
+void estimar_entrenador(t_entrenador* entrenador){
+	double alpha = g_config_team->alpha;
+    entrenador->estimacion_anterior = entrenador->estimacion_real;
+    entrenador->estimacion_real = (alpha * entrenador->instruccion_actual) + ((1-alpha) * entrenador->estimacion_real);
+    entrenador->estimacion_actual  = entrenador->estimacion_real;
+    entrenador->instruccion_actual = 0;
+}
+
+
+bool ordenador_pokemones_libres_mapa(void *poke1, void *poke2)
+{
+	t_pokemon_entrenador *pokemon1 = (t_pokemon_entrenador*) poke1;
+	t_pokemon_entrenador *pokemon2 = (t_pokemon_entrenador*) poke2;
+	return pokemon1->orden < pokemon2->orden;
 }

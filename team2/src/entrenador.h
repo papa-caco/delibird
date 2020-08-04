@@ -28,6 +28,12 @@ void moverEntrenador(t_entrenador* entrenador, t_posicion_entrenador* posicionAM
 
 t_pokemon_entrenador_reservado* moverPokemonAReservados(t_pokemon_entrenador* pokemonAMover, int idReservador);
 
+int cant_pokemones_reservados_entrenador(int id_entrenador);
+
+bool admite_reservar_pokemon(t_entrenador *entrenador);
+
+void eliminar_pokemon_libre_mapa(int orden_pokemon);
+
 int intentarAtraparPokemon(t_entrenador* entrenador, t_pokemon_entrenador_reservado* pokemon);
 
 char elIntercambioEsIdeal(t_entrenador* entrenador1, t_entrenador* entrenador2);

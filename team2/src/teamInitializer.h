@@ -27,6 +27,7 @@ typedef struct Configuracion_Team
 	int estimacion_inicial;
 	char *ruta_log;
 	int id_suscriptor;
+	double alpha;
 } t_config_team;
 
 typedef struct Posicion_Entrenador{
@@ -35,6 +36,7 @@ typedef struct Posicion_Entrenador{
 } t_posicion_entrenador;
 
 typedef struct Pokemon_Entrenador{
+	int orden;
 	int cantidad;
 	char* pokemon;
 	t_posicion_entrenador* posicion;
@@ -53,6 +55,7 @@ typedef enum Estado_Entrenador{
 	ESPERAR_CAUGHT,
 	DEADLOCK,
 	EXIT,
+	SEGUIR_MOVIENDOSE,
 } t_estado_entrenador;
 
 typedef struct Entrenador{
@@ -66,6 +69,12 @@ typedef struct Entrenador{
 	int id;
 	int ciclosCPU;
 	int quantumPorEjecutar;
+	float estimacion_real;
+	float estimacion_actual;
+	float estimacion_anterior;
+	int instruccion_actual;
+	int ejec_anterior;
+	bool hayQueDesalojar;
 
 	//FIJARSE SI HAY QUE AGREGAR UN SEMAFORO MUTEX PARA EL ENTRENADOR CUANDO SE MODIFIQUE O SE LEA.
 } t_entrenador;
@@ -92,6 +101,8 @@ t_list* idCorrelativosCatch;
 t_list* idCorrelativosGet;
 t_list* pokemonesLlegadosDelBroker;
 
+int rta_catch;
+
 pthread_mutex_t mutex_listaPokemonesLlegadosDelBroker;
 sem_t mutex_idCorrelativosGet;
 sem_t mutex_ciclosCPU;
@@ -115,6 +126,8 @@ pthread_t threadPlanificadorMP;
 int cantidadDeEntrenadores;
 
 char finalizarProceso;
+
+int cnt_pokemon;
 
 t_queue* colaReadyEntrenadores;
 
@@ -143,6 +156,8 @@ pthread_t tid_send_catch;
 pthread_mutex_t mutex_reconexion;
 
 pthread_t tid_reconexion;
+
+sem_t mutex_catch;
 
 sem_t sem_mutex_msjs;
 
@@ -186,6 +201,8 @@ int g_cnt_msjs_appeared;
 int g_cnt_msjs_localized;
 
 bool status_conn_broker;
+
+int entroUnoAReady;
 
 //-----------------Firma de Funciones----------------------------
 

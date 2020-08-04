@@ -30,23 +30,43 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 		switch (entrenador->estado_entrenador) {
 		case MOVERSE_A_POKEMON:
-			if (strcmp(planificadorAlgoritmo,fifo)== 0) {
+			if (strcmp(planificadorAlgoritmo,fifo)== 0 || strcmp(planificadorAlgoritmo,"SJF-SD") == 0
+					|| strcmp(planificadorAlgoritmo,"SJF-CD") == 0) {
 
-				pokemon = buscarPokemonMasCercano(entrenador->posicion);
-				//Ya hay semaforos adentro
-				t_pokemon_entrenador_reservado* pokemonReservado =
-						moverPokemonAReservados(pokemon, entrenador->id);
+
+				t_pokemon_entrenador_reservado* pokemonReservado = buscarPokemonReservado(entrenador->id);
 
 				distancia = calcularDistancia(entrenador->posicion,
 						pokemonReservado->posicion);
 
 				for (int i = 0; i < distancia; i++) {
+					 if(strcmp(planificadorAlgoritmo,"SJF-CD") == 0){
+						 if(entrenador->hayQueDesalojar){
+							 break;
+						 }
+					 }
 
 					moverEntrenador(entrenador, pokemonReservado->posicion);
 
 				}
 
-				entrenador->estado_entrenador = ATRAPAR;
+				if(strcmp(planificadorAlgoritmo,"SJF-CD") == 0){
+					distancia = calcularDistancia(entrenador->posicion,
+							pokemonReservado->posicion);
+
+					if (distancia == 0) {
+						entrenador->estado_entrenador = ATRAPAR;
+					} else{
+						entrenador->estado_entrenador = SEGUIR_MOVIENDOSE;
+					}
+
+				}else{
+					entrenador->estado_entrenador = ATRAPAR;
+				}
+
+
+
+
 
 				sem_post(&(sem_planificador_cplazoEntrenador));
 
@@ -55,40 +75,26 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 				pokemonReservado =
 						buscarPokemonReservado(entrenador->id);
 
-				if (pokemonReservado == NULL) {
-
-					pokemon = buscarPokemonMasCercano(entrenador->posicion);
-					//Ya hay semaforos adentro
-					pokemonReservado = moverPokemonAReservados(pokemon,
-							entrenador->id);
-
-				}
-
 				distancia = calcularDistancia(entrenador->posicion,
 						pokemonReservado->posicion);
 
 				for (int i = 0; i < distancia; i++) {
 					if (entrenador->quantumPorEjecutar == 0) {
-
 						continue;
 					}
 					moverEntrenador(entrenador, pokemonReservado->posicion);
 
 				}
-
-				distancia = calcularDistancia(entrenador->posicion,
-						pokemonReservado->posicion);
+				distancia = calcularDistancia(entrenador->posicion, pokemonReservado->posicion);
 
 				if (distancia == 0) {
 
 					entrenador->estado_entrenador = ATRAPAR;
 
-
 				}else {
 
-					sem_post(&sem_hay_pokemones_mapa);
+					entrenador->estado_entrenador = SEGUIR_MOVIENDOSE;
 				}
-
 				entrenador->quantumPorEjecutar = quantum;
 
 				sem_post(&(sem_planificador_cplazoEntrenador));
@@ -96,9 +102,71 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 			}
 
 			break;
+
+		case SEGUIR_MOVIENDOSE:
+
+			if (strcmp(planificadorAlgoritmo, rr) == 0) {
+				pokemonReservado = buscarPokemonReservado(entrenador->id);
+
+				distancia = calcularDistancia(entrenador->posicion,
+						pokemonReservado->posicion);
+
+				for (int i = 0; i < distancia; i++) {
+					if (entrenador->quantumPorEjecutar == 0) {
+						continue;
+					}
+					moverEntrenador(entrenador, pokemonReservado->posicion);
+
+				}
+				distancia = calcularDistancia(entrenador->posicion,
+						pokemonReservado->posicion);
+
+				if (distancia == 0) {
+
+					entrenador->estado_entrenador = ATRAPAR;
+
+				}
+
+				entrenador->quantumPorEjecutar = quantum;
+
+				sem_post(&(sem_planificador_cplazoEntrenador));
+
+			} else {
+
+				pokemonReservado = buscarPokemonReservado(entrenador->id);
+
+				distancia = calcularDistancia(entrenador->posicion,
+						pokemonReservado->posicion);
+
+				for (int i = 0; i < distancia; i++) {
+					if (entrenador->hayQueDesalojar) {
+						break;
+					}
+
+					moverEntrenador(entrenador, pokemonReservado->posicion);
+
+				}
+				distancia = calcularDistancia(entrenador->posicion,
+						pokemonReservado->posicion);
+
+				if (distancia == 0) {
+
+					entrenador->estado_entrenador = ATRAPAR;
+
+				}
+
+				sem_post(&(sem_planificador_cplazoEntrenador));
+
+			}
+
+
+
+
+		break;
 		case MOVERSE_A_ENTRENADOR:
 
-			if (strcmp(planificadorAlgoritmo,fifo)== 0) {
+			if (strcmp(planificadorAlgoritmo,fifo)== 0 || strcmp(planificadorAlgoritmo,"SJF-SD") == 0
+					|| strcmp(planificadorAlgoritmo,"SJF-CD") == 0)  {
 
 				//RECORDAR que el entrenador que se está moviendo ahora, debería de dejar de estar en la cola de blocked
 				//y estar en exit.
@@ -129,11 +197,9 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 				for (int i = 0; i < distancia; i++) {
 					if (entrenador->quantumPorEjecutar == 0) {
-
 						continue;
 					}
 					moverEntrenador(entrenador, posicionEntrenadorAMoverse);
-
 				}
 
 				distancia = calcularDistancia(entrenador->posicion,
@@ -149,22 +215,31 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 				sem_post(&(sem_planificador_cplazoEntrenador));
 
-			}
 
 			break;
 		case ATRAPAR:
-
 			pokemonReservado = buscarPokemonReservado(entrenador->id);
 
 			int resultadoEnvioMensaje = intentarAtraparPokemon(entrenador,
 					pokemonReservado);
 
-			//printf("ESTOY EN ENTRENADOR DESPUES DE INTENTAR ATRAPAR \n");
+			log_trace(g_logger,"Borrar-->>ESTOY EN ENTRENADOR DP DE INTENTAR ATRAPAR|id_msj_catch recibido:%d",
+					resultadoEnvioMensaje); //TODO Borrar
 			sleep(g_config_team->retardo_ciclo_cpu);
 
 			ciclosCPU++;
 
 			entrenador->ciclosCPU++;
+
+			if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
+						|| (!strcmp(g_config_team->algoritmo_planificion,
+								"SJF-SD"))) {
+
+					entrenador->instruccion_actual++;
+					entrenador->estimacion_actual--;
+					entrenador->ejec_anterior = 0;
+
+				}
 
 			if (resultadoEnvioMensaje == -1) {
 				sem_wait(&entrenador->mutex_entrenador);
@@ -172,10 +247,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 				sem_post(&entrenador->mutex_entrenador);
 			} else {
 				sem_wait(&entrenador->mutex_entrenador);
-				//printf("ESPERANDO RESPUESTA CAUGHT \n");
 				sem_wait(&sem_esperar_caught);
-				//printf("PASO RESPUESTA CAUGHT \n");
-
 				sem_post(&entrenador->mutex_entrenador);
 			}
 
@@ -228,9 +300,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 				free(pokemonReservado);
 
 				//Agrego el Poke
-				//sem_wait(&(entrenador->mutex_entrenador));
 				agregarPokemon(entrenador, pokemonAAgregarConvertido);
-				//sem_post(&(entrenador->mutex_entrenador));
 
 				//Muevo el pokemon a la lista global de atrapados
 				sem_wait(&(sem_pokemonesGlobalesAtrapados));
@@ -255,11 +325,8 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 			entrenador2 = buscarEntrenadorDelIntercambio(entrenador);
 
-			//if(elIntercambioEsIdeal(entrenador, entrenador2)){
-			//intercambiarIdealPokemon(entrenador, entrenador2);
-			//} else{
+
 			intercambiarNormalPokemon(entrenador, entrenador2);
-			//}
 
 			entrenador->estado_entrenador = ACABO_INTERCAMBIO;
 
@@ -273,18 +340,18 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 			break;
 
-			//case EXIT:
-			//pthread_exit(NULL);
-			//VERIFICAR SI SE TERMINA EL HILO DE ESTA FORMA.
 
 		case -1:
 			pthread_exit(NULL);
 		}
+
 		//FALTA DETERMINAR EL CASO DEL FINALIZADO DEL ENTRENADOR
 
+		}
 	}
-
 }
+
+
 
 t_pokemon_entrenador* buscarPokemonMasCercano(
 		t_posicion_entrenador* posicion_Entrenador) {
@@ -388,27 +455,8 @@ t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador) {
 
 	t_posicion_entrenador* posicionAMoverse = NULL;
 	t_entrenador* entrenadorAux;
+	char yaEncontre = 0;
 
-	/*sem_wait(&(sem_cola_blocked));
-
-	 for (int i = 0; i < queue_size(colaBlockedEntrenadores); i++) {
-
-	 entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
-
-	 if (entrenadorAux->estado_entrenador == DEADLOCK
-	 && elIntercambioEsIdeal(entrenador, entrenadorAux)) {
-
-	 posicionAMoverse = entrenadorAux->posicion;
-
-	 }
-
-	 queue_push(colaBlockedEntrenadores, entrenadorAux);
-
-	 }
-
-	 sem_post(&(sem_cola_blocked));*/
-
-	//if (posicionAMoverse == NULL) {
 	sem_wait(&(sem_cola_blocked));
 
 	for (int i = 0; i < queue_size(colaBlockedEntrenadores); i++) {
@@ -416,8 +464,8 @@ t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador) {
 		entrenadorAux = (t_entrenador*) queue_pop(colaBlockedEntrenadores);
 
 		if (entrenadorAux->estado_entrenador == DEADLOCK
-				&& puedoIntercambiar(entrenador, entrenadorAux)) {
-
+				&& puedoIntercambiar(entrenador, entrenadorAux) && yaEncontre == 0) {
+			yaEncontre=1;
 			posicionAMoverse = entrenadorAux->posicion;
 
 		}
@@ -435,51 +483,59 @@ t_posicion_entrenador* buscarEntrenadorAMoverse(t_entrenador* entrenador) {
 
 }
 
-t_pokemon_entrenador_reservado* moverPokemonAReservados(
-		t_pokemon_entrenador* pokemonAMover, int idReservador) {
+t_pokemon_entrenador_reservado* moverPokemonAReservados(t_pokemon_entrenador* pokemonAMover, int idReservador) {
 
 	t_pokemon_entrenador* pokemonAux;
-
-	t_pokemon_entrenador_reservado* pokemonAAgregar = malloc(
-			sizeof(t_pokemon_entrenador_reservado));
+	t_pokemon_entrenador_reservado* pokemonAAgregar = malloc(sizeof(t_pokemon_entrenador_reservado));
 	pokemonAAgregar->cantidad = 1;
 	pokemonAAgregar->pokemon = malloc(strlen(pokemonAMover->pokemon) + 1);
-	memcpy(pokemonAAgregar->pokemon, pokemonAMover->pokemon,
-			strlen(pokemonAMover->pokemon) + 1);
+	memcpy(pokemonAAgregar->pokemon, pokemonAMover->pokemon,strlen(pokemonAMover->pokemon) + 1);
 	pokemonAAgregar->posicion = malloc(sizeof(t_posicion_entrenador));
 	pokemonAAgregar->posicion->pos_x = pokemonAMover->posicion->pos_x;
 	pokemonAAgregar->posicion->pos_y = pokemonAMover->posicion->pos_y;
 	pokemonAAgregar->id_entrenadorReserva = idReservador;
-
 	sem_wait(&sem_pokemonesReservados);
 	list_add(pokemonesReservadosEnElMapa, pokemonAAgregar);
 	sem_post(&sem_pokemonesReservados);
-
-	int indice = 0;
-
-	sem_wait(&sem_pokemonesLibresEnElMapa);
-	for (int i = 0; i < list_size(pokemonesLibresEnElMapa); i++) {
-
-		pokemonAux = ((t_pokemon_entrenador*) list_get(pokemonesLibresEnElMapa,
-				i));
-
-		if (pokemonAux == pokemonAMover) {
-			indice = i;
-		}
-	}
-
-	if (pokemonAMover->cantidad == 1) {
-		pokemonAux = list_remove(pokemonesLibresEnElMapa, indice);
-		free(pokemonAux->posicion);
-		free(pokemonAux);
-
-	} else {
-
-		pokemonAMover->cantidad--;
-	}
-	sem_post(&sem_pokemonesLibresEnElMapa);
-
+	eliminar_pokemon_libre_mapa(pokemonAMover->orden);
 	return pokemonAAgregar;
+}
+
+int cant_pokemones_reservados_entrenador(int id_entrenador)
+{
+	bool mismo_id_entrenador(void *poke){
+		t_pokemon_entrenador_reservado *reservado = (t_pokemon_entrenador_reservado*) poke;
+		return reservado->id_entrenadorReserva == id_entrenador;
+	}
+	int cant_reservados_entrenador = 0;
+	if (pokemonesReservadosEnElMapa->elements_count > 0) {
+		t_list *reservados_entrenador = list_filter(pokemonesReservadosEnElMapa, mismo_id_entrenador);
+		cant_reservados_entrenador = reservados_entrenador->elements_count;
+		list_destroy(reservados_entrenador);
+	}
+	return cant_reservados_entrenador;
+}
+
+bool admite_reservar_pokemon(t_entrenador *entrenador)
+{
+	int cant_objetivos = entrenador->objetivoEntrenador->elements_count;
+	int cant_obtenidos = entrenador->pokemonesObtenidos->elements_count;
+	int cant_reservados = cant_pokemones_reservados_entrenador(entrenador->id);
+	return  cant_objetivos > (cant_reservados + cant_obtenidos);
+}
+
+void eliminar_pokemon_libre_mapa(int orden_pokemon)
+{
+	bool mismo_orden(void *poke) {
+		t_pokemon_entrenador *pokemon = (t_pokemon_entrenador*) poke;
+		return pokemon->orden == orden_pokemon;
+	}
+	sem_wait(&sem_pokemonesLibresEnElMapa);
+	t_pokemon_entrenador *pokemon_a_eliminar = list_remove_by_condition(pokemonesLibresEnElMapa,mismo_orden);
+	free(pokemon_a_eliminar->pokemon);
+	free(pokemon_a_eliminar->posicion);
+	free(pokemon_a_eliminar);
+	sem_post(&sem_pokemonesLibresEnElMapa);
 }
 
 /////MOVER ENTRENADOR///////////////////
@@ -509,6 +565,33 @@ void moverEntrenador(t_entrenador* entrenador,
 	sem_post(&mutex_ciclosCPU);
 
 	entrenador->ciclosCPU++;
+
+	if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
+						|| (!strcmp(g_config_team->algoritmo_planificion, "SJF-SD"))) {
+
+		entrenador->instruccion_actual++;
+		entrenador->estimacion_actual--;
+		entrenador->ejec_anterior = 0;
+
+
+		sem_wait(&sem_cola_ready);
+		int cantidadEnReadyActual = queue_size(colaReadyEntrenadores);
+		if(entroUnoAReady < cantidadEnReadyActual){
+
+			for(int i = 0; i < cantidadEnReadyActual; i++){
+				t_entrenador* otroEntrenador = queue_pop(colaReadyEntrenadores);
+				if(entrenador->estimacion_actual > otroEntrenador->estimacion_real){
+					entrenador->hayQueDesalojar = true;
+				}
+				queue_push(colaReadyEntrenadores, otroEntrenador);
+			}
+
+		}
+		sem_post(&sem_cola_ready);
+
+	}
+
+
 
 	entrenador->quantumPorEjecutar--;
 
@@ -542,9 +625,11 @@ int calcularDistancia(t_posicion_entrenador* posicionActual,
 int intentarAtraparPokemon(t_entrenador* entrenador,
 		t_pokemon_entrenador_reservado* pokemon) {
 
-	int prueba = enviar_catch_pokemon_broker(entrenador->posicion->pos_x,
-			entrenador->posicion->pos_y, pokemon->pokemon, g_logger,
-			entrenador->id);
+	int thread_status = enviar_catch_pokemon_broker(entrenador->posicion->pos_x,
+				entrenador->posicion->pos_y, pokemon->pokemon, g_logger,
+				entrenador->id);
+	sem_wait(&mutex_catch);
+	int prueba = rta_catch;
 	return prueba;
 
 }
@@ -708,7 +793,15 @@ void intercambiarNormalPokemon(t_entrenador* entrenador1,
 	sem_post(&mutex_ciclosCPU);
 
 	entrenador1->ciclosCPU += 5;
-	entrenador2->ciclosCPU += 5;
+
+	if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
+			|| (!strcmp(g_config_team->algoritmo_planificion, "SJF-SD"))) {
+
+		entrenador1->instruccion_actual += 5;
+		entrenador1->estimacion_actual -= 5;
+		entrenador1->ejec_anterior = 0;
+
+	}
 
 	liberar_lista_de_pokemones(pokemonesInnecesariosDT1);
 	liberar_lista_de_pokemones(pokemonesInnecesariosDT2);
