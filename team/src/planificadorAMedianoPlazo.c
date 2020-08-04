@@ -18,7 +18,7 @@ void planificadorMedianoPlazo() {
 	sem_wait(&sem_activacionPlanificadorMPlazo);
 
 	int valor = 0;
-	int esLaPrimeraVez = 0;
+
 
 	while (finalizarProceso == 0) {
 
@@ -96,10 +96,6 @@ void planificadorMedianoPlazo() {
 		//MATAR A SI MISMO, verifico que finalizarProceso no sea 0. Si es, salteo la lógica para que salga
 		//del while.
 
-		if (esLaPrimeraVez == 0) {
-			sleep(1);
-			esLaPrimeraVez = 1;
-		}
 
 		if (finalizarProceso == 0) {
 
@@ -174,9 +170,18 @@ void planificadorMedianoPlazo() {
 
 				}
 				//Mando un post al planificador a corto plazo por cada entrenador que pase a ready
-				for (int i = 0; i < encontreUnoAPasar; i++) {
-					sem_post(&sem_planificador_cplazoReady);
+				if (esLAPrimeraVez == 1) {
+					for (int i = 0; i < encontreUnoAPasar + 1; i++) {
+						sem_post(&sem_planificador_cplazoReady);
+					}
+
+				} else {
+					for (int i = 0; i < encontreUnoAPasar; i++) {
+						sem_post(&sem_planificador_cplazoReady);
+					}
 				}
+
+
 
 			}
 
@@ -226,7 +231,15 @@ void planificadorMedianoPlazo() {
 
 							sem_post(&sem_cola_ready);
 
-							sem_post(&sem_planificador_cplazoReady);
+							if(esLAPrimeraVez == 1){
+
+								sem_post(&sem_planificador_mplazo);
+
+							} else{
+								sem_post(&sem_planificador_cplazoReady);
+							}
+
+
 
 						}
 					}

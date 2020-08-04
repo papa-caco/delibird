@@ -326,6 +326,8 @@ void iniciar_variables_globales(){
 
 	ciclosCPU = 0;
 
+	esLAPrimeraVez = 2;
+
 	entroUnoAReady = 0;
 
 	cantidadCambiosDeContexto = 0;

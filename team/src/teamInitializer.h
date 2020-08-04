@@ -114,6 +114,8 @@ sem_t sem_esperar_caught;
 
 //-----------------Variables Globales----------------------------
 
+int esLAPrimeraVez;
+
 t_entrenador* entrenadorEnEjecucion;
 
 int cantidadCambiosDeContexto;

@@ -66,7 +66,9 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 
 
-
+				if(esLAPrimeraVez == 2){
+					esLAPrimeraVez = 1;
+				}
 
 				sem_post(&(sem_planificador_cplazoEntrenador));
 
@@ -96,6 +98,10 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 					entrenador->estado_entrenador = SEGUIR_MOVIENDOSE;
 				}
 				entrenador->quantumPorEjecutar = quantum;
+
+				if (esLAPrimeraVez == 2) {
+					esLAPrimeraVez = 1;
+				}
 
 				sem_post(&(sem_planificador_cplazoEntrenador));
 
