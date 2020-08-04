@@ -15,6 +15,11 @@ void planificarFifo(){
 	while (finalizarProceso == 0) {
 
 		//SEMAFORO QUE RECIBE DEL PLANIFICADOR DE MEDIANO PLAZO
+
+		//int sem_val = 99;
+		//sem_getvalue(&sem_planificador_cplazoReady, &sem_val);
+		//printf("sem_plani_cplazoReady: %d\n", sem_val);
+
 		sem_wait(&sem_planificador_cplazoReady);
 
 	//	printf("SE ACTIVO EL PLANIFICADOR A CORTO PLAZO \n");
@@ -61,8 +66,6 @@ void planificarFifo(){
 				cantidadCambiosDeContexto++;
 			}
 
-
-
 			//ESPERA EL SIGNAL DEL ENTRENADOR PARA QUE COMPLETE SU FUNCION
 			sem_wait(&sem_planificador_cplazoEntrenador);
 
@@ -76,6 +79,9 @@ void planificarFifo(){
 			//O FINALICE TODO SI CORRESPONDE
 			sem_post(&sem_planificador_mplazo);
 		}
+		//int sem_val2 = 99;
+		//sem_getvalue(&sem_planificador_mplazo, &sem_val2);
+		//printf("sem_plani_mplazo-post: %d\n", sem_val2);
 
 
 	}
