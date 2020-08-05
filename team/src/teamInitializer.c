@@ -167,6 +167,8 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		unEntrenador->estimacion_actual = g_config_team->estimacion_inicial;
 		unEntrenador->estimacion_anterior = g_config_team->estimacion_inicial;
 		unEntrenador->estimacion_real = g_config_team->estimacion_inicial;
+		unEntrenador->instruccion_actual = 0;
+		unEntrenador->ejec_anterior = 0;
 		sem_init(&(unEntrenador->mutex_entrenador), 0, 1);
 		sem_init(&(unEntrenador->sem_entrenador), 0, 0);
 		pthread_create(&(unEntrenador->hilo_entrenador), NULL, (void*) comportamiento_entrenador, unEntrenador);
@@ -328,6 +330,8 @@ void iniciar_variables_globales(){
 
 	esLAPrimeraVez = 2;
 
+	noEstimar = 1;
+
 	entroUnoAReady = 0;
 
 	cantidadCambiosDeContexto = 0;
@@ -414,5 +418,22 @@ void iniciar_variables_globales(){
 
 	pthread_mutex_init(&g_mutex_mensajes, NULL);
 
+
+}
+
+
+//SJF
+void estimar_entrenador(t_entrenador* entrenador){
+	if (noEstimar != 1) {
+		double alpha = g_config_team->alpha;
+		printf("Que onda ese alpha %f \n", alpha);
+		entrenador->estimacion_anterior = entrenador->estimacion_real;
+		entrenador->estimacion_real = ((alpha) * entrenador->instruccion_actual)
+				+ ((1 - alpha) * entrenador->estimacion_real);
+		entrenador->estimacion_actual = entrenador->estimacion_real;
+		entrenador->instruccion_actual = 0;
+	} else{
+		noEstimar = 0;
+	}
 
 }

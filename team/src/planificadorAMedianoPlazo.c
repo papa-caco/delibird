@@ -96,10 +96,10 @@ void planificadorMedianoPlazo() {
 		//MATAR A SI MISMO, verifico que finalizarProceso no sea 0. Si es, salteo la lógica para que salga
 		//del while.
 
-		if(hacerSleep == 1){
+		/*if(hacerSleep == 1){
 			hacerSleep = 0;
 			sleep(1);
-		}
+		}*/
 
 		if (finalizarProceso == 0) {
 
@@ -156,6 +156,10 @@ void planificadorMedianoPlazo() {
 									"SJF-SD"))) {
 						if(!entrenadorAux->hayQueDesalojar){
 							estimar_entrenador(entrenadorAux);
+							printf("La estimacion actual del entrenador %d es %4.2f \n", entrenadorAux->id, entrenadorAux->estimacion_actual);
+							printf("La estimacion real del entrenador %d es %4.2f \n", entrenadorAux->id, entrenadorAux->estimacion_real);
+							printf("La estimacion anterior del entrenador %d es %4.2f \n", entrenadorAux->id, entrenadorAux->estimacion_anterior);
+							printf("La instruccion actual del entrenador %d es %d \n", entrenadorAux->id, entrenadorAux->instruccion_actual);
 						} else{
 							entrenadorAux->hayQueDesalojar = false;
 						}
@@ -182,16 +186,16 @@ void planificadorMedianoPlazo() {
 
 				}
 				//Mando un post al planificador a corto plazo por cada entrenador que pase a ready
-				/*if (esLAPrimeraVez == 1) {
+				if (esLAPrimeraVez == 1) {
 					for (int i = 0; i < encontreUnoAPasar + 1; i++) {
 						sem_post(&sem_planificador_cplazoReady);
 					}
 
-				} else {*/
+				} else {
 					for (int i = 0; i < encontreUnoAPasar; i++) {
 						sem_post(&sem_planificador_cplazoReady);
 					}
-				//}
+				}
 
 
 
@@ -228,6 +232,10 @@ void planificadorMedianoPlazo() {
 											"SJF-SD"))) {
 								if (!entrenadorAux->hayQueDesalojar) {
 									estimar_entrenador(entrenadorAux);
+									printf("La estimacion actual del entrenador %d es %4.2f \n", entrenadorAux->id, entrenadorAux->estimacion_actual);
+									printf("La estimacion real del entrenador %d es %4.2f \n", entrenadorAux->id, entrenadorAux->estimacion_real);
+									printf("La estimacion anterior del entrenador %d es %4.2f \n", entrenadorAux->id, entrenadorAux->estimacion_anterior);
+									printf("La instruccion actual del entrenador %d es %d \n", entrenadorAux->id, entrenadorAux->instruccion_actual);
 								} else {
 									entrenadorAux->hayQueDesalojar = false;
 								}
@@ -243,16 +251,16 @@ void planificadorMedianoPlazo() {
 
 							sem_post(&sem_cola_ready);
 
-							/*if(esLAPrimeraVez == 1){
+							if(esLAPrimeraVez == 1){
 
 								sem_post(&sem_planificador_mplazo);
 								int* valorSem = malloc(sizeof(int));
 								sem_getvalue(&sem_planificador_mplazo, valorSem);
 								printf("El valor del semaforo es %d \n",*valorSem);
 
-							} else{*/
+							} else{
 								sem_post(&sem_planificador_cplazoReady);
-							//}
+							}
 
 
 
@@ -755,11 +763,4 @@ char todosEstanBloqueados(){
 }
 
 
-//SJF
-void estimar_entrenador(t_entrenador* entrenador){
-	double alpha = g_config_team->alpha;
-    entrenador->estimacion_anterior = entrenador->estimacion_real;
-    entrenador->estimacion_real = (alpha * entrenador->instruccion_actual) + ((1-alpha) * entrenador->estimacion_real);
-    entrenador->estimacion_actual  = entrenador->estimacion_real;
-    entrenador->instruccion_actual = 0;
-}
+
