@@ -23,11 +23,11 @@ void planificarFifo(){
 		if (finalizarProceso == 0) {
 			sem_wait(&sem_cola_ready);
 
-			if(esLAPrimeraVez == 1){
+			/*if(esLAPrimeraVez == 1){
 				t_entrenador* entrenadorTramoya = queue_pop(colaReadyEntrenadores);
 				queue_push(colaReadyEntrenadores, entrenadorTramoya);
 				esLAPrimeraVez = 0;
-			}
+			}*/
 
 			if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
 					|| (!strcmp(g_config_team->algoritmo_planificion, "SJF-SD"))) {

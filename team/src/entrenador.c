@@ -66,9 +66,9 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 
 
-				if(esLAPrimeraVez == 2){
+				/*if(esLAPrimeraVez == 2){
 					esLAPrimeraVez = 1;
-				}
+				}*/
 
 				sem_post(&(sem_planificador_cplazoEntrenador));
 
@@ -76,6 +76,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 				////INICIO ROUND ROBIN
 				pokemonReservado =
 						buscarPokemonReservado(entrenador->id);
+				printf("El reservado es %s \n", pokemonReservado->pokemon);
 
 				distancia = calcularDistancia(entrenador->posicion,
 						pokemonReservado->posicion);
@@ -99,9 +100,9 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 				}
 				entrenador->quantumPorEjecutar = quantum;
 
-				if (esLAPrimeraVez == 2) {
+				/*if (esLAPrimeraVez == 2) {
 					esLAPrimeraVez = 1;
-				}
+				}*/
 
 				sem_post(&(sem_planificador_cplazoEntrenador));
 
@@ -114,8 +115,10 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 			if (strcmp(planificadorAlgoritmo, rr) == 0) {
 				pokemonReservado = buscarPokemonReservado(entrenador->id);
 
+
 				distancia = calcularDistancia(entrenador->posicion,
 						pokemonReservado->posicion);
+
 
 				for (int i = 0; i < distancia; i++) {
 					if (entrenador->quantumPorEjecutar == 0) {
@@ -140,6 +143,8 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 			} else {
 
 				pokemonReservado = buscarPokemonReservado(entrenador->id);
+
+				printf("El reservado es %s \n", pokemonReservado->pokemon);
 
 				distancia = calcularDistancia(entrenador->posicion,
 						pokemonReservado->posicion);
@@ -557,10 +562,12 @@ void moverEntrenador(t_entrenador* entrenador,
 		}
 	}
 
+
 	sleep(g_config_team->retardo_ciclo_cpu);
 	sem_wait(&mutex_ciclosCPU);
 	ciclosCPU++;
 	sem_post(&mutex_ciclosCPU);
+
 
 	entrenador->ciclosCPU++;
 
@@ -590,7 +597,7 @@ void moverEntrenador(t_entrenador* entrenador,
 	}
 
 
-
+	printf("Llego a ejecutar un movimiento \n");
 	entrenador->quantumPorEjecutar--;
 
 	log_info(g_logger, "Entrenador %d se movio a la posicion (%d,%d) \n",
