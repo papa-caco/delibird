@@ -138,7 +138,7 @@ int connect_broker_y_enviar_mensaje_catch(t_msg_catch_team_broker *msg_catch_tea
 	if (id_mensaje != -1) {
 			rta_catch = id_mensaje;
 	}
-	log_trace(g_logger,"Borrar-->>Envié MSG_CATCH | RTA: id_msj_catch:%d\n",rta_catch);//TODO Borrar
+	//log_trace(g_logger,"Borrar-->>Envié MSG_CATCH | RTA: id_msj_catch:%d\n",rta_catch);//TODO Borrar
 	sem_post(&mutex_catch);
 	sem_post(&sem_mutex_msjs);
 	close(cliente_fd);
@@ -936,6 +936,8 @@ void agregarPokemonesDelLocalized(char *pokemon, t_posiciones_localized *posicio
 				sizeof(t_pokemon_entrenador));
 		pokemonAAgregarAlMapa->cantidad = 1;
 		pokemonAAgregarAlMapa->pokemon = pokemon;
+		pokemonAAgregarAlMapa->orden = cnt_pokemon;
+		cnt_pokemon ++ ;
 		pokemonAAgregarAlMapa->posicion = malloc(sizeof(t_posicion_entrenador));
 		pokemonAAgregarAlMapa->posicion->pos_x = coordenada->pos_x;
 		pokemonAAgregarAlMapa->posicion->pos_y = coordenada->pos_y;
