@@ -232,10 +232,10 @@ void planificadorMedianoPlazo() {
 											"SJF-SD"))) {
 								if (!entrenadorAux->hayQueDesalojar) {
 									estimar_entrenador(entrenadorAux);
-									printf("La estimacion actual del entrenador %d es %4.2f \n", entrenadorAux->id, entrenadorAux->estimacion_actual);
+									//printf("La estimacion actual del entrenador %d es %4.2f \n", entrenadorAux->id, entrenadorAux->estimacion_actual);
 									printf("La estimacion real del entrenador %d es %4.2f \n", entrenadorAux->id, entrenadorAux->estimacion_real);
-									printf("La estimacion anterior del entrenador %d es %4.2f \n", entrenadorAux->id, entrenadorAux->estimacion_anterior);
-									printf("La instruccion actual del entrenador %d es %d \n", entrenadorAux->id, entrenadorAux->instruccion_actual);
+									//printf("La estimacion anterior del entrenador %d es %4.2f \n", entrenadorAux->id, entrenadorAux->estimacion_anterior);
+									//printf("La instruccion actual del entrenador %d es %d \n", entrenadorAux->id, entrenadorAux->instruccion_actual);
 								} else {
 									entrenadorAux->hayQueDesalojar = false;
 								}

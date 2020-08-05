@@ -426,7 +426,7 @@ void iniciar_variables_globales(){
 void estimar_entrenador(t_entrenador* entrenador){
 	if (noEstimar != 1) {
 		double alpha = g_config_team->alpha;
-		printf("Que onda ese alpha %f \n", alpha);
+		//printf("Que onda ese alpha %f \n", alpha);
 		entrenador->estimacion_anterior = entrenador->estimacion_real;
 		entrenador->estimacion_real = ((alpha) * entrenador->instruccion_actual)
 				+ ((1 - alpha) * entrenador->estimacion_real);

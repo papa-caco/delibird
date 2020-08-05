@@ -25,10 +25,10 @@ void planificarFifo(){
 
 			if(esLAPrimeraVez == 1){
 				t_entrenador* entrenadorTramoya = queue_pop(colaReadyEntrenadores);
-				if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
+				/*if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
 									|| (!strcmp(g_config_team->algoritmo_planificion, "SJF-SD"))) {
 					estimar_entrenador(entrenadorTramoya);
-				}
+				}*/
 				queue_push(colaReadyEntrenadores, entrenadorTramoya);
 				esLAPrimeraVez = 0;
 			}
