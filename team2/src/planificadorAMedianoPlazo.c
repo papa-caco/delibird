@@ -701,14 +701,14 @@ char todosEstanBloqueados(){
 //SJF
 void estimar_entrenador(t_entrenador* entrenador){
 	/*log_trace(g_logger,"Antes de Estimar Entrenador %d|inst_act:%d|est_act:%.2f|ant_est:%.2f|real_est:%.2f|ejec_ant:%d",entrenador->id,entrenador->instruccion_actual
-				,entrenador->estimacion_actual,entrenador->estimacion_anterior, entrenador->estimacion_real,entrenador->ejec_anterior);*/
+		,entrenador->estimacion_actual,entrenador->estimacion_anterior, entrenador->estimacion_real,entrenador->ejec_anterior);*/
 	double alpha = g_config_team->alpha;
     entrenador->estimacion_anterior = entrenador->estimacion_real;
     entrenador->estimacion_real = (alpha * entrenador->instruccion_actual) + ((1-alpha) * entrenador->estimacion_real);
     entrenador->estimacion_actual  = entrenador->estimacion_real;
     entrenador->instruccion_actual = 0;
     /*log_trace(g_logger,"Entrenador estimado: %d|inst_act:%d|est_act:%.2f|ant_est:%.2f|real_est:%.2f|ejec_ant:%d",entrenador->id,entrenador->instruccion_actual
-    				,entrenador->estimacion_actual,entrenador->estimacion_anterior, entrenador->estimacion_real,entrenador->ejec_anterior);*/
+    	,entrenador->estimacion_actual,entrenador->estimacion_anterior, entrenador->estimacion_real,entrenador->ejec_anterior);*/
 
 }
 
