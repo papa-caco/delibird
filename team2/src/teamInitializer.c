@@ -167,6 +167,8 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 		unEntrenador->estimacion_actual = g_config_team->estimacion_inicial;
 		unEntrenador->estimacion_anterior = g_config_team->estimacion_inicial;
 		unEntrenador->estimacion_real = g_config_team->estimacion_inicial;
+		unEntrenador->instruccion_actual = 0;
+		unEntrenador->ejec_anterior = 0;
 		sem_init(&(unEntrenador->mutex_entrenador), 0, 1);
 		sem_init(&(unEntrenador->sem_entrenador), 0, 0);
 		pthread_create(&(unEntrenador->hilo_entrenador), NULL, (void*) comportamiento_entrenador, unEntrenador);

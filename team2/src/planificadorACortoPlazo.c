@@ -31,6 +31,7 @@ void planificarFifo(){
 			if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
 					|| (!strcmp(g_config_team->algoritmo_planificion, "SJF-SD"))) {
 				if(!esLaPrimeraVez){
+					puts("entra");
 					ordenar_cola_ready_estimacion();
 				} else{
 					esLaPrimeraVez=false;
@@ -48,7 +49,9 @@ void planificarFifo(){
 			sem_post(&sem_cola_ready);
 
 			log_info(g_logger,"Entrenador %d se movio a la cola de EXEC, porque esta primero en la cola de Ready", entrenadorAEjecutar->id);
-
+			/*log_trace(g_logger,"Entrenador %d|inst_act:%d|est_act:%.2f|ant_est:%.2f|real_est:%.2f|ejec_ant:%d",entrenadorAEjecutar->id,
+					entrenadorAEjecutar->instruccion_actual,entrenadorAEjecutar->estimacion_actual,
+					entrenadorAEjecutar->estimacion_anterior, entrenadorAEjecutar->estimacion_real,	entrenadorAEjecutar->ejec_anterior);*/
 			//COMIENZA A EJECUTAR LA FUNCION CORRESPONDIENTE DEL ENTRENADOR
 			sem_post(&(entrenadorAEjecutar->sem_entrenador));
 

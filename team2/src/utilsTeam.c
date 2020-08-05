@@ -19,8 +19,7 @@ void iniciar_suscripciones_broker(void) {
 	puts("Estableciendo conexiones con el BROKER -- Iniciando Suscripciones");
 	puts("");
 	int status_appeared = iniciar_suscripcion_cola(APPEARED_POKEMON, g_logger);
-	int status_localized = iniciar_suscripcion_cola(LOCALIZED_POKEMON,
-			g_logger);
+	int status_localized = iniciar_suscripcion_cola(LOCALIZED_POKEMON, g_logger);
 	int status_caught = iniciar_suscripcion_cola(CAUGHT_POKEMON, g_logger);
 }
 
@@ -936,8 +935,8 @@ void agregarPokemonesDelLocalized(char *pokemon, t_posiciones_localized *posicio
 				sizeof(t_pokemon_entrenador));
 		pokemonAAgregarAlMapa->cantidad = 1;
 		pokemonAAgregarAlMapa->pokemon = pokemon;
-		pokemonAAgregarAlMapa->orden = cnt_pokemon;
 		cnt_pokemon ++ ;
+		pokemonAAgregarAlMapa->orden = cnt_pokemon;
 		pokemonAAgregarAlMapa->posicion = malloc(sizeof(t_posicion_entrenador));
 		pokemonAAgregarAlMapa->posicion->pos_x = coordenada->pos_x;
 		pokemonAAgregarAlMapa->posicion->pos_y = coordenada->pos_y;
