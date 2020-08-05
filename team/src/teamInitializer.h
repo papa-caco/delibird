@@ -116,6 +116,8 @@ sem_t sem_esperar_caught;
 
 int esLAPrimeraVez;
 
+int noEstimar;
+
 t_entrenador* entrenadorEnEjecucion;
 
 int cantidadCambiosDeContexto;
@@ -232,5 +234,7 @@ void liberar_lista_de_pokemones(t_list* lista);
 void liberar_lista(t_list* lista);
 
 void liberar_cola(t_queue* cola);
+
+void estimar_entrenador(t_entrenador* entrenador);
 
 #endif /* SRC_TEAMINITIALIZER_H_ */

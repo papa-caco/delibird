@@ -23,10 +23,11 @@ char todosQuierenMoverseAPokemon(t_queue* colaDeEntrenadores);
 
 t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores);
 
+t_entrenador* buscarEntrenadorMasConvenienteEnColaRancio(t_queue* colaEntrenadores);
+
 t_entrenador* buscarEntrenadorMasConvenienteRR(t_queue* colaEntrenadores);
 
 char todosEstanBloqueados();
 
-void estimar_entrenador(t_entrenador* entrenador);
 
 #endif /* SRC_PLANIFICADORAMEDIANOPLAZO_H_ */
