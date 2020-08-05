@@ -4,6 +4,12 @@
  *  Created on: 7 jul. 2020
  *      Author: utnso
  */
+/*
+ * planificadorAMedianoPlazo.c
+ *
+ *  Created on: 7 jul. 2020
+ *      Author: utnso
+ */
 #include "planificadorAMedianoPlazo.h"
 
 void planificadorMedianoPlazo() {
@@ -31,8 +37,14 @@ void planificadorMedianoPlazo() {
 		//A AGREGAR SERAN LA CANTIDAD DE SIGNALS.
 
 		//POR CONFIGURACION QUE ESTE ACTIVADO SIEMPRE
+		//puts("a");
+		//int sem_val = 99;
+		//sem_getvalue(&sem_planificador_mplazo, &sem_val);
+		//printf("sem_val_m_plazo: %d\n", sem_val);
 		sem_wait(&sem_planificador_mplazo);
-
+		//sem_getvalue(&sem_planificador_mplazo, &sem_val);
+		//printf("sem_val_m_plazo dp: %d\n", sem_val);
+		//puts("b");
 		sem_wait(&sem_cola_blocked);
 		int cantidadElementosCola = queue_size(colaBlockedEntrenadores);
 		sem_post(&sem_cola_blocked);
@@ -120,7 +132,7 @@ void planificadorMedianoPlazo() {
 			if (cantidadElementosCola != 0
 					&& todosQuierenMoverseAPokemon(colaBlockedEntrenadores)) {
 
-				t_entrenador* entrenadorAux = NULL, *entrenador_reservador = NULL;
+				t_entrenador* entrenadorAux = NULL;
 
 				//Espero que haya pokemones
 				sem_wait(&sem_hay_pokemones_mapa);
@@ -132,72 +144,42 @@ void planificadorMedianoPlazo() {
 				int cantidadDePokemonesLibresAuxiliar = list_size(pokemonesLibresEnElMapa);
 				sem_post(&sem_pokemonesLibresEnElMapa);
 				//Empiezo a llenar la cola de Ready
-				int pasada = 0, id_reservador = 0;
+				int id_reservador = 0;
 				while (cantidadDeEntrenadoresAuxiliar != 0	&& cantidadDePokemonesLibresAuxiliar != 0) {
-					for (int h = 0; h < pokemonesLibresEnElMapa->elements_count; h ++) {
-						int orden_poke = ((t_pokemon_entrenador*)(list_get(pokemonesLibresEnElMapa,h)))->orden;
-						char *poke = ((t_pokemon_entrenador*)(list_get(pokemonesLibresEnElMapa,h)))->pokemon;
-						printf("%d, %s\n", orden_poke, poke);
-					}
 					t_pokemon_entrenador* pokemon_a_reservar = NULL;
 					if (pokemonesLibresEnElMapa->elements_count > 1) {
 						list_sort(pokemonesLibresEnElMapa, ordenador_pokemones_libres_mapa);
 					}
 					if(pokemonesLibresEnElMapa->elements_count > 0) {
 						pokemon_a_reservar = list_get(pokemonesLibresEnElMapa, 0);
-
 					}
 					entrenadorAux = buscarEntrenado_mas_cercano_a_pokemon(colaBlockedEntrenadores, pokemon_a_reservar);
-					if (entrenadorEnEjecucion != NULL) {
-						log_warning(g_logger,"Entrenador_en_Ejecucion: %d |pasada: %d",entrenadorEnEjecucion->id,pasada);
-						} else {
-						log_warning(g_logger,"Pasada: %d", pasada);
-					}
-					pasada ++;
-					if (entrenadorAux != NULL) {
-						log_trace(g_logger,"El entrenador_mas_conveniente para %s es el %d", pokemon_a_reservar->pokemon,  entrenadorAux->id);
-						id_reservador = entrenadorAux->id;
-					} else {
-						log_trace(g_logger,"No encontré entrenador para %s en la cola Blocked", pokemon_a_reservar->pokemon);
-						entrenador_reservador = buscarEntrenado_mas_cercano_a_pokemon(colaReadyEntrenadores, pokemon_a_reservar);
-						if (entrenador_reservador != NULL) {
-							log_trace(g_logger,"El entrenador_mas_conveniente para %s es el %d", pokemon_a_reservar->pokemon,  entrenador_reservador->id);
-							id_reservador = entrenador_reservador->id;
-						}else {
-							log_trace(g_logger,"No encontré entrenador para %s en la cola Ready", pokemon_a_reservar->pokemon);
-							id_reservador = entrenadorEnEjecucion->id;
-							log_trace(g_logger,"El entrenador_mas_conveniente para %s es el %d", pokemon_a_reservar->pokemon,  entrenadorEnEjecucion->id);
-						}
-					}
-					if (entrenadorAux == NULL && queue_size(colaBlockedEntrenadores) == 1) {
-						entrenadorAux = queue_pop(colaBlockedEntrenadores);
-						log_warning(g_logger,"Próximo entrenador a Ready: %d", entrenadorAux->id);
-					}
-					if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))
-							|| (!strcmp(g_config_team->algoritmo_planificion,
-									"SJF-SD"))) {
-						if(!entrenadorAux->hayQueDesalojar){
+					if(pokemon_a_reservar != NULL && entrenadorAux != NULL) {
+						puts("");
+						log_info(g_logger,"Entrenador %d está más cerca de %s en (%d,%d)",
+						entrenadorAux->id, pokemon_a_reservar->pokemon, pokemon_a_reservar->posicion->pos_x, pokemon_a_reservar->posicion->pos_y);
+								id_reservador = entrenadorAux->id;
+						t_pokemon_entrenador_reservado* pokemonReservado =	moverPokemonAReservados(pokemon_a_reservar, id_reservador);
+						cantidadDePokemonesLibresAuxiliar--;
+						if ((!strcmp(g_config_team->algoritmo_planificion, "SJF-CD"))||(!strcmp(g_config_team->algoritmo_planificion,"SJF-SD"))) {
+							if(!entrenadorAux->hayQueDesalojar){
 							estimar_entrenador(entrenadorAux);
-						} else{
-							entrenadorAux->hayQueDesalojar = false;
+							} else{
+								entrenadorAux->hayQueDesalojar = false;
+							}
 						}
-
+						encontreUnoAPasar++;
+						sem_wait(&sem_cola_ready);
+						queue_push(colaReadyEntrenadores, entrenadorAux);
+						puts("");
+						log_info(g_logger, "Entrenador %d se movio a la cola de READY, porque va a %s",
+							entrenadorAux->id, estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
+						sem_post(&sem_cola_ready);
+						cantidadDeEntrenadoresAuxiliar--;
+					} else {
+						cantidadDeEntrenadoresAuxiliar = 0;
+						cantidadDePokemonesLibresAuxiliar = 0;
 					}
-					encontreUnoAPasar++;
-					t_pokemon_entrenador_reservado* pokemonReservado =	moverPokemonAReservados(pokemon_a_reservar, id_reservador);
-					sem_wait(&sem_cola_ready);
-					queue_push(colaReadyEntrenadores, entrenadorAux);
-
-					log_info(g_logger,
-							"Entrenador %d se movio a la cola de READY, porque va a %s",
-							entrenadorAux->id,
-							estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
-
-					sem_post(&sem_cola_ready);
-
-					cantidadDeEntrenadoresAuxiliar--;
-					cantidadDePokemonesLibresAuxiliar--;
-
 				}
 				//Mando un post al planificador a corto plazo por cada entrenador que pase a ready
 				for (int i = 0; i < encontreUnoAPasar; i++) {
@@ -251,7 +233,6 @@ void planificadorMedianoPlazo() {
 									estadosEntrenadorStrings[entrenadorAux->estado_entrenador]);
 
 							sem_post(&sem_cola_ready);
-
 							sem_post(&sem_planificador_cplazoReady);
 
 						}
@@ -310,7 +291,6 @@ void planificadorMedianoPlazo() {
 
 				//y por último avisarle al planificador a corto plazo
 				sem_post(&sem_planificador_cplazoReady);
-
 				sem_post(&(entrenadorAux->mutex_entrenador));
 
 				//sem_post(&sem_hay_pokemones_mapa);
@@ -538,7 +518,6 @@ t_entrenador* buscarEntrenadorMasConvenienteEnCola(t_queue* colaEntrenadores) {
 		} else {
 			t_pokemon_entrenador* pokemonCercano = buscarPokemonMasCercano(
 					unEntrenador->posicion);
-			//puts(pokemonCercano->pokemon);
 			int distanciaEntreAmbos = calcularDistancia(unEntrenador->posicion,
 					pokemonCercano->posicion);
 
@@ -596,11 +575,7 @@ t_entrenador* buscarEntrenado_mas_cercano_a_pokemon(t_queue* colaEntrenadores, t
 	int entrenadoresEnCola = queue_size(colaEntrenadores);
 	for (int i = 0; i < entrenadoresEnCola; i++) {
 		unEntrenador = queue_pop(colaEntrenadores);
-		log_debug(g_logger,"En cola hay %d entrenadores|Entrenador %d |Cant_Objetivos: %d| Obtuvo: %d| cant_reservados:%d",entrenadoresEnCola,
-			unEntrenador->id , unEntrenador->objetivoEntrenador->elements_count,
-			unEntrenador->pokemonesObtenidos->elements_count, cant_pokemones_reservados_entrenador(unEntrenador->id));
 		if (!admite_reservar_pokemon(unEntrenador)) {
-			puts("no_admite");
 			queue_push(colaEntrenadores, unEntrenador);
 		} else if (unEntrenador->estado_entrenador != MOVERSE_A_POKEMON) {
 			queue_push(colaEntrenadores, unEntrenador);
@@ -634,7 +609,6 @@ t_entrenador* buscarEntrenado_mas_cercano_a_pokemon(t_queue* colaEntrenadores, t
 		}
 	}
 	if(entrenadorConveniente == NULL) {
-		puts("NULL");
 	}
 	return entrenadorConveniente;
 }
