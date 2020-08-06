@@ -76,7 +76,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 				////INICIO ROUND ROBIN
 				pokemonReservado =
 						buscarPokemonReservado(entrenador->id);
-				printf("El reservado es %s \n", pokemonReservado->pokemon);
+//				printf("El reservado es %s \n", pokemonReservado->pokemon);
 
 				distancia = calcularDistancia(entrenador->posicion,
 						pokemonReservado->posicion);
@@ -144,7 +144,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 				pokemonReservado = buscarPokemonReservado(entrenador->id);
 
-				printf("El reservado es %s \n", pokemonReservado->pokemon);
+//				printf("El reservado es %s \n", pokemonReservado->pokemon);
 
 				distancia = calcularDistancia(entrenador->posicion,
 						pokemonReservado->posicion);
@@ -264,8 +264,6 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 			sem_wait(&entrenador->mutex_entrenador);
 			if (entrenador->estado_entrenador == RECIBIO_RESPUESTA_OK && resultadoEnvioMensaje ==-1) {
-
-				//printf("ENTRO AL IF DEL RESPUESTA POR DEFAULT \n");
 
 				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(
 						sizeof(t_pokemon_entrenador));
@@ -597,7 +595,7 @@ void moverEntrenador(t_entrenador* entrenador,
 	}
 
 
-	printf("Llego a ejecutar un movimiento \n");
+//	printf("Llego a ejecutar un movimiento \n");
 	entrenador->quantumPorEjecutar--;
 
 	log_info(g_logger, "Entrenador %d se movio a la posicion (%d,%d) \n",
