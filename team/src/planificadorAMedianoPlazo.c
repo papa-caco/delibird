@@ -385,6 +385,8 @@ void liberar_variables_globales() {
 		free(entrenador);
 	}
 
+	printf("Despues de liberar entrenadores \n");
+
 	queue_destroy(colaReadyEntrenadores);
 
 	queue_destroy(colaBlockedEntrenadores);
@@ -397,17 +399,17 @@ void liberar_variables_globales() {
 		liberar_lista_de_pokemones(pokemonesLibresEnElMapa);
 	}
 
+
 	list_destroy(pokemonesReservadosEnElMapa);
 
-	list_clean(pokemonesAtrapadosGlobal);
+	liberar_lista_de_pokemones(pokemonesAtrapadosGlobal);
 
-	list_destroy(pokemonesAtrapadosGlobal);
 
-	list_clean(objetivoGlobalEntrenadores);
+	liberar_lista_de_pokemones(objetivoGlobalEntrenadores);
 
-	list_destroy(objetivoGlobalEntrenadores);
 
 	liberar_lista(idCorrelativosCatch);
+
 
 	list_clean(idCorrelativosGet);
 
