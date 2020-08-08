@@ -385,7 +385,6 @@ void liberar_variables_globales() {
 		free(entrenador);
 	}
 
-	printf("Despues de liberar entrenadores \n");
 
 	queue_destroy(colaReadyEntrenadores);
 
