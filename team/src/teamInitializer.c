@@ -44,8 +44,12 @@ t_list * extraer_posiciones_entrenadores() {
 
 		list_add(posicionesEntrenadores, posicion);
 
+		liberar_listas(posiciones);
+
 
 	}
+
+	liberar_listas(listaConfig);
 
 	config_destroy(config);
 
@@ -77,19 +81,18 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 
 
 		for(int j=0; pokemonesObjetivo[j] != NULL; j++){
-			t_pokemon_entrenador *objetivo = malloc(sizeof(t_pokemon_entrenador));
-			objetivo->posicion = malloc(sizeof(t_pokemon_entrenador));
-			objetivo->posicion->pos_x = 0;
-			objetivo->posicion->pos_y = 0;
 
 			t_pokemon_entrenador* pokemonEncontrado = list_buscar(objetivosUnEntrenador, pokemonesObjetivo[j]);
 
 			if(pokemonEncontrado != NULL){
-				objetivo = pokemonEncontrado;
-				objetivo->cantidad++;
+				pokemonEncontrado->cantidad++;
 			}
 			else{
-				//printf("Hay un nuevo Pokemon que es %s \n", pokemonesObjetivo[j]);
+				t_pokemon_entrenador *objetivo = malloc(
+						sizeof(t_pokemon_entrenador));
+				objetivo->posicion = malloc(sizeof(t_pokemon_entrenador));
+				objetivo->posicion->pos_x = 0;
+				objetivo->posicion->pos_y = 0;
 				objetivo->pokemon = malloc(strlen(pokemonesObjetivo[j]) +1);
 				memcpy(objetivo->pokemon, pokemonesObjetivo[j], strlen(pokemonesObjetivo[j]) + 1);
 				objetivo->cantidad = 1;
@@ -98,9 +101,13 @@ t_list *extraer_pokemones_entrenadores(char* configKey){
 
 		}
 
+		liberar_listas(pokemonesObjetivo);
+
 		list_add(objetivosEntrenadores, objetivosUnEntrenador);
 
 	}
+
+	liberar_listas(arrayConfig);
 
 	config_destroy(config);
 
@@ -134,21 +141,21 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 	for(int i=0; list_get(posiciones, i) != NULL; i++){
 		t_entrenador* unEntrenador = malloc(sizeof(t_entrenador));
 		unEntrenador->posicion = (t_posicion_entrenador*)list_get(posiciones, i);
-		unEntrenador->objetivoEntrenador = (t_list*)list_get(objetivosEntrenadores, i);
+		unEntrenador->objetivoEntrenador = (t_list*)list_remove(objetivosEntrenadores, 0);
 
 
-		t_list* obtenidos = (t_list*) list_get(pokemonesObtenidos, i);
+		t_list* obtenidos = (t_list*) list_remove(pokemonesObtenidos, 0);
 		if (obtenidos == NULL) {
 			unEntrenador->pokemonesObtenidos = list_create();
 		} else {
 			unEntrenador->pokemonesObtenidos = obtenidos;
 		}
 
-		unEntrenador->pokemonesObtenidos = (t_list*)list_get(pokemonesObtenidos, i);
+		//unEntrenador->pokemonesObtenidos = (t_list*)list_remove(pokemonesObtenidos, i);
 		unEntrenador->id = i;
 
 
-		for (int k = 0; k < list_size(unEntrenador->pokemonesObtenidos); k++) {
+		/*for (int k = 0; k < list_size(unEntrenador->pokemonesObtenidos); k++) {
 			t_pokemon_entrenador* pokePrint = list_get(
 					unEntrenador->pokemonesObtenidos, k);
 		}
@@ -157,7 +164,7 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 			t_pokemon_entrenador* pokePrint = list_get(
 					unEntrenador->objetivoEntrenador, k);
 			puts(pokePrint->pokemon);
-		}
+		}*/
 
 
 		unEntrenador->ciclosCPU = 0;
@@ -177,7 +184,15 @@ void iniciar_entrenadores_and_objetivoGlobal(){
 	}
 	//Al finalizar el programa vamos a tener que destruir la lista de entrenadores, lo cual implicará destruir
 	//también cada una de las listas que creamos acá para llenar a cada uno
+
 	cantidadDeEntrenadores = queue_size(colaBlockedEntrenadores);
+
+	list_clean(objetivosEntrenadores);
+	list_clean(pokemonesObtenidos);
+	list_clean(posiciones);
+	free(posiciones);
+	free(objetivosEntrenadores);
+	free(pokemonesObtenidos);
 
 }
 
@@ -187,7 +202,6 @@ void cargar_objetivo_global(t_list* objetivosEntrenadores){
 
 
 		for(int j=0; list_get(objetivosUnEntrenador, j) != NULL; j++){
-			t_pokemon_entrenador *pokemonNuevo = malloc(sizeof(t_pokemon_entrenador));
 			t_pokemon_entrenador* pokemonEncontrado = list_buscar(objetivoGlobalEntrenadores, ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->pokemon);
 			if(pokemonEncontrado != NULL){
 				pokemonEncontrado -> cantidad+=((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->cantidad;
@@ -198,6 +212,9 @@ void cargar_objetivo_global(t_list* objetivosEntrenadores){
 				pokemonNuevo->pokemon = malloc(strlen(nombrePokemonNuevo)+1);
 				memcpy(pokemonNuevo->pokemon, nombrePokemonNuevo, strlen(nombrePokemonNuevo)+1);
 				pokemonNuevo -> cantidad = ((t_pokemon_entrenador*)list_get(objetivosUnEntrenador, j))->cantidad;
+				pokemonNuevo->posicion = malloc(sizeof(t_posicion_entrenador));
+				pokemonNuevo->posicion->pos_x = 0;
+				pokemonNuevo->posicion->pos_y = 0;
 				list_add(objetivoGlobalEntrenadores, pokemonNuevo);
 				}
 
@@ -212,7 +229,6 @@ void cargar_obtenidos_global(t_list* pokemonesObtenidos){
 
 
 			for(int j=0; list_get(obtenidosUnEntrenador, j) != NULL; j++){
-				t_pokemon_entrenador *pokemonNuevo = malloc(sizeof(t_pokemon_entrenador));
 				t_pokemon_entrenador* pokemonEncontrado = list_buscar(pokemonesAtrapadosGlobal, ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->pokemon);
 				if(pokemonEncontrado != NULL){
 					pokemonEncontrado -> cantidad+=((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->cantidad;
@@ -223,6 +239,9 @@ void cargar_obtenidos_global(t_list* pokemonesObtenidos){
 					pokemonNuevo->pokemon = malloc(strlen(nombrePokemonNuevo)+1);
 					memcpy(pokemonNuevo->pokemon, nombrePokemonNuevo, strlen(nombrePokemonNuevo)+1);
 					pokemonNuevo -> cantidad = ((t_pokemon_entrenador*)list_get(obtenidosUnEntrenador, j))->cantidad;
+					pokemonNuevo->posicion = malloc(sizeof(t_posicion_entrenador));
+					pokemonNuevo->posicion->pos_x=0;
+					pokemonNuevo->posicion->pos_y=0;
 					list_add(pokemonesAtrapadosGlobal, pokemonNuevo);
 					}
 
@@ -292,17 +311,22 @@ void liberar_lista_de_pokemones(t_list* lista){
 	        contador++;
 	    }
 
-	    free(lista);
+	    list_clean(lista);
+	    list_destroy(lista);
 }
 
 void liberar_lista(t_list* lista) {
+
 
 	for(int i= 0; i< list_size(lista); i++){
 		free(list_get(lista,i));
 	}
 
+	list_clean(lista);
     free(lista);
 }
+
+
 
 void liberar_cola(t_queue* cola) {
 
@@ -426,7 +450,7 @@ void iniciar_variables_globales(){
 void estimar_entrenador(t_entrenador* entrenador){
 	if (noEstimar != 1) {
 		double alpha = g_config_team->alpha;
-		printf("Que onda ese alpha %f \n", alpha);
+		//printf("Que onda ese alpha %f \n", alpha);
 		entrenador->estimacion_anterior = entrenador->estimacion_real;
 		entrenador->estimacion_real = ((alpha) * entrenador->instruccion_actual)
 				+ ((1 - alpha) * entrenador->estimacion_real);

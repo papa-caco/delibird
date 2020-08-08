@@ -76,7 +76,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 				////INICIO ROUND ROBIN
 				pokemonReservado =
 						buscarPokemonReservado(entrenador->id);
-				printf("El reservado es %s \n", pokemonReservado->pokemon);
+//				printf("El reservado es %s \n", pokemonReservado->pokemon);
 
 				distancia = calcularDistancia(entrenador->posicion,
 						pokemonReservado->posicion);
@@ -144,7 +144,7 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 				pokemonReservado = buscarPokemonReservado(entrenador->id);
 
-				printf("El reservado es %s \n", pokemonReservado->pokemon);
+//				printf("El reservado es %s \n", pokemonReservado->pokemon);
 
 				distancia = calcularDistancia(entrenador->posicion,
 						pokemonReservado->posicion);
@@ -264,8 +264,6 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 
 			sem_wait(&entrenador->mutex_entrenador);
 			if (entrenador->estado_entrenador == RECIBIO_RESPUESTA_OK && resultadoEnvioMensaje ==-1) {
-
-				//printf("ENTRO AL IF DEL RESPUESTA POR DEFAULT \n");
 
 				t_pokemon_entrenador* pokemonAAgregarConvertido = malloc(
 						sizeof(t_pokemon_entrenador));
@@ -597,7 +595,7 @@ void moverEntrenador(t_entrenador* entrenador,
 	}
 
 
-	printf("Llego a ejecutar un movimiento \n");
+//	printf("Llego a ejecutar un movimiento \n");
 	entrenador->quantumPorEjecutar--;
 
 	log_info(g_logger, "Entrenador %d se movio a la posicion (%d,%d) \n",
@@ -728,10 +726,8 @@ void intercambiarNormalPokemon(t_entrenador* entrenador1,
 	//NO HAY QUE LIBERAR ESTOS CUATRO!
 	t_pokemon_entrenador* pokemonInnecesario1 = malloc(
 			sizeof(t_pokemon_entrenador));
-	//t_pokemon_entrenador* pokemonPendiente2 = malloc(sizeof(t_pokemon_entrenador));
 	t_pokemon_entrenador* pokemonInnecesario2 = malloc(
 			sizeof(t_pokemon_entrenador));
-	//t_pokemon_entrenador* pokemonPendiente1 = malloc(sizeof(t_pokemon_entrenador));
 
 	//Busco uno que le sirva al entrenador 1, de los innecesarios del entrenador 2
 	for (int i = 0; i < list_size(pokemonesInnecesariosDT2); i++) {
@@ -840,7 +836,9 @@ void agregarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon) {
 		pokemonAAgregar->posicion->pos_y = 0;
 
 		list_add(entrenador->pokemonesObtenidos, pokemonAAgregar);
+
 	}
+
 }
 
 void quitarPokemon(t_entrenador* entrenador, t_pokemon_entrenador* pokemon) {
@@ -964,6 +962,10 @@ char puedoIntercambiar(t_entrenador* entrenadorPorEjecutar,
 
 		}
 	}
+
+	liberar_lista_de_pokemones(pokemonesInnecesariosOtroEntrenador);
+	liberar_lista_de_pokemones(pokemonesPendientesEntrenadorPorEjecutar);
+
 	return leSirveAlDTPorEjecutar;
 }
 
