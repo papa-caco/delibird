@@ -234,8 +234,6 @@ void comportamiento_entrenador(t_entrenador* entrenador) {
 			int resultadoEnvioMensaje = intentarAtraparPokemon(entrenador,
 					pokemonReservado);
 
-			log_trace(g_logger,"Borrar-->>ESTOY EN ENTRENADOR DP DE INTENTAR ATRAPAR|id_msj_catch recibido:%d",
-					resultadoEnvioMensaje); //TODO Borrar
 			sleep(g_config_team->retardo_ciclo_cpu);
 
 			ciclosCPU++;

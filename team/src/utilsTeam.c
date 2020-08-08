@@ -138,7 +138,6 @@ int connect_broker_y_enviar_mensaje_catch(t_msg_catch_team_broker *msg_catch_tea
 	if (id_mensaje != -1) {
 			rta_catch = id_mensaje;
 	}
-	log_trace(g_logger,"Borrar-->>Envié MSG_CATCH | RTA: id_msj_catch:%d\n",rta_catch);//TODO Borrar
 	sem_post(&mutex_catch);
 	sem_post(&sem_mutex_msjs);
 	close(cliente_fd);
